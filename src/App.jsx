@@ -7,6 +7,8 @@ const SB_URL = import.meta.env.VITE_SUPABASE_URL;
 const SB_KEY = import.meta.env.VITE_SUPABASE_KEY;
 const sb = createClient(SB_URL, SB_KEY);
 
+const LOGO_SRC = "/logo.png";
+
 // ─── PALETA ──────────────────────────────────────────────────────────────────
 const C = {
   azul:"#3a7bd5", azulOsc:"#2563a8", azulClaro:"#eef4fd", azulBorde:"#b3d0f5",
@@ -133,8 +135,7 @@ function PantallaLogin({onLogin}) {
     <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:`linear-gradient(135deg,${C.azulClaro} 0%,#fff 50%,${C.rojoClaro} 100%)`}}>
       <div style={{background:"#fff",borderRadius:"20px",padding:"48px 40px",width:"100%",maxWidth:"400px",boxShadow:"0 20px 60px rgba(58,123,213,0.15)"}}>
         <div style={{textAlign:"center",marginBottom:"32px"}}>
-          <Logo size={56}/>
-          <div style={{marginTop:"12px",fontSize:"24px",fontWeight:"900",color:C.texto}}>MUNDO<span style={{color:C.rojo}}>CHILE</span></div>
+          <img src={LOGO_SRC} alt="MundoChile" style={{height:"120px",marginTop:"8px",marginBottom:"8px"}}/>
           <div style={{color:C.textoSuave,fontSize:"14px",marginTop:"4px"}}>Gestión de Interpretaciones</div>
         </div>
         {err&&<div style={{background:C.rojoClaro,color:C.rojo,padding:"10px 14px",borderRadius:"8px",marginBottom:"16px",fontSize:"14px",fontWeight:"600"}}>{err}</div>}
@@ -1017,9 +1018,11 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,onActualizar}) {
 // APP PRINCIPAL
 // ══════════════════════════════════════════════════════════════════════════════
 export default function App() {
-  const [usuario,setUsuario]=useState(null);
-  const [perfil,setPerfil]=useState(null);
-  const [cargandoAuth,setCargandoAuth]=useState(true);
+  // TEMP: login desactivado — para reactivar cambiar SKIP_LOGIN a false
+  const SKIP_LOGIN = true;
+  const [usuario,setUsuario]=useState(SKIP_LOGIN ? {id:"bypass"} : null);
+  const [perfil,setPerfil]=useState(SKIP_LOGIN ? {rol:"admin",nombre:"Admin"} : null);
+  const [cargandoAuth,setCargandoAuth]=useState(false);
   const [eventos,setEventos]=useState([]);
   const [clientes,setClientes]=useState([]);
   const [interpretes,setInterpretes]=useState([]);
@@ -1039,6 +1042,7 @@ export default function App() {
 
   // ── Auth ──
   useEffect(()=>{
+    if(SKIP_LOGIN){ cargarDatos(); return; }
     sb.auth.getSession().then(({data})=>{
       if(data.session?.user){setUsuario(data.session.user);cargarPerfil(data.session.user.id);}
       else setCargandoAuth(false);
@@ -1190,7 +1194,7 @@ export default function App() {
       <div style={{textAlign:"center"}}><Logo size={48}/><div style={{marginTop:"16px",color:C.textoMed,fontSize:"16px",fontWeight:"600"}}>Cargando…</div></div>
     </div>
   );
-  if(!usuario) return <PantallaLogin onLogin={(u)=>{setUsuario(u);cargarPerfil(u.id);}}/>;
+  if(!SKIP_LOGIN && !usuario) return <PantallaLogin onLogin={(u)=>{setUsuario(u);cargarPerfil(u.id);}}/>;
 
   const esAdmin=perfil?.rol==="admin";
   const esEditor=perfil?.rol==="editor"||esAdmin;
@@ -1199,10 +1203,9 @@ export default function App() {
     <div style={{fontFamily:"'Segoe UI',system-ui,sans-serif",minHeight:"100vh",background:C.gris,color:C.texto}}>
       {/* ── TOPBAR ── */}
       <div style={{position:"sticky",top:0,zIndex:100,background:"#fff",borderBottom:`1px solid ${C.grisBorde}`,boxShadow:"0 2px 8px rgba(58,123,213,0.08)"}}>
-        <div style={{padding:"0 16px",display:"flex",alignItems:"center",justifyContent:"space-between",height:"56px"}}>
+        <div style={{padding:"0 16px",display:"flex",alignItems:"center",justifyContent:"space-between",height:"120px"}}>
           <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
-            <Logo size={32}/>
-            <div><span style={{fontWeight:"900",fontSize:"16px",color:C.texto}}>MUNDO</span><span style={{fontWeight:"900",fontSize:"16px",color:C.rojo}}>CHILE</span></div>
+            <img src={LOGO_SRC} alt="MundoChile" style={{height:"104px"}}/>
           </div>
           <div style={{display:"flex",gap:"8px",alignItems:"center"}}>
             {esEditor&&<button onClick={()=>setModalEvento({modo:"nuevo",data:evVacio()})} style={S.btnA}>➕ Nuevo evento</button>}
