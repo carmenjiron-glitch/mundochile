@@ -20,13 +20,9 @@ const C = {
   gris:"#F7F7F5", grisMed:"#EFEFED", grisBorde:"#E5E5E3",
   texto:"#1A1A1A", textoMed:"#6B6B6B", textoSuave:"#9B9B9B", blanco:"#ffffff",
 };
-const PALETA_EVS = [
-  {borde:"#3a7bd5",fondo:"#eef4fd"},{borde:"#16a34a",fondo:"#f0fdf4"},
-  {borde:"#7c3aed",fondo:"#f5f3ff"},{borde:"#d97706",fondo:"#fffbeb"},
-  {borde:"#db2777",fondo:"#fdf2f8"},{borde:"#0891b2",fondo:"#ecfeff"},
-  {borde:"#ea580c",fondo:"#fff7ed"},{borde:"#65a30d",fondo:"#f7fee7"},
-];
-const colorEv = (id) => PALETA_EVS[(id||0)%8];
+const PALETA_CLIENTE=["#E03131","#C2255C","#9C36B5","#3B5BDB","#1971C2","#0C8599","#2F9E44","#E67700","#D9480F","#5C7CFA","#F06595","#20C997"];
+const colorCliente=(id)=>PALETA_CLIENTE[(id||0)%12];
+const avatarColor=(str)=>PALETA_CLIENTE[(str||"").split("").reduce((a,c)=>a+c.charCodeAt(0),0)%12];
 
 // ─── CONSTANTES ──────────────────────────────────────────────────────────────
 const TIPOS      = ["Simultánea","Consecutiva","Whispering"];
@@ -64,10 +60,16 @@ const S = {
   lbl: {fontSize:"11px",fontWeight:"700",color:C.textoMed,textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:"5px",display:"block"},
   fila:{display:"flex",gap:"12px",flexWrap:"wrap"},
   camp:{flex:"1",minWidth:"140px"},
-  btnA:{padding:"10px 20px",background:C.azul,color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"700",fontSize:"14px",fontFamily:"inherit"},
-  btnR:{padding:"10px 20px",background:C.rojo,color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"700",fontSize:"14px",fontFamily:"inherit"},
-  btnV:{padding:"10px 20px",background:C.verde,color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"700",fontSize:"14px",fontFamily:"inherit"},
+  btnA:{padding:"10px 20px",background:"#3a7bd5",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"700",fontSize:"14px",fontFamily:"inherit"},
+  btnR:{padding:"10px 20px",background:"#E03131",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"700",fontSize:"14px",fontFamily:"inherit"},
+  btnV:{padding:"10px 20px",background:"#2F9E44",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"700",fontSize:"14px",fontFamily:"inherit"},
   btnG:{padding:"10px 20px",background:"#fff",color:C.textoMed,border:`1.5px solid ${C.grisBorde}`,borderRadius:"8px",cursor:"pointer",fontWeight:"600",fontSize:"14px",fontFamily:"inherit"},
+  btnSave:{padding:"10px 20px",background:"#2F9E44",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"700",fontSize:"14px",fontFamily:"inherit"},
+  btnDel:{padding:"10px 20px",background:"#E03131",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"700",fontSize:"14px",fontFamily:"inherit"},
+  btnCancel:{padding:"10px 20px",background:"#868E96",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"700",fontSize:"14px",fontFamily:"inherit"},
+  btnEdit:{padding:"6px 12px",background:"#E67700",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"700",fontSize:"12px",fontFamily:"inherit"},
+  btnFicha:{padding:"6px 12px",background:"#1971C2",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"700",fontSize:"12px",fontFamily:"inherit"},
+  btnDup:{padding:"6px 12px",background:"#9C36B5",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"700",fontSize:"12px",fontFamily:"inherit"},
   btnP:{padding:"6px 12px",background:C.azulClaro,color:C.azul,border:`1px solid ${C.azulBorde}`,borderRadius:"6px",cursor:"pointer",fontWeight:"700",fontSize:"12px",fontFamily:"inherit"},
 };
 
@@ -111,8 +113,10 @@ function Logo({size=32}) {
   );
 }
 
-function Badge({texto,color=C.azul,fondo=C.azulClaro,icono=""}) {
-  return <span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"3px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"700",color,background:fondo,border:`1px solid ${color}33`}}>{icono}{texto}</span>;
+function Badge({texto,color=C.azul,fondo=C.azulClaro,icono="",solid=false}) {
+  const bg=solid?color:fondo;
+  const fg=solid?"#fff":color;
+  return <span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"3px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"700",color:fg,background:bg,border:solid?"none":`1px solid ${color}33`}}>{icono}{texto}</span>;
 }
 
 function CampoCopia({valor}) {
@@ -176,34 +180,40 @@ function PantallaLogin({onLogin}) {
 
 // ─── TARJETA EVENTO ───────────────────────────────────────────────────────────
 function TarjetaEvento({ev,clientes,pares,interpretes,onClick,todos_eventos}) {
-  const col=colorEv(ev.id), cliente=clientes.find(c=>c.id===ev.cliente_id), esZoomMC=ev.plataforma==="Zoom MundoChile";
+  const bg=colorCliente(ev.cliente_id);
+  const cliente=clientes.find(c=>c.id===ev.cliente_id);
+  const esZoomMC=ev.plataforma==="Zoom MundoChile";
   const tieneConflicto=todos_eventos&&(ev.asignaciones||[]).some(a=>a.interprete_id&&todos_eventos.some(otro=>{
     if(otro.id===ev.id)return false;
     if(!(otro.fecha_inicio<=ev.fecha_termino&&otro.fecha_termino>=ev.fecha_inicio))return false;
     return(otro.asignaciones||[]).some(b=>b.interprete_id===a.interprete_id);
   }));
+  const TIPO_COLORS={"Simultánea":"#3B5BDB","Consecutiva":"#2F9E44","Whispering":"#9C36B5"};
   return (
-    <div onClick={onClick} style={{borderRadius:"10px",padding:"12px",border:`1.5px solid ${col.borde}`,background:col.fondo,cursor:"pointer",marginBottom:"8px",borderLeft:`5px solid ${col.borde}`,transition:"transform 0.1s",boxShadow:"0 1px 3px rgba(0,0,0,0.07)"}}
-      onMouseEnter={e=>e.currentTarget.style.transform="translateY(-1px)"} onMouseLeave={e=>e.currentTarget.style.transform="translateY(0)"}>
-      <div style={{fontSize:"13px",fontWeight:"900",color:C.rojo,marginBottom:"4px",display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
-        <span>🏢 {cliente?.nombre_empresa||"—"}</span>
-        {tieneConflicto&&<span title="Conflicto: un intérprete tiene otro evento este día" style={{fontSize:"15px"}}>⚠️</span>}
+    <div onClick={onClick}
+      style={{borderRadius:"8px",padding:"12px",background:bg,color:"#fff",cursor:"pointer",marginBottom:"8px",boxShadow:"0 2px 8px rgba(0,0,0,0.18)",transition:"transform 0.1s,box-shadow 0.1s"}}
+      onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 4px 16px rgba(0,0,0,0.28)";}}
+      onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="0 2px 8px rgba(0,0,0,0.18)";}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:"4px"}}>
+        <div style={{fontSize:"14px",fontWeight:"900",color:"#fff"}}>{cliente?.nombre_empresa||"—"}</div>
+        {tieneConflicto&&<span title="Conflicto de intérprete" style={{fontSize:"14px",flexShrink:0}}>⚠️</span>}
       </div>
-      {ev.nombre_evento&&<div style={{fontSize:"13px",fontWeight:"700",color:C.texto,marginBottom:"4px"}}>{ev.nombre_evento}</div>}
-      <div style={{display:"flex",gap:"6px",flexWrap:"wrap",alignItems:"center",marginBottom:"6px"}}>
-        <span style={{fontSize:"12px",fontWeight:"700",color:C.textoMed}}>{ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)}</span>
-        <Badge texto={ev.tipo} icono="🎙 " color={ev.tipo==="Simultánea"?C.azul:ev.tipo==="Consecutiva"?C.verde:"#7c3aed"} fondo={ev.tipo==="Simultánea"?C.azulClaro:ev.tipo==="Consecutiva"?C.verdeClaro:"#f5f3ff"}/>
+      {ev.nombre_evento&&<div style={{fontSize:"12px",fontWeight:"600",color:"rgba(255,255,255,0.85)",marginBottom:"5px"}}>{ev.nombre_evento}</div>}
+      <div style={{display:"flex",gap:"5px",flexWrap:"wrap",alignItems:"center",marginBottom:"6px"}}>
+        <span style={{fontSize:"12px",fontWeight:"700",color:"rgba(255,255,255,0.9)"}}>{ev.hora_inicio?.slice(0,5)}–{ev.hora_termino?.slice(0,5)}</span>
+        <span style={{fontSize:"11px",fontWeight:"700",background:"rgba(255,255,255,0.25)",color:"#fff",padding:"2px 8px",borderRadius:"20px"}}>{ev.tipo}</span>
       </div>
-      {esZoomMC&&<div style={{background:C.amarilloVivo,color:"#1a1a1a",fontSize:"12px",fontWeight:"800",padding:"3px 10px",borderRadius:"20px",display:"inline-block",marginBottom:"6px"}}>🎛 Zoom MundoChile</div>}
+      {esZoomMC&&<div style={{fontSize:"11px",fontWeight:"800",background:"rgba(255,255,255,0.2)",color:"#fff",padding:"2px 8px",borderRadius:"20px",display:"inline-block",marginBottom:"5px"}}>🎛 Zoom MC</div>}
       {(ev.asignaciones||[]).slice(0,3).map((a,i)=>{
-        const interp=interpretes.find(x=>x.id===a.interprete_id), par=pares.find(p=>p.id===a.par_id);
-        return <div key={i} style={{marginBottom:"4px"}}>
-          {interp&&<div style={{fontSize:"13px",fontWeight:"800",color:C.texto}}>👤 {interp.nombre}{interp.apellido?" "+interp.apellido:""}</div>}
-          <div style={{fontSize:"13px",fontWeight:"700",color:C.azulOsc}}>🌐 {par?.descripcion||"—"}</div>
-        </div>;
+        const interp=interpretes.find(x=>x.id===a.interprete_id),par=pares.find(p=>p.id===a.par_id);
+        return interp?<div key={i} style={{fontSize:"12px",fontWeight:"700",color:"rgba(255,255,255,0.9)",marginBottom:"2px"}}>
+          👤 {interp.nombre}{interp.apellido?" "+interp.apellido:""}{par?<span style={{fontWeight:"400",opacity:0.8}}> · {par.descripcion}</span>:null}
+        </div>:null;
       })}
-      {(ev.asignaciones||[]).length>3&&<div style={{fontSize:"12px",color:C.textoSuave}}>+{(ev.asignaciones||[]).length-3} más</div>}
-      {ev.estado==="Facturado"&&<div style={{marginTop:"6px"}}><Badge texto="Facturado" color={C.azulOsc} fondo={C.azulClaro} icono="✅ "/></div>}
+      {(ev.asignaciones||[]).length>3&&<div style={{fontSize:"11px",color:"rgba(255,255,255,0.7)"}}>+{(ev.asignaciones||[]).length-3} más</div>}
+      {ev.estado!=="Pendiente"&&<div style={{marginTop:"6px"}}>
+        <span style={{fontSize:"11px",fontWeight:"800",background:"rgba(255,255,255,0.25)",color:"#fff",padding:"2px 8px",borderRadius:"20px"}}>{ev.estado==="Facturado"?"✓ Facturado":"✕ Cancelado"}</span>
+      </div>}
     </div>
   );
 }
@@ -412,7 +422,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,todos
     <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.65)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(4px)",padding:"16px"}}>
       <div style={{background:"#fff",borderRadius:"20px",width:"100%",maxWidth:"800px",maxHeight:"90vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,0.25)"}}>
         {/* Header */}
-        <div style={{padding:"20px 24px",borderBottom:`1px solid ${C.azulBorde}`,display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0,background:C.azul,borderRadius:"20px 20px 0 0"}}>
+        <div style={{padding:"20px 24px",borderBottom:"none",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0,background:form.id?"#E67700":"#3a7bd5",borderRadius:"20px 20px 0 0"}}>
           <div>
             <div style={{fontSize:"18px",fontWeight:"900",color:"#fff"}}>{form.id?"✏️ Editar evento":"➕ Nuevo evento"}</div>
             {form.id&&<div style={{fontSize:"12px",color:"rgba(255,255,255,0.7)",marginTop:"2px"}}>ID #{form.id}</div>}
@@ -421,7 +431,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,todos
         </div>
         {/* Tabs */}
         <div style={{display:"flex",borderBottom:`1px solid ${C.grisBorde}`,flexShrink:0}}>
-          {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"12px 20px",background:"none",border:"none",cursor:"pointer",borderBottom:tab===t.id?`3px solid ${C.azul}`:"3px solid transparent",color:tab===t.id?C.azul:C.textoSuave,fontWeight:tab===t.id?"800":"600",fontSize:"14px",fontFamily:"inherit"}}>{t.lbl}</button>)}
+          {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"10px 18px",background:tab===t.id?"#3a7bd5":"transparent",border:"none",borderRadius:tab===t.id?"8px":"0",cursor:"pointer",color:tab===t.id?"#fff":C.textoSuave,fontWeight:tab===t.id?"800":"600",fontSize:"14px",fontFamily:"inherit",margin:"6px 4px"}}>{t.lbl}</button>)}
         </div>
         {/* Cuerpo */}
         <div data-modal-scroll style={{overflowY:"auto",flex:1,padding:"20px 24px"}}>
@@ -615,8 +625,8 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,todos
         </div>
         {/* Footer */}
         <div style={{padding:"16px 24px",borderTop:`1px solid ${C.grisBorde}`,flexShrink:0,display:"flex",gap:"10px",justifyContent:"flex-end",background:C.gris,borderRadius:"0 0 20px 20px"}}>
-          <button onClick={onCerrar} style={S.btnG}>Cancelar</button>
-          <button onClick={guardar} disabled={guardando} style={{...S.btnA,opacity:guardando?0.7:1,minWidth:"140px"}}>{guardando?"Guardando…":"💾 Guardar cambios"}</button>
+          <button onClick={onCerrar} style={S.btnCancel}>Cancelar</button>
+          <button onClick={guardar} disabled={guardando} style={{...S.btnSave,opacity:guardando?0.7:1,minWidth:"140px"}}>{guardando?"Guardando…":"💾 Guardar"}</button>
         </div>
       </div>
     </div>
@@ -629,7 +639,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
   useEffect(()=>setAsignaciones(evento?.asignaciones||[]),[evento]);
   if(!evento) return null;
   const cliente=clientes.find(c=>c.id===evento.cliente_id);
-  const col=colorEv(evento.id);
+  const bg=colorCliente(evento.cliente_id);
   const esZoomMC=evento.plataforma==="Zoom MundoChile";
   const esMultidia=evento.fecha_inicio!==evento.fecha_termino;
   const nI=(id)=>{const i=interpretes.find(x=>x.id===id);return i?`${i.nombre}${i.apellido?" "+i.apellido:""}`:""};
@@ -646,16 +656,16 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
 
   const BotonesAccion=()=>(
     <div style={{display:"flex",gap:"8px",flexWrap:"wrap"}}>
-      <button onClick={onVerFicha} style={S.btnP}>📄 Ver ficha</button>
-      <button onClick={onEditar} style={{...S.btnP,background:C.amarilloFondo,color:C.amarillo,borderColor:C.amarillo}}>✏️ Editar</button>
-      <button onClick={()=>onDuplicar?.(evento)} style={{...S.btnP,background:"#f5f3ff",color:"#7c3aed",borderColor:"#7c3aed"}}>⧉ Duplicar</button>
-      <button onClick={onEliminar} style={{...S.btnP,background:C.rojoClaro,color:C.rojo,borderColor:C.rojo}}>🗑 Eliminar</button>
+      <button onClick={onVerFicha} style={S.btnFicha}>📄 Ver ficha</button>
+      <button onClick={onEditar} style={S.btnEdit}>✏️ Editar</button>
+      <button onClick={()=>onDuplicar?.(evento)} style={S.btnDup}>⧉ Duplicar</button>
+      <button onClick={onEliminar} style={S.btnDel}>🗑 Eliminar</button>
     </div>
   );
 
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.65)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(4px)",padding:"16px"}}>
-      <div style={{background:"#fff",borderRadius:"20px",width:"100%",maxWidth:"760px",maxHeight:"90vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,0.25)",borderTop:`5px solid ${col.borde}`}}>
+      <div style={{background:"#fff",borderRadius:"20px",width:"100%",maxWidth:"760px",maxHeight:"90vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,0.25)",borderTop:`5px solid ${bg}`}}>
         {/* Header */}
         <div style={{padding:"20px 24px",borderBottom:`1px solid ${C.grisBorde}`,display:"flex",alignItems:"flex-start",justifyContent:"space-between",flexShrink:0}}>
           <div style={{flex:1,minWidth:0}}>
@@ -668,11 +678,11 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
               {cliente.telefono&&<CampoCopia valor={cliente.telefono}/>}
             </div>}
             <div style={{display:"flex",gap:"8px",flexWrap:"wrap",marginTop:"8px"}}>
-              <Badge texto={evento.tipo} color={evento.tipo==="Simultánea"?C.azul:evento.tipo==="Consecutiva"?C.verde:"#7c3aed"} fondo={evento.tipo==="Simultánea"?C.azulClaro:evento.tipo==="Consecutiva"?C.verdeClaro:"#f5f3ff"} icono="🎙 "/>
-              <Badge texto={LBL_MODAL[evento.modalidad]||evento.modalidad} color={evento.modalidad==="presencial"?C.verde:evento.modalidad==="hibrido"?"#7c3aed":C.azul} fondo={evento.modalidad==="presencial"?C.verdeClaro:evento.modalidad==="hibrido"?"#f5f3ff":C.azulClaro} icono={evento.modalidad==="presencial"?"📍 ":evento.modalidad==="hibrido"?"🔀 ":"💻 "}/>
-              {evento.estado==="Facturado"&&<Badge texto="Facturado" color={C.azulOsc} fondo={C.azulClaro} icono="✅ "/>}
-              {evento.estado==="Cancelado"&&<Badge texto="Cancelado" color={C.rojo} fondo={C.rojoClaro} icono="❌ "/>}
-              {evento.estado==="Pendiente"&&<Badge texto="Pendiente" color="#d97706" fondo="#fffbeb" icono="⏳ "/>}
+              <Badge texto={evento.tipo} icono="🎙 " solid color={evento.tipo==="Simultánea"?"#3B5BDB":evento.tipo==="Consecutiva"?"#2F9E44":"#9C36B5"}/>
+              <Badge texto={LBL_MODAL[evento.modalidad]||evento.modalidad} icono={evento.modalidad==="presencial"?"📍 ":evento.modalidad==="hibrido"?"🔀 ":"💻 "} solid color={evento.modalidad==="presencial"?"#2F9E44":evento.modalidad==="hibrido"?"#E67700":"#1971C2"}/>
+              {evento.estado==="Facturado"&&<Badge texto="Facturado" solid color="#1971C2" icono="✓ "/>}
+              {evento.estado==="Cancelado"&&<Badge texto="Cancelado" solid color="#E03131" icono="✕ "/>}
+              {evento.estado==="Pendiente"&&<Badge texto="Pendiente" solid color="#E67700" icono="⏳ "/>}
             </div>
           </div>
           <div style={{display:"flex",flexDirection:"column",gap:"8px",marginLeft:"16px",flexShrink:0}}>
@@ -725,8 +735,8 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                 </div>
                 <button onClick={()=>togglePago(a)} title="Clic para cambiar estado de pago" style={{background:"none",border:"none",cursor:"pointer",padding:0}}>
                   {a.estado_pago==="Pagado"
-                    ?<Badge texto="Pagado" color={C.verde} fondo={C.verdeClaro} icono="✓ "/>
-                    :<Badge texto="Pendiente" color={C.amarillo} fondo={C.amarilloFondo} icono="⏳ "/>}
+                    ?<Badge texto="Pagado" solid color="#2F9E44" icono="✓ "/>
+                    :<Badge texto="Sin pago" solid color="#E03131" icono="● "/>}
                 </button>
               </div>
             ))}
@@ -773,7 +783,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
         </div>
         {/* Footer */}
         <div style={{padding:"16px 24px",borderTop:`1px solid ${C.grisBorde}`,flexShrink:0,display:"flex",gap:"10px",justifyContent:"space-between",alignItems:"center",background:C.gris,borderRadius:"0 0 20px 20px"}}>
-          <BotonesAccion/><button onClick={onCerrar} style={S.btnG}>Cerrar</button>
+          <BotonesAccion/><button onClick={onCerrar} style={S.btnCancel}>Cerrar</button>
         </div>
       </div>
     </div>
@@ -1027,26 +1037,34 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,onActualizar,per
             <button onClick={()=>{setEditando(null);setFormEdit({});}} style={S.btnG}>Cancelar</button>
           </div>
         </div>}
-        {interpretes.map(i=>(
-          <div key={i.id} style={{border:`1.5px solid ${C.grisBorde}`,borderRadius:"12px",padding:"14px 20px",marginBottom:"10px",background:"#fff",display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"12px",opacity:i.activo===false?0.6:1}}>
-            <div style={{flex:1}}>
-              <div style={{fontWeight:"800",fontSize:"15px",color:C.texto}}>{i.nombre}{i.apellido?" "+i.apellido:""}{i.es_host_zoom&&<span style={{color:C.rojo,marginLeft:"8px",fontSize:"12px"}}>🎛 Host Zoom</span>}</div>
-              <div style={{display:"flex",gap:"12px",marginTop:"5px",flexWrap:"wrap"}}>
-                {i.email&&<CampoCopia valor={i.email}/>}
-                {i.telefono&&<CampoCopia valor={i.telefono}/>}
-                {i.ciudad&&<span style={{fontSize:"13px",color:C.textoMed}}>📍 {i.ciudad}</span>}
-                {i.modalidad_trabajo&&<span style={{fontSize:"13px",color:C.textoMed}}>{i.modalidad_trabajo==="ambas"?"💻📍":i.modalidad_trabajo==="online"?"💻 Online":"📍 Presencial"}</span>}
+        {interpretes.map(i=>{
+          const nombreCompleto=`${i.nombre||""}${i.apellido?" "+i.apellido:""}`;
+          const aColor=avatarColor(nombreCompleto);
+          return(
+          <div key={i.id} style={{border:`1.5px solid ${C.grisBorde}`,borderRadius:"12px",padding:"14px 20px",marginBottom:"10px",background:"#fff",display:"flex",justifyContent:"space-between",alignItems:"center",gap:"12px",opacity:i.activo===false?0.6:1,transition:"background 0.1s"}}
+            onMouseEnter={e=>e.currentTarget.style.background=C.gris}
+            onMouseLeave={e=>e.currentTarget.style.background="#fff"}>
+            <div style={{display:"flex",gap:"12px",alignItems:"center",flex:1,minWidth:0}}>
+              <div style={{width:"40px",height:"40px",borderRadius:"50%",background:aColor,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:"900",fontSize:"16px",flexShrink:0}}>{(i.nombre||"?").slice(0,1).toUpperCase()}</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontWeight:"800",fontSize:"15px",color:C.texto}}>{nombreCompleto}{i.es_host_zoom&&<span style={{color:C.rojo,marginLeft:"8px",fontSize:"12px"}}>🎛 Host Zoom</span>}</div>
+                <div style={{display:"flex",gap:"12px",marginTop:"4px",flexWrap:"wrap"}}>
+                  {i.email&&<CampoCopia valor={i.email}/>}
+                  {i.telefono&&<CampoCopia valor={i.telefono}/>}
+                  {i.ciudad&&<span style={{fontSize:"13px",color:C.textoMed}}>📍 {i.ciudad}</span>}
+                  {i.modalidad_trabajo&&<span style={{fontSize:"13px",color:C.textoMed}}>{i.modalidad_trabajo==="ambas"?"💻📍":i.modalidad_trabajo==="online"?"💻 Online":"📍 Presencial"}</span>}
+                </div>
               </div>
             </div>
             <div style={{display:"flex",gap:"6px",flexShrink:0}}>
-              <button onClick={()=>{setEditando(i.id);setFormEdit({...i});}} style={S.btnP}>✏️ Editar</button>
+              <button onClick={()=>{setEditando(i.id);setFormEdit({...i});}} style={S.btnEdit}>✏️ Editar</button>
               <button onClick={async()=>{await sb.from("interpretes").update({activo:!i.activo}).eq("id",i.id);onActualizar();}}
                 style={{...S.btnP,background:i.activo?C.rojoClaro:C.verdeClaro,color:i.activo?C.rojo:C.verde,borderColor:i.activo?C.rojo:C.verde}}>
                 {i.activo?"Desactivar":"Activar"}
               </button>
             </div>
-          </div>
-        ))}
+          </div>);
+        })}
       </>}
 
       {/* ── CLIENTES ── */}
@@ -1071,19 +1089,26 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,onActualizar,per
             <button onClick={()=>{setEditando(null);setFormEdit({});}} style={S.btnG}>Cancelar</button>
           </div>
         </div>}
-        {clientes.map(c=>(
-          <div key={c.id} style={{border:`1.5px solid ${C.grisBorde}`,borderRadius:"12px",padding:"14px 20px",marginBottom:"10px",background:"#fff",display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"12px"}}>
-            <div style={{flex:1}}>
-              <div style={{fontWeight:"800",fontSize:"15px",color:C.texto}}>{c.nombre_empresa}</div>
-              <div style={{display:"flex",gap:"14px",marginTop:"5px",flexWrap:"wrap"}}>
-                {c.nombre_contacto&&<span style={{fontSize:"13px",color:C.textoMed}}>👤 {c.nombre_contacto}</span>}
-                {c.email_contacto&&<CampoCopia valor={c.email_contacto}/>}
-                {c.telefono&&<CampoCopia valor={c.telefono}/>}
+        {clientes.map(c=>{
+          const cColor=avatarColor(c.nombre_empresa||"");
+          return(
+          <div key={c.id} style={{border:`1.5px solid ${C.grisBorde}`,borderRadius:"12px",padding:"14px 20px",marginBottom:"10px",background:"#fff",display:"flex",justifyContent:"space-between",alignItems:"center",gap:"12px",transition:"background 0.1s"}}
+            onMouseEnter={e=>e.currentTarget.style.background=C.gris}
+            onMouseLeave={e=>e.currentTarget.style.background="#fff"}>
+            <div style={{display:"flex",gap:"12px",alignItems:"center",flex:1}}>
+              <div style={{width:"40px",height:"40px",borderRadius:"50%",background:cColor,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:"900",fontSize:"16px",flexShrink:0}}>{(c.nombre_empresa||"?").slice(0,1).toUpperCase()}</div>
+              <div style={{flex:1}}>
+                <div style={{fontWeight:"800",fontSize:"15px",color:C.texto}}>{c.nombre_empresa}</div>
+                <div style={{display:"flex",gap:"14px",marginTop:"4px",flexWrap:"wrap"}}>
+                  {c.nombre_contacto&&<span style={{fontSize:"13px",color:C.textoMed}}>👤 {c.nombre_contacto}</span>}
+                  {c.email_contacto&&<CampoCopia valor={c.email_contacto}/>}
+                  {c.telefono&&<CampoCopia valor={c.telefono}/>}
+                </div>
               </div>
             </div>
-            <button onClick={()=>{setEditando(c.id);setFormEdit({...c});}} style={S.btnP}>✏️ Editar</button>
-          </div>
-        ))}
+            <button onClick={()=>{setEditando(c.id);setFormEdit({...c});}} style={S.btnEdit}>✏️ Editar</button>
+          </div>);
+        })}
       </>}
 
       {/* ── IDIOMAS ── */}
@@ -1207,10 +1232,10 @@ function VistaAgenda({eventos,clientes,interpretes,pares,onAbrir}) {
             </div>
             {evs.map(ev=>{
               const cliente=clientes.find(c=>c.id===ev.cliente_id);
-              const col=colorEv(ev.id);
+              const evBg=colorCliente(ev.cliente_id);
               return (
                 <div key={ev.id} onClick={()=>onAbrir(ev)}
-                  style={{display:"flex",gap:"14px",alignItems:"flex-start",padding:"14px 16px",borderRadius:"10px",marginBottom:"8px",border:`1.5px solid ${C.grisBorde}`,background:"#fff",cursor:"pointer",borderLeft:`5px solid ${col.borde}`,boxShadow:"0 1px 3px rgba(0,0,0,0.06)",transition:"transform 0.1s"}}
+                  style={{display:"flex",gap:"14px",alignItems:"flex-start",padding:"14px 16px",borderRadius:"10px",marginBottom:"8px",border:`1.5px solid ${C.grisBorde}`,background:"#fff",cursor:"pointer",borderLeft:`5px solid ${evBg}`,boxShadow:"0 1px 3px rgba(0,0,0,0.06)",transition:"transform 0.1s"}}
                   onMouseEnter={e=>e.currentTarget.style.transform="translateY(-1px)"}
                   onMouseLeave={e=>e.currentTarget.style.transform="translateY(0)"}>
                   <div style={{minWidth:"72px",textAlign:"center",background:C.gris,borderRadius:"8px",padding:"8px 4px",flexShrink:0}}>
@@ -1221,11 +1246,11 @@ function VistaAgenda({eventos,clientes,interpretes,pares,onAbrir}) {
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{fontWeight:"900",fontSize:"15px",color:C.texto,marginBottom:"2px"}}>{cliente?.nombre_empresa||"—"}</div>
                     {ev.nombre_evento&&<div style={{fontSize:"13px",color:C.textoMed,marginBottom:"5px"}}>{ev.nombre_evento}</div>}
-                    <div style={{display:"flex",gap:"6px",flexWrap:"wrap",alignItems:"center"}}>
+                    <div style={{display:"flex",gap:"5px",flexWrap:"wrap",alignItems:"center"}}>
                       <span style={{fontSize:"12px",color:C.textoMed,fontWeight:"600"}}>{ev.hora_inicio?.slice(0,5)}–{ev.hora_termino?.slice(0,5)}</span>
-                      <Badge texto={ev.tipo} color={ev.tipo==="Simultánea"?C.azul:ev.tipo==="Consecutiva"?C.verde:"#7c3aed"} fondo={ev.tipo==="Simultánea"?C.azulClaro:ev.tipo==="Consecutiva"?C.verdeClaro:"#f5f3ff"}/>
-                      <Badge texto={LBL_MODAL[ev.modalidad]||ev.modalidad} color={C.textoMed} fondo={C.gris}/>
-                      <Badge texto={ev.estado} color={ev.estado==="Facturado"?C.verde:ev.estado==="Cancelado"?C.rojo:C.amarillo} fondo={ev.estado==="Facturado"?C.verdeClaro:ev.estado==="Cancelado"?C.rojoClaro:C.amarilloFondo}/>
+                      <Badge texto={ev.tipo} solid color={ev.tipo==="Simultánea"?"#3B5BDB":ev.tipo==="Consecutiva"?"#2F9E44":"#9C36B5"}/>
+                      <Badge texto={LBL_MODAL[ev.modalidad]||ev.modalidad} solid color={ev.modalidad==="presencial"?"#2F9E44":ev.modalidad==="hibrido"?"#E67700":"#1971C2"}/>
+                      <Badge texto={ev.estado} solid color={ev.estado==="Facturado"?"#1971C2":ev.estado==="Cancelado"?"#E03131":"#E67700"}/>
                     </div>
                     {(ev.asignaciones||[]).length>0&&<div style={{fontSize:"12px",color:C.textoSuave,marginTop:"5px"}}>
                       👤 {(ev.asignaciones||[]).slice(0,2).map(a=>{const i=interpretes.find(x=>x.id===a.interprete_id);const p=pares.find(x=>x.id===a.par_id);return i?`${i.nombre}${i.apellido?" "+i.apellido:""}${p?" ("+p.descripcion+")":""}`:""}).filter(Boolean).join(" · ")}
@@ -1419,7 +1444,7 @@ export default function App() {
               style={{minHeight:"80px",border:`1.5px solid ${esHoy?C.azul:C.grisBorde}`,borderRadius:"10px",padding:"6px 8px",cursor:"pointer",background:esHoy?C.azulClaro:"#fff"}}
               onMouseEnter={e=>{if(!esHoy)e.currentTarget.style.background=C.gris;}} onMouseLeave={e=>{if(!esHoy)e.currentTarget.style.background="#fff";}}>
               <div style={{fontWeight:esHoy?"900":"700",color:esHoy?C.azul:C.textoMed,fontSize:"14px",marginBottom:"4px"}}>{dia}</div>
-              {evs.slice(0,2).map((ev,j)=>{const col=colorEv(ev.id);return <div key={j} onClick={e=>{e.stopPropagation();abrirEvento(ev);}} style={{fontSize:"10px",fontWeight:"700",background:col.borde,color:"#fff",borderRadius:"4px",padding:"2px 5px",marginBottom:"2px",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{clientes.find(c=>c.id===ev.cliente_id)?.nombre_empresa||ev.nombre_evento||"Evento"}</div>;})}
+              {evs.slice(0,2).map((ev,j)=><div key={j} onClick={e=>{e.stopPropagation();abrirEvento(ev);}} style={{fontSize:"10px",fontWeight:"700",background:colorCliente(ev.cliente_id),color:"#fff",borderRadius:"4px",padding:"2px 5px",marginBottom:"2px",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{clientes.find(c=>c.id===ev.cliente_id)?.nombre_empresa||ev.nombre_evento||"Evento"}</div>)}
               {evs.length>2&&<div style={{fontSize:"10px",color:C.textoSuave,fontWeight:"600"}}>+{evs.length-2} más</div>}
             </div>;
           })}
@@ -1457,11 +1482,13 @@ export default function App() {
           {diasSemana.map((d,i)=>{
             const iso=toISO(d),evs=evsDia(iso),esHoy=iso===hoy();
             return <div key={i}>
-              <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{textAlign:"center",padding:"12px",borderRadius:"12px",marginBottom:"10px",background:esHoy?C.azul:C.grisMed,border:`2px solid ${esHoy?C.azul:C.grisBorde}`,cursor:"pointer"}}>
-                <div style={{fontSize:"11px",fontWeight:"800",textTransform:"uppercase",letterSpacing:"1px",color:esHoy?"#bfdbfe":C.textoSuave}}>{DIAS_SEM[i]}</div>
-                <div style={{fontSize:"26px",fontWeight:"900",color:esHoy?"#fff":C.texto}}>{d.getDate()}</div>
-                <div style={{fontSize:"11px",color:esHoy?"#bfdbfe":C.textoSuave,fontWeight:"600"}}>{MESES_C[d.getMonth()]} {d.getFullYear()}</div>
-                {evs.length>0&&<div style={{fontSize:"17px",fontWeight:"900",marginTop:"4px",color:esHoy?"#bfdbfe":C.azul}}>{evs.length} evento{evs.length!==1?"s":""}</div>}
+              <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{textAlign:"center",padding:"8px",borderRadius:"10px",marginBottom:"8px",background:esHoy?C.azul:C.grisMed,border:`1.5px solid ${esHoy?C.azul:C.grisBorde}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between",gap:"6px"}}>
+                <div style={{display:"flex",flexDirection:"column",alignItems:"flex-start"}}>
+                  <div style={{fontSize:"10px",fontWeight:"800",textTransform:"uppercase",letterSpacing:"1px",color:esHoy?"#bfdbfe":C.textoSuave}}>{DIAS_SEM[i]}</div>
+                  <div style={{fontSize:"22px",fontWeight:"900",lineHeight:1.1,color:esHoy?"#fff":C.texto}}>{d.getDate()}</div>
+                  <div style={{fontSize:"10px",color:esHoy?"#bfdbfe":C.textoSuave,fontWeight:"600"}}>{MESES_C[d.getMonth()]} {d.getFullYear()}</div>
+                </div>
+                {evs.length>0&&<div style={{fontSize:"13px",fontWeight:"700",color:esHoy?"#fff":C.azul,background:esHoy?"rgba(255,255,255,0.2)":C.azulClaro,padding:"2px 8px",borderRadius:"12px",whiteSpace:"nowrap"}}>{evs.length} ev.</div>}
               </div>
               {evs.map(ev=><TarjetaEvento key={ev.id} ev={ev} clientes={clientes} pares={pares} interpretes={interpretes} onClick={()=>abrirEvento(ev)} todos_eventos={eventos}/>)}
               {evs.length===0&&<div style={{textAlign:"center",color:C.textoSuave,fontWeight:"600",fontSize:"13px",padding:"16px 0"}}>Sin eventos</div>}
@@ -1509,7 +1536,7 @@ export default function App() {
           {/* Tabs centrados */}
           {pantalla==="calendario"&&<div style={{display:"flex",gap:"4px",alignItems:"center",flex:1,justifyContent:"center",flexWrap:"wrap"}}>
             {[["semana","Semana"],["dia","Día"],["mes","Mes"],["agenda","Agenda"]].map(([v,l])=>(
-              <button key={v} onClick={()=>setVista(v)} style={{padding:"8px 16px",background:vista===v?C.azulClaro:"transparent",border:`1.5px solid ${vista===v?C.azul:C.grisBorde}`,borderRadius:"8px",color:vista===v?C.azul:C.textoMed,fontWeight:vista===v?"800":"600",cursor:"pointer",fontSize:"14px",fontFamily:"inherit",transition:"all 0.15s"}}>{l}</button>
+              <button key={v} onClick={()=>setVista(v)} style={{padding:"8px 16px",background:vista===v?"#3a7bd5":"transparent",border:`1.5px solid ${vista===v?"#3a7bd5":C.grisBorde}`,borderRadius:"8px",color:vista===v?"#fff":C.textoMed,fontWeight:vista===v?"800":"600",cursor:"pointer",fontSize:"14px",fontFamily:"inherit",transition:"all 0.15s"}}>{l}</button>
             ))}
           </div>}
           {/* Acciones */}
