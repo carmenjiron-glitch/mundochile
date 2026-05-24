@@ -57,7 +57,7 @@ const HORAS = (() => { const h=[]; for(let x=6;x<=22;x++) for(let m of [0,15,30,
 const S = {
   inp: {width:"100%",padding:"9px 12px",border:`1.5px solid ${C.grisBorde}`,borderRadius:"8px",fontSize:"14px",color:C.texto,background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",height:"42px"},
   sel: {width:"100%",padding:"9px 12px",border:`1.5px solid ${C.grisBorde}`,borderRadius:"8px",fontSize:"14px",color:C.texto,background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",cursor:"pointer",height:"42px"},
-  lbl: {fontSize:"11px",fontWeight:"700",color:C.textoMed,textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:"5px",display:"block"},
+  lbl: {fontSize:"11px",fontWeight:"500",color:C.textoMed,textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:"5px",display:"block"},
   fila:{display:"flex",gap:"12px",flexWrap:"wrap"},
   camp:{flex:"1",minWidth:"140px"},
   btnA:{padding:"10px 20px",background:"#3a7bd5",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"700",fontSize:"14px",fontFamily:"inherit"},
@@ -191,28 +191,28 @@ function TarjetaEvento({ev,clientes,pares,interpretes,onClick,todos_eventos}) {
   const TIPO_COLORS={"Simultánea":"#3B5BDB","Consecutiva":"#2F9E44","Whispering":"#9C36B5"};
   return (
     <div onClick={onClick}
-      style={{borderRadius:"8px",padding:"12px",background:bg,color:"#fff",cursor:"pointer",marginBottom:"8px",boxShadow:"0 2px 8px rgba(0,0,0,0.18)",transition:"transform 0.1s,box-shadow 0.1s"}}
-      onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 4px 16px rgba(0,0,0,0.28)";}}
-      onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="0 2px 8px rgba(0,0,0,0.18)";}}>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:"4px"}}>
-        <div style={{fontSize:"14px",fontWeight:"900",color:"#fff"}}>{cliente?.nombre_empresa||"—"}</div>
-        {tieneConflicto&&<span title="Conflicto de intérprete" style={{fontSize:"14px",flexShrink:0}}>⚠️</span>}
+      style={{borderRadius:"10px",padding:"14px 16px",background:bg,color:"#fff",cursor:"pointer",marginBottom:"10px",boxShadow:"0 2px 8px rgba(0,0,0,0.15)",transition:"transform 0.12s,box-shadow 0.12s",lineHeight:1.5}}
+      onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 5px 18px rgba(0,0,0,0.25)";}}
+      onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="0 2px 8px rgba(0,0,0,0.15)";}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:"4px",gap:"6px"}}>
+        <div style={{fontSize:"14px",fontWeight:"600",color:"#fff",letterSpacing:"0.1px"}}>{cliente?.nombre_empresa||"—"}</div>
+        {tieneConflicto&&<span title="Conflicto de intérprete" style={{fontSize:"13px",flexShrink:0}}>⚠️</span>}
       </div>
-      {ev.nombre_evento&&<div style={{fontSize:"12px",fontWeight:"600",color:"rgba(255,255,255,0.85)",marginBottom:"5px"}}>{ev.nombre_evento}</div>}
-      <div style={{display:"flex",gap:"5px",flexWrap:"wrap",alignItems:"center",marginBottom:"6px"}}>
-        <span style={{fontSize:"12px",fontWeight:"700",color:"rgba(255,255,255,0.9)"}}>{ev.hora_inicio?.slice(0,5)}–{ev.hora_termino?.slice(0,5)}</span>
-        <span style={{fontSize:"11px",fontWeight:"700",background:"rgba(255,255,255,0.25)",color:"#fff",padding:"2px 8px",borderRadius:"20px"}}>{ev.tipo}</span>
+      {ev.nombre_evento&&<div style={{fontSize:"12px",fontWeight:"400",color:"rgba(255,255,255,0.85)",marginBottom:"5px"}}>{ev.nombre_evento}</div>}
+      <div style={{display:"flex",gap:"6px",flexWrap:"wrap",alignItems:"center",marginBottom:"6px"}}>
+        <span style={{fontSize:"12px",fontWeight:"400",color:"rgba(255,255,255,0.85)"}}>{ev.hora_inicio?.slice(0,5)}–{ev.hora_termino?.slice(0,5)}</span>
+        <span style={{fontSize:"11px",fontWeight:"500",background:"rgba(255,255,255,0.22)",color:"#fff",padding:"3px 10px",borderRadius:"20px"}}>{ev.tipo}</span>
       </div>
-      {esZoomMC&&<div style={{fontSize:"11px",fontWeight:"800",background:"rgba(255,255,255,0.2)",color:"#fff",padding:"2px 8px",borderRadius:"20px",display:"inline-block",marginBottom:"5px"}}>🎛 Zoom MC</div>}
+      {esZoomMC&&<div style={{fontSize:"11px",fontWeight:"500",background:"rgba(255,255,255,0.18)",color:"#fff",padding:"3px 10px",borderRadius:"20px",display:"inline-block",marginBottom:"5px"}}>🎛 Zoom MC</div>}
       {(ev.asignaciones||[]).slice(0,3).map((a,i)=>{
         const interp=interpretes.find(x=>x.id===a.interprete_id),par=pares.find(p=>p.id===a.par_id);
-        return interp?<div key={i} style={{fontSize:"12px",fontWeight:"700",color:"rgba(255,255,255,0.9)",marginBottom:"2px"}}>
-          👤 {interp.nombre}{interp.apellido?" "+interp.apellido:""}{par?<span style={{fontWeight:"400",opacity:0.8}}> · {par.descripcion}</span>:null}
+        return interp?<div key={i} style={{fontSize:"13px",fontWeight:"500",color:"rgba(255,255,255,0.95)",marginBottom:"2px"}}>
+          {interp.nombre}{interp.apellido?" "+interp.apellido:""}{par?<span style={{fontSize:"12px",fontWeight:"400",opacity:0.8}}> · {par.descripcion}</span>:null}
         </div>:null;
       })}
-      {(ev.asignaciones||[]).length>3&&<div style={{fontSize:"11px",color:"rgba(255,255,255,0.7)"}}>+{(ev.asignaciones||[]).length-3} más</div>}
+      {(ev.asignaciones||[]).length>3&&<div style={{fontSize:"11px",color:"rgba(255,255,255,0.65)"}}>+{(ev.asignaciones||[]).length-3} más</div>}
       {ev.estado!=="Pendiente"&&<div style={{marginTop:"6px"}}>
-        <span style={{fontSize:"11px",fontWeight:"800",background:"rgba(255,255,255,0.25)",color:"#fff",padding:"2px 8px",borderRadius:"20px"}}>{ev.estado==="Facturado"?"✓ Facturado":"✕ Cancelado"}</span>
+        <span style={{fontSize:"11px",fontWeight:"500",background:"rgba(255,255,255,0.22)",color:"#fff",padding:"3px 10px",borderRadius:"20px"}}>{ev.estado==="Facturado"?"✓ Facturado":"✕ Cancelado"}</span>
       </div>}
     </div>
   );
@@ -424,7 +424,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,todos
         {/* Header */}
         <div style={{padding:"20px 24px",borderBottom:"none",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0,background:form.id?"#E67700":"#3a7bd5",borderRadius:"20px 20px 0 0"}}>
           <div>
-            <div style={{fontSize:"18px",fontWeight:"900",color:"#fff"}}>{form.id?"✏️ Editar evento":"➕ Nuevo evento"}</div>
+            <div style={{fontSize:"18px",fontWeight:"700",color:"#fff"}}>{form.id?"✏️ Editar evento":"➕ Nuevo evento"}</div>
             {form.id&&<div style={{fontSize:"12px",color:"rgba(255,255,255,0.7)",marginTop:"2px"}}>ID #{form.id}</div>}
           </div>
           <button onClick={onCerrar} style={{background:"none",border:"none",cursor:"pointer",fontSize:"24px",color:"#fff",lineHeight:1}}>✕</button>
@@ -435,12 +435,12 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,todos
         </div>
         {/* Cuerpo */}
         <div data-modal-scroll style={{overflowY:"auto",flex:1,padding:"20px 24px"}}>
-          {error&&<div style={{background:C.rojoClaro,color:C.rojo,padding:"10px 14px",borderRadius:"8px",marginBottom:"14px",fontSize:"14px",fontWeight:"600"}}>{error}</div>}
+          {error&&<div style={{background:C.rojoClaro,color:C.rojo,padding:"10px 14px",borderRadius:"8px",marginBottom:"20px",fontSize:"14px",fontWeight:"600"}}>{error}</div>}
 
           {/* ── TAB GENERAL ── */}
           {tab==="general"&&<>
             {/* Cliente */}
-            <div style={{marginBottom:"14px"}}>
+            <div style={{marginBottom:"20px"}}>
               <label style={S.lbl}>🏢 Cliente *</label>
               <div style={{display:"flex",gap:"8px"}}>
                 <select style={S.sel} value={form.cliente_id||""} onChange={e=>setF("cliente_id",e.target.value?Number(e.target.value):"")}>
@@ -451,33 +451,33 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,todos
               </div>
             </div>
             {/* Nombre y OC */}
-            <div style={{...S.fila,marginBottom:"14px"}}>
+            <div style={{...S.fila,marginBottom:"20px"}}>
               <div style={{...S.camp,flex:2}}><label style={S.lbl}>Nombre del evento</label><input style={S.inp} value={form.nombre_evento} onChange={e=>setF("nombre_evento",e.target.value)} placeholder="Conferencia anual…"/></div>
               <div style={S.camp}><label style={S.lbl}>N° OC</label><input style={S.inp} value={form.nro_oc} onChange={e=>setF("nro_oc",e.target.value)} placeholder="OC-0000"/></div>
             </div>
             {/* Tipo + Modalidad */}
-            <div style={{...S.fila,marginBottom:"14px"}}>
+            <div style={{...S.fila,marginBottom:"20px"}}>
               <div style={S.camp}><label style={S.lbl}>🎙 Tipo de interpretación</label>
                 <select style={S.sel} value={form.tipo} onChange={e=>setF("tipo",e.target.value)}>{TIPOS.map(t=><option key={t}>{t}</option>)}</select></div>
               <div style={S.camp}><label style={S.lbl}>🔄 Modalidad</label>
                 <select style={S.sel} value={form.modalidad} onChange={e=>setF("modalidad",e.target.value)}>{MODALIDADES.map(m=><option key={m} value={m}>{LBL_MODAL[m]}</option>)}</select></div>
             </div>
             {/* Fechas */}
-            <div style={{...S.fila,marginBottom:"14px"}}>
+            <div style={{...S.fila,marginBottom:"20px"}}>
               <div style={S.camp}><label style={S.lbl}>📅 Fecha inicio</label><input style={S.inp} type="date" value={form.fecha_inicio} onChange={e=>setF("fecha_inicio",e.target.value)}/></div>
               <div style={S.camp}><label style={S.lbl}>📅 Fecha término</label><input style={S.inp} type="date" value={form.fecha_termino} onChange={e=>setF("fecha_termino",e.target.value)}/></div>
             </div>
             {/* Horas + Jornada */}
-            {!esMultidia&&<div style={{...S.fila,marginBottom:"14px"}}>
+            {!esMultidia&&<div style={{...S.fila,marginBottom:"20px"}}>
               <div style={S.camp}><label style={S.lbl}>🕐 Hora inicio</label><SelHora value={form.hora_inicio} onChange={v=>setF("hora_inicio",v)}/></div>
               <div style={S.camp}><label style={S.lbl}>🕐 Hora término</label><SelHora value={form.hora_termino} onChange={v=>setF("hora_termino",v)}/></div>
               <div style={S.camp}><label style={S.lbl}>⏱ Jornada</label>
                 <select style={S.sel} value={form.jornada} onChange={e=>setF("jornada",e.target.value)}>{JORNADAS.map(j=><option key={j}>{j}</option>)}</select></div>
             </div>}
-            {form.jornada==="Otro horario personalizado"&&!esMultidia&&<div style={{marginBottom:"14px"}}><label style={S.lbl}>✍️ Horario personalizado</label><input style={S.inp} value={form.jornada_personalizada} onChange={e=>setF("jornada_personalizada",e.target.value)}/></div>}
+            {form.jornada==="Otro horario personalizado"&&!esMultidia&&<div style={{marginBottom:"20px"}}><label style={S.lbl}>✍️ Horario personalizado</label><input style={S.inp} value={form.jornada_personalizada} onChange={e=>setF("jornada_personalizada",e.target.value)}/></div>}
             {/* Plataforma (remoto/híbrido) */}
             {(form.modalidad==="remoto"||form.modalidad==="hibrido")&&<>
-              <div style={{...S.fila,marginBottom:"14px"}}>
+              <div style={{...S.fila,marginBottom:"20px"}}>
                 <div style={S.camp}><label style={S.lbl}>💻 Plataforma</label>
                   <select style={S.sel} value={form.plataforma} onChange={e=>setF("plataforma",e.target.value)}>{PLATAFORMAS.map(p=><option key={p}>{p}</option>)}</select></div>
                 {form.plataforma==="Zoom MundoChile"&&<div style={S.camp}><label style={S.lbl}>🎛 Administrador Zoom</label>
@@ -489,10 +489,10 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,todos
             {/* Lugar (presencial/híbrido) */}
             {(form.modalidad==="presencial"||form.modalidad==="hibrido")&&<>
               <div style={{marginBottom:"10px"}}><label style={S.lbl}>📍 Lugar</label><input style={S.inp} value={form.lugar} onChange={e=>setF("lugar",e.target.value)} placeholder="Hotel Intercontinental, Santiago…"/></div>
-              <div style={{marginBottom:"14px"}}><label style={S.lbl}>Detalles del lugar</label><input style={S.inp} value={form.lugar_detalle} onChange={e=>setF("lugar_detalle",e.target.value)} placeholder="Sala Andes, piso 3…"/></div>
+              <div style={{marginBottom:"20px"}}><label style={S.lbl}>Detalles del lugar</label><input style={S.inp} value={form.lugar_detalle} onChange={e=>setF("lugar_detalle",e.target.value)} placeholder="Sala Andes, piso 3…"/></div>
             </>}
             {/* Estado + Comentarios */}
-            <div style={{...S.fila,marginBottom:"14px"}}>
+            <div style={{...S.fila,marginBottom:"20px"}}>
               <div style={S.camp}><label style={S.lbl}>Estado</label>
                 <select style={S.sel} value={form.estado} onChange={e=>setF("estado",e.target.value)}>{ESTADOS.map(e=><option key={e}>{e}</option>)}</select></div>
             </div>
@@ -501,7 +501,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,todos
 
           {/* ── TAB INTÉRPRETES (un día) ── */}
           {tab==="interpretes"&&!esMultidia&&<>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"14px"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"20px"}}>
               <div style={{fontWeight:"800",color:C.rojo,fontSize:"17px"}}>🎙 Intérpretes asignados</div>
               <button onClick={()=>addAsig()} style={S.btnA}>+ Agregar intérprete</button>
             </div>
@@ -512,7 +512,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,todos
 
           {/* ── TAB EQUIPOS AV (un día) ── */}
           {tab==="equipos"&&!esMultidia&&<>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"14px"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"20px"}}>
               <div style={{fontWeight:"800",color:C.verde,fontSize:"17px"}}>🔧 Equipos AV</div>
               <button onClick={()=>setForm(f=>({...f,equipos:[...(f.equipos||[]),eqVacio()]}))} style={S.btnA}>+ Agregar equipos</button>
             </div>
@@ -669,7 +669,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
         {/* Header */}
         <div style={{padding:"20px 24px",borderBottom:`1px solid ${C.grisBorde}`,display:"flex",alignItems:"flex-start",justifyContent:"space-between",flexShrink:0}}>
           <div style={{flex:1,minWidth:0}}>
-            <div style={{fontSize:"20px",fontWeight:"900",color:C.rojo,marginBottom:"4px"}}>🏢 {cliente?.nombre_empresa||"—"}</div>
+            <div style={{fontSize:"20px",fontWeight:"700",color:C.rojo,marginBottom:"4px"}}>🏢 {cliente?.nombre_empresa||"—"}</div>
             {evento.nombre_evento&&<div style={{fontSize:"16px",fontWeight:"700",color:C.texto}}>{evento.nombre_evento}</div>}
             {evento.nro_oc&&<div style={{fontSize:"13px",color:C.textoMed,marginTop:"3px"}}>N° OC: <strong>{evento.nro_oc}</strong></div>}
             {(cliente?.nombre_contacto||cliente?.email_contacto||cliente?.telefono)&&<div style={{fontSize:"12px",color:C.textoSuave,marginTop:"3px",display:"flex",gap:"10px",flexWrap:"wrap"}}>
@@ -725,7 +725,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             {asignaciones.map((a,i)=>(
               <div key={i} style={{display:"flex",gap:"12px",alignItems:"flex-start",padding:"12px",border:`1.5px solid ${C.grisBorde}`,borderRadius:"10px",marginBottom:"8px",background:"#fff"}}>
                 <div style={{flex:1}}>
-                  <div style={{fontWeight:"900",fontSize:"15px",color:C.texto}}>{nI(a.interprete_id)}{a.es_host_zoom&&<span style={{color:C.rojo,marginLeft:"8px",fontSize:"13px"}}>🎛 Host</span>}</div>
+                  <div style={{fontWeight:"700",fontSize:"15px",color:C.texto}}>{nI(a.interprete_id)}{a.es_host_zoom&&<span style={{color:C.rojo,marginLeft:"8px",fontSize:"13px"}}>🎛 Host</span>}</div>
                   <div style={{fontSize:"15px",fontWeight:"700",color:C.azul,marginTop:"4px"}}>🌐 {nP(a.par_id)}</div>
                   <div style={{fontSize:"12px",color:C.textoSuave,marginTop:"4px",display:"flex",gap:"12px",flexWrap:"wrap"}}>
                     {a.nro_ot&&<span>OT: {a.nro_ot}</span>}
@@ -860,7 +860,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
             </div>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"16px 24px"}}>
-            {campos.cliente&&<div style={{gridColumn:"1/-1"}}><div style={{fontSize:"11px",fontWeight:"700",color:C.textoSuave,textTransform:"uppercase",letterSpacing:"1px"}}>Cliente</div><div style={{fontSize:"22px",fontWeight:"900",color:C.rojo,marginTop:"4px"}}>{cliente?.nombre_empresa||"—"}</div></div>}
+            {campos.cliente&&<div style={{gridColumn:"1/-1"}}><div style={{fontSize:"11px",fontWeight:"700",color:C.textoSuave,textTransform:"uppercase",letterSpacing:"1px"}}>Cliente</div><div style={{fontSize:"22px",fontWeight:"700",color:C.rojo,marginTop:"4px"}}>{cliente?.nombre_empresa||"—"}</div></div>}
             {campos.evento&&evento.nombre_evento&&<div style={{gridColumn:"1/-1"}}><div style={{fontSize:"11px",fontWeight:"700",color:C.textoSuave,textTransform:"uppercase",letterSpacing:"1px"}}>Evento</div><div style={{fontSize:"18px",fontWeight:"800",color:C.texto,marginTop:"4px"}}>{evento.nombre_evento}</div></div>}
             {campos.tipo&&<div><div style={{fontSize:"11px",fontWeight:"700",color:C.textoSuave,textTransform:"uppercase",letterSpacing:"1px"}}>Tipo de interpretación</div><div style={{fontSize:"15px",fontWeight:"700",color:C.texto,marginTop:"4px"}}>🎙 {evento.tipo}</div></div>}
             {campos.modalidad&&<div><div style={{fontSize:"11px",fontWeight:"700",color:C.textoSuave,textTransform:"uppercase",letterSpacing:"1px"}}>Modalidad</div><div style={{fontSize:"15px",fontWeight:"700",color:C.texto,marginTop:"4px"}}>{evento.modalidad==="presencial"?"📍":evento.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evento.modalidad]}</div></div>}
@@ -918,13 +918,13 @@ function ModalNuevoCliente({onGuardar,onCerrar}) {
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.7)",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px"}}>
       <div style={{background:"#fff",borderRadius:"16px",padding:"28px 24px",width:"100%",maxWidth:"480px",boxShadow:"0 20px 60px rgba(0,0,0,0.25)"}}>
-        <div style={{fontWeight:"900",fontSize:"18px",color:C.texto,marginBottom:"20px"}}>🏢 Nuevo cliente</div>
-        <div style={{marginBottom:"14px"}}><label style={S.lbl}>Nombre empresa *</label><input style={S.inp} value={f.nombre_empresa} onChange={e=>u("nombre_empresa",e.target.value)}/></div>
-        <div style={{...S.fila,marginBottom:"14px"}}>
+        <div style={{fontWeight:"700",fontSize:"18px",color:C.texto,marginBottom:"20px"}}>🏢 Nuevo cliente</div>
+        <div style={{marginBottom:"20px"}}><label style={S.lbl}>Nombre empresa *</label><input style={S.inp} value={f.nombre_empresa} onChange={e=>u("nombre_empresa",e.target.value)}/></div>
+        <div style={{...S.fila,marginBottom:"20px"}}>
           <div style={S.camp}><label style={S.lbl}>Contacto</label><input style={S.inp} value={f.nombre_contacto} onChange={e=>u("nombre_contacto",e.target.value)}/></div>
           <div style={S.camp}><label style={S.lbl}>Email</label><input style={S.inp} type="email" value={f.email_contacto} onChange={e=>u("email_contacto",e.target.value)}/></div>
         </div>
-        <div style={{...S.fila,marginBottom:"14px"}}>
+        <div style={{...S.fila,marginBottom:"20px"}}>
           <div style={S.camp}><label style={S.lbl}>Teléfono</label><input style={S.inp} value={f.telefono} onChange={e=>u("telefono",e.target.value)}/></div>
           <div style={S.camp}><label style={S.lbl}>Celular</label><input style={S.inp} value={f.celular} onChange={e=>u("celular",e.target.value)}/></div>
         </div>
@@ -945,16 +945,16 @@ function ModalNuevoInterprete({onGuardar,onCerrar}) {
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.7)",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px"}}>
       <div style={{background:"#fff",borderRadius:"16px",padding:"28px 24px",width:"100%",maxWidth:"520px",boxShadow:"0 20px 60px rgba(0,0,0,0.25)"}}>
-        <div style={{fontWeight:"900",fontSize:"18px",color:C.texto,marginBottom:"20px"}}>👤 Nuevo intérprete</div>
-        <div style={{...S.fila,marginBottom:"14px"}}>
+        <div style={{fontWeight:"700",fontSize:"18px",color:C.texto,marginBottom:"20px"}}>👤 Nuevo intérprete</div>
+        <div style={{...S.fila,marginBottom:"20px"}}>
           <div style={S.camp}><label style={S.lbl}>Nombre *</label><input style={S.inp} value={f.nombre} onChange={e=>u("nombre",e.target.value)}/></div>
           <div style={S.camp}><label style={S.lbl}>Apellido</label><input style={S.inp} value={f.apellido} onChange={e=>u("apellido",e.target.value)}/></div>
         </div>
-        <div style={{...S.fila,marginBottom:"14px"}}>
+        <div style={{...S.fila,marginBottom:"20px"}}>
           <div style={S.camp}><label style={S.lbl}>Email</label><input style={S.inp} type="email" value={f.email} onChange={e=>u("email",e.target.value)}/></div>
           <div style={S.camp}><label style={S.lbl}>Teléfono</label><input style={S.inp} value={f.telefono} onChange={e=>u("telefono",e.target.value)}/></div>
         </div>
-        <div style={{...S.fila,marginBottom:"14px"}}>
+        <div style={{...S.fila,marginBottom:"20px"}}>
           <div style={S.camp}><label style={S.lbl}>Ciudad</label><input style={S.inp} placeholder="Santiago…" value={f.ciudad} onChange={e=>u("ciudad",e.target.value)}/></div>
           <div style={S.camp}><label style={S.lbl}>Modalidad</label>
             <select style={S.sel} value={f.modalidad_trabajo} onChange={e=>u("modalidad_trabajo",e.target.value)}>
@@ -1006,11 +1006,11 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,onActualizar,per
 
       {/* ── INTÉRPRETES ── */}
       {tab==="interpretes"&&<>
-        <div style={{display:"flex",justifyContent:"flex-end",marginBottom:"14px"}}>
+        <div style={{display:"flex",justifyContent:"flex-end",marginBottom:"20px"}}>
           <button onClick={()=>{setEditando("nuevo");setFormEdit({nombre:"",apellido:"",email:"",telefono:"",ciudad:"",modalidad_trabajo:"ambas",es_host_zoom:false,notas:"",activo:true});}} style={S.btnA}>+ Nuevo intérprete</button>
         </div>
         {editando&&<div style={{background:C.azulClaro,border:`1.5px solid ${C.azulBorde}`,borderRadius:"12px",padding:"20px",marginBottom:"20px"}}>
-          <div style={{fontWeight:"800",color:C.azul,marginBottom:"14px"}}>{editando==="nuevo"?"Nuevo intérprete":"Editar intérprete"}</div>
+          <div style={{fontWeight:"800",color:C.azul,marginBottom:"20px"}}>{editando==="nuevo"?"Nuevo intérprete":"Editar intérprete"}</div>
           <div style={{...S.fila,marginBottom:"12px"}}>
             <div style={S.camp}><label style={S.lbl}>Nombre *</label>{EF("nombre")}</div>
             <div style={S.camp}><label style={S.lbl}>Apellido</label>{EF("apellido")}</div>
@@ -1045,7 +1045,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,onActualizar,per
             onMouseEnter={e=>e.currentTarget.style.background=C.gris}
             onMouseLeave={e=>e.currentTarget.style.background="#fff"}>
             <div style={{display:"flex",gap:"12px",alignItems:"center",flex:1,minWidth:0}}>
-              <div style={{width:"40px",height:"40px",borderRadius:"50%",background:aColor,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:"900",fontSize:"16px",flexShrink:0}}>{(i.nombre||"?").slice(0,1).toUpperCase()}</div>
+              <div style={{width:"40px",height:"40px",borderRadius:"50%",background:aColor,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:"700",fontSize:"16px",flexShrink:0}}>{(i.nombre||"?").slice(0,1).toUpperCase()}</div>
               <div style={{flex:1,minWidth:0}}>
                 <div style={{fontWeight:"800",fontSize:"15px",color:C.texto}}>{nombreCompleto}{i.es_host_zoom&&<span style={{color:C.rojo,marginLeft:"8px",fontSize:"12px"}}>🎛 Host Zoom</span>}</div>
                 <div style={{display:"flex",gap:"12px",marginTop:"4px",flexWrap:"wrap"}}>
@@ -1069,11 +1069,11 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,onActualizar,per
 
       {/* ── CLIENTES ── */}
       {tab==="clientes"&&<>
-        <div style={{display:"flex",justifyContent:"flex-end",marginBottom:"14px"}}>
+        <div style={{display:"flex",justifyContent:"flex-end",marginBottom:"20px"}}>
           <button onClick={()=>{setEditando("nuevo");setFormEdit({nombre_empresa:"",nombre_contacto:"",email_contacto:"",telefono:"",celular:"",notas:"",activo:true});}} style={S.btnA}>+ Nuevo cliente</button>
         </div>
         {editando&&<div style={{background:C.azulClaro,border:`1.5px solid ${C.azulBorde}`,borderRadius:"12px",padding:"20px",marginBottom:"20px"}}>
-          <div style={{fontWeight:"800",color:C.azul,marginBottom:"14px"}}>{editando==="nuevo"?"Nuevo cliente":"Editar cliente"}</div>
+          <div style={{fontWeight:"800",color:C.azul,marginBottom:"20px"}}>{editando==="nuevo"?"Nuevo cliente":"Editar cliente"}</div>
           <div style={{marginBottom:"12px"}}><label style={S.lbl}>Nombre empresa *</label>{EF("nombre_empresa")}</div>
           <div style={{...S.fila,marginBottom:"12px"}}>
             <div style={S.camp}><label style={S.lbl}>Contacto</label>{EF("nombre_contacto")}</div>
@@ -1083,7 +1083,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,onActualizar,per
             <div style={S.camp}><label style={S.lbl}>Teléfono</label>{EF("telefono")}</div>
             <div style={S.camp}><label style={S.lbl}>Celular</label>{EF("celular")}</div>
           </div>
-          <div style={{marginBottom:"14px"}}><label style={S.lbl}>Notas</label><textarea style={{...S.inp,minHeight:"60px"}} value={formEdit.notas||""} onChange={e=>setFormEdit(f=>({...f,notas:e.target.value}))}/></div>
+          <div style={{marginBottom:"20px"}}><label style={S.lbl}>Notas</label><textarea style={{...S.inp,minHeight:"60px"}} value={formEdit.notas||""} onChange={e=>setFormEdit(f=>({...f,notas:e.target.value}))}/></div>
           <div style={{display:"flex",gap:"8px"}}>
             <button onClick={()=>guardar("clientes",formEdit,editando)} style={S.btnA}>💾 Guardar</button>
             <button onClick={()=>{setEditando(null);setFormEdit({});}} style={S.btnG}>Cancelar</button>
@@ -1096,7 +1096,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,onActualizar,per
             onMouseEnter={e=>e.currentTarget.style.background=C.gris}
             onMouseLeave={e=>e.currentTarget.style.background="#fff"}>
             <div style={{display:"flex",gap:"12px",alignItems:"center",flex:1}}>
-              <div style={{width:"40px",height:"40px",borderRadius:"50%",background:cColor,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:"900",fontSize:"16px",flexShrink:0}}>{(c.nombre_empresa||"?").slice(0,1).toUpperCase()}</div>
+              <div style={{width:"40px",height:"40px",borderRadius:"50%",background:cColor,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:"700",fontSize:"16px",flexShrink:0}}>{(c.nombre_empresa||"?").slice(0,1).toUpperCase()}</div>
               <div style={{flex:1}}>
                 <div style={{fontWeight:"800",fontSize:"15px",color:C.texto}}>{c.nombre_empresa}</div>
                 <div style={{display:"flex",gap:"14px",marginTop:"4px",flexWrap:"wrap"}}>
@@ -1113,11 +1113,11 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,onActualizar,per
 
       {/* ── IDIOMAS ── */}
       {tab==="idiomas"&&<>
-        <div style={{display:"flex",justifyContent:"flex-end",marginBottom:"14px"}}>
+        <div style={{display:"flex",justifyContent:"flex-end",marginBottom:"20px"}}>
           <button onClick={()=>{setEditando("nuevo");setFormEdit({idioma_origen:"",idioma_destino:"Español",activo:true});}} style={S.btnA}>+ Nuevo par de idiomas</button>
         </div>
         {editando&&<div style={{background:C.azulClaro,border:`1.5px solid ${C.azulBorde}`,borderRadius:"12px",padding:"20px",marginBottom:"20px"}}>
-          <div style={{...S.fila,marginBottom:"14px"}}>
+          <div style={{...S.fila,marginBottom:"20px"}}>
             <div style={S.camp}><label style={S.lbl}>Idioma origen</label>{EF("idioma_origen")}</div>
             <div style={S.camp}><label style={S.lbl}>Idioma destino</label>{EF("idioma_destino")}</div>
           </div>
@@ -1136,7 +1136,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,onActualizar,per
 
       {/* ── PROVEEDORES ── */}
       {tab==="proveedores"&&<>
-        <div style={{display:"flex",justifyContent:"flex-end",marginBottom:"14px"}}>
+        <div style={{display:"flex",justifyContent:"flex-end",marginBottom:"20px"}}>
           <button onClick={()=>{setEditando("nuevo");setFormEdit({nombre:"",nombre_contacto:"",email:"",telefono:"",notas:"",activo:true});}} style={S.btnA}>+ Nuevo proveedor</button>
         </div>
         {editando&&<div style={{background:C.azulClaro,border:`1.5px solid ${C.azulBorde}`,borderRadius:"12px",padding:"20px",marginBottom:"20px"}}>
@@ -1144,7 +1144,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,onActualizar,per
             <div style={S.camp}><label style={S.lbl}>Nombre empresa *</label>{EF("nombre")}</div>
             <div style={S.camp}><label style={S.lbl}>Contacto</label>{EF("nombre_contacto")}</div>
           </div>
-          <div style={{...S.fila,marginBottom:"14px"}}>
+          <div style={{...S.fila,marginBottom:"20px"}}>
             <div style={S.camp}><label style={S.lbl}>Email</label>{EF("email")}</div>
             <div style={S.camp}><label style={S.lbl}>Teléfono</label>{EF("telefono")}</div>
           </div>
@@ -1177,7 +1177,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,onActualizar,per
             onMouseEnter={e=>e.currentTarget.style.background=C.gris}
             onMouseLeave={e=>e.currentTarget.style.background="#fff"}>
             <div style={{display:"flex",gap:"12px",alignItems:"center",flex:1}}>
-              <div style={{width:"40px",height:"40px",borderRadius:"50%",background:C.azulClaro,color:C.azul,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:"900",fontSize:"16px",flexShrink:0}}>{ini}</div>
+              <div style={{width:"40px",height:"40px",borderRadius:"50%",background:C.azulClaro,color:C.azul,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:"700",fontSize:"16px",flexShrink:0}}>{ini}</div>
               <div>
                 <div style={{fontWeight:"800",fontSize:"15px",color:C.texto}}>{p.nombre||"Sin nombre"}</div>
                 {p.email&&<div style={{fontSize:"12px",color:C.textoSuave,marginTop:"2px"}}>{p.email}</div>}
@@ -1240,11 +1240,11 @@ function VistaAgenda({eventos,clientes,interpretes,pares,onAbrir}) {
                   onMouseLeave={e=>e.currentTarget.style.transform="translateY(0)"}>
                   <div style={{minWidth:"72px",textAlign:"center",background:C.gris,borderRadius:"8px",padding:"8px 4px",flexShrink:0}}>
                     <div style={{fontSize:"10px",color:C.textoSuave,fontWeight:"700",textTransform:"uppercase"}}>{diasNombres[desdeISO(ev.fecha_inicio).getDay()].slice(0,3)}</div>
-                    <div style={{fontSize:"22px",fontWeight:"900",color:C.texto,lineHeight:1.1}}>{desdeISO(ev.fecha_inicio).getDate()}</div>
+                    <div style={{fontSize:"22px",fontWeight:"700",color:C.texto,lineHeight:1.1}}>{desdeISO(ev.fecha_inicio).getDate()}</div>
                     <div style={{fontSize:"10px",color:C.textoSuave}}>{MESES_C[desdeISO(ev.fecha_inicio).getMonth()]}</div>
                   </div>
                   <div style={{flex:1,minWidth:0}}>
-                    <div style={{fontWeight:"900",fontSize:"15px",color:C.texto,marginBottom:"2px"}}>{cliente?.nombre_empresa||"—"}</div>
+                    <div style={{fontWeight:"700",fontSize:"15px",color:C.texto,marginBottom:"2px"}}>{cliente?.nombre_empresa||"—"}</div>
                     {ev.nombre_evento&&<div style={{fontSize:"13px",color:C.textoMed,marginBottom:"5px"}}>{ev.nombre_evento}</div>}
                     <div style={{display:"flex",gap:"5px",flexWrap:"wrap",alignItems:"center"}}>
                       <span style={{fontSize:"12px",color:C.textoMed,fontWeight:"600"}}>{ev.hora_inicio?.slice(0,5)}–{ev.hora_termino?.slice(0,5)}</span>
@@ -1433,18 +1433,18 @@ export default function App() {
     for(let i=0;i<pri;i++) celdas.push(null);
     for(let i=1;i<=total;i++) celdas.push(i);
     return (
-      <div style={{padding:"12px 16px 80px",overflowX:"auto"}}>
+      <div style={{padding:"20px 24px 80px",overflowX:"auto"}}>
         <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:"4px",minWidth:"800px"}}>
-          {DIAS_SEM.map(d=><div key={d} style={{textAlign:"center",fontWeight:"800",fontSize:"12px",color:C.textoSuave,padding:"8px 0",textTransform:"uppercase"}}>{d}</div>)}
+          {DIAS_SEM.map(d=><div key={d} style={{textAlign:"center",fontWeight:"600",fontSize:"12px",color:C.textoSuave,padding:"8px 0",textTransform:"uppercase"}}>{d}</div>)}
           {celdas.map((dia,i)=>{
             if(!dia) return <div key={i}/>;
             const iso=`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-${String(dia).padStart(2,"0")}`;
             const evs=evsDia(iso), esHoy=iso===hoy();
             return <div key={i} onClick={()=>{setDiaActual(iso);setVista("dia");}}
-              style={{minHeight:"80px",border:`1.5px solid ${esHoy?C.azul:C.grisBorde}`,borderRadius:"10px",padding:"6px 8px",cursor:"pointer",background:esHoy?C.azulClaro:"#fff"}}
+              style={{minHeight:"100px",border:`1.5px solid ${esHoy?C.azul:C.grisBorde}`,borderRadius:"10px",padding:"10px",cursor:"pointer",background:esHoy?C.azulClaro:"#fff"}}
               onMouseEnter={e=>{if(!esHoy)e.currentTarget.style.background=C.gris;}} onMouseLeave={e=>{if(!esHoy)e.currentTarget.style.background="#fff";}}>
-              <div style={{fontWeight:esHoy?"900":"700",color:esHoy?C.azul:C.textoMed,fontSize:"14px",marginBottom:"4px"}}>{dia}</div>
-              {evs.slice(0,2).map((ev,j)=><div key={j} onClick={e=>{e.stopPropagation();abrirEvento(ev);}} style={{fontSize:"10px",fontWeight:"700",background:colorCliente(ev.cliente_id),color:"#fff",borderRadius:"4px",padding:"2px 5px",marginBottom:"2px",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{clientes.find(c=>c.id===ev.cliente_id)?.nombre_empresa||ev.nombre_evento||"Evento"}</div>)}
+              <div style={{fontWeight:"600",color:esHoy?C.azul:C.textoMed,fontSize:"14px",marginBottom:"4px"}}>{dia}</div>
+              {evs.slice(0,2).map((ev,j)=><div key={j} onClick={e=>{e.stopPropagation();abrirEvento(ev);}} style={{fontSize:"11px",fontWeight:"600",background:colorCliente(ev.cliente_id),color:"#fff",borderRadius:"4px",padding:"3px 8px",marginBottom:"2px",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{clientes.find(c=>c.id===ev.cliente_id)?.nombre_empresa||ev.nombre_evento||"Evento"}</div>)}
               {evs.length>2&&<div style={{fontSize:"10px",color:C.textoSuave,fontWeight:"600"}}>+{evs.length-2} más</div>}
             </div>;
           })}
@@ -1463,11 +1463,11 @@ export default function App() {
             <div style={{background:esHoy?C.azul:evs.length?C.grisMed:C.gris,padding:"12px 16px",display:"flex",alignItems:"center",gap:"12px",cursor:"pointer"}} onClick={()=>{setDiaActual(iso);setVista("dia");}}>
               <div style={{width:"48px",height:"48px",borderRadius:"50%",background:esHoy?"rgba(255,255,255,0.2)":"#fff",border:`2px solid ${esHoy?"rgba(255,255,255,0.4)":C.grisBorde}`,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
                 <div style={{fontSize:"9px",fontWeight:"800",textTransform:"uppercase",color:esHoy?"#bfdbfe":C.textoSuave}}>{DIAS_SEM[i]}</div>
-                <div style={{fontSize:"20px",fontWeight:"900",lineHeight:1,color:esHoy?"#fff":C.texto}}>{d.getDate()}</div>
+                <div style={{fontSize:"20px",fontWeight:"700",lineHeight:1,color:esHoy?"#fff":C.texto}}>{d.getDate()}</div>
               </div>
               <div style={{flex:1}}>
                 <div style={{fontSize:"13px",color:esHoy?"#bfdbfe":C.textoSuave}}>{MESES_L[d.getMonth()]}</div>
-                {evs.length>0?<div style={{fontSize:"20px",fontWeight:"900",color:esHoy?"#fff":C.azul}}>{evs.length} evento{evs.length!==1?"s":""}</div>:<div style={{fontSize:"14px",color:esHoy?"#bfdbfe":C.textoSuave,fontWeight:"600"}}>Sin eventos</div>}
+                {evs.length>0?<div style={{fontSize:"20px",fontWeight:"700",color:esHoy?"#fff":C.azul}}>{evs.length} evento{evs.length!==1?"s":""}</div>:<div style={{fontSize:"14px",color:esHoy?"#bfdbfe":C.textoSuave,fontWeight:"600"}}>Sin eventos</div>}
               </div>
               <div style={{fontSize:"18px",color:esHoy?"#bfdbfe":C.textoSuave}}>›</div>
             </div>
@@ -1477,18 +1477,18 @@ export default function App() {
       </div>
     );
     return (
-      <div style={{overflowX:"auto",padding:"16px 16px 80px"}}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(7,minmax(200px,1fr))",gap:"10px",minWidth:"800px"}}>
+      <div style={{overflowX:"auto",padding:"20px 24px 80px"}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(7,minmax(200px,1fr))",gap:"12px",minWidth:"800px"}}>
           {diasSemana.map((d,i)=>{
             const iso=toISO(d),evs=evsDia(iso),esHoy=iso===hoy();
             return <div key={i}>
-              <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{textAlign:"center",padding:"8px",borderRadius:"10px",marginBottom:"8px",background:esHoy?C.azul:C.grisMed,border:`1.5px solid ${esHoy?C.azul:C.grisBorde}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between",gap:"6px"}}>
+              <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{textAlign:"center",padding:"10px 12px",borderRadius:"10px",marginBottom:"8px",background:esHoy?C.azul:C.grisMed,border:`1.5px solid ${esHoy?C.azul:C.grisBorde}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between",gap:"6px"}}>
                 <div style={{display:"flex",flexDirection:"column",alignItems:"flex-start"}}>
-                  <div style={{fontSize:"10px",fontWeight:"800",textTransform:"uppercase",letterSpacing:"1px",color:esHoy?"#bfdbfe":C.textoSuave}}>{DIAS_SEM[i]}</div>
-                  <div style={{fontSize:"22px",fontWeight:"900",lineHeight:1.1,color:esHoy?"#fff":C.texto}}>{d.getDate()}</div>
-                  <div style={{fontSize:"10px",color:esHoy?"#bfdbfe":C.textoSuave,fontWeight:"600"}}>{MESES_C[d.getMonth()]} {d.getFullYear()}</div>
+                  <div style={{fontSize:"10px",fontWeight:"500",textTransform:"uppercase",letterSpacing:"1.5px",color:esHoy?"#bfdbfe":C.textoSuave}}>{DIAS_SEM[i]}</div>
+                  <div style={{fontSize:"24px",fontWeight:"700",lineHeight:1.1,color:esHoy?"#fff":C.texto}}>{d.getDate()}</div>
+                  <div style={{fontSize:"10px",color:esHoy?"#bfdbfe":C.textoSuave,fontWeight:"500"}}>{MESES_C[d.getMonth()]} {d.getFullYear()}</div>
                 </div>
-                {evs.length>0&&<div style={{fontSize:"13px",fontWeight:"700",color:esHoy?"#fff":C.azul,background:esHoy?"rgba(255,255,255,0.2)":C.azulClaro,padding:"2px 8px",borderRadius:"12px",whiteSpace:"nowrap"}}>{evs.length} ev.</div>}
+                {evs.length>0&&<div style={{fontSize:"12px",fontWeight:"500",color:esHoy?"#fff":C.azul,background:esHoy?"rgba(255,255,255,0.2)":C.azulClaro,padding:"2px 8px",borderRadius:"12px",whiteSpace:"nowrap"}}>{evs.length} ev.</div>}
               </div>
               {evs.map(ev=><TarjetaEvento key={ev.id} ev={ev} clientes={clientes} pares={pares} interpretes={interpretes} onClick={()=>abrirEvento(ev)} todos_eventos={eventos}/>)}
               {evs.length===0&&<div style={{textAlign:"center",color:C.textoSuave,fontWeight:"600",fontSize:"13px",padding:"16px 0"}}>Sin eventos</div>}
@@ -1503,7 +1503,7 @@ export default function App() {
   const renderDia=()=>{
     const evs=evsDia(diaActual);
     return <div style={{padding:"16px 16px 80px"}}>
-      <div style={{fontWeight:"900",fontSize:"18px",color:C.texto,marginBottom:"16px"}}>
+      <div style={{fontWeight:"700",fontSize:"18px",color:C.texto,marginBottom:"16px"}}>
         {formatLargo(diaActual)}<span style={{fontWeight:"400",color:C.textoSuave,fontSize:"15px",marginLeft:"12px"}}>{evs.length} evento{evs.length!==1?"s":""}</span>
       </div>
       {evs.length===0?<div style={{textAlign:"center",padding:"60px 20px",color:C.textoSuave,border:`2px dashed ${C.grisBorde}`,borderRadius:"16px"}}><div style={{fontSize:"40px",marginBottom:"12px"}}>📅</div><div style={{fontWeight:"700",fontSize:"16px"}}>Sin eventos este día</div></div>
@@ -1563,7 +1563,7 @@ export default function App() {
         {/* Navegación */}
         {pantalla==="calendario"&&vista!=="agenda"&&<div style={{padding:"8px 16px 12px",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:"8px",borderTop:`1px solid ${C.grisBorde}`,background:C.gris}}>
           <div>
-            <div style={{fontWeight:"900",fontSize:"17px",color:C.texto}}>{tituloNav()}</div>
+            <div style={{fontWeight:"700",fontSize:"17px",color:C.texto}}>{tituloNav()}</div>
             <div style={{fontSize:"12px",color:C.textoSuave,marginTop:"2px"}}>{contadorSubtitulo()}</div>
           </div>
           <div style={{display:"flex",gap:"6px"}}>
