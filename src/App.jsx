@@ -1,6 +1,8 @@
-// MundoChile v2.0 — Gestión de Interpretaciones
+// MundoChile v2.1 — Gestión de Interpretaciones
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { createClient } from "@supabase/supabase-js";
+import * as XLSX from "xlsx";
+import html2canvas from "html2canvas";
 
 // ─── SUPABASE ────────────────────────────────────────────────────────────────
 const SB_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -9,14 +11,14 @@ const sb = createClient(SB_URL, SB_KEY);
 
 const LOGO_SRC = "/logo.png";
 
-// ─── PALETA ──────────────────────────────────────────────────────────────────
+// ─── PALETA (Notion-inspired) ─────────────────────────────────────────────────
 const C = {
   azul:"#3a7bd5", azulOsc:"#2563a8", azulClaro:"#eef4fd", azulBorde:"#b3d0f5",
   rojo:"#e63946", rojoClaro:"#fdeef0", rojoBorde:"#f5b8bc",
   verde:"#16a34a", verdeClaro:"#f0fdf4", verdeBorde:"#86efac",
   amarillo:"#f59e0b", amarilloVivo:"#fef08a", amarilloFondo:"#fffbeb",
-  gris:"#f8fafc", grisMed:"#f1f5f9", grisBorde:"#e2e8f0",
-  texto:"#0f172a", textoMed:"#475569", textoSuave:"#94a3b8", blanco:"#ffffff",
+  gris:"#F7F7F5", grisMed:"#EFEFED", grisBorde:"#E5E5E3",
+  texto:"#1A1A1A", textoMed:"#6B6B6B", textoSuave:"#9B9B9B", blanco:"#ffffff",
 };
 const PALETA_EVS = [
   {borde:"#3a7bd5",fondo:"#eef4fd"},{borde:"#16a34a",fondo:"#f0fdf4"},
@@ -57,9 +59,9 @@ const HORAS = (() => { const h=[]; for(let x=6;x<=22;x++) for(let m of [0,15,30,
 
 // ─── ESTILOS BASE ─────────────────────────────────────────────────────────────
 const S = {
-  inp: {width:"100%",padding:"9px 12px",border:`1.5px solid ${C.grisBorde}`,borderRadius:"8px",fontSize:"14px",color:C.texto,background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit"},
-  sel: {width:"100%",padding:"9px 12px",border:`1.5px solid ${C.grisBorde}`,borderRadius:"8px",fontSize:"14px",color:C.texto,background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",cursor:"pointer"},
-  lbl: {fontSize:"12px",fontWeight:"700",color:C.textoMed,textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:"5px",display:"block"},
+  inp: {width:"100%",padding:"9px 12px",border:`1.5px solid ${C.grisBorde}`,borderRadius:"8px",fontSize:"14px",color:C.texto,background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",height:"42px"},
+  sel: {width:"100%",padding:"9px 12px",border:`1.5px solid ${C.grisBorde}`,borderRadius:"8px",fontSize:"14px",color:C.texto,background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",cursor:"pointer",height:"42px"},
+  lbl: {fontSize:"11px",fontWeight:"700",color:C.textoMed,textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:"5px",display:"block"},
   fila:{display:"flex",gap:"12px",flexWrap:"wrap"},
   camp:{flex:"1",minWidth:"140px"},
   btnA:{padding:"10px 20px",background:C.azul,color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"700",fontSize:"14px",fontFamily:"inherit"},
@@ -76,11 +78,27 @@ const evVacio = () => ({
   jornada:"Media Jornada", jornada_personalizada:"", lugar:"", lugar_detalle:"",
   modalidad:"remoto", plataforma:"Zoom MundoChile", zoom_owner:"mundochile",
   zoom_administrador:"", estado:"Pendiente", comentarios:"",
-  asignaciones:[], dias:[],
+  asignaciones:[], dias:[], equipos:[],
 });
 const asigVacia = () => ({interprete_id:"",par_id:"",nro_ot:"",nro_boleta:"",es_boleta_adicional:false,es_host_zoom:false,rol:"Principal",hora_presentacion:"",estado_pago:"Pendiente"});
 const diaVacio  = (fecha) => ({fecha,hora_inicio:"09:00",hora_termino:"13:00",jornada:"Media Jornada",jornada_personalizada:"",asignaciones:[],equipos:[]});
 const eqVacio   = () => ({tipo_equipo:"fijo",proveedor_id:"",proveedor_nombre:"",proveedor_contacto:"",proveedor_telefono:"",num_receptores:0,num_cabinas:0,num_asistentes:0,asistentes_origen:"mismo_proveedor",asistentes_otro_proveedor:"",asistentes_mundochile_nombres:"",portatiles_origen:"mundochile",proveedor_portatiles:"",dia_montaje:"",hora_montaje:"",contacto_in_situ:"",instrucciones:""});
+
+// ─── TOAST ───────────────────────────────────────────────────────────────────
+function ToastContainer({toasts,onRemove}) {
+  if(!toasts.length) return null;
+  return (
+    <div style={{position:"fixed",bottom:"24px",right:"24px",zIndex:2000,display:"flex",flexDirection:"column",gap:"10px",maxWidth:"400px"}}>
+      {toasts.map(t=>(
+        <div key={t.id} style={{background:"#fff",border:`1.5px solid ${t.type==="error"?C.rojo:t.type==="success"?C.verde:C.grisBorde}`,borderLeft:`5px solid ${t.type==="error"?C.rojo:t.type==="success"?C.verde:C.azul}`,borderRadius:"10px",padding:"12px 16px",boxShadow:"0 4px 20px rgba(0,0,0,0.15)",display:"flex",alignItems:"flex-start",gap:"10px"}}>
+          <div style={{flex:1,fontSize:"14px",color:C.texto,fontWeight:"600"}}>{t.msg}</div>
+          {t.retry&&<button onClick={t.retry} style={{...S.btnP,fontSize:"11px",padding:"4px 8px",whiteSpace:"nowrap"}}>↺ Reintentar</button>}
+          <button onClick={()=>onRemove(t.id)} style={{background:"none",border:"none",cursor:"pointer",color:C.textoSuave,fontSize:"18px",lineHeight:1,padding:0,flexShrink:0}}>✕</button>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 // ─── COMPONENTES PEQUEÑOS ────────────────────────────────────────────────────
 function Logo({size=32}) {
@@ -157,12 +175,20 @@ function PantallaLogin({onLogin}) {
 }
 
 // ─── TARJETA EVENTO ───────────────────────────────────────────────────────────
-function TarjetaEvento({ev,clientes,pares,interpretes,onClick}) {
+function TarjetaEvento({ev,clientes,pares,interpretes,onClick,todos_eventos}) {
   const col=colorEv(ev.id), cliente=clientes.find(c=>c.id===ev.cliente_id), esZoomMC=ev.plataforma==="Zoom MundoChile";
+  const tieneConflicto=todos_eventos&&(ev.asignaciones||[]).some(a=>a.interprete_id&&todos_eventos.some(otro=>{
+    if(otro.id===ev.id)return false;
+    if(!(otro.fecha_inicio<=ev.fecha_termino&&otro.fecha_termino>=ev.fecha_inicio))return false;
+    return(otro.asignaciones||[]).some(b=>b.interprete_id===a.interprete_id);
+  }));
   return (
-    <div onClick={onClick} style={{borderRadius:"10px",padding:"12px",border:`2px solid ${col.borde}`,background:col.fondo,cursor:"pointer",marginBottom:"8px",borderLeft:`5px solid ${col.borde}`,transition:"transform 0.1s"}}
+    <div onClick={onClick} style={{borderRadius:"10px",padding:"12px",border:`1.5px solid ${col.borde}`,background:col.fondo,cursor:"pointer",marginBottom:"8px",borderLeft:`5px solid ${col.borde}`,transition:"transform 0.1s",boxShadow:"0 1px 3px rgba(0,0,0,0.07)"}}
       onMouseEnter={e=>e.currentTarget.style.transform="translateY(-1px)"} onMouseLeave={e=>e.currentTarget.style.transform="translateY(0)"}>
-      <div style={{fontSize:"13px",fontWeight:"900",color:C.rojo,marginBottom:"4px"}}>🏢 {cliente?.nombre_empresa||"—"}</div>
+      <div style={{fontSize:"13px",fontWeight:"900",color:C.rojo,marginBottom:"4px",display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+        <span>🏢 {cliente?.nombre_empresa||"—"}</span>
+        {tieneConflicto&&<span title="Conflicto: un intérprete tiene otro evento este día" style={{fontSize:"15px"}}>⚠️</span>}
+      </div>
       {ev.nombre_evento&&<div style={{fontSize:"13px",fontWeight:"700",color:C.texto,marginBottom:"4px"}}>{ev.nombre_evento}</div>}
       <div style={{display:"flex",gap:"6px",flexWrap:"wrap",alignItems:"center",marginBottom:"6px"}}>
         <span style={{fontSize:"12px",fontWeight:"700",color:C.textoMed}}>{ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)}</span>
@@ -251,6 +277,23 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,todos
           rol:a.rol||"Principal", hora_presentacion:a.hora_presentacion||null, estado_pago:a.estado_pago||"Pendiente",
         }));
         if(asigs.length>0){const{error:e}=await sb.from("asignaciones").insert(asigs);if(e)throw e;}
+      }
+      // Insertar equipos AV para evento de un día (phantom evento_dia)
+      if(!esMultidia&&form.modalidad!=="remoto"&&(form.equipos||[]).length>0){
+        const{data:dD,error:eDia}=await sb.from("evento_dias").insert({
+          evento_id:eventoId,fecha:form.fecha_inicio,orden:1,
+          hora_inicio:form.hora_inicio||"09:00",hora_termino:form.hora_termino||"13:00",
+          jornada:form.jornada||"Media Jornada",jornada_personalizada:form.jornada_personalizada||"",
+        }).select().single();
+        if(eDia)throw eDia;
+        const eqs=form.equipos.map(eq=>({
+          evento_dia_id:dD.id,tipo_equipo:eq.tipo_equipo||"fijo",
+          proveedor_id:eq.proveedor_id||null,proveedor_nombre:eq.proveedor_nombre||"",
+          proveedor_contacto:eq.proveedor_contacto||"",proveedor_telefono:eq.proveedor_telefono||"",
+          num_receptores:Number(eq.num_receptores)||0,num_cabinas:Number(eq.num_cabinas)||0,
+          num_asistentes:Number(eq.num_asistentes)||0,
+        }));
+        const{error:eE}=await sb.from("equipos_dia").insert(eqs);if(eE)throw eE;
       }
       // Insertar días
       if(esMultidia){
@@ -363,7 +406,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,todos
 
   const TABS=esMultidia
     ?[{id:"general",lbl:"📋 Detalles"},{id:"dias",lbl:"📅 Por Día"}]
-    :[{id:"general",lbl:"📋 Detalles"},{id:"interpretes",lbl:"🎙 Intérpretes"}];
+    :[{id:"general",lbl:"📋 Detalles"},{id:"interpretes",lbl:"🎙 Intérpretes"},...(form.modalidad!=="remoto"?[{id:"equipos",lbl:"🔧 Equipos AV"}]:[])];
 
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.65)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(4px)",padding:"16px"}}>
@@ -457,6 +500,45 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,todos
             {form.asignaciones.length>0&&<button onClick={()=>addAsig()} style={{...S.btnP,width:"100%",padding:"9px"}}>+ Agregar otro intérprete</button>}
           </>}
 
+          {/* ── TAB EQUIPOS AV (un día) ── */}
+          {tab==="equipos"&&!esMultidia&&<>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"14px"}}>
+              <div style={{fontWeight:"800",color:C.verde,fontSize:"17px"}}>🔧 Equipos AV</div>
+              <button onClick={()=>setForm(f=>({...f,equipos:[...(f.equipos||[]),eqVacio()]}))} style={S.btnA}>+ Agregar equipos</button>
+            </div>
+            {(form.equipos||[]).length===0&&<div style={{textAlign:"center",color:C.textoSuave,padding:"40px 20px",border:`2px dashed ${C.grisBorde}`,borderRadius:"12px"}}>Sin equipos AV — Agrega uno arriba</div>}
+            {(form.equipos||[]).map((eq,eIdx)=>(
+              <div key={eIdx} style={{border:`1px solid ${C.grisBorde}`,borderRadius:"10px",padding:"14px",marginBottom:"10px",background:"#fff"}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:"10px"}}>
+                  <div style={{fontWeight:"700",color:C.azul,fontSize:"13px"}}>Equipo #{eIdx+1}</div>
+                  <button onClick={()=>setForm(f=>{const eqs=[...(f.equipos||[])];eqs.splice(eIdx,1);return{...f,equipos:eqs};})} style={{background:"none",border:"none",cursor:"pointer",color:C.rojo,fontWeight:"700"}}>✕</button>
+                </div>
+                <div style={S.fila}>
+                  <div style={S.camp}><label style={S.lbl}>Tipo de sistema</label>
+                    <select style={S.sel} value={eq.tipo_equipo} onChange={e=>setForm(f=>{const eqs=[...(f.equipos||[])];eqs[eIdx]={...eqs[eIdx],tipo_equipo:e.target.value};return{...f,equipos:eqs};})}>
+                      <option value="fijo">Sistema fijo (cabina y receptores)</option>
+                      <option value="portatil">Sistema portátil</option>
+                      <option value="cabina_portatil">Cabina portátil</option>
+                    </select></div>
+                  <div style={S.camp}><label style={S.lbl}>Proveedor AV</label>
+                    <select style={S.sel} value={eq.proveedor_id||""} onChange={e=>setForm(f=>{const eqs=[...(f.equipos||[])];eqs[eIdx]={...eqs[eIdx],proveedor_id:e.target.value?Number(e.target.value):null};return{...f,equipos:eqs};})}>
+                      <option value="">Sin proveedor / otro</option>
+                      {proveedores.filter(p=>p.activo!==false).map(p=><option key={p.id} value={p.id}>{p.nombre}</option>)}
+                    </select></div>
+                </div>
+                <div style={{...S.fila,marginTop:"10px"}}>
+                  <div style={S.camp}><label style={S.lbl}>N° receptores</label><input style={S.inp} type="number" value={eq.num_receptores} onChange={e=>setForm(f=>{const eqs=[...(f.equipos||[])];eqs[eIdx]={...eqs[eIdx],num_receptores:e.target.value};return{...f,equipos:eqs};})}/></div>
+                  <div style={S.camp}><label style={S.lbl}>N° cabinas</label><input style={S.inp} type="number" value={eq.num_cabinas} onChange={e=>setForm(f=>{const eqs=[...(f.equipos||[])];eqs[eIdx]={...eqs[eIdx],num_cabinas:e.target.value};return{...f,equipos:eqs};})}/></div>
+                  <div style={S.camp}><label style={S.lbl}>N° asistentes</label><input style={S.inp} type="number" value={eq.num_asistentes} onChange={e=>setForm(f=>{const eqs=[...(f.equipos||[])];eqs[eIdx]={...eqs[eIdx],num_asistentes:e.target.value};return{...f,equipos:eqs};})}/></div>
+                </div>
+                <div style={{...S.fila,marginTop:"10px"}}>
+                  <div style={S.camp}><label style={S.lbl}>Contacto proveedor</label><input style={S.inp} defaultValue={eq.proveedor_contacto} onBlur={e=>setForm(f=>{const eqs=[...(f.equipos||[])];eqs[eIdx]={...eqs[eIdx],proveedor_contacto:e.target.value};return{...f,equipos:eqs};})}/></div>
+                  <div style={S.camp}><label style={S.lbl}>Teléfono proveedor</label><input style={S.inp} defaultValue={eq.proveedor_telefono} onBlur={e=>setForm(f=>{const eqs=[...(f.equipos||[])];eqs[eIdx]={...eqs[eIdx],proveedor_telefono:e.target.value};return{...f,equipos:eqs};})}/></div>
+                </div>
+              </div>
+            ))}
+          </>}
+
           {/* ── TAB POR DÍA ── */}
           {tab==="dias"&&esMultidia&&form.dias.map((dia,dIdx)=>(
             <div key={dia.fecha} style={{border:`2px solid ${C.grisBorde}`,borderRadius:"14px",marginBottom:"16px",overflow:"hidden"}}>
@@ -542,7 +624,9 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,todos
 }
 
 // ─── MODAL DETALLE ────────────────────────────────────────────────────────────
-function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onEliminar,onCerrar,onVerFicha}) {
+function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onEliminar,onCerrar,onVerFicha,onDuplicar,addToast}) {
+  const [asignaciones,setAsignaciones]=useState(evento?.asignaciones||[]);
+  useEffect(()=>setAsignaciones(evento?.asignaciones||[]),[evento]);
   if(!evento) return null;
   const cliente=clientes.find(c=>c.id===evento.cliente_id);
   const col=colorEv(evento.id);
@@ -552,10 +636,19 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
   const nP=(id)=>pares.find(p=>p.id===id)?.descripcion||"—";
   const dias=((evento.evento_dias||evento.dias||[]).sort((a,b)=>(a.orden||0)-(b.orden||0)));
 
+  const togglePago=async(asig)=>{
+    const nuevo=asig.estado_pago==="Pagado"?"Pendiente":"Pagado";
+    const{error:e}=await sb.from("asignaciones").update({estado_pago:nuevo}).eq("id",asig.id);
+    if(e){addToast?.("Error al actualizar pago: "+e.message,"error");return;}
+    setAsignaciones(a=>a.map(x=>x.id===asig.id?{...x,estado_pago:nuevo}:x));
+    addToast?.(nuevo==="Pagado"?"✓ Pago registrado":"↩ Pago revertido a Pendiente","success");
+  };
+
   const BotonesAccion=()=>(
     <div style={{display:"flex",gap:"8px",flexWrap:"wrap"}}>
       <button onClick={onVerFicha} style={S.btnP}>📄 Ver ficha</button>
       <button onClick={onEditar} style={{...S.btnP,background:C.amarilloFondo,color:C.amarillo,borderColor:C.amarillo}}>✏️ Editar</button>
+      <button onClick={()=>onDuplicar?.(evento)} style={{...S.btnP,background:"#f5f3ff",color:"#7c3aed",borderColor:"#7c3aed"}}>⧉ Duplicar</button>
       <button onClick={onEliminar} style={{...S.btnP,background:C.rojoClaro,color:C.rojo,borderColor:C.rojo}}>🗑 Eliminar</button>
     </div>
   );
@@ -568,6 +661,12 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           <div style={{flex:1,minWidth:0}}>
             <div style={{fontSize:"20px",fontWeight:"900",color:C.rojo,marginBottom:"4px"}}>🏢 {cliente?.nombre_empresa||"—"}</div>
             {evento.nombre_evento&&<div style={{fontSize:"16px",fontWeight:"700",color:C.texto}}>{evento.nombre_evento}</div>}
+            {evento.nro_oc&&<div style={{fontSize:"13px",color:C.textoMed,marginTop:"3px"}}>N° OC: <strong>{evento.nro_oc}</strong></div>}
+            {(cliente?.nombre_contacto||cliente?.email_contacto||cliente?.telefono)&&<div style={{fontSize:"12px",color:C.textoSuave,marginTop:"3px",display:"flex",gap:"10px",flexWrap:"wrap"}}>
+              {cliente.nombre_contacto&&<span>👤 {cliente.nombre_contacto}</span>}
+              {cliente.email_contacto&&<CampoCopia valor={cliente.email_contacto}/>}
+              {cliente.telefono&&<CampoCopia valor={cliente.telefono}/>}
+            </div>}
             <div style={{display:"flex",gap:"8px",flexWrap:"wrap",marginTop:"8px"}}>
               <Badge texto={evento.tipo} color={evento.tipo==="Simultánea"?C.azul:evento.tipo==="Consecutiva"?C.verde:"#7c3aed"} fondo={evento.tipo==="Simultánea"?C.azulClaro:evento.tipo==="Consecutiva"?C.verdeClaro:"#f5f3ff"} icono="🎙 "/>
               <Badge texto={LBL_MODAL[evento.modalidad]||evento.modalidad} color={evento.modalidad==="presencial"?C.verde:evento.modalidad==="hibrido"?"#7c3aed":C.azul} fondo={evento.modalidad==="presencial"?C.verdeClaro:evento.modalidad==="hibrido"?"#f5f3ff":C.azulClaro} icono={evento.modalidad==="presencial"?"📍 ":evento.modalidad==="hibrido"?"🔀 ":"💻 "}/>
@@ -611,9 +710,9 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             </a>
           </div>}
           {/* Asignaciones generales */}
-          {(evento.asignaciones||[]).length>0&&<div style={{marginBottom:"16px"}}>
+          {asignaciones.length>0&&<div style={{marginBottom:"16px"}}>
             <div style={{fontSize:"13px",fontWeight:"700",color:C.textoMed,textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:"10px"}}>🎙 Intérpretes</div>
-            {evento.asignaciones.map((a,i)=>(
+            {asignaciones.map((a,i)=>(
               <div key={i} style={{display:"flex",gap:"12px",alignItems:"flex-start",padding:"12px",border:`1.5px solid ${C.grisBorde}`,borderRadius:"10px",marginBottom:"8px",background:"#fff"}}>
                 <div style={{flex:1}}>
                   <div style={{fontWeight:"900",fontSize:"15px",color:C.texto}}>{nI(a.interprete_id)}{a.es_host_zoom&&<span style={{color:C.rojo,marginLeft:"8px",fontSize:"13px"}}>🎛 Host</span>}</div>
@@ -624,7 +723,11 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                     {a.hora_presentacion&&<span>🕐 {a.hora_presentacion.slice(0,5)}</span>}
                   </div>
                 </div>
-                {a.estado_pago==="Pagado"&&<Badge texto="Pagado" color={C.verde} fondo={C.verdeClaro} icono="✓ "/>}
+                <button onClick={()=>togglePago(a)} title="Clic para cambiar estado de pago" style={{background:"none",border:"none",cursor:"pointer",padding:0}}>
+                  {a.estado_pago==="Pagado"
+                    ?<Badge texto="Pagado" color={C.verde} fondo={C.verdeClaro} icono="✓ "/>
+                    :<Badge texto="Pendiente" color={C.amarillo} fondo={C.amarilloFondo} icono="⏳ "/>}
+                </button>
               </div>
             ))}
           </div>}
@@ -658,10 +761,15 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
               </div>
             </div>
           ))}
-          {evento.comentarios&&<div style={{background:C.gris,borderRadius:"10px",padding:"12px 16px"}}>
+          {evento.comentarios&&<div style={{background:C.gris,borderRadius:"10px",padding:"12px 16px",marginBottom:"16px"}}>
             <div style={{fontSize:"11px",color:C.textoSuave,fontWeight:"700",textTransform:"uppercase",marginBottom:"6px"}}>💬 Comentarios</div>
             <div style={{color:C.texto,fontSize:"14px"}}>{evento.comentarios}</div>
           </div>}
+          {/* F13: Historial */}
+          <div style={{fontSize:"11px",color:C.textoSuave,display:"flex",gap:"16px",flexWrap:"wrap",paddingTop:"8px",borderTop:`1px solid ${C.grisBorde}`}}>
+            {evento.created_by_nombre&&<span>Creado por <strong>{evento.created_by_nombre}</strong>{evento.created_at&&" el "+new Date(evento.created_at).toLocaleDateString("es-CL")}</span>}
+            {evento.edited_by_nombre&&<span>Editado por <strong>{evento.edited_by_nombre}</strong>{evento.updated_at&&" el "+new Date(evento.updated_at).toLocaleDateString("es-CL")}</span>}
+          </div>
         </div>
         {/* Footer */}
         <div style={{padding:"16px 24px",borderTop:`1px solid ${C.grisBorde}`,flexShrink:0,display:"flex",gap:"10px",justifyContent:"space-between",alignItems:"center",background:C.gris,borderRadius:"0 0 20px 20px"}}>
@@ -686,7 +794,26 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
     {k:"jornada",l:"⏱ Jornada"},{k:"lugar",l:"📍 Lugar"},{k:"plataforma",l:"💻 Plataforma"},
     {k:"interpretes",l:"🎙 Intérpretes"},{k:"equipos",l:"🔧 Equipos AV"},{k:"comentarios",l:"💬 Comentarios"},
   ];
-  const [campos,setCampos]=useState({cliente:true,evento:true,tipo:true,modalidad:true,fecha:true,horario:true,jornada:true,lugar:true,plataforma:true,interpretes:true,equipos:false,comentarios:false});
+  const DEFAULTS={cliente:true,evento:true,tipo:true,modalidad:true,fecha:true,horario:true,jornada:true,lugar:true,plataforma:true,interpretes:true,equipos:false,comentarios:false};
+  const [campos,setCampos]=useState(()=>({...DEFAULTS,...JSON.parse(localStorage.getItem("mc_ficha_campos")||"{}")}));
+  const toggleCampo=(k)=>{const n={...campos,[k]:!campos[k]};setCampos(n);localStorage.setItem("mc_ficha_campos",JSON.stringify(n));};
+  const [exportando,setExportando]=useState(false);
+
+  const exportarJPG=async()=>{
+    const el=document.getElementById("ficha-mc");
+    if(!el)return;
+    setExportando(true);
+    const prev=el.style.width;
+    el.style.width="1200px";
+    try{
+      const canvas=await html2canvas(el,{scale:2,backgroundColor:"#ffffff",useCORS:true});
+      el.style.width=prev;
+      const url=canvas.toDataURL("image/jpeg",0.95);
+      const a=document.createElement("a");
+      a.download=`ficha-mc-${Date.now()}.jpg`;a.href=url;a.click();
+    }catch(err){el.style.width=prev;}
+    setExportando(false);
+  };
 
   const imprimir=()=>{
     const el=document.getElementById("ficha-mc");
@@ -705,7 +832,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
             <button onClick={onCerrar} style={{background:"none",border:"none",cursor:"pointer",fontSize:"22px",color:C.textoSuave}}>✕</button>
           </div>
           <div style={{display:"flex",flexWrap:"wrap",gap:"8px"}}>
-            {CAMPOS_OPC.map(({k,l})=><button key={k} onClick={()=>setCampos(c=>({...c,[k]:!c[k]}))}
+            {CAMPOS_OPC.map(({k,l})=><button key={k} onClick={()=>toggleCampo(k)}
               style={{padding:"6px 14px",borderRadius:"20px",cursor:"pointer",fontSize:"13px",fontWeight:"700",fontFamily:"inherit",background:campos[k]?C.azul:C.grisMed,color:campos[k]?"#fff":C.textoMed,border:campos[k]?`1.5px solid ${C.azulOsc}`:`1.5px solid ${C.grisBorde}`}}>{l}</button>)}
           </div>
         </div>
@@ -765,6 +892,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
         {/* Footer */}
         <div style={{padding:"16px 24px",borderTop:`1px solid ${C.grisBorde}`,display:"flex",gap:"12px",justifyContent:"center",flexWrap:"wrap",alignItems:"center",background:C.gris,borderRadius:"0 0 20px 20px"}}>
           <button onClick={()=>{if(fichaRef.current)fichaRef.current.scrollTop=0;}} style={{...S.btnG,padding:"8px 14px"}}>↑ Arriba</button>
+          <button onClick={exportarJPG} disabled={exportando} style={{...S.btnA,background:C.verde,opacity:exportando?0.7:1}}>🖼 {exportando?"Exportando…":"Exportar JPG"}</button>
           <button onClick={imprimir} style={{...S.btnA,background:C.azulOsc}}>🖨 Imprimir</button>
           <button onClick={onCerrar} style={S.btnG}>Cerrar</button>
         </div>
@@ -839,11 +967,14 @@ function ModalNuevoInterprete({onGuardar,onCerrar}) {
 }
 
 // ─── PANTALLA CONFIGURACIÓN ───────────────────────────────────────────────────
-function PantallaConfig({clientes,interpretes,pares,proveedores,onActualizar}) {
+function PantallaConfig({clientes,interpretes,pares,proveedores,onActualizar,perfil}) {
   const [tab,setTab]=useState("interpretes");
   const [editando,setEditando]=useState(null);
   const [formEdit,setFormEdit]=useState({});
-  const tabs=[{id:"interpretes",l:"👤 Intérpretes"},{id:"clientes",l:"🏢 Clientes"},{id:"idiomas",l:"🌐 Idiomas"},{id:"proveedores",l:"🔧 Proveedores"}];
+  const [perfiles,setPerfiles]=useState([]);
+  const tabs=[{id:"interpretes",l:"👤 Intérpretes"},{id:"clientes",l:"🏢 Clientes"},{id:"idiomas",l:"🌐 Idiomas"},{id:"proveedores",l:"🔧 Proveedores"},{id:"usuarios",l:"👥 Usuarios"}];
+
+  useEffect(()=>{if(tab==="usuarios")sb.from("perfiles").select("*").order("nombre").then(({data})=>data&&setPerfiles(data));},[tab]);
 
   const guardar=async(tabla,payload,id)=>{
     if(id==="nuevo") await sb.from(tabla).insert(payload);
@@ -1010,6 +1141,103 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,onActualizar}) {
           </div>
         ))}
       </>}
+
+      {/* ── USUARIOS ── */}
+      {tab==="usuarios"&&<>
+        <div style={{marginBottom:"16px",fontSize:"13px",color:C.textoMed}}>Gestión de accesos al sistema. Solo administradores pueden cambiar roles.</div>
+        {perfiles.map(p=>{
+          const ini=(p.nombre||"?").slice(0,1).toUpperCase();
+          return(
+          <div key={p.id} style={{border:`1.5px solid ${C.grisBorde}`,borderRadius:"12px",padding:"14px 20px",marginBottom:"10px",background:"#fff",display:"flex",justifyContent:"space-between",alignItems:"center",gap:"12px",opacity:p.activo===false?0.5:1}}
+            onMouseEnter={e=>e.currentTarget.style.background=C.gris}
+            onMouseLeave={e=>e.currentTarget.style.background="#fff"}>
+            <div style={{display:"flex",gap:"12px",alignItems:"center",flex:1}}>
+              <div style={{width:"40px",height:"40px",borderRadius:"50%",background:C.azulClaro,color:C.azul,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:"900",fontSize:"16px",flexShrink:0}}>{ini}</div>
+              <div>
+                <div style={{fontWeight:"800",fontSize:"15px",color:C.texto}}>{p.nombre||"Sin nombre"}</div>
+                {p.email&&<div style={{fontSize:"12px",color:C.textoSuave,marginTop:"2px"}}>{p.email}</div>}
+              </div>
+            </div>
+            <div style={{display:"flex",gap:"8px",alignItems:"center",flexShrink:0}}>
+              <select style={{...S.sel,width:"130px",height:"36px",fontSize:"13px"}} value={p.rol||"viewer"}
+                onChange={async e=>{await sb.from("perfiles").update({rol:e.target.value}).eq("id",p.id);setPerfiles(xs=>xs.map(x=>x.id===p.id?{...x,rol:e.target.value}:x));}}>
+                <option value="admin">Admin</option>
+                <option value="editor">Editor</option>
+                <option value="viewer">Viewer</option>
+              </select>
+              <button onClick={async()=>{const nu=p.activo===false;await sb.from("perfiles").update({activo:nu}).eq("id",p.id);setPerfiles(xs=>xs.map(x=>x.id===p.id?{...x,activo:nu}:x));}}
+                style={{...S.btnP,background:p.activo===false?C.verdeClaro:C.rojoClaro,color:p.activo===false?C.verde:C.rojo,borderColor:p.activo===false?C.verde:C.rojo}}>
+                {p.activo===false?"Activar":"Desactivar"}
+              </button>
+            </div>
+          </div>);
+        })}
+        {perfiles.length===0&&<div style={{textAlign:"center",padding:"40px",color:C.textoSuave}}>Cargando usuarios…</div>}
+      </>}
+    </div>
+  );
+}
+
+// ─── VISTA AGENDA (F8) ───────────────────────────────────────────────────────
+function VistaAgenda({eventos,clientes,interpretes,pares,onAbrir}) {
+  const sorted=[...eventos].sort((a,b)=>a.fecha_inicio.localeCompare(b.fecha_inicio));
+  const byWeek={};
+  sorted.forEach(ev=>{
+    const d=desdeISO(ev.fecha_inicio);
+    const dow=d.getDay()===0?6:d.getDay()-1;
+    const lun=new Date(d);lun.setDate(d.getDate()-dow);
+    const key=toISO(lun);
+    if(!byWeek[key])byWeek[key]=[];
+    byWeek[key].push(ev);
+  });
+  if(!Object.keys(byWeek).length) return (
+    <div style={{textAlign:"center",padding:"80px 20px",color:C.textoSuave}}>
+      <div style={{fontSize:"40px",marginBottom:"12px"}}>📅</div>
+      <div style={{fontWeight:"700",fontSize:"16px"}}>No hay eventos que mostrar</div>
+    </div>
+  );
+  return (
+    <div style={{padding:"16px 16px 80px",maxWidth:"900px",margin:"0 auto"}}>
+      {Object.entries(byWeek).map(([lunISO,evs])=>{
+        const fin=new Date(desdeISO(lunISO));fin.setDate(fin.getDate()+6);
+        return (
+          <div key={lunISO} style={{marginBottom:"28px"}}>
+            <div style={{fontSize:"12px",fontWeight:"700",color:C.textoSuave,textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:"10px",paddingBottom:"8px",borderBottom:`1.5px solid ${C.grisBorde}`}}>
+              Semana del {formatCorto(lunISO)} al {formatCorto(toISO(fin))} · {evs.length} evento{evs.length!==1?"s":""}
+            </div>
+            {evs.map(ev=>{
+              const cliente=clientes.find(c=>c.id===ev.cliente_id);
+              const col=colorEv(ev.id);
+              return (
+                <div key={ev.id} onClick={()=>onAbrir(ev)}
+                  style={{display:"flex",gap:"14px",alignItems:"flex-start",padding:"14px 16px",borderRadius:"10px",marginBottom:"8px",border:`1.5px solid ${C.grisBorde}`,background:"#fff",cursor:"pointer",borderLeft:`5px solid ${col.borde}`,boxShadow:"0 1px 3px rgba(0,0,0,0.06)",transition:"transform 0.1s"}}
+                  onMouseEnter={e=>e.currentTarget.style.transform="translateY(-1px)"}
+                  onMouseLeave={e=>e.currentTarget.style.transform="translateY(0)"}>
+                  <div style={{minWidth:"72px",textAlign:"center",background:C.gris,borderRadius:"8px",padding:"8px 4px",flexShrink:0}}>
+                    <div style={{fontSize:"10px",color:C.textoSuave,fontWeight:"700",textTransform:"uppercase"}}>{diasNombres[desdeISO(ev.fecha_inicio).getDay()].slice(0,3)}</div>
+                    <div style={{fontSize:"22px",fontWeight:"900",color:C.texto,lineHeight:1.1}}>{desdeISO(ev.fecha_inicio).getDate()}</div>
+                    <div style={{fontSize:"10px",color:C.textoSuave}}>{MESES_C[desdeISO(ev.fecha_inicio).getMonth()]}</div>
+                  </div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontWeight:"900",fontSize:"15px",color:C.texto,marginBottom:"2px"}}>{cliente?.nombre_empresa||"—"}</div>
+                    {ev.nombre_evento&&<div style={{fontSize:"13px",color:C.textoMed,marginBottom:"5px"}}>{ev.nombre_evento}</div>}
+                    <div style={{display:"flex",gap:"6px",flexWrap:"wrap",alignItems:"center"}}>
+                      <span style={{fontSize:"12px",color:C.textoMed,fontWeight:"600"}}>{ev.hora_inicio?.slice(0,5)}–{ev.hora_termino?.slice(0,5)}</span>
+                      <Badge texto={ev.tipo} color={ev.tipo==="Simultánea"?C.azul:ev.tipo==="Consecutiva"?C.verde:"#7c3aed"} fondo={ev.tipo==="Simultánea"?C.azulClaro:ev.tipo==="Consecutiva"?C.verdeClaro:"#f5f3ff"}/>
+                      <Badge texto={LBL_MODAL[ev.modalidad]||ev.modalidad} color={C.textoMed} fondo={C.gris}/>
+                      <Badge texto={ev.estado} color={ev.estado==="Facturado"?C.verde:ev.estado==="Cancelado"?C.rojo:C.amarillo} fondo={ev.estado==="Facturado"?C.verdeClaro:ev.estado==="Cancelado"?C.rojoClaro:C.amarilloFondo}/>
+                    </div>
+                    {(ev.asignaciones||[]).length>0&&<div style={{fontSize:"12px",color:C.textoSuave,marginTop:"5px"}}>
+                      👤 {(ev.asignaciones||[]).slice(0,2).map(a=>{const i=interpretes.find(x=>x.id===a.interprete_id);const p=pares.find(x=>x.id===a.par_id);return i?`${i.nombre}${i.apellido?" "+i.apellido:""}${p?" ("+p.descripcion+")":""}`:""}).filter(Boolean).join(" · ")}
+                      {(ev.asignaciones||[]).length>2&&` +${(ev.asignaciones||[]).length-2} más`}
+                    </div>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -1039,6 +1267,18 @@ export default function App() {
   const [modalFicha,setModalFicha]=useState(null);
   const [modalNuevoCli,setModalNuevoCli]=useState(false);
   const [modalNuevoInt,setModalNuevoInt]=useState(null);
+  // Búsqueda, filtros y toasts
+  const [busqueda,setBusqueda]=useState("");
+  const [buscando,setBuscando]=useState(false);
+  const [filtros,setFiltros]=useState({estado:"",modalidad:"",tipo:"",interprete_id:""});
+  const [mostrarFiltros,setMostrarFiltros]=useState(false);
+  const [toasts,setToasts]=useState([]);
+  const addToast=useCallback((msg,type="info",retry=null)=>{
+    const id=Date.now()+Math.random();
+    setToasts(t=>[...t,{id,msg,type,retry}]);
+    if(type!=="error")setTimeout(()=>setToasts(t=>t.filter(x=>x.id!==id)),4000);
+  },[]);
+  const removeToast=useCallback(id=>setToasts(t=>t.filter(x=>x.id!==id)),[]);
 
   // ── Auth ──
   useEffect(()=>{
@@ -1078,12 +1318,62 @@ export default function App() {
 
   const diasSemana=useMemo(()=>semanaDesde(semanaOff),[semanaOff]);
   const esMobile=typeof window!=="undefined"&&window.innerWidth<768;
-  const evsDia=(iso)=>eventos.filter(e=>e.fecha_inicio<=iso&&e.fecha_termino>=iso).sort((a,b)=>(a.hora_inicio||"").localeCompare(b.hora_inicio||""));
+
+  const eventosFiltrados=useMemo(()=>{
+    let evs=eventos;
+    if(busqueda.trim()){
+      const b=busqueda.toLowerCase().trim();
+      evs=evs.filter(ev=>{
+        const cli=clientes.find(c=>c.id===ev.cliente_id);
+        const iNombres=(ev.asignaciones||[]).map(a=>{const i=interpretes.find(x=>x.id===a.interprete_id);return i?`${i.nombre} ${i.apellido||""}`:""}).join(" ");
+        const ots=(ev.asignaciones||[]).map(a=>a.nro_ot||"").join(" ");
+        const bols=(ev.asignaciones||[]).map(a=>a.nro_boleta||"").join(" ");
+        return(cli?.nombre_empresa||"").toLowerCase().includes(b)||(ev.nombre_evento||"").toLowerCase().includes(b)||(ev.nro_oc||"").toLowerCase().includes(b)||iNombres.toLowerCase().includes(b)||ots.toLowerCase().includes(b)||bols.toLowerCase().includes(b);
+      });
+    }
+    if(filtros.estado) evs=evs.filter(e=>e.estado===filtros.estado);
+    if(filtros.modalidad) evs=evs.filter(e=>e.modalidad===filtros.modalidad);
+    if(filtros.tipo) evs=evs.filter(e=>e.tipo===filtros.tipo);
+    if(filtros.interprete_id) evs=evs.filter(e=>(e.asignaciones||[]).some(a=>String(a.interprete_id)===String(filtros.interprete_id)));
+    return evs;
+  },[eventos,busqueda,filtros,clientes,interpretes]);
+
+  const evsDia=(iso)=>eventosFiltrados.filter(e=>e.fecha_inicio<=iso&&e.fecha_termino>=iso).sort((a,b)=>(a.hora_inicio||"").localeCompare(b.hora_inicio||""));
+
+  const hayFiltros=busqueda||Object.values(filtros).some(Boolean);
+
+  const exportarExcel=()=>{
+    const rows=eventosFiltrados.map(ev=>{
+      const cli=clientes.find(c=>c.id===ev.cliente_id);
+      const asigs=(ev.asignaciones||[]).map(a=>{const i=interpretes.find(x=>x.id===a.interprete_id);const p=pares.find(x=>x.id===a.par_id);return i?`${i.nombre}${i.apellido?" "+i.apellido:""}${p?" ("+p.descripcion+")":""}`:""}).filter(Boolean).join("; ");
+      return{"Cliente":cli?.nombre_empresa||"","Evento":ev.nombre_evento||"","Tipo":ev.tipo||"","Modalidad":LBL_MODAL[ev.modalidad]||ev.modalidad,"Estado":ev.estado||"","Fecha inicio":ev.fecha_inicio,"Fecha término":ev.fecha_termino,"Hora inicio":ev.hora_inicio?.slice(0,5),"Hora término":ev.hora_termino?.slice(0,5),"Jornada":ev.jornada,"N° OC":ev.nro_oc||"","Lugar":ev.lugar||"","Plataforma":ev.plataforma||"","Intérpretes":asigs};
+    });
+    const ws=XLSX.utils.json_to_sheet(rows);
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,"Eventos");
+    XLSX.writeFile(wb,`MundoChile_${new Date().toISOString().slice(0,10)}.xlsx`);
+    addToast("Excel exportado correctamente","success");
+  };
+
+  const duplicarEvento=(ev)=>{
+    const copy={...evVacio(),cliente_id:ev.cliente_id,nombre_evento:(ev.nombre_evento||"")+" (copia)",tipo:ev.tipo,modalidad:ev.modalidad,plataforma:ev.plataforma,zoom_owner:ev.zoom_owner,zoom_administrador:ev.zoom_administrador,lugar:ev.lugar,lugar_detalle:ev.lugar_detalle,jornada:ev.jornada,jornada_personalizada:ev.jornada_personalizada,hora_inicio:ev.hora_inicio,hora_termino:ev.hora_termino,comentarios:ev.comentarios};
+    setModalDetalle(null);
+    setModalEvento({modo:"nuevo",data:copy});
+  };
+
+  const navAnterior=()=>{if(vista==="semana")setSemanaOff(o=>o-1);else if(vista==="mes")setMesOff(o=>o-1);else if(vista==="dia"){const d=desdeISO(diaActual);d.setDate(d.getDate()-1);setDiaActual(toISO(d));}};
+  const navSiguiente=()=>{if(vista==="semana")setSemanaOff(o=>o+1);else if(vista==="mes")setMesOff(o=>o+1);else if(vista==="dia"){const d=desdeISO(diaActual);d.setDate(d.getDate()+1);setDiaActual(toISO(d));}};
 
   const tituloNav=()=>{
     if(vista==="semana"){const d=diasSemana;return `${d[0].getDate()} ${MESES_C[d[0].getMonth()]} – ${d[6].getDate()} ${MESES_C[d[6].getMonth()]} ${d[6].getFullYear()}`;}
     if(vista==="mes"){const n=new Date();n.setMonth(n.getMonth()+mesOff);return `${MESES_L[n.getMonth()].charAt(0).toUpperCase()+MESES_L[n.getMonth()].slice(1)} ${n.getFullYear()}`;}
+    if(vista==="agenda") return "Agenda";
     return formatLargo(diaActual);
+  };
+  const contadorSubtitulo=()=>{
+    if(cargando) return "Cargando…";
+    if(vista==="dia"){const n=evsDia(diaActual).length;return `${n} evento${n!==1?"s":""}`;}
+    const n=eventosFiltrados.length;return `${n} evento${n!==1?"s":""}${hayFiltros?" (filtrado)":""}`;
   };
 
   const abrirEvento=async(ev)=>{
@@ -1092,9 +1382,15 @@ export default function App() {
   };
 
   const editarEvento=(ev)=>{
-    const diasForm=(ev.evento_dias||[]).sort((a,b)=>a.orden-b.orden).map(d=>({...d,asignaciones:d.asignaciones_dia||[],equipos:d.equipos_dia||[]}));
+    const esDia=ev.fecha_inicio===ev.fecha_termino;
+    const diasForm=(ev.evento_dias||[])
+      .filter(d=>!esDia)
+      .sort((a,b)=>a.orden-b.orden)
+      .map(d=>({...d,asignaciones:(d.asignaciones_dia||[]).map(a=>({...asigVacia(),...a})),equipos:d.equipos_dia||[]}));
+    const equiposSingles=esDia&&(ev.evento_dias||[]).length>0?(ev.evento_dias[0].equipos_dia||[]):[];
+    const asigs=(ev.asignaciones||[]).map(a=>({...asigVacia(),...a}));
     setModalDetalle(null);
-    setModalEvento({modo:"editar",data:{...ev,asignaciones:ev.asignaciones||[],dias:diasForm}});
+    setModalEvento({modo:"editar",data:{...ev,asignaciones:asigs,dias:diasForm,equipos:equiposSingles}});
   };
 
   const eliminarEvento=async(id)=>{
@@ -1113,7 +1409,7 @@ export default function App() {
     for(let i=1;i<=total;i++) celdas.push(i);
     return (
       <div style={{padding:"12px 16px 80px",overflowX:"auto"}}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:"4px",minWidth:"500px"}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:"4px",minWidth:"800px"}}>
           {DIAS_SEM.map(d=><div key={d} style={{textAlign:"center",fontWeight:"800",fontSize:"12px",color:C.textoSuave,padding:"8px 0",textTransform:"uppercase"}}>{d}</div>)}
           {celdas.map((dia,i)=>{
             if(!dia) return <div key={i}/>;
@@ -1150,7 +1446,7 @@ export default function App() {
               </div>
               <div style={{fontSize:"18px",color:esHoy?"#bfdbfe":C.textoSuave}}>›</div>
             </div>
-            {evs.length>0&&<div style={{padding:"10px 12px"}}>{evs.map(ev=><TarjetaEvento key={ev.id} ev={ev} clientes={clientes} pares={pares} interpretes={interpretes} onClick={()=>abrirEvento(ev)}/>)}</div>}
+            {evs.length>0&&<div style={{padding:"10px 12px"}}>{evs.map(ev=><TarjetaEvento key={ev.id} ev={ev} clientes={clientes} pares={pares} interpretes={interpretes} onClick={()=>abrirEvento(ev)} todos_eventos={eventos}/>)}</div>}
           </div>;
         })}
       </div>
@@ -1167,7 +1463,7 @@ export default function App() {
                 <div style={{fontSize:"11px",color:esHoy?"#bfdbfe":C.textoSuave,fontWeight:"600"}}>{MESES_C[d.getMonth()]} {d.getFullYear()}</div>
                 {evs.length>0&&<div style={{fontSize:"17px",fontWeight:"900",marginTop:"4px",color:esHoy?"#bfdbfe":C.azul}}>{evs.length} evento{evs.length!==1?"s":""}</div>}
               </div>
-              {evs.map(ev=><TarjetaEvento key={ev.id} ev={ev} clientes={clientes} pares={pares} interpretes={interpretes} onClick={()=>abrirEvento(ev)}/>)}
+              {evs.map(ev=><TarjetaEvento key={ev.id} ev={ev} clientes={clientes} pares={pares} interpretes={interpretes} onClick={()=>abrirEvento(ev)} todos_eventos={eventos}/>)}
               {evs.length===0&&<div style={{textAlign:"center",color:C.textoSuave,fontWeight:"600",fontSize:"13px",padding:"16px 0"}}>Sin eventos</div>}
             </div>;
           })}
@@ -1184,9 +1480,10 @@ export default function App() {
         {formatLargo(diaActual)}<span style={{fontWeight:"400",color:C.textoSuave,fontSize:"15px",marginLeft:"12px"}}>{evs.length} evento{evs.length!==1?"s":""}</span>
       </div>
       {evs.length===0?<div style={{textAlign:"center",padding:"60px 20px",color:C.textoSuave,border:`2px dashed ${C.grisBorde}`,borderRadius:"16px"}}><div style={{fontSize:"40px",marginBottom:"12px"}}>📅</div><div style={{fontWeight:"700",fontSize:"16px"}}>Sin eventos este día</div></div>
-      :<div style={{display:"grid",gridTemplateColumns:esMobile?"1fr":"1fr 1fr",gap:"12px"}}>{evs.map(ev=><TarjetaEvento key={ev.id} ev={ev} clientes={clientes} pares={pares} interpretes={interpretes} onClick={()=>abrirEvento(ev)}/>)}</div>}
+      :<div style={{display:"grid",gridTemplateColumns:esMobile?"1fr":"1fr 1fr",gap:"12px"}}>{evs.map(ev=><TarjetaEvento key={ev.id} ev={ev} clientes={clientes} pares={pares} interpretes={interpretes} onClick={()=>abrirEvento(ev)} todos_eventos={eventos}/>)}</div>}
     </div>;
   };
+
 
   // ── Guards ──
   if(cargandoAuth) return (
@@ -1202,47 +1499,90 @@ export default function App() {
   return (
     <div style={{fontFamily:"'Segoe UI',system-ui,sans-serif",minHeight:"100vh",background:C.gris,color:C.texto}}>
       {/* ── TOPBAR ── */}
-      <div style={{position:"sticky",top:0,zIndex:100,background:"#fff",borderBottom:`1px solid ${C.grisBorde}`,boxShadow:"0 2px 8px rgba(58,123,213,0.08)"}}>
-        <div style={{padding:"0 16px",display:"flex",alignItems:"center",justifyContent:"space-between",height:"120px"}}>
-          <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
+      <div style={{position:"sticky",top:0,zIndex:100,background:"#fff",borderBottom:`1px solid ${C.grisBorde}`,boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
+        {/* Fila principal: logo | tabs | acciones */}
+        <div style={{padding:"0 16px",display:"flex",alignItems:"center",justifyContent:"space-between",height:"120px",gap:"12px"}}>
+          {/* Logo */}
+          <div style={{flexShrink:0}}>
             <img src={LOGO_SRC} alt="MundoChile" style={{height:"104px"}}/>
           </div>
-          <div style={{display:"flex",gap:"8px",alignItems:"center"}}>
-            {esEditor&&<button onClick={()=>setModalEvento({modo:"nuevo",data:evVacio()})} style={S.btnA}>➕ Nuevo evento</button>}
-            {esAdmin&&<button onClick={()=>setPantalla(p=>p==="config"?"calendario":"config")} style={{...S.btnG,padding:"8px 14px"}}>⚙️ Config</button>}
-            <button onClick={()=>sb.auth.signOut()} style={{...S.btnG,padding:"8px 14px",fontSize:"13px"}}>Salir</button>
+          {/* Tabs centrados */}
+          {pantalla==="calendario"&&<div style={{display:"flex",gap:"4px",alignItems:"center",flex:1,justifyContent:"center",flexWrap:"wrap"}}>
+            {[["semana","Semana"],["dia","Día"],["mes","Mes"],["agenda","Agenda"]].map(([v,l])=>(
+              <button key={v} onClick={()=>setVista(v)} style={{padding:"8px 16px",background:vista===v?C.azulClaro:"transparent",border:`1.5px solid ${vista===v?C.azul:C.grisBorde}`,borderRadius:"8px",color:vista===v?C.azul:C.textoMed,fontWeight:vista===v?"800":"600",cursor:"pointer",fontSize:"14px",fontFamily:"inherit",transition:"all 0.15s"}}>{l}</button>
+            ))}
+          </div>}
+          {/* Acciones */}
+          <div style={{display:"flex",gap:"6px",alignItems:"center",flexShrink:0,flexWrap:"wrap",justifyContent:"flex-end"}}>
+            {/* Búsqueda F6 */}
+            {buscando
+              ?<input autoFocus style={{...S.inp,width:"180px",height:"38px",fontSize:"13px"}} value={busqueda} onChange={e=>setBusqueda(e.target.value)} onBlur={()=>{if(!busqueda)setBuscando(false);}} placeholder="Buscar…"/>
+              :<button onClick={()=>setBuscando(true)} style={{...S.btnG,padding:"8px 12px",fontSize:"13px"}} title="Buscar">🔍</button>
+            }
+            {busqueda&&<button onClick={()=>{setBusqueda("");setBuscando(false);}} style={{...S.btnG,padding:"8px 10px",fontSize:"13px"}}>✕</button>}
+            {/* Filtros F7 */}
+            <button onClick={()=>setMostrarFiltros(f=>!f)} style={{...S.btnG,padding:"8px 12px",fontSize:"13px",background:mostrarFiltros||Object.values(filtros).some(Boolean)?C.azulClaro:"#fff",color:mostrarFiltros||Object.values(filtros).some(Boolean)?C.azul:C.textoMed,borderColor:mostrarFiltros||Object.values(filtros).some(Boolean)?C.azul:C.grisBorde}}>
+              {Object.values(filtros).some(Boolean)?"⚙️*":"⚙️"} Filtros
+            </button>
+            {/* Excel F5 */}
+            {esEditor&&<button onClick={exportarExcel} style={{...S.btnG,padding:"8px 12px",fontSize:"13px",background:"#f0fdf4",color:C.verde,borderColor:C.verde}}>📊 Excel</button>}
+            {/* Nuevo evento */}
+            {esEditor&&<button onClick={()=>setModalEvento({modo:"nuevo",data:evVacio()})} style={{...S.btnA,padding:"8px 14px",fontSize:"13px"}}>➕ Nuevo</button>}
+            {/* Config */}
+            {esAdmin&&<button onClick={()=>setPantalla(p=>p==="config"?"calendario":"config")} style={{...S.btnG,padding:"8px 12px",fontSize:"13px",background:pantalla==="config"?C.azulClaro:"#fff",color:pantalla==="config"?C.azul:C.textoMed,borderColor:pantalla==="config"?C.azul:C.grisBorde}}>⚙️</button>}
+            <button onClick={()=>sb.auth.signOut()} style={{...S.btnG,padding:"8px 12px",fontSize:"13px"}}>Salir</button>
           </div>
         </div>
-        {pantalla==="calendario"&&<>
-          <div style={{display:"flex",gap:"6px",padding:"8px 16px",borderTop:`1px solid ${C.grisBorde}`,background:C.gris}}>
-            {[["semana","📅 Semana"],["dia","📆 Día"],["mes","🗓 Mes"]].map(([v,l])=><button key={v} onClick={()=>setVista(v)}
-              style={{flex:1,maxWidth:"140px",padding:"10px 0",background:vista===v?"#fff":"transparent",border:`2px solid ${vista===v?C.azul:C.grisBorde}`,borderRadius:"10px",color:vista===v?C.azul:C.textoSuave,fontWeight:vista===v?"900":"600",cursor:"pointer",fontSize:"14px",fontFamily:"inherit",boxShadow:vista===v?`0 2px 8px ${C.azul}22`:"none",transition:"all 0.15s"}}>
-              {l}</button>)}
+        {/* Navegación */}
+        {pantalla==="calendario"&&vista!=="agenda"&&<div style={{padding:"8px 16px 12px",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:"8px",borderTop:`1px solid ${C.grisBorde}`,background:C.gris}}>
+          <div>
+            <div style={{fontWeight:"900",fontSize:"17px",color:C.texto}}>{tituloNav()}</div>
+            <div style={{fontSize:"12px",color:C.textoSuave,marginTop:"2px"}}>{contadorSubtitulo()}</div>
           </div>
-          <div style={{padding:"10px 16px 12px",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:"8px"}}>
-            <div>
-              <div style={{fontWeight:"900",fontSize:"17px",color:C.texto}}>{tituloNav()}</div>
-              <div style={{fontSize:"12px",color:C.textoSuave,marginTop:"2px"}}>{cargando?"Cargando…":`${eventos.length} eventos`}</div>
-            </div>
-            <div style={{display:"flex",gap:"6px"}}>
-              <button onClick={()=>{if(vista==="semana")setSemanaOff(o=>o-1);else if(vista==="mes")setMesOff(o=>o-1);else{const d=desdeISO(diaActual);d.setDate(d.getDate()-1);setDiaActual(toISO(d));};}} style={S.btnG}>← Anterior</button>
-              <button onClick={()=>{setSemanaOff(0);setMesOff(0);setDiaActual(hoy());}} style={S.btnP}>Hoy</button>
-              <button onClick={()=>{if(vista==="semana")setSemanaOff(o=>o+1);else if(vista==="mes")setMesOff(o=>o+1);else{const d=desdeISO(diaActual);d.setDate(d.getDate()+1);setDiaActual(toISO(d));};}} style={S.btnG}>Siguiente →</button>
-            </div>
+          <div style={{display:"flex",gap:"6px"}}>
+            <button onClick={navAnterior} style={S.btnG}>← Anterior</button>
+            <button onClick={()=>{setSemanaOff(0);setMesOff(0);setDiaActual(hoy());}} style={S.btnP}>Hoy</button>
+            <button onClick={navSiguiente} style={S.btnG}>Siguiente →</button>
           </div>
-        </>}
+        </div>}
+        {/* Panel filtros F7 */}
+        {mostrarFiltros&&pantalla==="calendario"&&<div style={{padding:"12px 16px",borderTop:`1px solid ${C.grisBorde}`,background:"#fff",display:"flex",gap:"10px",flexWrap:"wrap",alignItems:"flex-end"}}>
+          {[["estado","Estado",["",..."Pendiente,Facturado,Cancelado".split(",")],v=>v||"Todos"],[  "modalidad","Modalidad",["","remoto","presencial","hibrido"],v=>v?LBL_MODAL[v]:"Todas"],["tipo","Tipo",["Simultánea","Consecutiva","Whispering"],null]].map(([k,lbl,opts,fmt])=>(
+            <div key={k} style={{minWidth:"130px"}}>
+              <label style={S.lbl}>{lbl}</label>
+              <select style={{...S.sel,height:"36px",fontSize:"13px"}} value={filtros[k]} onChange={e=>setFiltros(f=>({...f,[k]:e.target.value}))}>
+                {k==="tipo"&&<option value="">Todos</option>}
+                {opts.map(o=><option key={o} value={o}>{fmt?fmt(o):o||"Todos"}</option>)}
+              </select>
+            </div>
+          ))}
+          <div style={{minWidth:"160px"}}>
+            <label style={S.lbl}>Intérprete</label>
+            <select style={{...S.sel,height:"36px",fontSize:"13px"}} value={filtros.interprete_id} onChange={e=>setFiltros(f=>({...f,interprete_id:e.target.value}))}>
+              <option value="">Todos</option>
+              {interpretes.filter(i=>i.activo!==false).map(i=><option key={i.id} value={i.id}>{i.nombre}{i.apellido?" "+i.apellido:""}</option>)}
+            </select>
+          </div>
+          {Object.values(filtros).some(Boolean)&&<button onClick={()=>setFiltros({estado:"",modalidad:"",tipo:"",interprete_id:""})} style={{...S.btnP,alignSelf:"flex-end",height:"36px"}}>✕ Limpiar</button>}
+        </div>}
       </div>
 
       {/* ── CONTENIDO ── */}
-      {pantalla==="calendario"&&<>{vista==="semana"&&renderSemana()}{vista==="dia"&&renderDia()}{vista==="mes"&&renderMes()}</>}
-      {pantalla==="config"&&esAdmin&&<PantallaConfig clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} onActualizar={cargarDatos}/>}
+      {pantalla==="calendario"&&<>
+        {vista==="semana"&&renderSemana()}
+        {vista==="dia"&&renderDia()}
+        {vista==="mes"&&renderMes()}
+        {vista==="agenda"&&<VistaAgenda eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} onAbrir={abrirEvento}/>}
+      </>}
+      {pantalla==="config"&&esAdmin&&<PantallaConfig clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} onActualizar={cargarDatos} perfil={perfil}/>}
 
       {/* ── MODALES ── */}
-      {modalEvento&&<ModalEvento eventoInicial={modalEvento.data} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} todos_eventos={eventos} perfil={perfil} onGuardar={()=>{setModalEvento(null);cargarDatos();}} onCerrar={()=>setModalEvento(null)} onNuevoCliente={()=>setModalNuevoCli(true)} onNuevoInterprete={(ai,di)=>setModalNuevoInt({ai,di})}/>}
-      {modalDetalle&&<ModalDetalle evento={modalDetalle} clientes={clientes} interpretes={interpretes} pares={pares} perfil={perfil} onEditar={()=>editarEvento(modalDetalle)} onEliminar={()=>eliminarEvento(modalDetalle.id)} onCerrar={()=>setModalDetalle(null)} onVerFicha={()=>{setModalFicha(modalDetalle);setModalDetalle(null);}}/>}
+      {modalEvento&&<ModalEvento eventoInicial={modalEvento.data} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} todos_eventos={eventos} perfil={perfil} onGuardar={()=>{setModalEvento(null);cargarDatos();addToast("Evento guardado correctamente","success");}} onCerrar={()=>setModalEvento(null)} onNuevoCliente={()=>setModalNuevoCli(true)} onNuevoInterprete={(ai,di)=>setModalNuevoInt({ai,di})}/>}
+      {modalDetalle&&<ModalDetalle evento={modalDetalle} clientes={clientes} interpretes={interpretes} pares={pares} perfil={perfil} onEditar={()=>editarEvento(modalDetalle)} onEliminar={()=>eliminarEvento(modalDetalle.id)} onCerrar={()=>setModalDetalle(null)} onVerFicha={()=>{setModalFicha(modalDetalle);setModalDetalle(null);}} onDuplicar={duplicarEvento} addToast={addToast}/>}
       {modalFicha&&<ModalFicha evento={modalFicha} clientes={clientes} interpretes={interpretes} pares={pares} onCerrar={()=>setModalFicha(null)}/>}
-      {modalNuevoCli&&<ModalNuevoCliente onGuardar={async(d)=>{await sb.from("clientes").insert(d);await cargarDatos();setModalNuevoCli(false);}} onCerrar={()=>setModalNuevoCli(false)}/>}
-      {modalNuevoInt&&<ModalNuevoInterprete onGuardar={async(d)=>{await sb.from("interpretes").insert(d);await cargarDatos();setModalNuevoInt(null);}} onCerrar={()=>setModalNuevoInt(null)}/>}
+      {modalNuevoCli&&<ModalNuevoCliente onGuardar={async(d)=>{await sb.from("clientes").insert(d);await cargarDatos();setModalNuevoCli(false);addToast("Cliente creado","success");}} onCerrar={()=>setModalNuevoCli(false)}/>}
+      {modalNuevoInt&&<ModalNuevoInterprete onGuardar={async(d)=>{await sb.from("interpretes").insert(d);await cargarDatos();setModalNuevoInt(null);addToast("Intérprete creado","success");}} onCerrar={()=>setModalNuevoInt(null)}/>}
+      <ToastContainer toasts={toasts} onRemove={removeToast}/>
     </div>
   );
 }
