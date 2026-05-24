@@ -1723,8 +1723,8 @@ export default function App() {
         {/* Fila principal: logo | tabs | acciones */}
         <div style={{padding:"0 16px",display:"flex",alignItems:"center",justifyContent:"space-between",height:"120px",gap:"12px"}}>
           {/* Logo */}
-          <div style={{flexShrink:0}}>
-            <img src={LOGO_SRC} alt="MundoChile" style={{height:"104px"}}/>
+          <div style={{flexShrink:0,overflow:"hidden",height:"80px"}}>
+            <img src={LOGO_SRC} alt="MundoChile" style={{height:"104px",display:"block"}}/>
           </div>
           {/* Tabs centrados */}
           {pantalla==="calendario"&&<div style={{display:"flex",gap:"4px",alignItems:"center",flex:1,justifyContent:"center",flexWrap:"wrap"}}>
