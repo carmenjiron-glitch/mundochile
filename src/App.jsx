@@ -23,6 +23,10 @@ const C = {
 const PALETA_CLIENTE=["#E03131","#C2255C","#9C36B5","#3B5BDB","#1971C2","#0C8599","#2F9E44","#E67700","#D9480F","#5C7CFA","#F06595","#20C997"];
 const colorCliente=(id)=>PALETA_CLIENTE[(id||0)%12];
 const avatarColor=(str)=>PALETA_CLIENTE[(str||"").split("").reduce((a,c)=>a+c.charCodeAt(0),0)%12];
+const IDIOMA_COLOR={"Inglés":"#012169","Francés":"#002395","Portugués":"#009C3B","Español":"#AA151B","Alemán":"#000000","Italiano":"#009246","Chino":"#DE2910","Japonés":"#BC002D"};
+const IDIOMA_FLAG={"Inglés":"🇬🇧","Francés":"🇫🇷","Portugués":"🇧🇷","Español":"🇪🇸","Alemán":"🇩🇪","Italiano":"🇮🇹","Chino":"🇨🇳","Japonés":"🇯🇵"};
+const idiomaColor=(idioma)=>IDIOMA_COLOR[idioma]||"#868E96";
+const idiomaFlag=(idioma)=>IDIOMA_FLAG[idioma]||"🌐";
 
 // ─── CONSTANTES ──────────────────────────────────────────────────────────────
 const TIPOS      = ["Simultánea","Consecutiva","Whispering"];
@@ -51,7 +55,7 @@ const semanaDesde = (off) => {
   d.setDate(d.getDate()-dow+off*7);
   return Array.from({length:7},(_,i)=>{ const x=new Date(d); x.setDate(d.getDate()+i); return x; });
 };
-const HORAS = (() => { const h=[]; for(let x=6;x<=22;x++) for(let m of [0,15,30,45]) h.push(`${String(x).padStart(2,"0")}:${String(m).padStart(2,"0")}`); return h; })();
+const HORAS = (() => { const h=[]; for(let x=7;x<=22;x++) for(let m of [0,15,30,45]) h.push(`${String(x).padStart(2,"0")}:${String(m).padStart(2,"0")}`); return h; })();
 
 // ─── ESTILOS BASE ─────────────────────────────────────────────────────────────
 const S = {
@@ -80,6 +84,7 @@ const evVacio = () => ({
   jornada:"Media Jornada", jornada_personalizada:"", lugar:"", lugar_detalle:"",
   modalidad:"remoto", plataforma:"Zoom MundoChile", zoom_owner:"mundochile",
   zoom_administrador:"", estado:"Pendiente de Facturación", comentarios:"",
+  nro_hes:"", nro_otros:"",
   asignaciones:[], dias:[], equipos:[],
 });
 const asigVacia = () => ({interprete_id:"",par_id:"",nro_ot:"",nro_boleta:"",es_boleta_adicional:false,es_host_zoom:false,rol:"Principal",hora_presentacion:"",estado_pago:"Pendiente"});
@@ -134,10 +139,19 @@ function CampoCopia({valor}) {
 }
 
 function SelHora({value,onChange,placeholder="Hora"}) {
+  const [manual,setManual]=useState(false);
+  const esManual=manual||(!!value&&!HORAS.includes(value));
+  if(esManual) return (
+    <div style={{display:"flex",gap:"6px"}}>
+      <input style={{...S.inp,flex:1}} value={value||""} onChange={e=>onChange(e.target.value)} placeholder="08:30"/>
+      <button onClick={()=>{setManual(false);onChange("09:00");}} style={{...S.btnG,padding:"9px 10px",fontSize:"12px",whiteSpace:"nowrap",height:"42px"}}>↩ Lista</button>
+    </div>
+  );
   return (
-    <select style={S.sel} value={value||""} onChange={e=>onChange(e.target.value)}>
+    <select style={S.sel} value={value||""} onChange={e=>{if(e.target.value==="__otro__"){setManual(true);onChange("");}else onChange(e.target.value);}}>
       <option value="">{placeholder}</option>
       {HORAS.map(h=><option key={h} value={h}>{h} hrs</option>)}
+      <option value="__otro__">Otro horario…</option>
     </select>
   );
 }
@@ -179,46 +193,70 @@ function PantallaLogin({onLogin}) {
 }
 
 // ─── TARJETA EVENTO ───────────────────────────────────────────────────────────
-function TarjetaEvento({ev,clientes,pares,interpretes,proveedores=[],onClick,todos_eventos}) {
-  const bg=colorCliente(ev.cliente_id);
+function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onClick}) {
+  const borderColor=colorCliente(ev.cliente_id);
   const cliente=clientes.find(c=>c.id===ev.cliente_id);
-  const tieneConflicto=todos_eventos&&(ev.asignaciones||[]).some(a=>a.interprete_id&&todos_eventos.some(otro=>{
-    if(otro.id===ev.id)return false;
-    if(!(otro.fecha_inicio<=ev.fecha_termino&&otro.fecha_termino>=ev.fecha_inicio))return false;
-    return(otro.asignaciones||[]).some(b=>b.interprete_id===a.interprete_id);
-  }));
   const todosEquipos=(ev.evento_dias||[]).flatMap(d=>d.equipos_dia||[]);
   const tieneEquipos=todosEquipos.length>0;
   const provNombreEq=tieneEquipos?(todosEquipos[0].proveedor_nombre||proveedores.find(p=>p.id===todosEquipos[0].proveedor_id)?.nombre||""):"";
   const esPresencial=ev.modalidad==="presencial"||ev.modalidad==="hibrido";
   const lugarOPlat=esPresencial?ev.lugar:ev.plataforma;
+  const esZoomMC=ev.plataforma==="Zoom MundoChile";
+
+  const hoyCal=hoy();
+  const manana=toISO(new Date(desdeISO(hoyCal).getTime()+86400000));
+  const dotColor=diaDe===hoyCal?"#E03131":diaDe===manana?"#F59E0B":null;
+
+  let diaXdeY=null;
+  if(diaDe&&ev.fecha_inicio!==ev.fecha_termino){
+    const ini=desdeISO(ev.fecha_inicio);
+    const diaCol=desdeISO(diaDe);
+    const x=Math.round((diaCol-ini)/86400000)+1;
+    const y=Math.round((desdeISO(ev.fecha_termino)-ini)/86400000)+1;
+    diaXdeY={x,y};
+  }
+
+  const tipoBg=ev.tipo==="Simultánea"?"#3B5BDB":ev.tipo==="Consecutiva"?"#2F9E44":"#9C36B5";
+  const modBg=ev.modalidad==="remoto"?"#1971C2":ev.modalidad==="presencial"?"#2F9E44":"#7950F2";
+  const factBg=ev.estado==="Facturado"?"#1971C2":"#E67700";
+  const bs={display:"inline-flex",alignItems:"center",padding:"3px 10px",borderRadius:"20px",fontSize:"11px",fontWeight:"500",color:"#fff",whiteSpace:"nowrap"};
+
   return (
     <div onClick={onClick}
-      style={{borderRadius:"10px",padding:"14px 16px",background:bg,color:"#fff",cursor:"pointer",marginBottom:"10px",boxShadow:"0 2px 8px rgba(0,0,0,0.15)",transition:"transform 0.12s,box-shadow 0.12s",lineHeight:1.5}}
-      onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 5px 18px rgba(0,0,0,0.25)";}}
-      onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="0 2px 8px rgba(0,0,0,0.15)";}}>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:"3px",gap:"6px"}}>
-        <div style={{fontSize:"21px",fontWeight:"700",color:"#fff",letterSpacing:"0.1px",lineHeight:1.2}}>{cliente?.nombre_empresa||"—"}</div>
-        {tieneConflicto&&<span title="Conflicto de intérprete" style={{fontSize:"14px",flexShrink:0}}>⚠️</span>}
+      style={{borderRadius:"10px",padding:"12px 14px",background:"#FFFFFF",color:C.texto,cursor:"pointer",marginBottom:"12px",boxShadow:"0 2px 8px rgba(0,0,0,0.10)",borderLeft:`5px solid ${borderColor}`,position:"relative",transition:"transform 0.12s,box-shadow 0.12s",lineHeight:1.5}}
+      onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 5px 18px rgba(0,0,0,0.18)";}}
+      onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="0 2px 8px rgba(0,0,0,0.10)";}}>
+      {dotColor&&<div style={{position:"absolute",top:"10px",right:"10px",width:"10px",height:"10px",borderRadius:"50%",background:dotColor,animation:"mcpulse 2s ease-in-out infinite"}}/>}
+      {diaXdeY&&<div style={{marginBottom:"6px"}}><span style={{display:"inline-flex",alignItems:"center",padding:"2px 10px",borderRadius:"20px",fontSize:"11px",fontWeight:"500",color:"#1971C2",background:"#E8F4FD",border:"1px solid #bee3f8"}}>📅 Día {diaXdeY.x} de {diaXdeY.y}</span></div>}
+      <div style={{fontSize:"21px",fontWeight:"700",color:"#1A1A1A",letterSpacing:"0.1px",lineHeight:1.2,marginBottom:"2px",paddingRight:dotColor?"18px":"0"}}>{cliente?.nombre_empresa||"—"}</div>
+      {ev.nombre_evento&&<div style={{fontSize:"14px",fontWeight:"400",color:"#6B6B6B",marginBottom:"4px"}}>{ev.nombre_evento}</div>}
+      <div style={{fontSize:"16px",fontWeight:"500",color:"#1A1A1A",marginBottom:"6px"}}>{ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)} hrs</div>
+      <div style={{display:"flex",gap:"5px",flexWrap:"wrap",alignItems:"center",marginBottom:"6px"}}>
+        <span style={{...bs,background:tipoBg}}>{ev.tipo}</span>
+        <span style={{...bs,background:modBg}}>{LBL_MODAL[ev.modalidad]||ev.modalidad}</span>
+        <span style={{...bs,background:factBg}}>{ev.estado==="Facturado"?"Facturado":"Pend. Facturación"}</span>
       </div>
-      {ev.nombre_evento&&<div style={{fontSize:"18px",fontWeight:"400",color:"rgba(255,255,255,0.85)",marginBottom:"4px"}}>{ev.nombre_evento}</div>}
-      <div style={{fontSize:"18px",fontWeight:"400",color:"rgba(255,255,255,0.90)",marginBottom:"5px"}}>{ev.hora_inicio?.slice(0,5)}–{ev.hora_termino?.slice(0,5)}</div>
-      <div style={{display:"flex",gap:"5px",flexWrap:"wrap",alignItems:"center",marginBottom:"5px"}}>
-        <span style={{fontSize:"11px",fontWeight:"500",background:"rgba(255,255,255,0.22)",color:"#fff",padding:"3px 10px",borderRadius:"20px"}}>{ev.tipo}</span>
-        <span style={{fontSize:"11px",fontWeight:"500",background:"rgba(255,255,255,0.18)",color:"#fff",padding:"3px 10px",borderRadius:"20px"}}>{LBL_MODAL[ev.modalidad]||ev.modalidad}</span>
-      </div>
-      {lugarOPlat&&<div style={{fontSize:"18px",fontWeight:"400",color:"rgba(255,255,255,0.85)",marginBottom:"4px"}}>{esPresencial?"📍":"💻"} {lugarOPlat}</div>}
+      {lugarOPlat&&<div style={{fontSize:"13px",color:"#6B6B6B",marginBottom:"5px"}}>{esPresencial?"📍":"💻"} {lugarOPlat}</div>}
+      {!esPresencial&&esZoomMC&&<div style={{marginBottom:"5px"}}><span style={{display:"inline-flex",alignItems:"center",padding:"3px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",color:"#92400E",background:"#FFF3CD",border:"1px solid #F59E0B"}}>💻 Zoom MundoChile{ev.zoom_administrador?` · ${ev.zoom_administrador}`:""}</span></div>}
       {(ev.asignaciones||[]).map((a,i)=>{
-        const interp=interpretes.find(x=>x.id===a.interprete_id),par=pares.find(p=>p.id===a.par_id);
-        return interp?<div key={i} style={{fontSize:"18px",fontWeight:"500",color:"rgba(255,255,255,0.95)",marginBottom:"2px"}}>
-          {interp.nombre}{interp.apellido?" "+interp.apellido:""}{par?<span style={{fontSize:"18px",fontWeight:"400",opacity:0.8}}> · {par.descripcion}</span>:null}
-        </div>:null;
+        const interp=interpretes.find(x=>x.id===a.interprete_id);
+        const par=pares.find(p=>p.id===a.par_id);
+        if(!interp) return null;
+        const idioma=par?.idioma_origen||"";
+        const bg=idiomaColor(idioma);
+        const flag=idiomaFlag(idioma);
+        const esHost=a.es_host_zoom;
+        return (
+          <div key={i} style={{marginBottom:"4px"}}>
+            <span style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 14px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:"#fff",background:bg,border:esHost?"2px solid #E03131":"2px solid transparent",boxSizing:"border-box"}}>
+              {flag} {interp.nombre}{interp.apellido?" "+interp.apellido:""}
+              {par&&<span style={{opacity:0.85,fontSize:"12px"}}> · {par.idioma_origen} — {par.idioma_destino}</span>}
+              {esHost&&<span style={{marginLeft:"2px"}}>🔑</span>}
+            </span>
+          </div>
+        );
       })}
-      {tieneEquipos&&<div style={{marginTop:"4px"}}><span style={{fontSize:"11px",fontWeight:"500",background:"rgba(255,255,255,0.18)",color:"#fff",padding:"3px 10px",borderRadius:"20px"}}>🔧 Equipos AV{provNombreEq?` · ${provNombreEq}`:""}</span></div>}
-      <div style={{marginTop:"5px"}}>
-        {ev.estado==="Facturado"&&<span style={{fontSize:"11px",fontWeight:"500",background:"rgba(255,255,255,0.22)",color:"#fff",padding:"3px 10px",borderRadius:"20px"}}>✓ Facturado</span>}
-        {(ev.estado==="Pendiente de Facturación"||ev.estado==="Pendiente")&&<span style={{fontSize:"11px",fontWeight:"500",background:"rgba(255,255,255,0.14)",color:"rgba(255,255,255,0.75)",padding:"3px 10px",borderRadius:"20px"}}>⏳ Pend. Facturación</span>}
-      </div>
+      {tieneEquipos&&<div style={{marginTop:"5px"}}><span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"3px 10px",borderRadius:"20px",fontSize:"11px",fontWeight:"500",color:"#495057",background:"#F1F3F5",border:"1px solid #DEE2E6"}}>🔧 Equipos AV{provNombreEq?` · ${provNombreEq}`:""}</span></div>}
     </div>
   );
 }
@@ -241,6 +279,14 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,todos
     for(let i=0;i<=diff;i++){const d=new Date(ini);d.setDate(ini.getDate()+i);const iso=toISO(d);nuevos.push(form.dias.find(x=>x.fecha===iso)||diaVacio(iso));}
     setForm(f=>({...f,dias:nuevos}));
   },[form.fecha_inicio,form.fecha_termino]);
+
+  useEffect(()=>{
+    if(!form.hora_inicio||!form.hora_termino) return;
+    const [hi,hm]=form.hora_inicio.split(":").map(Number);
+    const [ti,tm]=form.hora_termino.split(":").map(Number);
+    const mins=(ti*60+tm)-(hi*60+hm);
+    if(mins>0) setF("jornada",mins<420?"Media Jornada":"Jornada Completa");
+  },[form.hora_inicio,form.hora_termino]);
 
   const esMultidia=form.dias.length>1;
 
@@ -364,9 +410,12 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,todos
     const interp=interpretes.find(x=>x.id===a.interprete_id);
     return (
       <div style={{border:`1.5px solid ${C.grisBorde}`,borderRadius:"10px",padding:"14px",marginBottom:"10px",background:C.gris}}>
-        {alerta&&<div style={{background:"#fef3c7",border:"1px solid #f59e0b",borderRadius:"8px",padding:"8px 12px",marginBottom:"10px",fontSize:"13px",color:"#92400e",fontWeight:"600"}}>
-          ⚠️ Este intérprete ya tiene asignación en "{alerta.nombre_evento||alerta.clientes?.nombre_empresa||"otro evento"}"
-          <button onClick={()=>setAlerta(null)} style={{marginLeft:"8px",background:"none",border:"none",cursor:"pointer",color:"#92400e",fontWeight:"800"}}>✕</button>
+        {alerta&&<div style={{background:"#fef3c7",border:"1px solid #f59e0b",borderRadius:"8px",padding:"10px 14px",marginBottom:"10px",fontSize:"13px",color:"#92400e"}}>
+          <div style={{fontWeight:"600",marginBottom:"8px"}}>⚠️ {interp?.nombre||"Este intérprete"} ya tiene asignado "{alerta.nombre_evento||"otro evento"}" el {formatLargo(alerta.fecha_inicio)}. ¿Deseas agregarlo de todos modos?</div>
+          <div style={{display:"flex",gap:"8px"}}>
+            <button onClick={()=>setAlerta(null)} style={{padding:"5px 12px",background:"#92400e",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"700",fontSize:"12px",fontFamily:"inherit"}}>Sí, agregar igual</button>
+            <button onClick={()=>{edit("interprete_id","");setAlerta(null);}} style={{padding:"5px 12px",background:"none",color:"#92400e",border:"1px solid #92400e",borderRadius:"6px",cursor:"pointer",fontWeight:"700",fontSize:"12px",fontFamily:"inherit"}}>Cambiar intérprete</button>
+          </div>
         </div>}
         <div style={S.fila}>
           <div style={{...S.camp,minWidth:"200px"}}>
@@ -700,9 +749,9 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           </div>
           {/* Plataforma */}
           {(evento.modalidad==="remoto"||evento.modalidad==="hibrido")&&<div style={{marginBottom:"16px"}}>
-            <div style={{display:"inline-flex",alignItems:"center",gap:"10px",padding:"10px 16px",borderRadius:"10px",background:esZoomMC?C.amarilloVivo:C.grisMed,color:esZoomMC?"#1a1a1a":C.texto,fontWeight:"800",fontSize:"14px",border:esZoomMC?`2px solid ${C.amarillo}`:`1px solid ${C.grisBorde}`}}>
+            <span style={{display:"inline-flex",alignItems:"center",gap:"8px",padding:"3px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",color:esZoomMC?"#92400E":C.texto,background:esZoomMC?"#FFF3CD":C.grisMed,border:esZoomMC?"1px solid #F59E0B":`1px solid ${C.grisBorde}`}}>
               💻 {evento.plataforma}{evento.zoom_administrador&&` — Administra: ${evento.zoom_administrador}`}
-            </div>
+            </span>
           </div>}
           {/* Lugar */}
           {(evento.modalidad==="presencial"||evento.modalidad==="hibrido")&&evento.lugar&&<div style={{marginBottom:"16px",background:C.gris,borderRadius:"10px",padding:"12px 16px"}}>
@@ -1267,6 +1316,7 @@ export default function App() {
   const [interpretes,setInterpretes]=useState([]);
   const [pares,setPares]=useState([]);
   const [proveedores,setProveedores]=useState([]);
+  const [lugares,setLugares]=useState([]);
   const [cargando,setCargando]=useState(false);
   const [vista,setVista]=useState("semana");
   const [semanaOff,setSemanaOff]=useState(0);
@@ -1291,6 +1341,13 @@ export default function App() {
   },[]);
   const removeToast=useCallback(id=>setToasts(t=>t.filter(x=>x.id!==id)),[]);
 
+  useEffect(()=>{
+    const s=document.createElement("style");
+    s.textContent="@keyframes mcpulse{0%,100%{opacity:0.3;transform:scale(0.8)}50%{opacity:1;transform:scale(1.2)}}";
+    document.head.appendChild(s);
+    return()=>document.head.removeChild(s);
+  },[]);
+
   // ── Auth ──
   useEffect(()=>{
     if(SKIP_LOGIN){ cargarDatos(); return; }
@@ -1312,18 +1369,20 @@ export default function App() {
 
   const cargarDatos=useCallback(async()=>{
     setCargando(true);
-    const[evR,cliR,intR,parR,provR]=await Promise.all([
+    const[evR,cliR,intR,parR,provR,lugR]=await Promise.all([
       sb.from("eventos").select("*, asignaciones(*), evento_dias(*, asignaciones_dia(*), equipos_dia(*))").order("fecha_inicio"),
       sb.from("clientes").select("*").order("nombre_empresa"),
       sb.from("interpretes").select("*").order("nombre"),
       sb.from("pares_idiomas").select("*").order("idioma_origen"),
       sb.from("proveedores").select("*").order("nombre"),
+      sb.from("lugares").select("*").order("nombre"),
     ]);
     if(evR.data) setEventos(evR.data);
     if(cliR.data) setClientes(cliR.data);
     if(intR.data) setInterpretes(intR.data);
     if(parR.data) setPares(parR.data);
     if(provR.data) setProveedores(provR.data);
+    if(lugR.data) setLugares(lugR.data);
     setCargando(false);
   },[]);
 
@@ -1435,14 +1494,22 @@ export default function App() {
 
   // ── Vista SEMANA ──
   const renderSemana=()=>{
+    const diasLF=diasSemana.slice(0,5);
+    const diasFS=diasSemana.slice(5,7);
+    const evsFinSemana=diasFS.flatMap(d=>evsDia(toISO(d)));
+    const nombresDia=["LUN","MAR","MIÉ","JUE","VIE"];
+
     if(esMobile) return (
       <div style={{padding:"10px 12px 80px"}}>
-        {diasSemana.map((d,i)=>{
+        {evsFinSemana.length>0&&<div onClick={()=>{setDiaActual(toISO(diasFS[0]));setVista("dia");}} style={{background:"#FFF3CD",border:"1px solid #F59E0B",borderRadius:"8px",padding:"8px 16px",marginBottom:"12px",cursor:"pointer",display:"flex",alignItems:"center",gap:"8px",color:"#92400E",fontSize:"13px",fontWeight:"600"}}>
+          ⚡ Ver {evsFinSemana.length} evento{evsFinSemana.length!==1?"s":""} activo{evsFinSemana.length!==1?"s":""} este fin de semana
+        </div>}
+        {diasLF.map((d,i)=>{
           const iso=toISO(d),evs=evsDia(iso),esHoy=iso===hoy();
           return <div key={i} style={{marginBottom:"10px",border:`2px solid ${esHoy?C.azul:C.grisBorde}`,borderRadius:"14px",overflow:"hidden"}}>
             <div style={{background:esHoy?C.azul:evs.length?C.grisMed:C.gris,padding:"12px 16px",display:"flex",alignItems:"center",gap:"12px",cursor:"pointer"}} onClick={()=>{setDiaActual(iso);setVista("dia");}}>
               <div style={{width:"48px",height:"48px",borderRadius:"50%",background:esHoy?"rgba(255,255,255,0.2)":"#fff",border:`2px solid ${esHoy?"rgba(255,255,255,0.4)":C.grisBorde}`,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
-                <div style={{fontSize:"9px",fontWeight:"800",textTransform:"uppercase",color:esHoy?"#bfdbfe":C.textoSuave}}>{DIAS_SEM[i]}</div>
+                <div style={{fontSize:"9px",fontWeight:"800",textTransform:"uppercase",color:esHoy?"#bfdbfe":C.textoSuave}}>{nombresDia[i]}</div>
                 <div style={{fontSize:"20px",fontWeight:"700",lineHeight:1,color:esHoy?"#fff":C.texto}}>{d.getDate()}</div>
               </div>
               <div style={{flex:1}}>
@@ -1451,24 +1518,29 @@ export default function App() {
               </div>
               <div style={{fontSize:"18px",color:esHoy?"#bfdbfe":C.textoSuave}}>›</div>
             </div>
-            {evs.length>0&&<div style={{padding:"10px 12px"}}>{evs.map(ev=><TarjetaEvento key={ev.id} ev={ev} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} todos_eventos={eventos}/>)}</div>}
+            {evs.length>0&&<div style={{padding:"10px 12px"}}>{evs.map(ev=><TarjetaEvento key={ev.id} ev={ev} diaDe={iso} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)}/>)}</div>}
           </div>;
         })}
       </div>
     );
+
     return (
       <div style={{overflowX:"auto",padding:"20px 24px 80px"}}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(7,minmax(200px,1fr))",gap:"12px",minWidth:"800px"}}>
-          {diasSemana.map((d,i)=>{
+        {evsFinSemana.length>0&&<div onClick={()=>{setDiaActual(toISO(diasFS[0]));setVista("dia");}} style={{background:"#FFF3CD",border:"1px solid #F59E0B",borderRadius:"8px",padding:"8px 16px",marginBottom:"16px",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:"8px",color:"#92400E",fontSize:"13px",fontWeight:"600",boxShadow:"0 1px 3px rgba(0,0,0,0.08)"}}>
+          ⚡ Ver {evsFinSemana.length} evento{evsFinSemana.length!==1?"s":""} activo{evsFinSemana.length!==1?"s":""} este fin de semana
+        </div>}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(5,minmax(200px,1fr))",gap:"12px",minWidth:"700px"}}>
+          {diasLF.map((d,i)=>{
             const iso=toISO(d),evs=evsDia(iso),esHoy=iso===hoy();
-            return <div key={i}>
-              <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{textAlign:"center",padding:"10px 12px",borderRadius:"12px",marginBottom:"8px",background:esHoy?C.azul:evs.length?"#D0E4FF":"#E8EDF5",border:`1.5px solid ${esHoy?C.azul:evs.length?"#b3d0f5":C.grisBorde}`,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:"2px",boxShadow:"0 2px 6px rgba(0,0,0,0.10)"}}>
-                <div style={{fontSize:"10px",fontWeight:"500",textTransform:"uppercase",letterSpacing:"1.5px",color:esHoy?"#bfdbfe":C.textoSuave}}>{DIAS_SEM[i]}</div>
-                <div style={{fontSize:"24px",fontWeight:"700",lineHeight:1.1,color:esHoy?"#fff":C.texto}}>{d.getDate()}</div>
-                <div style={{fontSize:"10px",color:esHoy?"#bfdbfe":C.textoSuave,fontWeight:"500"}}>{MESES_C[d.getMonth()]} {d.getFullYear()}</div>
-                {evs.length>0&&<div style={{fontSize:"16px",fontWeight:"700",color:esHoy?"#fff":"#3a7bd5",background:esHoy?"rgba(255,255,255,0.25)":"rgba(255,255,255,0.9)",padding:"4px 14px",borderRadius:"20px",marginTop:"6px",whiteSpace:"nowrap",boxShadow:"0 1px 3px rgba(0,0,0,0.08)"}}>{evs.length} evento{evs.length!==1?"s":""}</div>}
+            const mesLargo=MESES_L[d.getMonth()].charAt(0).toUpperCase()+MESES_L[d.getMonth()].slice(1);
+            return <div key={i} style={{background:"#EBF0F5",borderRadius:"12px",padding:"10px"}}>
+              <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{textAlign:"center",padding:"8px",borderRadius:"10px",marginBottom:"8px",background:esHoy?C.azul:evs.length?"#D0E4FF":"#fff",border:`1.5px solid ${esHoy?C.azul:evs.length?"#b3d0f5":"#CBD5E1"}`,cursor:"pointer",boxShadow:"0 1px 4px rgba(0,0,0,0.07)"}}>
+                <div style={{fontSize:"15px",fontWeight:"600",color:esHoy?"#bfdbfe":"#374151",textTransform:"uppercase",letterSpacing:"1px"}}>{nombresDia[i]}</div>
+                <div style={{fontSize:"22px",fontWeight:"700",lineHeight:1.1,color:esHoy?"#fff":C.texto,margin:"2px 0"}}>{d.getDate()}</div>
+                <div style={{fontSize:"12px",color:esHoy?"#bfdbfe":"#374151",fontWeight:"500"}}>{mesLargo} {d.getFullYear()}</div>
+                {evs.length>0&&<div style={{fontSize:"16px",fontWeight:"700",color:esHoy?"#fff":"#3a7bd5",background:esHoy?"rgba(255,255,255,0.25)":"rgba(255,255,255,0.9)",padding:"4px 14px",borderRadius:"20px",marginTop:"6px",whiteSpace:"nowrap",boxShadow:"0 1px 3px rgba(0,0,0,0.08)",display:"inline-block"}}>{evs.length} evento{evs.length!==1?"s":""}</div>}
               </div>
-              {evs.map(ev=><TarjetaEvento key={ev.id} ev={ev} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} todos_eventos={eventos}/>)}
+              {evs.map(ev=><TarjetaEvento key={ev.id} ev={ev} diaDe={iso} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)}/>)}
               {evs.length===0&&<div style={{textAlign:"center",color:C.textoSuave,fontWeight:"600",fontSize:"13px",padding:"16px 0"}}>Sin eventos</div>}
             </div>;
           })}
@@ -1485,7 +1557,7 @@ export default function App() {
         {formatLargo(diaActual)}<span style={{fontWeight:"400",color:C.textoSuave,fontSize:"15px",marginLeft:"12px"}}>{evs.length} evento{evs.length!==1?"s":""}</span>
       </div>
       {evs.length===0?<div style={{textAlign:"center",padding:"60px 20px",color:C.textoSuave,border:`2px dashed ${C.grisBorde}`,borderRadius:"16px"}}><div style={{fontSize:"40px",marginBottom:"12px"}}>📅</div><div style={{fontWeight:"700",fontSize:"16px"}}>Sin eventos este día</div></div>
-      :<div style={{display:"grid",gridTemplateColumns:esMobile?"1fr":"1fr 1fr",gap:"12px"}}>{evs.map(ev=><TarjetaEvento key={ev.id} ev={ev} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} todos_eventos={eventos}/>)}</div>}
+      :<div style={{display:"grid",gridTemplateColumns:esMobile?"1fr":"1fr 1fr",gap:"12px"}}>{evs.map(ev=><TarjetaEvento key={ev.id} ev={ev} diaDe={diaActual} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)}/>)}</div>}
     </div>;
   };
 
@@ -1502,7 +1574,7 @@ export default function App() {
   const esEditor=perfil?.rol==="editor"||esAdmin;
 
   return (
-    <div style={{fontFamily:"'Segoe UI',system-ui,sans-serif",minHeight:"100vh",background:C.gris,color:C.texto}}>
+    <div style={{fontFamily:"'Segoe UI',system-ui,sans-serif",minHeight:"100vh",background:"#E4E9F0",color:C.texto}}>
       {/* ── TOPBAR ── */}
       <div style={{position:"sticky",top:0,zIndex:100,background:"#fff",borderBottom:`1px solid ${C.grisBorde}`,boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
         {/* Fila principal: logo | tabs | acciones */}
