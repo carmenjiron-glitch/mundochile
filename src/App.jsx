@@ -27,6 +27,9 @@ const IDIOMA_COLOR={"Inglés":"#012169","Francés":"#002395","Portugués":"#009C
 const IDIOMA_FLAG={"Inglés":"🇬🇧","Francés":"🇫🇷","Portugués":"🇧🇷","Español":"🇪🇸","Alemán":"🇩🇪","Italiano":"🇮🇹","Chino":"🇨🇳","Japonés":"🇯🇵"};
 const idiomaColor=(idioma)=>IDIOMA_COLOR[idioma]||"#868E96";
 const idiomaFlag=(idioma)=>IDIOMA_FLAG[idioma]||"🌐";
+const IDIOMA_CDN={"Inglés":"gb","Francés":"fr","Portugués":"br","Español":"es","Alemán":"de","Italiano":"it","Chino":"cn","Japonés":"jp"};
+function FlagImg({idioma}){const c=IDIOMA_CDN[idioma];if(!c)return<span style={{fontSize:"13px"}}>🌐</span>;return<img src={`https://flagcdn.com/20x15/${c}.png`} style={{width:"20px",height:"15px",objectFit:"cover",borderRadius:"2px",verticalAlign:"middle",display:"inline-block",flexShrink:0}} alt={idioma}/>;}
+
 
 // ─── CONSTANTES ──────────────────────────────────────────────────────────────
 const TIPOS      = ["Simultánea","Consecutiva","Whispering"];
@@ -76,10 +79,10 @@ const HORAS = (() => { const h=[]; for(let x=7;x<=22;x++) for(let m of [0,15,30,
 
 // ─── ESTILOS BASE ─────────────────────────────────────────────────────────────
 const S = {
-  inp: {width:"100%",padding:"9px 12px",border:`1.5px solid ${C.grisBorde}`,borderRadius:"8px",fontSize:"14px",color:C.texto,background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",height:"42px"},
-  sel: {width:"100%",padding:"9px 12px",border:`1.5px solid ${C.grisBorde}`,borderRadius:"8px",fontSize:"14px",color:C.texto,background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",cursor:"pointer",height:"42px"},
-  lbl: {fontSize:"13px",fontWeight:"500",color:C.textoMed,textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:"5px",display:"block"},
-  fila:{display:"flex",gap:"12px",flexWrap:"wrap"},
+  inp: {width:"100%",padding:"9px 12px",border:`1.5px solid ${C.grisBorde}`,borderRadius:"8px",fontSize:"16px",color:C.texto,background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",height:"48px"},
+  sel: {width:"100%",padding:"9px 12px",border:`1.5px solid ${C.grisBorde}`,borderRadius:"8px",fontSize:"16px",color:C.texto,background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",cursor:"pointer",height:"48px"},
+  lbl: {fontSize:"14px",fontWeight:"700",color:"#1A1A1A",textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:"5px",display:"block"},
+  fila:{display:"flex",gap:"16px",flexWrap:"wrap"},
   camp:{flex:"1",minWidth:"140px"},
   btnA:{padding:"10px 20px",background:"#3a7bd5",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"700",fontSize:"14px",fontFamily:"inherit"},
   btnR:{padding:"10px 20px",background:"#E03131",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"700",fontSize:"14px",fontFamily:"inherit"},
@@ -161,7 +164,7 @@ function SelHora({value,onChange,placeholder="Hora"}) {
   if(esManual) return (
     <div style={{display:"flex",gap:"6px"}}>
       <input style={{...S.inp,flex:1}} value={value||""} onChange={e=>onChange(e.target.value)} placeholder="08:30"/>
-      <button onClick={()=>{setManual(false);onChange("09:00");}} style={{...S.btnG,padding:"9px 10px",fontSize:"12px",whiteSpace:"nowrap",height:"42px"}}>↩ Lista</button>
+      <button onClick={()=>{setManual(false);onChange("09:00");}} style={{...S.btnG,padding:"9px 10px",fontSize:"12px",whiteSpace:"nowrap",height:"48px"}}>↩ Lista</button>
     </div>
   );
   return (
@@ -236,24 +239,24 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
   const tipoBg=ev.tipo==="Simultánea"?"#3B5BDB":ev.tipo==="Consecutiva"?"#2F9E44":"#9C36B5";
   const modBg=ev.modalidad==="remoto"?"#1971C2":ev.modalidad==="presencial"?"#2F9E44":"#7950F2";
   const factBg=ev.estado==="Facturado"?"#1971C2":"#E67700";
-  const bs={display:"inline-flex",alignItems:"center",padding:"3px 10px",borderRadius:"20px",fontSize:"11px",fontWeight:"500",color:"#fff",whiteSpace:"nowrap"};
+  const bs={display:"inline-flex",alignItems:"center",padding:"5px 14px",borderRadius:"20px",fontSize:"13px",fontWeight:"500",color:"#fff",whiteSpace:"nowrap"};
 
   return (
     <div onClick={onClick}
-      style={{borderRadius:"10px",padding:"12px 14px",background:"#FFFFFF",color:C.texto,cursor:"pointer",marginBottom:"12px",boxShadow:"0 2px 8px rgba(0,0,0,0.10)",borderLeft:`5px solid ${borderColor}`,position:"relative",transition:"transform 0.12s,box-shadow 0.12s",lineHeight:1.5}}
+      style={{borderRadius:"10px",padding:"18px 20px",background:"#FFFFFF",color:C.texto,cursor:"pointer",marginBottom:"12px",boxShadow:"0 2px 8px rgba(0,0,0,0.10)",borderLeft:`6px solid ${borderColor}`,position:"relative",transition:"transform 0.12s,box-shadow 0.12s",lineHeight:1.5,minHeight:"160px"}}
       onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 5px 18px rgba(0,0,0,0.18)";}}
       onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="0 2px 8px rgba(0,0,0,0.10)";}}>
       {dotColor&&<div style={{position:"absolute",top:"10px",right:"10px",width:"10px",height:"10px",borderRadius:"50%",background:dotColor,animation:"mcpulse 2s ease-in-out infinite"}}/>}
       {diaXdeY&&<div style={{marginBottom:"6px"}}><span style={{display:"inline-flex",alignItems:"center",padding:"2px 10px",borderRadius:"20px",fontSize:"11px",fontWeight:"500",color:"#1971C2",background:"#E8F4FD",border:"1px solid #bee3f8"}}>📅 Día {diaXdeY.x} de {diaXdeY.y}</span></div>}
-      <div style={{fontSize:"21px",fontWeight:"700",color:"#1A1A1A",letterSpacing:"0.1px",lineHeight:1.2,marginBottom:"2px",paddingRight:dotColor?"18px":"0"}}>{cliente?.nombre_empresa||"—"}</div>
+      <div style={{fontSize:"22px",fontWeight:"800",color:"#1A1A1A",letterSpacing:"0.1px",lineHeight:1.2,marginBottom:"2px",paddingRight:dotColor?"18px":"0"}}>{cliente?.nombre_empresa||"—"}</div>
       {ev.nombre_evento&&<div style={{fontSize:"14px",fontWeight:"400",color:"#6B6B6B",marginBottom:"4px"}}>{ev.nombre_evento}</div>}
       <div style={{fontSize:"16px",fontWeight:"500",color:"#1A1A1A",marginBottom:"6px"}}>{ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)} hrs</div>
       <div style={{display:"flex",gap:"5px",flexWrap:"wrap",alignItems:"center",marginBottom:"6px"}}>
         <span style={{...bs,background:tipoBg}}>{ev.tipo}</span>
         <span style={{...bs,background:modBg}}>{LBL_MODAL[ev.modalidad]||ev.modalidad}</span>
-        <span style={{...bs,background:factBg}}>{ev.estado==="Facturado"?"Facturado":"Pend. Facturación"}</span>
+        <span style={{...bs,background:factBg}}>{ev.estado==="Facturado"?"Facturado":"Facturación Pendiente"}</span>
       </div>
-      {lugarOPlat&&<div style={{fontSize:"13px",color:"#6B6B6B",marginBottom:"5px"}}>{esPresencial?"📍":"💻"} {lugarOPlat}</div>}
+      {lugarOPlat&&<div style={{fontSize:"15px",color:"#6B6B6B",marginBottom:"8px"}}>{esPresencial?"📍":"💻"} {lugarOPlat}</div>}
       {!esPresencial&&esZoomMC&&<div style={{marginBottom:"5px"}}><span style={{display:"inline-flex",alignItems:"center",padding:"3px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",color:"#92400E",background:"#FFF3CD",border:"1px solid #F59E0B"}}>💻 Zoom MundoChile{ev.zoom_administrador?` · ${ev.zoom_administrador}`:""}</span></div>}
       {(ev.asignaciones||[]).map((a,i)=>{
         const interp=interpretes.find(x=>x.id===a.interprete_id);
@@ -261,14 +264,12 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
         if(!interp) return null;
         const idioma=par?.idioma_origen||"";
         const bg=idiomaColor(idioma);
-        const flag=idiomaFlag(idioma);
         const esHost=a.es_host_zoom;
         return (
-          <div key={i} style={{marginBottom:"4px"}}>
-            <span style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 14px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:"#fff",background:bg,border:esHost?"2px solid #E03131":"2px solid transparent",boxSizing:"border-box"}}>
-              {flag} {interp.nombre}{interp.apellido?" "+interp.apellido:""}
+          <div key={i} style={{marginBottom:"6px"}}>
+            <span style={{display:"inline-flex",alignItems:"center",gap:"8px",padding:"8px 16px",borderRadius:"20px",fontSize:"15px",fontWeight:"500",color:"#fff",background:bg,border:esHost?"2px solid #E03131":"2px solid transparent",boxSizing:"border-box",maxWidth:"100%"}}>
+              {esHost&&<span style={{fontSize:"13px"}}>🔑</span>}<FlagImg idioma={idioma}/><span style={{fontWeight:"700"}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
               {par&&<span style={{opacity:0.85,fontSize:"12px"}}> · {par.idioma_origen} — {par.idioma_destino}</span>}
-              {esHost&&<span style={{marginLeft:"2px"}}>🔑</span>}
             </span>
           </div>
         );
@@ -492,7 +493,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
 
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.65)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(4px)",padding:"16px"}}>
-      <div style={{background:"#fff",borderRadius:"20px",width:"100%",maxWidth:"800px",maxHeight:"90vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,0.25)"}}>
+      <div style={{background:"#fff",borderRadius:"20px",width:"100%",maxWidth:"760px",maxHeight:"90vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,0.25)"}}>
         {/* Header */}
         <div style={{padding:"20px 24px",borderBottom:"none",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0,background:form.id?"#E67700":"#3a7bd5",borderRadius:"20px 20px 0 0"}}>
           <div style={{fontSize:"18px",fontWeight:"600",color:"#fff"}}>{form.id?"✏️ Editar evento":"➕ Nuevo evento"}</div>
@@ -751,8 +752,8 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
   const tipoBg=evento.tipo==="Simultánea"?"#3B5BDB":evento.tipo==="Consecutiva"?"#2F9E44":"#9C36B5";
   const modBg=evento.modalidad==="remoto"?"#1971C2":evento.modalidad==="presencial"?"#2F9E44":"#7950F2";
   const factBg=evento.estado==="Facturado"?"#1971C2":"#E67700";
-  const bs={display:"inline-flex",alignItems:"center",padding:"3px 10px",borderRadius:"20px",fontSize:"11px",fontWeight:"500",color:"#fff",whiteSpace:"nowrap"};
-  const ST=({txt})=><div style={{fontSize:"13px",fontWeight:"600",color:"#1A1A1A",textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:"8px"}}>{txt}</div>;
+  const bs={display:"inline-flex",alignItems:"center",padding:"5px 14px",borderRadius:"20px",fontSize:"13px",fontWeight:"500",color:"#fff",whiteSpace:"nowrap"};
+  const ST=({txt})=><div style={{fontSize:"13px",fontWeight:"700",color:"#1A1A1A",textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:"8px"}}>{txt}</div>;
   const btnD=(bg)=>({padding:"8px 18px",background:bg,color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"});
   const InterpPill=({a})=>{
     const interp=interpretes.find(x=>x.id===a.interprete_id);
@@ -760,13 +761,11 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
     if(!interp) return null;
     const idioma=par?.idioma_origen||"";
     const bg=idiomaColor(idioma);
-    const flag=idiomaFlag(idioma);
     return (
-      <div style={{marginBottom:"6px",display:"flex",alignItems:"center",gap:"10px",flexWrap:"wrap"}}>
-        <span style={{display:"inline-flex",alignItems:"center",gap:"8px",padding:"6px 16px",borderRadius:"20px",fontSize:"16px",fontWeight:"500",color:"#fff",background:bg,border:a.es_host_zoom?"2px solid #E03131":"2px solid transparent",boxSizing:"border-box"}}>
-          {flag} {interp.nombre}{interp.apellido?" "+interp.apellido:""}
+      <div style={{marginBottom:"8px",display:"flex",alignItems:"center",gap:"10px",flexWrap:"wrap"}}>
+        <span style={{display:"inline-flex",alignItems:"center",gap:"8px",padding:"10px 18px",borderRadius:"20px",fontSize:"16px",fontWeight:"500",color:"#fff",background:bg,border:a.es_host_zoom?"2px solid #E03131":"2px solid transparent",boxSizing:"border-box"}}>
+          {a.es_host_zoom&&<span style={{fontSize:"14px"}}>🔑</span>}<FlagImg idioma={idioma}/><span style={{fontWeight:"700"}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
           {par&&<span style={{opacity:0.85,fontSize:"13px"}}> · {par.idioma_origen} — {par.idioma_destino}</span>}
-          {a.es_host_zoom&&<span style={{marginLeft:"4px"}}>🔑</span>}
         </span>
         {(a.nro_ot||a.nro_boleta||a.hora_presentacion)&&<span style={{fontSize:"12px",color:C.textoMed,display:"flex",gap:"10px"}}>
           {a.nro_ot&&<span>OT: {a.nro_ot}</span>}
@@ -785,28 +784,28 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
   );
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.65)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(4px)",padding:"16px"}}>
-      <div style={{background:"#fff",borderRadius:"20px",width:"100%",maxWidth:"760px",maxHeight:"90vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,0.25)"}}>
-        {/* Header oscuro */}
-        <div style={{background:"#2D3748",padding:"20px 24px",borderRadius:"20px 20px 0 0",flexShrink:0}}>
+      <div style={{background:"#fff",borderRadius:"20px",width:"100%",maxWidth:"760px",maxHeight:"85vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,0.25)"}}>
+        {/* Header */}
+        <div style={{background:"#FFFFFF",padding:"20px 24px",borderRadius:"20px 20px 0 0",flexShrink:0,borderBottom:`4px solid ${colorCliente(evento.cliente_id)}`}}>
           <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:"16px"}}>
             <div style={{flex:1,minWidth:0}}>
-              <div style={{fontSize:"22px",fontWeight:"700",color:"#fff",lineHeight:1.2,marginBottom:"4px"}}>{cliente?.nombre_empresa||"—"}</div>
-              {evento.nombre_evento&&<div style={{fontSize:"15px",color:"rgba(255,255,255,0.8)",marginBottom:"4px"}}>{evento.nombre_evento}</div>}
-              {evento.nro_oc&&<div style={{fontSize:"13px",color:"rgba(255,255,255,0.55)",marginBottom:"8px"}}>N° OC: {evento.nro_oc}</div>}
+              <div style={{fontSize:"26px",fontWeight:"800",color:"#1A1A1A",lineHeight:1.2,marginBottom:"4px"}}>{cliente?.nombre_empresa||"—"}</div>
+              {evento.nombre_evento&&<div style={{fontSize:"15px",color:"#374151",marginBottom:"4px"}}>{evento.nombre_evento}</div>}
+              {evento.nro_oc&&<div style={{fontSize:"13px",color:"#6B6B6B",marginBottom:"8px"}}>N° OC: {evento.nro_oc}</div>}
               <div style={{display:"flex",gap:"6px",flexWrap:"wrap"}}>
                 <span style={{...bs,background:tipoBg}}>🎙 {evento.tipo}</span>
                 <span style={{...bs,background:modBg}}>{evento.modalidad==="presencial"?"📍":evento.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evento.modalidad]||evento.modalidad}</span>
-                <span style={{...bs,background:factBg}}>{evento.estado==="Facturado"?"✓ Facturado":"⏳ Pend. Facturación"}</span>
+                <span style={{...bs,background:factBg}}>{evento.estado==="Facturado"?"✓ Facturado":"⏳ Facturación Pendiente"}</span>
               </div>
             </div>
             <div style={{display:"flex",flexDirection:"column",gap:"8px",alignItems:"flex-end",flexShrink:0}}>
               <BotonesAccion/>
-              <button onClick={onCerrar} style={{background:"none",border:"1px solid rgba(255,255,255,0.3)",cursor:"pointer",fontSize:"13px",color:"rgba(255,255,255,0.7)",padding:"4px 10px",borderRadius:"6px",fontFamily:"inherit"}}>✕ Cerrar</button>
+              <button onClick={onCerrar} style={{background:"#868E96",border:"none",cursor:"pointer",fontSize:"13px",color:"#fff",padding:"6px 14px",borderRadius:"6px",fontFamily:"inherit",fontWeight:"600"}}>✕ Cerrar</button>
             </div>
           </div>
         </div>
         {/* Cuerpo */}
-        <div style={{overflowY:"auto",flex:1,padding:"20px 24px"}}>
+        <div style={{overflowY:"auto",flex:1,padding:"24px 28px"}}>
           {/* Programa multidía PRIMERO */}
           {esMultidia&&dias.length>0&&<div style={{marginBottom:"20px"}}>
             <ST txt="📅 Programa del evento"/>
@@ -830,11 +829,11 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"16px"}}>
             <div style={{background:C.gris,borderRadius:"10px",padding:"12px 16px"}}>
               <ST txt="📅 Fecha"/>
-              <div style={{fontSize:"14px",fontWeight:"600",color:C.texto}}>{esMultidia?`${formatCorto(evento.fecha_inicio)} → ${formatCorto(evento.fecha_termino)}`:formatLargo(evento.fecha_inicio)}</div>
+              <div style={{fontSize:"17px",fontWeight:"600",color:"#1A1A1A"}}>{esMultidia?`${formatCorto(evento.fecha_inicio)} → ${formatCorto(evento.fecha_termino)}`:formatLargo(evento.fecha_inicio)}</div>
             </div>
             <div style={{background:C.gris,borderRadius:"10px",padding:"12px 16px"}}>
               <ST txt="🕐 Horario"/>
-              <div style={{fontSize:"14px",fontWeight:"600",color:C.texto}}>{evento.hora_inicio?.slice(0,5)} – {evento.hora_termino?.slice(0,5)} hrs{evento.jornada&&<span style={{fontWeight:"400",color:C.textoMed}}> · {evento.jornada}</span>}</div>
+              <div style={{fontSize:"17px",fontWeight:"600",color:"#1A1A1A"}}>{evento.hora_inicio?.slice(0,5)} – {evento.hora_termino?.slice(0,5)} hrs{evento.jornada&&<span style={{fontWeight:"400",color:C.textoMed}}> · {evento.jornada}</span>}</div>
             </div>
           </div>
           {/* Plataforma */}
@@ -849,8 +848,8 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             <ST txt="📍 Lugar"/>
             <div style={{display:"flex",alignItems:"flex-start",gap:"12px",flexWrap:"wrap"}}>
               <div style={{flex:1,minWidth:"180px"}}>
-                <div style={{fontWeight:"700",fontSize:"15px",color:C.texto}}>{evento.lugar}</div>
-                {evento.lugar_detalle&&<div style={{color:C.textoMed,fontSize:"13px",marginTop:"4px"}}>{evento.lugar_detalle}</div>}
+                <div style={{fontWeight:"600",fontSize:"17px",color:"#1A1A1A"}}>{evento.lugar}</div>
+                {evento.lugar_detalle&&<div style={{color:C.textoMed,fontSize:"14px",marginTop:"4px"}}>{evento.lugar_detalle}</div>}
               </div>
               <div style={{display:"flex",gap:"8px",flexShrink:0}}>
                 <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((evento.lugar||"")+" "+(evento.lugar_detalle||""))}`} target="_blank" rel="noreferrer"
@@ -1407,10 +1406,10 @@ function VistaAgenda({eventos,clientes,interpretes,pares,onAbrir}) {
                       <span style={{fontSize:"12px",color:C.textoMed,fontWeight:"600"}}>{ev.hora_inicio?.slice(0,5)}–{ev.hora_termino?.slice(0,5)}</span>
                       <Badge texto={ev.tipo} solid color={ev.tipo==="Simultánea"?"#3B5BDB":ev.tipo==="Consecutiva"?"#2F9E44":"#9C36B5"}/>
                       <Badge texto={LBL_MODAL[ev.modalidad]||ev.modalidad} solid color={ev.modalidad==="presencial"?"#2F9E44":ev.modalidad==="hibrido"?"#E67700":"#1971C2"}/>
-                      <Badge texto={ev.estado==="Facturado"?"Facturado":"Pend. Facturación"} solid color={ev.estado==="Facturado"?"#1971C2":"#E67700"}/>
+                      <Badge texto={ev.estado==="Facturado"?"Facturado":"Facturación Pendiente"} solid color={ev.estado==="Facturado"?"#1971C2":"#E67700"}/>
                     </div>
                     {(ev.asignaciones||[]).length>0&&<div style={{display:"flex",gap:"4px",flexWrap:"wrap",marginTop:"6px"}}>
-                      {(ev.asignaciones||[]).slice(0,3).map((a,ai)=>{const i=interpretes.find(x=>x.id===a.interprete_id);const p=pares.find(x=>x.id===a.par_id);if(!i)return null;const idioma=p?.idioma_origen||"";return<span key={ai} style={{display:"inline-flex",alignItems:"center",gap:"3px",padding:"2px 7px",borderRadius:"20px",fontSize:"11px",fontWeight:"600",color:"#fff",background:idiomaColor(idioma),border:a.is_host?"2px solid #E03131":"2px solid transparent",maxWidth:"150px"}}><span>{idiomaFlag(idioma)}</span><span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{i.nombre}{i.apellido?" "+i.apellido:""}</span></span>;})}
+                      {(ev.asignaciones||[]).slice(0,3).map((a,ai)=>{const i=interpretes.find(x=>x.id===a.interprete_id);const p=pares.find(x=>x.id===a.par_id);if(!i)return null;const idioma=p?.idioma_origen||"";return<span key={ai} style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"3px 8px",borderRadius:"20px",fontSize:"11px",fontWeight:"600",color:"#fff",background:idiomaColor(idioma),border:a.is_host?"2px solid #E03131":"2px solid transparent",maxWidth:"160px"}}><FlagImg idioma={idioma}/><span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{i.nombre}{i.apellido?" "+i.apellido:""}</span></span>;})}
                       {(ev.asignaciones||[]).length>3&&<span style={{fontSize:"11px",color:C.textoSuave,alignSelf:"center",fontWeight:"600"}}>+{(ev.asignaciones||[]).length-3} más</span>}
                     </div>}
                   </div>
@@ -1551,7 +1550,7 @@ export default function App() {
   const navSiguiente=()=>{if(vista==="semana")setSemanaOff(o=>o+1);else if(vista==="mes")setMesOff(o=>o+1);else if(vista==="dia"){const d=desdeISO(diaActual);d.setDate(d.getDate()+1);setDiaActual(toISO(d));}};
 
   const tituloNav=()=>{
-    if(vista==="semana"){const d=diasSemana;return `${d[0].getDate()} ${MESES_C[d[0].getMonth()]} – ${d[6].getDate()} ${MESES_C[d[6].getMonth()]} ${d[6].getFullYear()}`;}
+    if(vista==="semana"){const d=diasSemana;const capM=(m)=>MESES_L[m].charAt(0).toUpperCase()+MESES_L[m].slice(1);return `${d[0].getDate()} ${capM(d[0].getMonth())} – ${d[6].getDate()} ${capM(d[6].getMonth())} ${d[6].getFullYear()}`;}
     if(vista==="mes"){const n=new Date();n.setMonth(n.getMonth()+mesOff);return `${MESES_L[n.getMonth()].charAt(0).toUpperCase()+MESES_L[n.getMonth()].slice(1)} ${n.getFullYear()}`;}
     if(vista==="agenda") return "Agenda";
     return formatLargo(diaActual);
@@ -1596,17 +1595,17 @@ export default function App() {
     return (
       <div style={{padding:"20px 24px 80px",overflowX:"auto"}}>
         <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:"4px",minWidth:"800px"}}>
-          {DIAS_SEM.map(d=><div key={d} style={{textAlign:"center",fontWeight:"600",fontSize:"12px",color:C.textoSuave,padding:"8px 0",textTransform:"uppercase"}}>{d}</div>)}
+          {DIAS_SEM.map(d=><div key={d} style={{textAlign:"center",fontWeight:"700",fontSize:"12px",color:"rgba(255,255,255,0.85)",padding:"8px 0",textTransform:"uppercase"}}>{d}</div>)}
           {celdas.map((dia,i)=>{
             if(!dia) return <div key={i}/>;
             const iso=`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-${String(dia).padStart(2,"0")}`;
             const evs=evsDia(iso), esHoy=iso===hoy();
             return <div key={i} onClick={()=>{setDiaActual(iso);setVista("dia");}}
-              style={{minHeight:"100px",border:`1.5px solid ${esHoy?C.azul:C.grisBorde}`,borderRadius:"10px",padding:"10px",cursor:"pointer",background:esHoy?C.azulClaro:"#fff"}}
-              onMouseEnter={e=>{if(!esHoy)e.currentTarget.style.background=C.gris;}} onMouseLeave={e=>{if(!esHoy)e.currentTarget.style.background="#fff";}}>
-              <div style={{marginBottom:"4px"}}><span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:"26px",height:"26px",borderRadius:"50%",background:esHoy?C.azul:"transparent",color:esHoy?"#fff":C.textoMed,fontWeight:"700",fontSize:"14px"}}>{dia}</span></div>
+              style={{minHeight:"100px",border:`1.5px solid ${esHoy?"#fff":"rgba(255,255,255,0.2)"}`,borderRadius:"10px",padding:"10px",cursor:"pointer",background:esHoy?"rgba(255,255,255,0.25)":"rgba(255,255,255,0.12)"}}
+              onMouseEnter={e=>{if(!esHoy)e.currentTarget.style.background="rgba(255,255,255,0.22)";}} onMouseLeave={e=>{if(!esHoy)e.currentTarget.style.background="rgba(255,255,255,0.12)";}}>
+              <div style={{marginBottom:"4px"}}><span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:"28px",height:"28px",borderRadius:"50%",background:esHoy?"#fff":"transparent",color:esHoy?C.azul:"rgba(255,255,255,0.9)",fontWeight:"700",fontSize:"14px"}}>{dia}</span></div>
               {evs.slice(0,2).map((ev,j)=><div key={j} onClick={e=>{e.stopPropagation();abrirEvento(ev);}} style={{fontSize:"11px",fontWeight:"600",background:colorCliente(ev.cliente_id),color:"#fff",borderRadius:"4px",padding:"3px 8px",marginBottom:"2px",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{clientes.find(c=>c.id===ev.cliente_id)?.nombre_empresa||ev.nombre_evento||"Evento"}</div>)}
-              {evs.length>2&&<div style={{fontSize:"10px",color:C.textoSuave,fontWeight:"600"}}>+{evs.length-2} más</div>}
+              {evs.length>2&&<div style={{fontSize:"10px",color:"rgba(255,255,255,0.7)",fontWeight:"600"}}>+{evs.length-2} más</div>}
             </div>;
           })}
         </div>
@@ -1647,23 +1646,25 @@ export default function App() {
     );
 
     return (
-      <div style={{overflowX:"auto",padding:"20px 24px 80px"}}>
-        {evsFinSemana.length>0&&<div onClick={()=>{setDiaActual(toISO(diasFS[0]));setVista("dia");}} style={{background:"#FFF3CD",border:"1px solid #F59E0B",borderRadius:"8px",padding:"8px 16px",marginBottom:"16px",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:"8px",color:"#92400E",fontSize:"13px",fontWeight:"600",boxShadow:"0 1px 3px rgba(0,0,0,0.08)"}}>
+      <div style={{padding:"20px 24px 80px"}}>
+        {evsFinSemana.length>0&&<div onClick={()=>{setDiaActual(toISO(diasFS[0]));setVista("dia");}} style={{background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.3)",borderRadius:"8px",padding:"8px 16px",marginBottom:"16px",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:"8px",color:"#fff",fontSize:"13px",fontWeight:"600"}}>
           ⚡ Ver {evsFinSemana.length} evento{evsFinSemana.length!==1?"s":""} activo{evsFinSemana.length!==1?"s":""} este fin de semana
         </div>}
-        <div style={{display:"grid",gridTemplateColumns:"repeat(5,minmax(200px,1fr))",gap:"12px",minWidth:"700px"}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:"12px"}}>
           {diasLF.map((d,i)=>{
             const iso=toISO(d),evs=evsDia(iso),esHoy=iso===hoy();
             const mesLargo=MESES_L[d.getMonth()].charAt(0).toUpperCase()+MESES_L[d.getMonth()].slice(1);
-            return <div key={i} style={{background:"#EBF0F5",borderRadius:"12px",padding:"10px"}}>
-              <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{textAlign:"center",padding:"8px",borderRadius:"10px",marginBottom:"8px",background:esHoy?C.azul:evs.length?"#D0E4FF":"#fff",border:`1.5px solid ${esHoy?C.azul:evs.length?"#b3d0f5":"#CBD5E1"}`,cursor:"pointer",boxShadow:"0 1px 4px rgba(0,0,0,0.07)"}}>
-                <div style={{fontSize:"15px",fontWeight:"600",color:esHoy?"#bfdbfe":"#374151",textTransform:"uppercase",letterSpacing:"1px"}}>{nombresDia[i]}</div>
-                <div style={{fontSize:"22px",fontWeight:"700",lineHeight:1.1,color:esHoy?"#fff":C.texto,margin:"2px 0"}}>{d.getDate()}</div>
-                <div style={{fontSize:"12px",color:esHoy?"#bfdbfe":"#374151",fontWeight:"500"}}>{mesLargo} {d.getFullYear()}</div>
-                {evs.length>0&&<div style={{fontSize:"16px",fontWeight:"700",color:esHoy?"#fff":"#3a7bd5",background:esHoy?"rgba(255,255,255,0.25)":"rgba(255,255,255,0.9)",padding:"4px 14px",borderRadius:"20px",marginTop:"6px",whiteSpace:"nowrap",boxShadow:"0 1px 3px rgba(0,0,0,0.08)",display:"inline-block"}}>{evs.length} evento{evs.length!==1?"s":""}</div>}
+            return <div key={i} style={{background:"rgba(255,255,255,0.15)",backdropFilter:"blur(4px)",WebkitBackdropFilter:"blur(4px)",borderRadius:"12px",padding:"10px",minHeight:"calc(100vh - 220px)"}}>
+              <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{textAlign:"center",padding:"10px 8px",borderRadius:"10px",marginBottom:"8px",background:"rgba(255,255,255,0.20)",cursor:"pointer",transition:"background 0.15s"}}
+                onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.30)"}
+                onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.20)"}>
+                <div style={{fontSize:"18px",fontWeight:"700",color:"#fff",textTransform:"uppercase",letterSpacing:"1px"}}>{nombresDia[i]}</div>
+                <div style={{fontSize:"36px",fontWeight:"800",lineHeight:1.1,color:"#fff",margin:"4px 0"}}>{d.getDate()}</div>
+                <div style={{fontSize:"15px",color:"rgba(255,255,255,0.8)",fontWeight:"500"}}>{mesLargo} {d.getFullYear()}</div>
+                {evs.length>0&&<div style={{fontSize:"15px",fontWeight:"700",color:"#fff",background:"rgba(255,255,255,0.25)",padding:"4px 16px",borderRadius:"20px",marginTop:"6px",whiteSpace:"nowrap",display:"inline-block"}}>{evs.length} evento{evs.length!==1?"s":""}</div>}
               </div>
               {evs.map(ev=><TarjetaEvento key={ev.id} ev={ev} diaDe={iso} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)}/>)}
-              {evs.length===0&&<div style={{textAlign:"center",color:C.textoSuave,fontWeight:"600",fontSize:"13px",padding:"16px 0"}}>Sin eventos</div>}
+              {evs.length===0&&<div style={{textAlign:"center",color:"rgba(255,255,255,0.6)",fontWeight:"600",fontSize:"13px",padding:"20px 0"}}>Sin eventos</div>}
             </div>;
           })}
         </div>
@@ -1696,9 +1697,9 @@ export default function App() {
   const esEditor=perfil?.rol==="editor"||esAdmin;
 
   return (
-    <div style={{fontFamily:"'Segoe UI',system-ui,sans-serif",minHeight:"100vh",background:"#E4E9F0",color:C.texto}}>
+    <div style={{fontFamily:"'Segoe UI',system-ui,sans-serif",minHeight:"100vh",background:"linear-gradient(135deg, #1a2a4a 0%, #1e3a6e 50%, #2563a8 100%)",color:C.texto}}>
       {/* ── TOPBAR ── */}
-      <div style={{position:"sticky",top:0,zIndex:100,background:"#fff",borderBottom:`1px solid ${C.grisBorde}`,boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
+      <div style={{position:"sticky",top:0,zIndex:100,background:"rgba(0,0,0,0.3)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)"}}>
         {/* Fila principal: logo | tabs | acciones */}
         <div style={{padding:"0 16px",display:"flex",alignItems:"center",justifyContent:"space-between",height:"120px",gap:"12px"}}>
           {/* Logo */}
@@ -1708,47 +1709,47 @@ export default function App() {
           {/* Tabs centrados */}
           {pantalla==="calendario"&&<div style={{display:"flex",gap:"4px",alignItems:"center",flex:1,justifyContent:"center",flexWrap:"wrap"}}>
             {[["semana","Semana"],["dia","Día"],["mes","Mes"],["agenda","Agenda"]].map(([v,l])=>(
-              <button key={v} onClick={()=>setVista(v)} style={{padding:"10px 19px",background:vista===v?"#3a7bd5":"transparent",border:`1.5px solid ${vista===v?"#3a7bd5":C.grisBorde}`,borderRadius:"8px",color:vista===v?"#fff":C.textoMed,fontWeight:vista===v?"500":"600",letterSpacing:vista===v?"0.2px":"normal",cursor:"pointer",fontSize:"17px",fontFamily:"inherit",transition:"all 0.15s"}}>{l}</button>
+              <button key={v} onClick={()=>setVista(v)} style={{padding:"10px 20px",background:vista===v?"rgba(255,255,255,0.25)":"transparent",border:"none",borderRadius:"8px",color:"#fff",fontWeight:vista===v?"600":"500",cursor:"pointer",fontSize:"15px",fontFamily:"inherit",transition:"all 0.15s"}}>{l}</button>
             ))}
           </div>}
           {/* Acciones */}
           <div style={{display:"flex",gap:"6px",alignItems:"center",flexShrink:0,flexWrap:"wrap",justifyContent:"flex-end"}}>
-            {/* Búsqueda F6 */}
+            {/* Búsqueda */}
             {buscando
-              ?<input autoFocus style={{...S.inp,width:"180px",height:"38px",fontSize:"15px"}} value={busqueda} onChange={e=>setBusqueda(e.target.value)} onBlur={()=>{if(!busqueda)setBuscando(false);}} placeholder="Buscar…"/>
-              :<button onClick={()=>setBuscando(true)} style={{...S.btnG,padding:"10px 14px",fontSize:"16px"}} title="Buscar">🔍</button>
+              ?<input autoFocus style={{...S.inp,width:"180px",height:"38px",fontSize:"15px",background:"rgba(255,255,255,0.15)",color:"#fff",borderColor:"rgba(255,255,255,0.3)"}} value={busqueda} onChange={e=>setBusqueda(e.target.value)} onBlur={()=>{if(!busqueda)setBuscando(false);}} placeholder="Buscar…"/>
+              :<button onClick={()=>setBuscando(true)} style={{padding:"10px 14px",fontSize:"16px",background:"rgba(255,255,255,0.15)",color:"#fff",border:"1px solid rgba(255,255,255,0.25)",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}} title="Buscar">🔍</button>
             }
-            {busqueda&&<button onClick={()=>{setBusqueda("");setBuscando(false);}} style={{...S.btnG,padding:"10px 12px",fontSize:"16px"}}>✕</button>}
-            {/* Filtros F7 */}
-            <button onClick={()=>setMostrarFiltros(f=>!f)} style={{...S.btnG,padding:"10px 14px",fontSize:"16px",background:mostrarFiltros||Object.values(filtros).some(Boolean)?C.azulClaro:"#fff",color:mostrarFiltros||Object.values(filtros).some(Boolean)?C.azul:C.textoMed,borderColor:mostrarFiltros||Object.values(filtros).some(Boolean)?C.azul:C.grisBorde}}>
+            {busqueda&&<button onClick={()=>{setBusqueda("");setBuscando(false);}} style={{padding:"10px 12px",fontSize:"16px",background:"rgba(255,255,255,0.15)",color:"#fff",border:"1px solid rgba(255,255,255,0.25)",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>✕</button>}
+            {/* Filtros */}
+            <button onClick={()=>setMostrarFiltros(f=>!f)} style={{padding:"10px 14px",fontSize:"16px",background:mostrarFiltros||Object.values(filtros).some(Boolean)?"rgba(255,255,255,0.35)":"rgba(255,255,255,0.15)",color:"#fff",border:"1px solid rgba(255,255,255,0.25)",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit",fontWeight:mostrarFiltros||Object.values(filtros).some(Boolean)?"700":"500"}}>
               {Object.values(filtros).some(Boolean)?"⚙️*":"⚙️"} Filtros
             </button>
-            {/* Excel F5 */}
-            {esEditor&&<button onClick={exportarExcel} style={{...S.btnG,padding:"10px 14px",fontSize:"16px",background:"#f0fdf4",color:C.verde,borderColor:C.verde}}>📊 Excel</button>}
+            {/* Excel */}
+            {esEditor&&<button onClick={exportarExcel} style={{padding:"10px 14px",fontSize:"16px",background:"rgba(22,163,74,0.25)",color:"#6EE7B7",border:"1px solid rgba(22,163,74,0.5)",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>📊 Excel</button>}
             {/* Nuevo evento */}
             {esEditor&&<button onClick={()=>setModalEvento({modo:"nuevo",data:evVacio()})} style={{...S.btnA,padding:"10px 17px",fontSize:"16px"}}><span style={{color:"#FFFFFF",fontWeight:"700"}}>+</span> Nuevo</button>}
             {/* Config */}
-            {esAdmin&&<button onClick={()=>setPantalla(p=>p==="config"?"calendario":"config")} style={{...S.btnG,padding:"10px 14px",fontSize:"16px",background:pantalla==="config"?C.azulClaro:"#fff",color:pantalla==="config"?C.azul:C.textoMed,borderColor:pantalla==="config"?C.azul:C.grisBorde}}>⚙️</button>}
-            <button onClick={()=>sb.auth.signOut()} style={{...S.btnG,padding:"10px 14px",fontSize:"16px"}}>Salir</button>
+            {esAdmin&&<button onClick={()=>setPantalla(p=>p==="config"?"calendario":"config")} style={{padding:"10px 14px",fontSize:"16px",background:pantalla==="config"?"rgba(255,255,255,0.35)":"rgba(255,255,255,0.15)",color:"#fff",border:"1px solid rgba(255,255,255,0.25)",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>⚙️</button>}
+            <button onClick={()=>sb.auth.signOut()} style={{padding:"10px 14px",fontSize:"16px",background:"rgba(255,255,255,0.15)",color:"#fff",border:"1px solid rgba(255,255,255,0.25)",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>Salir</button>
           </div>
         </div>
         {/* Navegación */}
-        {pantalla==="calendario"&&vista!=="agenda"&&<div style={{padding:"8px 16px 12px",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:"8px",borderTop:`1px solid ${C.grisBorde}`,background:C.gris}}>
+        {pantalla==="calendario"&&vista!=="agenda"&&<div style={{padding:"8px 16px 12px",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:"8px",borderTop:"1px solid rgba(255,255,255,0.15)"}}>
           <div>
-            <div style={{fontWeight:"700",fontSize:"17px",color:C.texto}}>{tituloNav()}</div>
-            <div style={{fontSize:"12px",color:C.textoSuave,marginTop:"2px"}}>{contadorSubtitulo()}</div>
+            <div style={{fontWeight:"700",fontSize:"17px",color:"#fff"}}>{tituloNav()}</div>
+            <div style={{fontSize:"12px",color:"rgba(255,255,255,0.7)",marginTop:"2px"}}>{contadorSubtitulo()}</div>
           </div>
           <div style={{display:"flex",gap:"6px"}}>
-            <button onClick={navAnterior} style={S.btnG}>← Anterior</button>
-            <button onClick={()=>{setSemanaOff(0);setMesOff(0);setDiaActual(hoy());}} style={S.btnP}>Hoy</button>
-            <button onClick={navSiguiente} style={S.btnG}>Siguiente →</button>
+            <button onClick={navAnterior} style={{...S.btnG,background:"rgba(255,255,255,0.15)",color:"#fff",borderColor:"rgba(255,255,255,0.25)"}}>← Anterior</button>
+            <button onClick={()=>{setSemanaOff(0);setMesOff(0);setDiaActual(hoy());}} style={{...S.btnP,background:"rgba(255,255,255,0.25)",color:"#fff",borderColor:"transparent"}}>Hoy</button>
+            <button onClick={navSiguiente} style={{...S.btnG,background:"rgba(255,255,255,0.15)",color:"#fff",borderColor:"rgba(255,255,255,0.25)"}}>Siguiente →</button>
           </div>
         </div>}
         {/* Panel filtros F7 */}
-        {mostrarFiltros&&pantalla==="calendario"&&<div style={{padding:"12px 16px",borderTop:`1px solid ${C.grisBorde}`,background:"#fff",display:"flex",gap:"10px",flexWrap:"wrap",alignItems:"flex-end"}}>
+        {mostrarFiltros&&pantalla==="calendario"&&<div style={{padding:"12px 16px",borderTop:"1px solid rgba(255,255,255,0.15)",background:"rgba(0,0,0,0.2)",display:"flex",gap:"10px",flexWrap:"wrap",alignItems:"flex-end"}}>
           {[["estado","Estado",["","Pendiente de Facturación","Facturado"],v=>v||"Todos"],["modalidad","Modalidad",["","remoto","presencial","hibrido"],v=>v?LBL_MODAL[v]:"Todas"],["tipo","Tipo",["Simultánea","Consecutiva","Whispering"],null]].map(([k,lbl,opts,fmt])=>(
             <div key={k} style={{minWidth:"130px"}}>
-              <label style={S.lbl}>{lbl}</label>
+              <label style={{...S.lbl,color:"rgba(255,255,255,0.85)"}}>{lbl}</label>
               <select style={{...S.sel,height:"36px",fontSize:"13px"}} value={filtros[k]} onChange={e=>setFiltros(f=>({...f,[k]:e.target.value}))}>
                 {k==="tipo"&&<option value="">Todos</option>}
                 {opts.map(o=><option key={o} value={o}>{fmt?fmt(o):o||"Todos"}</option>)}
@@ -1756,7 +1757,7 @@ export default function App() {
             </div>
           ))}
           <div style={{minWidth:"160px"}}>
-            <label style={S.lbl}>Intérprete</label>
+            <label style={{...S.lbl,color:"rgba(255,255,255,0.85)"}}>Intérprete</label>
             <select style={{...S.sel,height:"36px",fontSize:"13px"}} value={filtros.interprete_id} onChange={e=>setFiltros(f=>({...f,interprete_id:e.target.value}))}>
               <option value="">Todos</option>
               {interpretes.filter(i=>i.activo!==false).map(i=><option key={i.id} value={i.id}>{i.nombre}{i.apellido?" "+i.apellido:""}</option>)}
