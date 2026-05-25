@@ -93,16 +93,16 @@ const HORAS = (() => { const h=[]; for(let x=7;x<=22;x++) for(let m of [0,15,30,
 const S = {
   inp: {width:"100%",padding:"9px 12px",border:`1.5px solid ${C.grisBorde}`,borderRadius:"8px",fontSize:"16px",color:C.texto,background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",height:"48px"},
   sel: {width:"100%",padding:"9px 12px",border:`1.5px solid ${C.grisBorde}`,borderRadius:"8px",fontSize:"16px",color:C.texto,background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",cursor:"pointer",height:"48px"},
-  lbl: {fontSize:"14px",fontWeight:"600",color:"#4A4A4A",textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:"5px",display:"block"},
+  lbl: {fontSize:"14px",fontWeight:"600",color:"#383838",textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:"5px",display:"block"},
   fila:{display:"flex",gap:"16px",flexWrap:"wrap"},
   camp:{flex:"1",minWidth:"140px"},
   btnA:{padding:"10px 20px",background:"#3a7bd5",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
   btnR:{padding:"10px 20px",background:"#E03131",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
   btnV:{padding:"10px 20px",background:"#2F9E44",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
-  btnG:{padding:"10px 20px",background:"#fff",color:C.textoMed,border:`1.5px solid ${C.grisBorde}`,borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
+  btnG:{padding:"10px 20px",background:"#F1F5F9",color:"#475569",border:"1.5px solid #CBD5E1",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
   btnSave:{padding:"11px 22px",background:"#2F9E44",color:"#fff",border:"2px solid #1B5E20",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"16px",fontFamily:"inherit"},
   btnDel:{padding:"10px 20px",background:"#E03131",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
-  btnCancel:{padding:"10px 20px",background:"#FFEBEE",color:"#C62828",border:"1px solid #EF9A9A",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
+  btnCancel:{padding:"10px 20px",background:"#F1F5F9",color:"#475569",border:"1.5px solid #CBD5E1",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
   btnEdit:{padding:"6px 12px",background:"#E67700",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",fontFamily:"inherit"},
   btnFicha:{padding:"6px 12px",background:"#1971C2",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",fontFamily:"inherit"},
   btnDup:{padding:"6px 12px",background:"#9C36B5",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",fontFamily:"inherit"},
@@ -518,7 +518,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
         </div>
         {/* Tabs */}
         <div style={{display:"flex",borderBottom:`1px solid ${C.grisBorde}`,flexShrink:0}}>
-          {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"10px 18px",background:tab===t.id?"#3a7bd5":"transparent",border:"none",borderRadius:tab===t.id?"8px":"0",cursor:"pointer",color:tab===t.id?"#fff":C.textoSuave,fontWeight:tab===t.id?"800":"600",fontSize:"14px",fontFamily:"inherit",margin:"6px 4px"}}>{t.lbl}</button>)}
+          {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"10px 18px",background:tab===t.id?"#3a7bd5":"#EEF4FD",border:"none",borderRadius:"8px",cursor:"pointer",color:tab===t.id?"#fff":"#3a7bd5",fontWeight:tab===t.id?"700":"500",fontSize:"14px",fontFamily:"inherit",margin:"6px 4px",opacity:tab===t.id?1:0.75}}>{t.lbl}</button>)}
         </div>
         {/* Cuerpo */}
         <div data-modal-scroll style={{overflowY:"auto",flex:1,padding:"20px 24px"}}>
@@ -534,7 +534,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                   <option value="">Seleccionar cliente…</option>
                   {clientes.map(c=><option key={c.id} value={c.id}>{c.nombre_empresa}</option>)}
                 </select>
-                <button onClick={onNuevoCliente} style={S.btnP}>+ Nuevo</button>
+                <button onClick={onNuevoCliente} style={{padding:"0",width:"48px",height:"48px",background:"#1E3A6E",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"26px",fontWeight:"300",fontFamily:"inherit",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,lineHeight:1}}>+</button>
               </div>
             </div>
             {/* Nombre del evento */}
@@ -1786,8 +1786,8 @@ export default function App() {
           {/* IZQUIERDA: logo + brand */}
           <div style={{display:"flex",alignItems:"center",gap:"10px",flexShrink:0}}>
             <div style={{flexShrink:0,display:"flex",alignItems:"center"}}>
-              <div style={{width:"96px",height:"96px",borderRadius:"50%",background:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",padding:"4px",flexShrink:0,boxShadow:"0 2px 8px rgba(0,0,0,0.15)",overflow:"hidden"}}>
-                <img src={LOGO_SRC} alt="MundoChile" style={{width:"88px",height:"88px",objectFit:"cover",display:"block",borderRadius:"50%"}}/>
+              <div style={{width:"96px",height:"96px",borderRadius:"50%",background:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",padding:"8px",flexShrink:0,boxShadow:"0 2px 8px rgba(0,0,0,0.15)",overflow:"hidden"}}>
+                <img src={LOGO_SRC} alt="MundoChile" style={{width:"80px",height:"80px",objectFit:"contain",display:"block"}}/>
               </div>
             </div>
             <div>
@@ -1838,7 +1838,7 @@ export default function App() {
       {modalEvento&&<ModalEvento eventoInicial={modalEvento.data} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} todos_eventos={eventos} perfil={perfil} onGuardar={()=>{setModalEvento(null);cargarDatos();addToast("Evento guardado correctamente","success");}} onCerrar={()=>setModalEvento(null)} onNuevoCliente={()=>setModalNuevoCli(true)} onNuevoInterprete={(ai,di)=>setModalNuevoInt({ai,di})} onLugarCreado={cargarDatos}/>}
       {modalDetalle&&<ModalDetalle evento={modalDetalle} clientes={clientes} interpretes={interpretes} pares={pares} perfil={perfil} onEditar={()=>editarEvento(modalDetalle)} onEliminar={()=>eliminarEvento(modalDetalle.id)} onCerrar={()=>setModalDetalle(null)} onVerFicha={()=>{setModalFicha(modalDetalle);setModalDetalle(null);}} addToast={addToast}/>}
       {modalFicha&&<ModalFicha evento={modalFicha} clientes={clientes} interpretes={interpretes} pares={pares} onCerrar={()=>setModalFicha(null)}/>}
-      {modalNuevoCli&&<ModalNuevoCliente onGuardar={async(d)=>{await sb.from("clientes").insert(d);await cargarDatos();setModalNuevoCli(false);addToast("Cliente creado","success");}} onCerrar={()=>setModalNuevoCli(false)}/>}
+      {modalNuevoCli&&<ModalNuevoCliente onGuardar={async(d)=>{const{data}=await sb.from("clientes").insert(d).select().single();await cargarDatos();setModalNuevoCli(false);if(data&&modalEvento){setModalEvento(prev=>({...prev,data:{...prev.data,cliente_id:data.id}}));}addToast("Cliente creado","success");}} onCerrar={()=>setModalNuevoCli(false)}/>}
       {modalNuevoInt&&<ModalNuevoInterprete onGuardar={async(d)=>{await sb.from("interpretes").insert(d);await cargarDatos();setModalNuevoInt(null);addToast("Intérprete creado","success");}} onCerrar={()=>setModalNuevoInt(null)}/>}
       <ToastContainer toasts={toasts} onRemove={removeToast}/>
     </div>

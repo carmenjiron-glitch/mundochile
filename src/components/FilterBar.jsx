@@ -55,8 +55,7 @@ export default function FilterBar({filters, onChange, interpreters=[]}) {
 
       {hayFiltro&&(
         <button onClick={()=>onChange({estado:"",modalidad:"",tipo:"",interprete_id:""})}
-          style={{background:"#EF4444",color:"#FFFFFF",
-            border:"none",borderRadius:"50%",
+          style={{background:"#EF4444",color:"#FFFFFF",border:"none",borderRadius:"50%",
             width:"24px",height:"24px",display:"flex",alignItems:"center",
             justifyContent:"center",cursor:"pointer",fontSize:"16px",
             fontWeight:"700",flexShrink:0,padding:0,lineHeight:1}}>
