@@ -1,17 +1,18 @@
 export default function FilterBar({filters, onChange, interpreters=[]}) {
   const CHIP_ACTIVO = {
-    padding:"4px 12px",borderRadius:"20px",cursor:"pointer",
-    fontSize:"13px",fontWeight:"700",fontFamily:"inherit",
-    background:"#FFFBEB",color:"#92400E",border:"2px solid #EF4444"
+    padding:"5px 14px",borderRadius:"20px",cursor:"pointer",
+    fontSize:"14px",fontWeight:"600",fontFamily:"inherit",
+    background:"#3a7bd5",color:"#FFFFFF",
+    border:"1.5px solid #FFFFFF"
   };
   const CHIP_INACTIVO = {
-    padding:"4px 12px",borderRadius:"20px",cursor:"pointer",
-    fontSize:"13px",fontWeight:"500",fontFamily:"inherit",
+    padding:"5px 14px",borderRadius:"20px",cursor:"pointer",
+    fontSize:"14px",fontWeight:"500",fontFamily:"inherit",
     background:"rgba(255,255,255,0.12)",color:"#FDE68A",
-    border:"1px solid rgba(255,255,255,0.22)"
+    border:"1.5px solid rgba(255,255,255,0.35)"
   };
   const LBL = {
-    fontSize:"10px",fontWeight:"800",color:"rgba(255,255,255,0.55)",
+    fontSize:"11px",fontWeight:"800",color:"rgba(255,255,255,0.60)",
     textTransform:"uppercase",letterSpacing:"0.10em",marginLeft:"4px"
   };
   const hayFiltro = filters.estado||filters.modalidad||filters.tipo||filters.interprete_id;
