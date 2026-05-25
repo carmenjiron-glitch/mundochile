@@ -1786,12 +1786,12 @@ export default function App() {
           {/* IZQUIERDA: logo + brand */}
           <div style={{display:"flex",alignItems:"center",gap:"10px",flexShrink:0}}>
             <div style={{flexShrink:0,display:"flex",alignItems:"center"}}>
-              <div style={{width:"80px",height:"80px",borderRadius:"50%",background:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",padding:"3px",flexShrink:0,boxShadow:"0 2px 8px rgba(0,0,0,0.15)"}}>
-                <img src={LOGO_SRC} alt="MundoChile" style={{width:"74px",height:"74px",objectFit:"contain",display:"block"}}/>
+              <div style={{width:"96px",height:"96px",borderRadius:"50%",background:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",padding:"4px",flexShrink:0,boxShadow:"0 2px 8px rgba(0,0,0,0.15)",overflow:"hidden"}}>
+                <img src={LOGO_SRC} alt="MundoChile" style={{width:"88px",height:"88px",objectFit:"cover",display:"block",borderRadius:"50%"}}/>
               </div>
             </div>
             <div>
-              <div style={{fontWeight:"800",fontSize:"28px",color:"#FFFFFF",lineHeight:1,letterSpacing:"0.01em"}}>MundoChile</div>
+              <div style={{fontWeight:"800",fontSize:"21px",color:"#FFFFFF",lineHeight:1,letterSpacing:"0.01em"}}>MundoChile</div>
               <div style={{fontSize:"13px",color:"rgba(255,255,255,0.75)",marginTop:"3px"}}>Translations & Interpreters · Since 2003</div>
             </div>
           </div>

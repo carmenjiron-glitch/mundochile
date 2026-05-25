@@ -7,7 +7,7 @@ export default function FilterBar({filters, onChange, interpreters=[]}) {
   const CHIP_INACTIVO = {
     padding:"4px 12px",borderRadius:"20px",cursor:"pointer",
     fontSize:"13px",fontWeight:"500",fontFamily:"inherit",
-    background:"rgba(255,255,255,0.12)",color:"#FFFFFF",
+    background:"rgba(255,255,255,0.12)",color:"#FDE68A",
     border:"1px solid rgba(255,255,255,0.22)"
   };
   const LBL = {
@@ -19,7 +19,7 @@ export default function FilterBar({filters, onChange, interpreters=[]}) {
   return (
     <div style={{display:"flex",flexWrap:"wrap",gap:"6px",padding:"10px 16px",
       background:"rgba(0,0,0,0.15)",borderRadius:"10px",marginBottom:"16px",
-      alignItems:"center"}}>
+      alignItems:"center",justifyContent:"center"}}>
 
       <span style={LBL}>Estado</span>
       {[["","Todos"],["Facturación Pendiente","Pendiente"],["Facturado","Facturado"]].map(([v,l])=>(
@@ -41,7 +41,7 @@ export default function FilterBar({filters, onChange, interpreters=[]}) {
 
       <select value={filters.interprete_id||""}
         onChange={e=>onChange({...filters,interprete_id:e.target.value})}
-        style={{background:"rgba(255,255,255,0.15)",color:"#FFFFFF",
+        style={{background:"rgba(255,255,255,0.15)",color:"#FDE68A",
           border:"1px solid rgba(255,255,255,0.30)",borderRadius:"20px",
           padding:"4px 10px",fontSize:"13px",maxWidth:"160px",
           flexShrink:1,cursor:"pointer",outline:"none",marginLeft:"8px"}}>
@@ -55,8 +55,8 @@ export default function FilterBar({filters, onChange, interpreters=[]}) {
 
       {hayFiltro&&(
         <button onClick={()=>onChange({estado:"",modalidad:"",tipo:"",interprete_id:""})}
-          style={{background:"rgba(255,255,255,0.20)",color:"#FFFFFF",
-            border:"1px solid rgba(255,255,255,0.40)",borderRadius:"50%",
+          style={{background:"#EF4444",color:"#FFFFFF",
+            border:"none",borderRadius:"50%",
             width:"24px",height:"24px",display:"flex",alignItems:"center",
             justifyContent:"center",cursor:"pointer",fontSize:"16px",
             fontWeight:"700",flexShrink:0,padding:0,lineHeight:1}}>
