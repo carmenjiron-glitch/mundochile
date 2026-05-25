@@ -99,10 +99,10 @@ const S = {
   btnA:{padding:"10px 20px",background:"#3a7bd5",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
   btnR:{padding:"10px 20px",background:"#E03131",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
   btnV:{padding:"10px 20px",background:"#2F9E44",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
-  btnG:{padding:"10px 20px",background:"#F1F5F9",color:"#475569",border:"1.5px solid #CBD5E1",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
+  btnG:{padding:"10px 20px",background:"#FFF5F5",color:"#E53E3E",border:"1.5px solid #FC8181",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
   btnSave:{padding:"11px 22px",background:"#2F9E44",color:"#fff",border:"2px solid #1B5E20",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"16px",fontFamily:"inherit"},
   btnDel:{padding:"10px 20px",background:"#E03131",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
-  btnCancel:{padding:"10px 20px",background:"#F1F5F9",color:"#475569",border:"1.5px solid #CBD5E1",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
+  btnCancel:{padding:"10px 20px",background:"#FFF5F5",color:"#E53E3E",border:"1.5px solid #FC8181",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
   btnEdit:{padding:"6px 12px",background:"#E67700",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",fontFamily:"inherit"},
   btnFicha:{padding:"6px 12px",background:"#1971C2",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",fontFamily:"inherit"},
   btnDup:{padding:"6px 12px",background:"#9C36B5",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",fontFamily:"inherit"},
@@ -116,7 +116,7 @@ const evVacio = () => ({
   jornada:"Media Jornada", jornada_personalizada:"", lugar:"", lugar_detalle:"",
   modalidad:"remoto", plataforma:"Zoom MundoChile", zoom_owner:"mundochile",
   zoom_administrador:"", estado:"Facturación Pendiente", comentarios:"",
-  nro_hes:"", nro_otros:"",
+  nro_hes:"", nro_otros:"", comentarios_av:"",
   asignaciones:[], dias:[], equipos:[],
 });
 const asigVacia = () => ({interprete_id:"",par_id:"",nro_ot:"",nro_boleta:"",es_boleta_adicional:false,es_host_zoom:false,rol:"Principal",hora_presentacion:"",estado_pago:"Pendiente"});
@@ -471,7 +471,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           </div>
           <div style={S.camp}>
             <label style={S.lbl}>🌐 Par de idiomas</label>
-            <select style={{...S.sel,fontWeight:"700"}} value={a.par_id||""} onChange={e=>edit("par_id",e.target.value?Number(e.target.value):"")}>
+            <select style={{...S.sel,fontWeight:"400",color:C.textoMed}} value={a.par_id||""} onChange={e=>edit("par_id",e.target.value?Number(e.target.value):"")}>
               <option value="">Seleccionar par de idiomas…</option>
               {(pares||[]).filter(p=>p.activo!==false).sort((a,b)=>(a.descripcion||"").localeCompare(b.descripcion||"")).map(p=><option key={p.id} value={p.id}>{p.descripcion}</option>)}
             </select>
@@ -515,7 +515,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
         </div>
         {/* Tabs */}
         <div style={{display:"flex",borderBottom:`1px solid ${C.grisBorde}`,flexShrink:0}}>
-          {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"10px 18px",background:tab===t.id?"#3a7bd5":"#EEF4FD",border:"none",borderRadius:"8px",cursor:"pointer",color:tab===t.id?"#fff":"#3a7bd5",fontWeight:tab===t.id?"700":"500",fontSize:"14px",fontFamily:"inherit",margin:"6px 4px",opacity:tab===t.id?1:0.75}}>{t.lbl}</button>)}
+          {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"10px 18px",background:tab===t.id?"#3a7bd5":"#AECBEF",border:"none",borderRadius:"8px",cursor:"pointer",color:tab===t.id?"#fff":"#173060",fontWeight:tab===t.id?"700":"600",fontSize:"14px",fontFamily:"inherit",margin:"6px 4px",opacity:1}}>{t.lbl}</button>)}
         </div>
         {/* Cuerpo */}
         <div data-modal-scroll style={{overflowY:"auto",flex:1,padding:"20px 24px"}}>
@@ -573,7 +573,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
               <div style={{...S.fila,marginBottom:"20px"}}>
                 <div style={S.camp}><label style={S.lbl}>💻 Plataforma</label>
                   <select style={S.sel} value={form.plataforma} onChange={e=>setF("plataforma",e.target.value)}>{PLATAFORMAS.map(p=><option key={p}>{p}</option>)}</select></div>
-                {form.plataforma==="Zoom MundoChile"&&<div style={S.camp}><label style={S.lbl}>🎛 Administrador Zoom</label>
+                {form.plataforma==="Zoom MundoChile"&&<div style={S.camp}><label style={S.lbl}>🔑 Administrador Zoom</label>
                   <select style={S.sel} value={zoomOtro?"__otro__":(ZOOM_ADMIN.includes(form.zoom_administrador)?form.zoom_administrador:"")} onChange={e=>{if(e.target.value==="__otro__"){setZoomOtro(true);setF("zoom_administrador","");}else{setZoomOtro(false);setF("zoom_administrador",e.target.value);}}}>
                     <option value="">Sin asignar</option>{ZOOM_ADMIN.map(z=><option key={z}>{z}</option>)}<option value="__otro__">Otro…</option>
                   </select>
@@ -703,6 +703,13 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                 </div>
               </div>
             ))}
+          <div style={{marginTop:"20px",borderTop:`1px solid ${C.grisBorde}`,paddingTop:"16px"}}>
+            <label style={S.lbl}>💬 Comentarios Equipos AV</label>
+            <textarea style={{...S.inp,minHeight:"80px",resize:"vertical"}}
+              value={form.comentarios_av||""}
+              onChange={e=>setF("comentarios_av",e.target.value)}
+              placeholder="Instrucciones, observaciones sobre equipos AV…"/>
+          </div>
           </>}
 
           {/* ── TAB POR DÍA ── */}
@@ -860,7 +867,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                 <button onClick={onEditar} style={btnA("#E67700")}>✏️ Editar</button>
                 <button onClick={onEliminar} style={btnA("#E03131")}>🗑 Eliminar</button>
               </div>
-              <button onClick={onCerrar} style={{background:"none",border:"1px solid #D1D5DB",cursor:"pointer",fontSize:"13px",color:"#6B7280",padding:"5px 14px",borderRadius:"6px",fontFamily:"inherit",fontWeight:"600"}}>✕ Cerrar</button>
+              <button onClick={onCerrar} style={{background:"#FFF5F5",border:"1.5px solid #FC8181",cursor:"pointer",fontSize:"13px",color:"#E53E3E",padding:"5px 14px",borderRadius:"6px",fontFamily:"inherit",fontWeight:"600"}}>✕ Cerrar</button>
             </div>
           </div>
         </div>
@@ -1268,7 +1275,15 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
       {/* Tabs */}
       <div style={{display:"flex",gap:"6px",marginBottom:"20px",flexWrap:"wrap"}}>
         {tabs.map(t=><button key={t.id} onClick={()=>{setTab(t.id);setEditando(null);setFormEdit({});}}
-          style={{padding:"10px 18px",borderRadius:"10px",border:`2px solid ${tab===t.id?C.azul:C.grisBorde}`,background:tab===t.id?C.azulClaro:"#fff",color:tab===t.id?C.azul:C.textoMed,fontWeight:tab===t.id?"800":"600",cursor:"pointer",fontFamily:"inherit",fontSize:"14px"}}>
+          style={{
+            padding:"10px 18px",borderRadius:"10px",cursor:"pointer",fontFamily:"inherit",fontSize:"14px",
+            background:tab===t.id?"#FFFBEB":"#fff",
+            color:tab===t.id?C.azul:C.textoMed,
+            fontWeight:tab===t.id?"800":"600",
+            border:tab===t.id?"2px solid #F59E0B":`2px solid ${C.grisBorde}`,
+            borderBottom:tab===t.id?"4px solid #F59E0B":`2px solid ${C.grisBorde}`,
+            boxShadow:tab===t.id?"0 2px 8px rgba(245,158,11,0.25)":"none"
+          }}>
           {t.l}</button>)}
       </div>
 
@@ -1843,7 +1858,7 @@ export default function App() {
           <div style={{display:"flex",alignItems:"center",gap:"10px",flexShrink:0}}>
             <div style={{flexShrink:0,display:"flex",alignItems:"center"}}>
               <div style={{width:"82px",height:"82px",borderRadius:"50%",background:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",padding:"2px",flexShrink:0,boxShadow:"0 2px 8px rgba(0,0,0,0.15)",overflow:"hidden",marginTop:"6px",marginBottom:"6px"}}>
-                <img src={LOGO_SRC} alt="MundoChile" style={{width:"78px",height:"78px",objectFit:"contain",display:"block"}}/>
+                <img src={LOGO_SRC} alt="MundoChile" style={{width:"78px",height:"78px",objectFit:"contain",display:"block",objectPosition:"center top",transform:"translateY(-4px)"}}/>
               </div>
             </div>
             <div>

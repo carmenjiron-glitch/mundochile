@@ -1,13 +1,13 @@
 export default function FilterBar({filters, onChange, interpreters=[]}) {
   const CHIP_ACTIVO = {
-    padding:"4px 10px",borderRadius:"20px",cursor:"pointer",
-    fontSize:"12px",fontWeight:"600",fontFamily:"inherit",
+    padding:"3px 6px",borderRadius:"20px",cursor:"pointer",
+    fontSize:"11px",fontWeight:"600",fontFamily:"inherit",
     background:"rgba(255,255,255,0.28)",color:"#FFFFFF",
     border:"1.5px solid rgba(255,255,255,0.70)",whiteSpace:"nowrap"
   };
   const CHIP_INACTIVO = {
-    padding:"4px 10px",borderRadius:"20px",cursor:"pointer",
-    fontSize:"12px",fontWeight:"400",fontFamily:"inherit",
+    padding:"3px 6px",borderRadius:"20px",cursor:"pointer",
+    fontSize:"11px",fontWeight:"400",fontFamily:"inherit",
     background:"rgba(255,255,255,0.10)",color:"rgba(255,255,255,0.60)",
     border:"1px solid rgba(255,255,255,0.22)",whiteSpace:"nowrap"
   };
@@ -23,7 +23,7 @@ export default function FilterBar({filters, onChange, interpreters=[]}) {
 
   return (
     <div style={{
-      display:"flex",flexWrap:"nowrap",gap:"5px",padding:"8px 16px",
+      display:"flex",flexWrap:"nowrap",gap:"2px",padding:"6px 10px",
       background:"rgba(0,0,0,0.15)",borderRadius:"10px",marginBottom:"16px",
       alignItems:"center",justifyContent:"space-between",overflowX:"auto"
     }}>
@@ -41,7 +41,7 @@ export default function FilterBar({filters, onChange, interpreters=[]}) {
       ))}
 
       <span style={{...LBL,marginLeft:"4px"}}>Tipo</span>
-      {[["","Todos"],["Simultánea","Sim."],["Consecutiva","Cons."],["Whispering","Whis."]].map(([v,l])=>(
+      {[["","Todos"],["Simultánea","Simultánea"],["Consecutiva","Consecutiva"],["Whispering","Whispering"]].map(([v,l])=>(
         <button key={v} onClick={()=>onChange({...filters,tipo:v})}
           style={filters.tipo===v ? CHIP_ACTIVO : CHIP_INACTIVO}>{l}</button>
       ))}
