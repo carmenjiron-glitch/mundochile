@@ -12,8 +12,11 @@ export default function FilterBar({filters, onChange, interpreters=[]}) {
     border:"1.5px solid #FC8181"
   };
   const LBL = {
-    fontSize:"11px",fontWeight:"800",color:"#FC8181",
-    textTransform:"uppercase",letterSpacing:"0.10em",marginLeft:"4px"
+    fontSize:"11px",fontWeight:"700",fontFamily:"inherit",
+    textTransform:"uppercase",letterSpacing:"0.08em",
+    color:"#FC8181",background:"#FFFFFF",
+    border:"1.5px solid #FC8181",borderRadius:"6px",
+    padding:"3px 10px",display:"inline-flex",alignItems:"center"
   };
   const hayFiltro = filters.estado||filters.modalidad||filters.tipo||filters.interprete_id;
 
