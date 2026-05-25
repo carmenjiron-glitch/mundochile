@@ -12,7 +12,7 @@ export default function FilterBar({filters, onChange, interpreters=[]}) {
     border:"1.5px solid #FC8181"
   };
   const LBL = {
-    fontSize:"11px",fontWeight:"800",color:"rgba(255,255,255,0.60)",
+    fontSize:"11px",fontWeight:"800",color:"#FC8181",
     textTransform:"uppercase",letterSpacing:"0.10em",marginLeft:"4px"
   };
   const hayFiltro = filters.estado||filters.modalidad||filters.tipo||filters.interprete_id;
