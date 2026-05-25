@@ -1857,7 +1857,7 @@ export default function App() {
           {/* IZQUIERDA: logo + brand */}
           <div style={{display:"flex",alignItems:"center",gap:"10px",flexShrink:0}}>
             <div style={{flexShrink:0,display:"flex",alignItems:"center"}}>
-              <div style={{width:"82px",height:"82px",borderRadius:"50%",background:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",padding:"2px",flexShrink:0,boxShadow:"0 2px 8px rgba(0,0,0,0.15)"}}>
+              <div style={{width:"82px",height:"82px",borderRadius:"50%",background:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",padding:"2px",flexShrink:0,boxShadow:"0 2px 8px rgba(0,0,0,0.15)",overflow:"hidden"}}>
                 <img src={LOGO_SRC} alt="MundoChile" style={{width:"78px",height:"78px",objectFit:"contain",display:"block"}}/>
               </div>
             </div>
