@@ -7,9 +7,9 @@ const chipInactive = {
   background: 'rgba(255,255,255,0.15)', color: '#FFFFFF',
   border: '1px solid rgba(255,255,255,0.25)',
 };
-const chipActive = (bg, text) => ({
+const chipActive = () => ({
   ...chipBase,
-  background: bg, color: text, border: `1px solid ${text}`,
+  background: '#FFFBEB', color: '#92400E', border: '2px solid #EF4444', fontWeight: '700',
 });
 
 const ESTADO_OPTS = [
@@ -46,7 +46,7 @@ export default function FilterBar({ filters, onChange, interpreters }) {
       <span style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Estado</span>
       {ESTADO_OPTS.map(([val, label, bg, text]) => (
         <button key={val} onClick={() => set('estado', val)}
-          style={filters.estado === val && bg ? chipActive(bg, text) : chipInactive}>
+          style={filters.estado === val && bg ? chipActive() : chipInactive}>
           {label}
         </button>
       ))}
@@ -54,7 +54,7 @@ export default function FilterBar({ filters, onChange, interpreters }) {
       <span style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Modalidad</span>
       {MODAL_OPTS.map(([val, label, bg, text]) => (
         <button key={val} onClick={() => set('modalidad', val)}
-          style={filters.modalidad === val && (val === '' || bg) ? (bg ? chipActive(bg, text) : chipInactive) : chipInactive}>
+          style={filters.modalidad === val && (val === '' || bg) ? (bg ? chipActive() : chipInactive) : chipInactive}>
           {label}
         </button>
       ))}
@@ -62,7 +62,7 @@ export default function FilterBar({ filters, onChange, interpreters }) {
       <span style={{ fontSize: '11px', fontWeight: '700', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Tipo</span>
       {TIPO_OPTS.map(([val, label, bg, text]) => (
         <button key={val} onClick={() => set('tipo', val)}
-          style={filters.tipo === val && (val === '' || bg) ? (bg ? chipActive(bg, text) : chipInactive) : chipInactive}>
+          style={filters.tipo === val && (val === '' || bg) ? (bg ? chipActive() : chipInactive) : chipInactive}>
           {label}
         </button>
       ))}

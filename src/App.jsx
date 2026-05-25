@@ -302,6 +302,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
   const [agregarLugar,setAgregarLugar]=useState(false);
   const [nuevoLugar,setNuevoLugar]=useState("");
   const setF=useCallback((k,v)=>setForm(f=>({...f,[k]:v})),[]);
+  const [zoomOtro,setZoomOtro]=useState(!ZOOM_ADMIN.includes(form.zoom_administrador)&&!!form.zoom_administrador);
 
   useEffect(()=>{
     if(!form.fecha_inicio||!form.fecha_termino) return;
@@ -457,7 +458,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
             <div style={{display:"flex",gap:"6px"}}>
               <select style={S.sel} value={a.interprete_id||""} onChange={e=>edit("interprete_id",e.target.value?Number(e.target.value):"")}>
                 <option value="">Seleccionar…</option>
-                {interpretes.filter(i=>i.activo).map(i=><option key={i.id} value={i.id}>{i.nombre}{i.apellido?" "+i.apellido:""}{i.es_host_zoom?" 🎛":""}{i.ciudad?` · ${i.ciudad}`:""}</option>)}
+                {interpretes.filter(i=>i.activo).map(i=><option key={i.id} value={i.id}>{i.nombre}{i.apellido?" "+i.apellido:""}{i.es_host_zoom?" 🔑":""}{i.ciudad?` · ${i.ciudad}`:""}</option>)}
               </select>
               <button onClick={()=>onNuevoInterprete(idx,dIdx)} style={S.btnP}>+</button>
             </div>
@@ -574,9 +575,11 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                 <div style={S.camp}><label style={S.lbl}>💻 Plataforma</label>
                   <select style={S.sel} value={form.plataforma} onChange={e=>setF("plataforma",e.target.value)}>{PLATAFORMAS.map(p=><option key={p}>{p}</option>)}</select></div>
                 {form.plataforma==="Zoom MundoChile"&&<div style={S.camp}><label style={S.lbl}>🎛 Administrador Zoom</label>
-                  <select style={S.sel} value={form.zoom_administrador} onChange={e=>setF("zoom_administrador",e.target.value)}>
-                    <option value="">Sin asignar</option>{ZOOM_ADMIN.map(z=><option key={z}>{z}</option>)}
-                  </select></div>}
+                  <select style={S.sel} value={zoomOtro?"__otro__":(ZOOM_ADMIN.includes(form.zoom_administrador)?form.zoom_administrador:"")} onChange={e=>{if(e.target.value==="__otro__"){setZoomOtro(true);setF("zoom_administrador","");}else{setZoomOtro(false);setF("zoom_administrador",e.target.value);}}}>
+                    <option value="">Sin asignar</option>{ZOOM_ADMIN.map(z=><option key={z}>{z}</option>)}<option value="__otro__">Otro…</option>
+                  </select>
+                  {zoomOtro&&<input style={{...S.inp,marginTop:"6px"}} value={form.zoom_administrador||""} onChange={e=>setF("zoom_administrador",e.target.value)} placeholder="Nombre del administrador…"/>}
+                </div>}
               </div>
             </>}
             {/* Lugar (presencial/híbrido) */}
@@ -977,7 +980,9 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
           {/* Header compacto ~70px */}
           <div style={{display:"flex",alignItems:"center",height:"64px",padding:"0 16px",borderRadius:"8px",background:"#1E3A6E",color:"#fff",marginBottom:"12px",flexShrink:0}}>
             <div style={{flexShrink:0,marginRight:"12px",display:"flex",alignItems:"center"}}>
-              <img src={LOGO_SRC} alt="MC" style={{height:"42px",width:"auto",objectFit:"contain",display:"block"}}/>
+              <div style={{width:"52px",height:"52px",borderRadius:"50%",background:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",padding:"5px",boxShadow:"0 1px 4px rgba(0,0,0,0.15)"}}>
+                <img src={LOGO_SRC} alt="MundoChile" style={{width:"42px",height:"42px",objectFit:"contain",display:"block"}}/>
+              </div>
             </div>
             <div style={{flex:1,minWidth:0}}>
               <div style={{fontSize:"18px",fontWeight:"900",color:"#fff",letterSpacing:"0.04em",lineHeight:1}}>MUNDOCHILE</div>
@@ -1144,7 +1149,23 @@ function ModalNuevoInterprete({onGuardar,onCerrar}) {
           <div style={S.camp}><label style={S.lbl}>Teléfono</label><input style={S.inp} value={f.telefono} onChange={e=>u("telefono",e.target.value)}/></div>
         </div>
         <div style={{...S.fila,marginBottom:"20px"}}>
-          <div style={S.camp}><label style={S.lbl}>Ciudad</label><input style={S.inp} placeholder="Santiago…" value={f.ciudad} onChange={e=>u("ciudad",e.target.value)}/></div>
+          <div style={S.camp}><label style={S.lbl}>Ciudad</label>
+  <select style={S.sel} value={f.ciudad} onChange={e=>u("ciudad",e.target.value)}>
+    <option value="">Seleccionar…</option>
+    <optgroup label="🇨🇱 Chile">
+      <option>Santiago</option><option>Viña del Mar</option><option>Valparaíso</option>
+      <option>Concepción</option><option>La Serena</option><option>Antofagasta</option>
+      <option>Temuco</option><option>Rancagua</option><option>Talca</option>
+      <option>Arica</option><option>Iquique</option><option>Puerto Montt</option>
+      <option>Chillán</option><option>Calama</option><option>Copiapó</option>
+    </optgroup>
+    <optgroup label="🌎 Otros países">
+      <option>Buenos Aires</option><option>Lima</option><option>Bogotá</option>
+      <option>Ciudad de México</option><option>Madrid</option><option>Miami</option>
+      <option>Nueva York</option><option>São Paulo</option><option>Montevideo</option><option>Quito</option>
+    </optgroup>
+  </select>
+</div>
           <div style={S.camp}><label style={S.lbl}>Modalidad</label>
             <select style={S.sel} value={f.modalidad_trabajo} onChange={e=>u("modalidad_trabajo",e.target.value)}>
               <option value="ambas">💻📍 Presencial y Online</option>
@@ -1153,7 +1174,7 @@ function ModalNuevoInterprete({onGuardar,onCerrar}) {
             </select></div>
         </div>
         <div style={{marginBottom:"16px"}}><label style={{display:"flex",gap:"8px",alignItems:"center",cursor:"pointer",fontSize:"14px",color:C.rojo,fontWeight:"700"}}>
-          <input type="checkbox" checked={f.es_host_zoom} onChange={e=>u("es_host_zoom",e.target.checked)}/> 🎛 Host alternativo Zoom MundoChile
+          <input type="checkbox" checked={f.es_host_zoom} onChange={e=>u("es_host_zoom",e.target.checked)}/> 🔑 Host Zoom MundoChile
         </label></div>
         <div style={{marginBottom:"20px"}}><label style={S.lbl}>Notas</label><textarea style={{...S.inp,minHeight:"60px"}} value={f.notas} onChange={e=>u("notas",e.target.value)}/></div>
         <div style={{display:"flex",gap:"10px",justifyContent:"flex-end"}}>
@@ -1209,7 +1230,23 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
             <div style={S.camp}><label style={S.lbl}>Teléfono</label>{EF("telefono")}</div>
           </div>
           <div style={{...S.fila,marginBottom:"12px"}}>
-            <div style={S.camp}><label style={S.lbl}>Ciudad</label>{EF("ciudad")}</div>
+            <div style={S.camp}><label style={S.lbl}>Ciudad</label>
+              <select style={S.sel} value={formEdit.ciudad||""} onChange={e=>setFormEdit(f=>({...f,ciudad:e.target.value}))}>
+                <option value="">Seleccionar…</option>
+                <optgroup label="🇨🇱 Chile">
+                  <option>Santiago</option><option>Viña del Mar</option><option>Valparaíso</option>
+                  <option>Concepción</option><option>La Serena</option><option>Antofagasta</option>
+                  <option>Temuco</option><option>Rancagua</option><option>Talca</option>
+                  <option>Arica</option><option>Iquique</option><option>Puerto Montt</option>
+                  <option>Chillán</option><option>Calama</option><option>Copiapó</option>
+                </optgroup>
+                <optgroup label="🌎 Otros países">
+                  <option>Buenos Aires</option><option>Lima</option><option>Bogotá</option>
+                  <option>Ciudad de México</option><option>Madrid</option><option>Miami</option>
+                  <option>Nueva York</option><option>São Paulo</option><option>Montevideo</option><option>Quito</option>
+                </optgroup>
+              </select>
+            </div>
             <div style={S.camp}><label style={S.lbl}>Modalidad</label>
               <select style={S.sel} value={formEdit.modalidad_trabajo||"ambas"} onChange={e=>setFormEdit(f=>({...f,modalidad_trabajo:e.target.value}))}>
                 <option value="ambas">💻📍 Presencial y Online</option>
@@ -1219,7 +1256,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
           </div>
           <div style={{marginBottom:"12px"}}><label style={S.lbl}>Notas</label><textarea style={{...S.inp,minHeight:"60px"}} value={formEdit.notas||""} onChange={e=>setFormEdit(f=>({...f,notas:e.target.value}))}/></div>
           <label style={{display:"flex",gap:"8px",alignItems:"center",cursor:"pointer",fontSize:"14px",color:C.rojo,fontWeight:"700",marginBottom:"16px"}}>
-            <input type="checkbox" checked={!!formEdit.es_host_zoom} onChange={e=>setFormEdit(f=>({...f,es_host_zoom:e.target.checked}))}/> 🎛 Host alternativo Zoom MundoChile
+            <input type="checkbox" checked={!!formEdit.es_host_zoom} onChange={e=>setFormEdit(f=>({...f,es_host_zoom:e.target.checked}))}/> 🔑 Host Zoom MundoChile
           </label>
           <div style={{display:"flex",gap:"8px"}}>
             <button onClick={()=>guardar("interpretes",formEdit,editando)} style={S.btnA}>💾 Guardar</button>
@@ -1236,7 +1273,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
             <div style={{display:"flex",gap:"12px",alignItems:"center",flex:1,minWidth:0}}>
               <div style={{width:"40px",height:"40px",borderRadius:"50%",background:aColor,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:"700",fontSize:"16px",flexShrink:0}}>{(i.nombre||"?").slice(0,1).toUpperCase()}</div>
               <div style={{flex:1,minWidth:0}}>
-                <div style={{fontWeight:"800",fontSize:"15px",color:C.texto}}>{nombreCompleto}{i.es_host_zoom&&<span style={{color:C.rojo,marginLeft:"8px",fontSize:"12px"}}>🎛 Host Zoom</span>}</div>
+                <div style={{fontWeight:"800",fontSize:"15px",color:C.texto}}>{nombreCompleto}{i.es_host_zoom&&<span style={{color:C.rojo,marginLeft:"8px",fontSize:"12px"}}>🔑 Host Zoom</span>}</div>
                 <div style={{display:"flex",gap:"12px",marginTop:"4px",flexWrap:"wrap"}}>
                   {i.email&&<CampoCopia valor={i.email}/>}
                   {i.telefono&&<CampoCopia valor={i.telefono}/>}
@@ -1743,15 +1780,17 @@ export default function App() {
     <div style={{fontFamily:"'Inter','Segoe UI',system-ui,sans-serif",minHeight:"100vh",background:"linear-gradient(135deg, #1a2a4a 0%, #1e3a6e 50%, #2563a8 100%)",color:"#FFFFFF",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",textRendering:"optimizeLegibility"}}>
       {/* ── TOPBAR ── */}
       <div style={{position:"sticky",top:0,zIndex:100,background:"#162d57",borderBottom:"1px solid rgba(255,255,255,0.10)"}}>
-        <div style={{padding:"0 24px",display:"flex",alignItems:"center",justifyContent:"space-between",height:"64px",gap:"12px"}}>
+        <div style={{padding:"0 28px",display:"flex",alignItems:"center",justifyContent:"space-between",height:"84px",gap:"14px"}}>
           {/* IZQUIERDA: logo + brand */}
           <div style={{display:"flex",alignItems:"center",gap:"10px",flexShrink:0}}>
             <div style={{flexShrink:0,display:"flex",alignItems:"center"}}>
-              <img src={LOGO_SRC} alt="MundoChile" style={{height:"44px",width:"auto",display:"block",objectFit:"contain"}}/>
+              <div style={{width:"66px",height:"66px",borderRadius:"50%",background:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",padding:"6px",flexShrink:0,boxShadow:"0 2px 8px rgba(0,0,0,0.15)"}}>
+                <img src={LOGO_SRC} alt="MundoChile" style={{width:"54px",height:"54px",objectFit:"contain",display:"block"}}/>
+              </div>
             </div>
             <div>
-              <div style={{fontWeight:"800",fontSize:"22px",color:"#FFFFFF",lineHeight:1,letterSpacing:"0.02em"}}>MUNDOCHILE</div>
-              <div style={{fontSize:"11px",color:"rgba(255,255,255,0.70)",marginTop:"2px"}}>Translations & Interpreters · Since 2003</div>
+              <div style={{fontWeight:"800",fontSize:"28px",color:"#FFFFFF",lineHeight:1,letterSpacing:"0.01em"}}>MundoChile</div>
+              <div style={{fontSize:"13px",color:"rgba(255,255,255,0.75)",marginTop:"3px"}}>Translations & Interpreters · Since 2003</div>
             </div>
           </div>
           {/* CENTRO: tabs */}
@@ -1779,7 +1818,7 @@ export default function App() {
             {esEditor&&<button onClick={exportarExcel} style={{padding:"7px 12px",fontSize:"13px",background:"rgba(22,163,74,0.25)",color:"#6EE7B7",border:"1px solid rgba(22,163,74,0.5)",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}} title="Exportar Excel">📊</button>}
             {esEditor&&<button onClick={()=>setModalEvento({modo:"nuevo",data:evVacio()})} style={{padding:"7px 16px",fontSize:"14px",background:"#e63946",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit",fontWeight:"700"}}>+ Nuevo</button>}
             {esAdmin&&<button onClick={()=>setPantalla(p=>p==="config"?"calendario":"config")} style={{padding:"7px 12px",fontSize:"14px",background:pantalla==="config"?"rgba(255,255,255,0.35)":"rgba(255,255,255,0.15)",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>⚙️</button>}
-            <button onClick={()=>sb.auth.signOut()} style={{padding:"7px 12px",fontSize:"13px",background:"rgba(255,255,255,0.15)",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>Salir</button>
+            <button onClick={()=>{sb.auth.signOut();window.location.reload();}} style={{padding:"9px 14px",fontSize:"14px",background:"rgba(255,255,255,0.15)",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>Salir</button>
           </div>
         </div>
       </div>
