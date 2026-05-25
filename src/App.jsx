@@ -47,7 +47,7 @@ const TIPOS      = ["Simultánea","Consecutiva","Whispering"];
 const MODALIDADES= ["remoto","presencial","hibrido"];
 const LBL_MODAL  = {remoto:"Remoto",presencial:"Presencial",hibrido:"Híbrido"};
 const PLATAFORMAS= ["Zoom MundoChile","Zoom Cliente","Teams","Webex","Meet","Otro"];
-const ZOOM_ADMIN = ["Magix","RLA","El mismo cliente","Otro audiovisual"];
+const ZOOM_ADMIN = ["Magix","RLA","El mismo cliente","Otro"];
 const JORNADAS_PRES=["1 hora","Media Jornada","Media Jornada + 1 hora adicional","Jornada Completa","Jornada Completa + 1 hora adicional","Otro horario personalizado"];
 const JORNADAS_REM=["1 hora","1 hora + 1 bloque de 15 minutos","2 horas","2 horas + 1 bloque de 30 minutos","Media Jornada 4 horas","Media Jornada + 1 hora adicional","1 Jornada Completa","Jornada Completa + 1 hora adicional","Otro horario personalizado"];
 const JORNADAS=[...new Set([...JORNADAS_PRES,...JORNADAS_REM])];
@@ -68,7 +68,7 @@ const calcJornada=(mins,mod)=>{
   if(mins>540&&mins<=600)return"Jornada Completa + 1 hora adicional";
   return"Otro horario personalizado";
 };
-const ESTADOS    = ["Pendiente de Facturación","Facturado"];
+const ESTADOS    = ["Facturación Pendiente","Facturado"];
 const DIAS_SEM   = ["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"];
 const MESES_L    = ["enero","febrero","marzo","abril","mayo","junio",
                     "julio","agosto","septiembre","octubre","noviembre","diciembre"];
@@ -115,7 +115,7 @@ const evVacio = () => ({
   fecha_inicio:hoy(), fecha_termino:hoy(), hora_inicio:"09:00", hora_termino:"13:00",
   jornada:"Media Jornada", jornada_personalizada:"", lugar:"", lugar_detalle:"",
   modalidad:"remoto", plataforma:"Zoom MundoChile", zoom_owner:"mundochile",
-  zoom_administrador:"", estado:"Pendiente de Facturación", comentarios:"",
+  zoom_administrador:"", estado:"Facturación Pendiente", comentarios:"",
   nro_hes:"", nro_otros:"",
   asignaciones:[], dias:[], equipos:[],
 });
@@ -330,7 +330,9 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
     return todos_eventos.find(ev=>{
       if(ev.id===form.id) return false;
       if(!(ev.fecha_inicio<=form.fecha_termino&&ev.fecha_termino>=form.fecha_inicio)) return false;
-      return (ev.asignaciones||[]).some(a=>a.interprete_id===interp_id);
+      const enAsigs=(ev.asignaciones||[]).some(a=>a.interprete_id===interp_id);
+      const enDias=(ev.evento_dias||[]).some(d=>(d.asignaciones_dia||[]).some(a=>a.interprete_id===interp_id));
+      return enAsigs||enDias;
     });
   };
 
@@ -504,15 +506,15 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
 
   const TABS=esMultidia
     ?[{id:"general",lbl:"📋 Detalles"},{id:"dias",lbl:"📅 Por Día"}]
-    :[{id:"general",lbl:"📋 Detalles"},{id:"interpretes",lbl:"🎙 Intérpretes"},...(form.modalidad!=="remoto"?[{id:"equipos",lbl:"🔧 Equipos AV"}]:[])];
+    :[{id:"general",lbl:"📋 Detalles"},{id:"interpretes",lbl:"🎙 Intérpretes"},{id:"equipos",lbl:"🔧 Equipos AV"}];
 
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.65)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(4px)",padding:"16px"}}>
       <div style={{background:"#fff",borderRadius:"20px",width:"100%",maxWidth:"760px",maxHeight:"90vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,0.25)"}}>
         {/* Header */}
         <div style={{padding:"20px 24px",borderBottom:"none",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0,background:form.id?"#E67700":"#3a7bd5",borderRadius:"20px 20px 0 0"}}>
-          <div style={{fontSize:"18px",fontWeight:"600",color:"#fff"}}>{form.id?"✏️ Editar evento":"➕ Nuevo evento"}</div>
-          <button onClick={onCerrar} style={{background:"none",border:"none",cursor:"pointer",fontSize:"24px",color:"#fff",lineHeight:1}}>✕</button>
+          <div style={{fontSize:"18px",fontWeight:"600",color:"#FFFFFF"}}>{form.id?"✏️ Editar evento":"Nuevo evento"}</div>
+          <button onClick={onCerrar} style={{background:"none",border:"none",cursor:"pointer",fontSize:"28px",color:"#FFFFFF",lineHeight:1,fontWeight:"300",opacity:1}}>×</button>
         </div>
         {/* Tabs */}
         <div style={{display:"flex",borderBottom:`1px solid ${C.grisBorde}`,flexShrink:0}}>
@@ -980,8 +982,8 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
           {/* Header compacto ~70px */}
           <div style={{display:"flex",alignItems:"center",height:"64px",padding:"0 16px",borderRadius:"8px",background:"#1E3A6E",color:"#fff",marginBottom:"12px",flexShrink:0}}>
             <div style={{flexShrink:0,marginRight:"12px",display:"flex",alignItems:"center"}}>
-              <div style={{width:"52px",height:"52px",borderRadius:"50%",background:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",padding:"5px",boxShadow:"0 1px 4px rgba(0,0,0,0.15)"}}>
-                <img src={LOGO_SRC} alt="MundoChile" style={{width:"42px",height:"42px",objectFit:"contain",display:"block"}}/>
+              <div style={{width:"58px",height:"58px",borderRadius:"50%",background:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",padding:"2px",boxShadow:"0 1px 4px rgba(0,0,0,0.15)"}}>
+                <img src={LOGO_SRC} alt="MundoChile" style={{width:"54px",height:"54px",objectFit:"contain",display:"block"}}/>
               </div>
             </div>
             <div style={{flex:1,minWidth:0}}>
@@ -1784,8 +1786,8 @@ export default function App() {
           {/* IZQUIERDA: logo + brand */}
           <div style={{display:"flex",alignItems:"center",gap:"10px",flexShrink:0}}>
             <div style={{flexShrink:0,display:"flex",alignItems:"center"}}>
-              <div style={{width:"66px",height:"66px",borderRadius:"50%",background:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",padding:"6px",flexShrink:0,boxShadow:"0 2px 8px rgba(0,0,0,0.15)"}}>
-                <img src={LOGO_SRC} alt="MundoChile" style={{width:"54px",height:"54px",objectFit:"contain",display:"block"}}/>
+              <div style={{width:"80px",height:"80px",borderRadius:"50%",background:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",padding:"3px",flexShrink:0,boxShadow:"0 2px 8px rgba(0,0,0,0.15)"}}>
+                <img src={LOGO_SRC} alt="MundoChile" style={{width:"74px",height:"74px",objectFit:"contain",display:"block"}}/>
               </div>
             </div>
             <div>
