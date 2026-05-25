@@ -1867,9 +1867,9 @@ export default function App() {
             </div>
           </div>
           {/* CENTRO: tabs */}
-          {pantalla==="calendario"&&<div style={{display:"flex",gap:"4px",alignItems:"center",flex:1,justifyContent:"center"}}>
+          {pantalla==="calendario"&&<div style={{display:"flex",gap:"2px",alignItems:"center",flex:1,justifyContent:"center"}}>
             {[["semana","Semana"],["dia","Día"],["mes","Mes"],["agenda","Agenda"]].map(([v,l])=>(
-              <button key={v} onClick={()=>setVista(v)} style={{padding:"8px 18px",background:vista===v?"#FFFFFF":"rgba(255,255,255,0.12)",border:"none",borderRadius:"8px",color:vista===v?"#1E3A6E":"#FFFFFF",fontWeight:vista===v?"700":"400",cursor:"pointer",fontSize:"14px",fontFamily:"inherit",transition:"all 0.15s"}}>{l}</button>
+              <button key={v} onClick={()=>setVista(v)} style={{padding:"11px 26px",background:vista===v?"#FFFFFF":"rgba(255,255,255,0.12)",border:"none",borderRadius:"8px",color:vista===v?"#1E3A6E":"#FFFFFF",fontWeight:vista===v?"700":"400",cursor:"pointer",fontSize:"16px",fontFamily:"inherit",transition:"all 0.15s"}}>{l}</button>
             ))}
           </div>}
           {/* DERECHA: nav + utilidades */}
