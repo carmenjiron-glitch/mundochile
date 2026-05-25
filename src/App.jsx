@@ -93,20 +93,20 @@ const HORAS = (() => { const h=[]; for(let x=7;x<=22;x++) for(let m of [0,15,30,
 const S = {
   inp: {width:"100%",padding:"9px 12px",border:`1.5px solid ${C.grisBorde}`,borderRadius:"8px",fontSize:"16px",color:C.texto,background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",height:"48px"},
   sel: {width:"100%",padding:"9px 12px",border:`1.5px solid ${C.grisBorde}`,borderRadius:"8px",fontSize:"16px",color:C.texto,background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",cursor:"pointer",height:"48px"},
-  lbl: {fontSize:"14px",fontWeight:"700",color:"#1A1A1A",textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:"5px",display:"block"},
+  lbl: {fontSize:"14px",fontWeight:"600",color:"#4A4A4A",textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:"5px",display:"block"},
   fila:{display:"flex",gap:"16px",flexWrap:"wrap"},
   camp:{flex:"1",minWidth:"140px"},
-  btnA:{padding:"10px 20px",background:"#3a7bd5",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"700",fontSize:"14px",fontFamily:"inherit"},
-  btnR:{padding:"10px 20px",background:"#E03131",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"700",fontSize:"14px",fontFamily:"inherit"},
-  btnV:{padding:"10px 20px",background:"#2F9E44",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"700",fontSize:"14px",fontFamily:"inherit"},
-  btnG:{padding:"10px 20px",background:"#fff",color:C.textoMed,border:`1.5px solid ${C.grisBorde}`,borderRadius:"8px",cursor:"pointer",fontWeight:"600",fontSize:"14px",fontFamily:"inherit"},
-  btnSave:{padding:"11px 22px",background:"#2F9E44",color:"#fff",border:"2px solid #1B5E20",borderRadius:"8px",cursor:"pointer",fontWeight:"600",fontSize:"16px",fontFamily:"inherit"},
-  btnDel:{padding:"10px 20px",background:"#E03131",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"600",fontSize:"14px",fontFamily:"inherit"},
-  btnCancel:{padding:"10px 20px",background:"#FFEBEE",color:"#C62828",border:"1px solid #EF9A9A",borderRadius:"8px",cursor:"pointer",fontWeight:"600",fontSize:"14px",fontFamily:"inherit"},
-  btnEdit:{padding:"6px 12px",background:"#E67700",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"700",fontSize:"12px",fontFamily:"inherit"},
-  btnFicha:{padding:"6px 12px",background:"#1971C2",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"700",fontSize:"12px",fontFamily:"inherit"},
-  btnDup:{padding:"6px 12px",background:"#9C36B5",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"700",fontSize:"12px",fontFamily:"inherit"},
-  btnP:{padding:"6px 12px",background:C.azulClaro,color:C.azul,border:`1px solid ${C.azulBorde}`,borderRadius:"6px",cursor:"pointer",fontWeight:"700",fontSize:"12px",fontFamily:"inherit"},
+  btnA:{padding:"10px 20px",background:"#3a7bd5",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
+  btnR:{padding:"10px 20px",background:"#E03131",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
+  btnV:{padding:"10px 20px",background:"#2F9E44",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
+  btnG:{padding:"10px 20px",background:"#fff",color:C.textoMed,border:`1.5px solid ${C.grisBorde}`,borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
+  btnSave:{padding:"11px 22px",background:"#2F9E44",color:"#fff",border:"2px solid #1B5E20",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"16px",fontFamily:"inherit"},
+  btnDel:{padding:"10px 20px",background:"#E03131",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
+  btnCancel:{padding:"10px 20px",background:"#FFEBEE",color:"#C62828",border:"1px solid #EF9A9A",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
+  btnEdit:{padding:"6px 12px",background:"#E67700",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",fontFamily:"inherit"},
+  btnFicha:{padding:"6px 12px",background:"#1971C2",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",fontFamily:"inherit"},
+  btnDup:{padding:"6px 12px",background:"#9C36B5",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",fontFamily:"inherit"},
+  btnP:{padding:"6px 12px",background:C.azulClaro,color:C.azul,border:`1px solid ${C.azulBorde}`,borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",fontFamily:"inherit"},
 };
 
 // ─── ESTADO VACÍO ─────────────────────────────────────────────────────────────
@@ -628,7 +628,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           {/* ── TAB INTÉRPRETES (un día) ── */}
           {tab==="interpretes"&&!esMultidia&&<>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"20px"}}>
-              <div style={{fontWeight:"800",color:C.rojo,fontSize:"17px"}}>🎙 Intérpretes asignados</div>
+              <div style={{fontWeight:"600",color:C.rojo,fontSize:"17px"}}>🎙 Intérpretes asignados</div>
               <button onClick={()=>addAsig()} style={S.btnA}>+ Agregar intérprete</button>
             </div>
             {form.asignaciones.length===0&&<div style={{textAlign:"center",color:C.textoSuave,padding:"40px 20px",border:`2px dashed ${C.grisBorde}`,borderRadius:"12px"}}>Sin intérpretes — Agrega uno arriba</div>}
@@ -639,7 +639,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           {/* ── TAB EQUIPOS AV (un día) ── */}
           {tab==="equipos"&&!esMultidia&&<>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"20px"}}>
-              <div style={{fontWeight:"800",color:C.verde,fontSize:"17px"}}>🔧 Equipos AV</div>
+              <div style={{fontWeight:"600",color:C.verde,fontSize:"17px"}}>🔧 Equipos AV</div>
               <button onClick={()=>setForm(f=>({...f,equipos:[...(f.equipos||[]),eqVacio()]}))} style={S.btnA}>+ Agregar equipos</button>
             </div>
             {(form.equipos||[]).length===0&&<div style={{textAlign:"center",color:C.textoSuave,padding:"40px 20px",border:`2px dashed ${C.grisBorde}`,borderRadius:"12px"}}>Sin equipos AV — Agrega uno arriba</div>}
@@ -678,7 +678,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           {/* ── TAB POR DÍA ── */}
           {tab==="dias"&&esMultidia&&form.dias.map((dia,dIdx)=>(
             <div key={dia.fecha} style={{border:`2px solid ${C.grisBorde}`,borderRadius:"14px",marginBottom:"16px",overflow:"hidden"}}>
-              <div style={{background:C.grisMed,padding:"12px 16px",fontWeight:"800",color:C.azul,fontSize:"14px"}}>
+              <div style={{background:C.grisMed,padding:"12px 16px",fontWeight:"600",color:C.azul,fontSize:"14px"}}>
                 📅 Día {dIdx+1} de {form.dias.length} — {formatLargo(dia.fecha)}
               </div>
               <div style={{padding:"16px"}}>
@@ -1222,7 +1222,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
           <button onClick={()=>{setEditando("nuevo");setFormEdit({nombre:"",apellido:"",email:"",telefono:"",ciudad:"",modalidad_trabajo:"ambas",es_host_zoom:false,notas:"",activo:true});}} style={S.btnA}>+ Nuevo intérprete</button>
         </div>
         {editando&&<div style={{background:C.azulClaro,border:`1.5px solid ${C.azulBorde}`,borderRadius:"12px",padding:"20px",marginBottom:"20px"}}>
-          <div style={{fontWeight:"800",color:C.azul,marginBottom:"20px"}}>{editando==="nuevo"?"Nuevo intérprete":"Editar intérprete"}</div>
+          <div style={{fontWeight:"600",color:C.azul,marginBottom:"20px"}}>{editando==="nuevo"?"Nuevo intérprete":"Editar intérprete"}</div>
           <div style={{...S.fila,marginBottom:"12px"}}>
             <div style={S.camp}><label style={S.lbl}>Nombre *</label>{EF("nombre")}</div>
             <div style={S.camp}><label style={S.lbl}>Apellido</label>{EF("apellido")}</div>
@@ -1301,7 +1301,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
           <button onClick={()=>{setEditando("nuevo");setFormEdit({nombre_empresa:"",nombre_contacto:"",email_contacto:"",telefono:"",celular:"",notas:"",activo:true});}} style={S.btnA}>+ Nuevo cliente</button>
         </div>
         {editando&&<div style={{background:C.azulClaro,border:`1.5px solid ${C.azulBorde}`,borderRadius:"12px",padding:"20px",marginBottom:"20px"}}>
-          <div style={{fontWeight:"800",color:C.azul,marginBottom:"20px"}}>{editando==="nuevo"?"Nuevo cliente":"Editar cliente"}</div>
+          <div style={{fontWeight:"600",color:C.azul,marginBottom:"20px"}}>{editando==="nuevo"?"Nuevo cliente":"Editar cliente"}</div>
           <div style={{marginBottom:"12px"}}><label style={S.lbl}>Nombre empresa *</label>{EF("nombre_empresa")}</div>
           <div style={{...S.fila,marginBottom:"12px"}}>
             <div style={S.camp}><label style={S.lbl}>Contacto</label>{EF("nombre_contacto")}</div>
