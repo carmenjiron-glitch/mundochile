@@ -1,15 +1,15 @@
 export default function FilterBar({filters, onChange, interpreters=[]}) {
   const CHIP_ACTIVO = {
-    padding:"5px 14px",borderRadius:"20px",cursor:"pointer",
+    padding:"6px 16px",borderRadius:"8px",cursor:"pointer",
     fontSize:"14px",fontWeight:"600",fontFamily:"inherit",
-    background:"#3a7bd5",color:"#FFFFFF",
-    border:"1.5px solid #FFFFFF"
+    background:"#FFFFFF",color:"#E53E3E",
+    border:"1.5px solid #E53E3E"
   };
   const CHIP_INACTIVO = {
-    padding:"5px 14px",borderRadius:"20px",cursor:"pointer",
+    padding:"6px 16px",borderRadius:"8px",cursor:"pointer",
     fontSize:"14px",fontWeight:"500",fontFamily:"inherit",
-    background:"rgba(255,255,255,0.12)",color:"#FDE68A",
-    border:"1.5px solid rgba(255,255,255,0.35)"
+    background:"#FFFFFF",color:"#FC8181",
+    border:"1.5px solid #FC8181"
   };
   const LBL = {
     fontSize:"11px",fontWeight:"800",color:"rgba(255,255,255,0.60)",
