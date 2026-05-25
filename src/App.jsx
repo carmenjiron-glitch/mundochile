@@ -462,7 +462,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                 <option value="">Seleccionar…</option>
                 {interpretes.filter(i=>i.activo).map(i=><option key={i.id} value={i.id}>{i.nombre}{i.apellido?" "+i.apellido:""}{i.es_host_zoom?" 🔑":""}{i.ciudad?` · ${i.ciudad}`:""}</option>)}
               </select>
-              <button onClick={()=>onNuevoInterprete(idx,dIdx)} style={S.btnP}>+</button>
+              <button onClick={()=>onNuevoInterprete(idx,dIdx)} style={{...S.btnP,fontSize:"21px",fontWeight:"700",width:"48px",height:"48px",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>+</button>
             </div>
             {interp&&<div style={{fontSize:"11px",color:C.textoSuave,marginTop:"4px",display:"flex",gap:"8px",flexWrap:"wrap"}}>
               {interp.ciudad&&<span>📍 {interp.ciudad}</span>}
@@ -472,8 +472,8 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           <div style={S.camp}>
             <label style={S.lbl}>🌐 Par de idiomas</label>
             <select style={{...S.sel,fontWeight:"700"}} value={a.par_id||""} onChange={e=>edit("par_id",e.target.value?Number(e.target.value):"")}>
-              <option value="">Seleccionar…</option>
-              {[...["Inglés","Portugués","Francés"].reduce((acc,pr)=>{const p=pares.filter(x=>x.activo!==false&&x.idioma_origen===pr).sort((a,b)=>["Inglés","Portugués","Francés"].indexOf(a.idioma_origen)-["Inglés","Portugués","Francés"].indexOf(b.idioma_origen));acc.push(...p);return acc;},[]),...pares.filter(p=>p.activo!==false&&!["Inglés","Portugués","Francés"].includes(p.idioma_origen)).sort((a,b)=>a.descripcion?.localeCompare(b.descripcion||""))].map(p=><option key={p.id} value={p.id}>{p.descripcion}</option>)}
+              <option value="">Seleccionar par de idiomas…</option>
+              {(pares||[]).filter(p=>p.activo!==false).sort((a,b)=>(a.descripcion||"").localeCompare(b.descripcion||"")).map(p=><option key={p.id} value={p.id}>{p.descripcion}</option>)}
             </select>
           </div>
         </div>
@@ -483,9 +483,6 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           <div style={S.camp}><label style={S.lbl}>🕐 Hora presentación</label><SelHora value={a.hora_presentacion} onChange={v=>edit("hora_presentacion",v)} placeholder="Misma del evento"/></div>
         </div>
         <div style={{display:"flex",gap:"16px",marginTop:"10px",flexWrap:"wrap",alignItems:"center"}}>
-          <label style={{display:"flex",gap:"6px",alignItems:"center",cursor:"pointer",fontSize:"13px",color:C.textoMed}}>
-            <input type="checkbox" checked={!!a.es_boleta_adicional} onChange={e=>edit("es_boleta_adicional",e.target.checked)}/> Boleta adicional (B#)
-          </label>
           <label style={{display:"flex",gap:"6px",alignItems:"center",cursor:"pointer",fontSize:"13px",color:a.es_host_zoom?C.rojo:C.textoMed,fontWeight:a.es_host_zoom?"700":"400"}}>
             <input type="checkbox" checked={!!a.es_host_zoom} onChange={e=>edit("es_host_zoom",e.target.checked)}/> 🔑 Host Zoom MundoChile
           </label>
@@ -634,6 +631,13 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
             {form.asignaciones.length===0&&<div style={{textAlign:"center",color:C.textoSuave,padding:"40px 20px",border:`2px dashed ${C.grisBorde}`,borderRadius:"12px"}}>Sin intérpretes — Agrega uno arriba</div>}
             {form.asignaciones.map((a,idx)=><FilaAsig key={idx} a={a} idx={idx}/>)}
             {form.asignaciones.length>0&&<button onClick={()=>addAsig()} style={{...S.btnP,width:"100%",padding:"9px"}}>+ Agregar otro intérprete</button>}
+          <div style={{marginTop:"20px",borderTop:`1px solid ${C.grisBorde}`,paddingTop:"16px"}}>
+            <label style={S.lbl}>💬 Comentarios</label>
+            <textarea style={{...S.inp,minHeight:"80px",resize:"vertical"}}
+              value={form.comentarios||""}
+              onChange={e=>setF("comentarios",e.target.value)}
+              placeholder="Notas adicionales sobre los intérpretes…"/>
+          </div>
           </>}
 
           {/* ── TAB EQUIPOS AV (un día) ── */}
@@ -663,13 +667,39 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                     </select></div>
                 </div>
                 <div style={{...S.fila,marginTop:"10px"}}>
-                  <div style={S.camp}><label style={S.lbl}>N° receptores</label><input style={S.inp} type="number" value={eq.num_receptores} onChange={e=>setForm(f=>{const eqs=[...(f.equipos||[])];eqs[eIdx]={...eqs[eIdx],num_receptores:e.target.value};return{...f,equipos:eqs};})}/></div>
+                  <div style={S.camp}><label style={S.lbl}>N° receptores</label>
+  <select style={S.sel} value={[50,100,150,200,250,300,350,400,450,500].includes(Number(eq.num_receptores))||!eq.num_receptores?eq.num_receptores:"__otro__"}
+    onChange={e=>{if(e.target.value==="__otro__")setForm(f=>{const eqs=[...(f.equipos||[])];eqs[eIdx]={...eqs[eIdx],num_receptores:""};return{...f,equipos:eqs};});else setForm(f=>{const eqs=[...(f.equipos||[])];eqs[eIdx]={...eqs[eIdx],num_receptores:e.target.value};return{...f,equipos:eqs};});}}>
+    <option value="">Seleccionar…</option>
+    {[50,100,150,200,250,300,350,400,450,500].map(n=><option key={n} value={n}>{n} receptores</option>)}
+    <option value="__otro__">Otro número…</option>
+  </select>
+  {(![50,100,150,200,250,300,350,400,450,500].includes(Number(eq.num_receptores))&&eq.num_receptores!=="")&&
+    <input style={{...S.inp,marginTop:"6px"}} type="number" value={eq.num_receptores||""} onChange={e=>setForm(f=>{const eqs=[...(f.equipos||[])];eqs[eIdx]={...eqs[eIdx],num_receptores:e.target.value};return{...f,equipos:eqs};})} placeholder="Ingresa número…"/>
+  }
+</div>
                   <div style={S.camp}><label style={S.lbl}>N° cabinas</label><input style={S.inp} type="number" value={eq.num_cabinas} onChange={e=>setForm(f=>{const eqs=[...(f.equipos||[])];eqs[eIdx]={...eqs[eIdx],num_cabinas:e.target.value};return{...f,equipos:eqs};})}/></div>
                   <div style={S.camp}><label style={S.lbl}>N° asistentes</label><input style={S.inp} type="number" value={eq.num_asistentes} onChange={e=>setForm(f=>{const eqs=[...(f.equipos||[])];eqs[eIdx]={...eqs[eIdx],num_asistentes:e.target.value};return{...f,equipos:eqs};})}/></div>
                 </div>
-                <div style={{...S.fila,marginTop:"10px"}}>
-                  <div style={S.camp}><label style={S.lbl}>Contacto proveedor</label><input style={S.inp} defaultValue={eq.proveedor_contacto} onBlur={e=>setForm(f=>{const eqs=[...(f.equipos||[])];eqs[eIdx]={...eqs[eIdx],proveedor_contacto:e.target.value};return{...f,equipos:eqs};})}/></div>
-                  <div style={S.camp}><label style={S.lbl}>Teléfono proveedor</label><input style={S.inp} defaultValue={eq.proveedor_telefono} onBlur={e=>setForm(f=>{const eqs=[...(f.equipos||[])];eqs[eIdx]={...eqs[eIdx],proveedor_telefono:e.target.value};return{...f,equipos:eqs};})}/></div>
+                <div style={{marginTop:"10px"}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"6px"}}>
+                    <label style={S.lbl}>Contactos proveedor</label>
+                    <button onClick={()=>setForm(f=>{const eqs=[...(f.equipos||[])];let cs=[];try{cs=JSON.parse(eqs[eIdx].proveedor_contacto||"[]");}catch{cs=[];}cs.push({tipo:"celular",valor:""});eqs[eIdx]={...eqs[eIdx],proveedor_contacto:JSON.stringify(cs)};return{...f,equipos:eqs};})} style={{...S.btnP,padding:"4px 10px",fontSize:"18px",fontWeight:"700"}}>+</button>
+                  </div>
+                  <div style={{maxHeight:"160px",overflowY:"auto",display:"flex",flexDirection:"column",gap:"6px"}}>
+                    {(()=>{let cs=[];try{cs=JSON.parse(eq.proveedor_contacto||"[]");}catch{cs=eq.proveedor_contacto?[{tipo:"celular",valor:eq.proveedor_contacto}]:[];}
+                    return cs.map((c,ci)=>(
+                      <div key={ci} style={{display:"flex",gap:"6px",alignItems:"center"}}>
+                        <select style={{...S.sel,width:"130px",flexShrink:0}} value={c.tipo} onChange={e=>setForm(f=>{const eqs=[...(f.equipos||[])];let cs2=[];try{cs2=JSON.parse(eqs[eIdx].proveedor_contacto||"[]");}catch{cs2=[];}cs2[ci]={...cs2[ci],tipo:e.target.value};eqs[eIdx]={...eqs[eIdx],proveedor_contacto:JSON.stringify(cs2)};return{...f,equipos:eqs};})}>
+                          <option value="celular">📱 Celular</option>
+                          <option value="whatsapp">💬 WhatsApp</option>
+                          <option value="mail">✉️ Mail</option>
+                        </select>
+                        <input style={{...S.inp,flex:1}} value={c.valor} onChange={e=>setForm(f=>{const eqs=[...(f.equipos||[])];let cs2=[];try{cs2=JSON.parse(eqs[eIdx].proveedor_contacto||"[]");}catch{cs2=[];}cs2[ci]={...cs2[ci],valor:e.target.value};eqs[eIdx]={...eqs[eIdx],proveedor_contacto:JSON.stringify(cs2)};return{...f,equipos:eqs};})} placeholder={c.tipo==="mail"?"correo@ejemplo.com":"+56 9 0000 0000"}/>
+                        <button onClick={()=>setForm(f=>{const eqs=[...(f.equipos||[])];let cs2=[];try{cs2=JSON.parse(eqs[eIdx].proveedor_contacto||"[]");}catch{cs2=[];}cs2.splice(ci,1);eqs[eIdx]={...eqs[eIdx],proveedor_contacto:JSON.stringify(cs2)};return{...f,equipos:eqs};})} style={{background:"none",border:"none",cursor:"pointer",color:C.rojo,fontSize:"16px",padding:"0 4px"}}>×</button>
+                      </div>
+                    ));})()}
+                  </div>
                 </div>
               </div>
             ))}
@@ -725,13 +755,39 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                           </select></div>
                       </div>
                       <div style={{...S.fila,marginTop:"10px"}}>
-                        <div style={S.camp}><label style={S.lbl}>N° receptores</label><input style={S.inp} type="number" value={eq.num_receptores} onChange={e=>editEq(dIdx,eIdx,"num_receptores",e.target.value)}/></div>
+                        <div style={S.camp}><label style={S.lbl}>N° receptores</label>
+  <select style={S.sel} value={[50,100,150,200,250,300,350,400,450,500].includes(Number(eq.num_receptores))||!eq.num_receptores?eq.num_receptores:"__otro__"}
+    onChange={e=>{if(e.target.value==="__otro__")editEq(dIdx,eIdx,"num_receptores","");else editEq(dIdx,eIdx,"num_receptores",e.target.value);}}>
+    <option value="">Seleccionar…</option>
+    {[50,100,150,200,250,300,350,400,450,500].map(n=><option key={n} value={n}>{n} receptores</option>)}
+    <option value="__otro__">Otro número…</option>
+  </select>
+  {(![50,100,150,200,250,300,350,400,450,500].includes(Number(eq.num_receptores))&&eq.num_receptores!=="")&&
+    <input style={{...S.inp,marginTop:"6px"}} type="number" value={eq.num_receptores||""} onChange={e=>editEq(dIdx,eIdx,"num_receptores",e.target.value)} placeholder="Ingresa número…"/>
+  }
+</div>
                         <div style={S.camp}><label style={S.lbl}>N° cabinas</label><input style={S.inp} type="number" value={eq.num_cabinas} onChange={e=>editEq(dIdx,eIdx,"num_cabinas",e.target.value)}/></div>
                         <div style={S.camp}><label style={S.lbl}>N° asistentes</label><input style={S.inp} type="number" value={eq.num_asistentes} onChange={e=>editEq(dIdx,eIdx,"num_asistentes",e.target.value)}/></div>
                       </div>
-                      <div style={{...S.fila,marginTop:"10px"}}>
-                        <div style={S.camp}><label style={S.lbl}>Contacto proveedor</label><input style={S.inp} defaultValue={eq.proveedor_contacto} onBlur={e=>editEq(dIdx,eIdx,"proveedor_contacto",e.target.value)}/></div>
-                        <div style={S.camp}><label style={S.lbl}>Teléfono proveedor</label><input style={S.inp} defaultValue={eq.proveedor_telefono} onBlur={e=>editEq(dIdx,eIdx,"proveedor_telefono",e.target.value)}/></div>
+                      <div style={{marginTop:"10px"}}>
+                        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"6px"}}>
+                          <label style={S.lbl}>Contactos proveedor</label>
+                          <button onClick={()=>{let cs=[];try{cs=JSON.parse(eq.proveedor_contacto||"[]");}catch{cs=[];}cs.push({tipo:"celular",valor:""});editEq(dIdx,eIdx,"proveedor_contacto",JSON.stringify(cs));}} style={{...S.btnP,padding:"4px 10px",fontSize:"18px",fontWeight:"700"}}>+</button>
+                        </div>
+                        <div style={{maxHeight:"160px",overflowY:"auto",display:"flex",flexDirection:"column",gap:"6px"}}>
+                          {(()=>{let cs=[];try{cs=JSON.parse(eq.proveedor_contacto||"[]");}catch{cs=eq.proveedor_contacto?[{tipo:"celular",valor:eq.proveedor_contacto}]:[];}
+                          return cs.map((c,ci)=>(
+                            <div key={ci} style={{display:"flex",gap:"6px",alignItems:"center"}}>
+                              <select style={{...S.sel,width:"130px",flexShrink:0}} value={c.tipo} onChange={e=>{let cs2=[];try{cs2=JSON.parse(eq.proveedor_contacto||"[]");}catch{cs2=[];}cs2[ci]={...cs2[ci],tipo:e.target.value};editEq(dIdx,eIdx,"proveedor_contacto",JSON.stringify(cs2));}}>
+                                <option value="celular">📱 Celular</option>
+                                <option value="whatsapp">💬 WhatsApp</option>
+                                <option value="mail">✉️ Mail</option>
+                              </select>
+                              <input style={{...S.inp,flex:1}} value={c.valor} onChange={e=>{let cs2=[];try{cs2=JSON.parse(eq.proveedor_contacto||"[]");}catch{cs2=[];}cs2[ci]={...cs2[ci],valor:e.target.value};editEq(dIdx,eIdx,"proveedor_contacto",JSON.stringify(cs2));}} placeholder={c.tipo==="mail"?"correo@ejemplo.com":"+56 9 0000 0000"}/>
+                              <button onClick={()=>{let cs2=[];try{cs2=JSON.parse(eq.proveedor_contacto||"[]");}catch{cs2=[];}cs2.splice(ci,1);editEq(dIdx,eIdx,"proveedor_contacto",JSON.stringify(cs2));}} style={{background:"none",border:"none",cursor:"pointer",color:C.rojo,fontSize:"16px",padding:"0 4px"}}>×</button>
+                            </div>
+                          ));})()}
+                        </div>
                       </div>
                       <div style={{marginTop:"12px",paddingTop:"12px",borderTop:`1px solid ${C.grisBorde}`}}>
                         <div style={{fontWeight:"700",color:C.textoMed,fontSize:"12px",marginBottom:"10px",textTransform:"uppercase"}}>🔩 Montaje</div>
