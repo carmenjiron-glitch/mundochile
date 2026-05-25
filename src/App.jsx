@@ -1857,8 +1857,8 @@ export default function App() {
           {/* IZQUIERDA: logo + brand */}
           <div style={{display:"flex",alignItems:"center",gap:"10px",flexShrink:0}}>
             <div style={{flexShrink:0,display:"flex",alignItems:"center"}}>
-              <div style={{width:"82px",height:"82px",borderRadius:"50%",background:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",padding:"2px",flexShrink:0,boxShadow:"0 2px 8px rgba(0,0,0,0.15)",overflow:"hidden",marginTop:"6px",marginBottom:"6px"}}>
-                <img src={LOGO_SRC} alt="MundoChile" style={{width:"78px",height:"78px",objectFit:"contain",display:"block",objectPosition:"center top",transform:"translateY(-4px)"}}/>
+              <div style={{width:"82px",height:"82px",borderRadius:"50%",background:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",padding:"2px",flexShrink:0,boxShadow:"0 2px 8px rgba(0,0,0,0.15)"}}>
+                <img src={LOGO_SRC} alt="MundoChile" style={{width:"78px",height:"78px",objectFit:"contain",display:"block"}}/>
               </div>
             </div>
             <div>
@@ -1867,9 +1867,9 @@ export default function App() {
             </div>
           </div>
           {/* CENTRO: tabs */}
-          {pantalla==="calendario"&&<div style={{display:"flex",gap:"2px",alignItems:"center",flex:1,justifyContent:"center"}}>
+          {pantalla==="calendario"&&<div style={{display:"flex",gap:"8px",alignItems:"center",flex:1,justifyContent:"center"}}>
             {[["semana","Semana"],["dia","Día"],["mes","Mes"],["agenda","Agenda"]].map(([v,l])=>(
-              <button key={v} onClick={()=>setVista(v)} style={{padding:"11px 26px",background:vista===v?"#FFFFFF":"rgba(255,255,255,0.12)",border:"none",borderRadius:"8px",color:vista===v?"#1E3A6E":"#FFFFFF",fontWeight:vista===v?"700":"400",cursor:"pointer",fontSize:"16px",fontFamily:"inherit",transition:"all 0.15s"}}>{l}</button>
+              <button key={v} onClick={()=>setVista(v)} style={{padding:"9px 16px",background:vista===v?"#FFFFFF":"rgba(255,255,255,0.12)",border:"none",borderRadius:"8px",color:vista===v?"#1E3A6E":"#FFFFFF",fontWeight:vista===v?"700":"400",cursor:"pointer",fontSize:"13px",fontFamily:"inherit",transition:"all 0.15s"}}>{l}</button>
             ))}
           </div>}
           {/* DERECHA: nav + utilidades */}
