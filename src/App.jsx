@@ -3,6 +3,11 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { createClient } from "@supabase/supabase-js";
 import * as XLSX from "xlsx";
 import html2canvas from "html2canvas";
+import EventCard from "./components/ui/EventCard.jsx";
+import MultiDayPill from "./components/ui/MultiDayPill.jsx";
+import PlatformChip from "./components/ui/PlatformChip.jsx";
+import InterpreterRow from "./components/ui/InterpreterRow.jsx";
+import FilterBar from "./components/FilterBar.jsx";
 
 // ─── SUPABASE ────────────────────────────────────────────────────────────────
 const SB_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -756,42 +761,27 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
   if(!evento) return null;
   const cliente=clientes.find(c=>c.id===evento.cliente_id);
   const esZoomMC=evento.plataforma==="Zoom MundoChile";
+  const esPresencial=evento.modalidad==="presencial"||evento.modalidad==="hibrido";
   const esMultidia=evento.fecha_inicio!==evento.fecha_termino;
   const dias=((evento.evento_dias||evento.dias||[]).sort((a,b)=>(a.orden||0)-(b.orden||0)));
-  const btMD=B_TIPO[evento.tipo]||{bg:"#EEF2FF",c:"#3B5BDB"};
-  const bmMD=B_MOD[evento.modalidad]||{bg:"#F7F7F5",c:"#6B6B6B"};
-  const beMD=B_EST(evento.estado);
-  const bsMD=(bg,c)=>({display:"inline-flex",alignItems:"center",padding:"5px 14px",borderRadius:"6px",fontSize:"14px",fontWeight:"600",color:c,background:bg,border:`2px solid ${c}`,whiteSpace:"nowrap"});
-  const ST=({txt})=><div style={{fontSize:"15px",fontWeight:"700",color:"#1A1A1A",textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:"8px"}}>{txt}</div>;
-  const btnD=(bg)=>({padding:"10px 20px",background:bg,color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"600",fontSize:"15px",fontFamily:"inherit"});
-  const InterpPill=({a})=>{
+  const LBL={remoto:"Remoto",presencial:"Presencial",hibrido:"Híbrido"};
+  const LBL_LARGA={txt:"13px",fw:"700",c:"#0F172A",tt:"uppercase",ls:"0.04em"};
+  const SL=({t})=><div style={{fontSize:LBL_LARGA.txt,fontWeight:LBL_LARGA.fw,color:LBL_LARGA.c,textTransform:LBL_LARGA.tt,letterSpacing:LBL_LARGA.ls,marginBottom:"6px"}}>{t}</div>;
+  const HR=()=><hr style={{border:"none",borderTop:"1px solid #E5E7EB",margin:"16px 0"}}/>;
+  const btnA=(bg)=>({padding:"8px 18px",background:bg,color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"600",fontSize:"14px",fontFamily:"inherit"});
+  const interpRows=(asigs)=>asigs.reduce((acc,a)=>{
     const interp=interpretes.find(x=>x.id===a.interprete_id);
     const par=pares.find(p=>p.id===a.par_id);
-    if(!interp) return null;
-    const idioma=par?.idioma_origen||"";
-    const bg=idiomaColor(idioma);
-    const bd=idiomaBorde(idioma);
-    return (
-      <div style={{marginBottom:"8px",display:"flex",alignItems:"center",gap:"10px",flexWrap:"wrap"}}>
-        <span style={{display:"inline-flex",alignItems:"center",gap:"8px",padding:"12px 20px",borderRadius:"20px",fontSize:"17px",fontWeight:"500",color:"#fff",background:bg,border:a.es_host_zoom?`2px solid #E03131`:`2px solid ${bd}`,boxSizing:"border-box"}}>
-          {a.es_host_zoom&&<span style={{fontSize:"14px"}}>🔑</span>}<FlagImg idioma={idioma}/><span style={{fontWeight:"500"}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
-          {par&&<span style={{opacity:0.85,fontSize:"13px"}}> · {par.idioma_origen} — {par.idioma_destino}</span>}
-        </span>
-        {(a.nro_ot||a.nro_boleta||a.hora_presentacion)&&<span style={{fontSize:"12px",color:C.textoMed,display:"flex",gap:"10px"}}>
-          {a.nro_ot&&<span>OT: {a.nro_ot}</span>}
-          {a.nro_boleta&&<span>Boleta: {a.nro_boleta}</span>}
-          {a.hora_presentacion&&<span>🕐 {a.hora_presentacion.slice(0,5)}</span>}
-        </span>}
-      </div>
-    );
-  };
-  const BotonesAccion=()=>(
-    <div style={{display:"flex",gap:"8px",flexWrap:"wrap"}}>
-      <button onClick={onVerFicha} style={btnD("#1971C2")}>📄 Ver ficha</button>
-      <button onClick={onEditar} style={btnD("#E67700")}>✏️ Editar</button>
-      <button onClick={onEliminar} style={btnD("#E03131")}>🗑 Eliminar</button>
-    </div>
-  );
+    if(!interp) return acc;
+    acc.push({name:`${interp.nombre}${interp.apellido?" "+interp.apellido:""}`,language:par?.idioma_origen||"",isHost:!!a.es_host_zoom});
+    return acc;
+  },[]);
+  const metaRow=(a)=>(a.nro_ot||a.nro_boleta||a.hora_presentacion)
+    ?<div style={{fontSize:"12px",color:"#6B7280",marginTop:"4px",display:"flex",gap:"10px",flexWrap:"wrap"}}>
+      {a.nro_ot&&<span>OT: {a.nro_ot}</span>}
+      {a.nro_boleta&&<span>Boleta: {a.nro_boleta}</span>}
+      {a.hora_presentacion&&<span>🕐 {a.hora_presentacion.slice(0,5)}</span>}
+    </div>:null;
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.65)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(4px)",padding:"16px"}}>
       <div style={{background:"#fff",borderRadius:"20px",width:"100%",maxWidth:"760px",maxHeight:"88vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,0.25)"}}>
@@ -799,96 +789,77 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
         <div style={{background:"#FFFFFF",padding:"20px 24px",borderRadius:"20px 20px 0 0",flexShrink:0,borderBottom:`5px solid ${colorCliente(evento.cliente_id)}`}}>
           <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:"16px"}}>
             <div style={{flex:1,minWidth:0}}>
-              <div style={{fontSize:"28px",fontWeight:"800",color:"#1A1A1A",lineHeight:1.2,marginBottom:"4px"}}>{cliente?.nombre_empresa||"—"}</div>
-              {cliente?.nombre_contacto&&<div style={{fontSize:"15px",color:"#6B6B6B",fontStyle:"italic",marginBottom:"4px"}}>{cliente.nombre_contacto}</div>}
-              {evento.nombre_evento&&<div style={{fontSize:"15px",color:"#374151",marginBottom:"4px"}}>{evento.nombre_evento}</div>}
-              {evento.nro_oc&&<div style={{fontSize:"13px",color:"#6B6B6B",marginBottom:"8px"}}>N° OC: {evento.nro_oc}</div>}
-              <div style={{display:"flex",gap:"6px",flexWrap:"wrap"}}>
-                <span style={bsMD(btMD.bg,btMD.c)}>🎙 {evento.tipo}</span>
-                <span style={bsMD(bmMD.bg,bmMD.c)}>{evento.modalidad==="presencial"?"📍":evento.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evento.modalidad]||evento.modalidad}</span>
-                <span style={bsMD(beMD.bg,beMD.c)}>{evento.estado==="Facturado"?"✓ Facturado":"⏳ Facturación Pendiente"}</span>
-              </div>
+              <div style={{fontSize:"22px",fontWeight:"800",color:"#0F172A",lineHeight:1.2}}>{cliente?.nombre_empresa||"—"}</div>
+              {cliente?.nombre_contacto&&<div style={{fontSize:"13px",color:"#6B7280",fontStyle:"italic",marginTop:"4px"}}>{cliente.nombre_contacto}</div>}
+              {evento.nro_oc&&<div style={{fontSize:"12px",color:"#6B7280",marginTop:"4px"}}>N° OC: {evento.nro_oc}</div>}
             </div>
-            <div style={{display:"flex",flexDirection:"column",gap:"8px",alignItems:"flex-end",flexShrink:0}}>
-              <BotonesAccion/>
-              <button onClick={onCerrar} style={{background:"#868E96",border:"none",cursor:"pointer",fontSize:"13px",color:"#fff",padding:"6px 14px",borderRadius:"6px",fontFamily:"inherit",fontWeight:"600"}}>✕ Cerrar</button>
+            <div style={{display:"flex",flexDirection:"column",gap:"6px",alignItems:"flex-end",flexShrink:0}}>
+              <div style={{display:"flex",gap:"6px",flexWrap:"wrap"}}>
+                <button onClick={onVerFicha} style={btnA("#1971C2")}>📄 Ficha</button>
+                <button onClick={onEditar} style={btnA("#E67700")}>✏️ Editar</button>
+                <button onClick={onEliminar} style={btnA("#E03131")}>🗑 Eliminar</button>
+              </div>
+              <button onClick={onCerrar} style={{background:"none",border:"1px solid #D1D5DB",cursor:"pointer",fontSize:"13px",color:"#6B7280",padding:"5px 14px",borderRadius:"6px",fontFamily:"inherit",fontWeight:"600"}}>✕ Cerrar</button>
             </div>
           </div>
         </div>
         {/* Cuerpo */}
         <div style={{overflowY:"auto",flex:1,padding:"24px 28px"}}>
-          {/* Programa multidía PRIMERO */}
-          {esMultidia&&dias.length>0&&<div style={{marginBottom:"28px"}}>
-            <ST txt="📅 Programa del evento"/>
-            <div style={{borderRadius:"10px",overflow:"hidden",boxShadow:"0 1px 4px rgba(0,0,0,0.08)",border:`1px solid ${C.grisBorde}`}}>
-              <table style={{width:"100%",borderCollapse:"collapse"}}>
-                <thead><tr style={{background:"#2D3748",color:"#fff"}}>
-                  {["Día","Fecha","Horario","Jornada"].map(h=><th key={h} style={{padding:"10px 14px",textAlign:"left",fontSize:"12px",fontWeight:"600"}}>{h}</th>)}
-                </tr></thead>
-                <tbody>{dias.map((dia,dIdx)=>(
-                  <tr key={dIdx} style={{background:dIdx%2===0?"#fff":"#F7FAFC",borderBottom:`1px solid ${C.grisBorde}`}}>
-                    <td style={{padding:"10px 14px",fontSize:"13px",fontWeight:"700",color:C.azul}}>Día {dIdx+1}</td>
-                    <td style={{padding:"10px 14px",fontSize:"13px",color:C.texto}}>{formatLargo(dia.fecha)}</td>
-                    <td style={{padding:"10px 14px",fontSize:"13px",color:C.texto}}>{dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs</td>
-                    <td style={{padding:"10px 14px",fontSize:"13px",color:C.textoMed}}>{dia.jornada}</td>
-                  </tr>
-                ))}</tbody>
-              </table>
-            </div>
-          </div>}
-          {/* Fecha y Horario */}
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"28px"}}>
-            <div style={{background:C.gris,borderRadius:"10px",padding:"12px 16px"}}>
-              <ST txt="📅 Fecha"/>
-              <div style={{fontSize:"21px",fontWeight:"600",color:"#1A1A1A"}}>{esMultidia?`${formatMedioES(evento.fecha_inicio)} → ${formatMedioES(evento.fecha_termino)}`:formatLargo(evento.fecha_inicio)}</div>
-            </div>
-            <div style={{background:C.gris,borderRadius:"10px",padding:"12px 16px"}}>
-              <ST txt="🕐 Horario"/>
-              <div style={{fontSize:"21px",fontWeight:"600",color:"#1A1A1A"}}>{evento.hora_inicio?.slice(0,5)} – {evento.hora_termino?.slice(0,5)} hrs{evento.jornada&&<span style={{fontWeight:"400",color:C.textoMed}}> · {evento.jornada}</span>}</div>
-            </div>
+          {/* Evento + Fecha + Horario */}
+          {evento.nombre_evento&&<div style={{fontSize:"18px",fontWeight:"700",color:"#0F172A",marginBottom:"8px"}}>{evento.nombre_evento}</div>}
+          <div style={{fontSize:"15px",color:"#475569",marginBottom:"4px"}}>
+            📅 {esMultidia?`${formatMedioES(evento.fecha_inicio)} → ${formatMedioES(evento.fecha_termino)}`:formatLargo(evento.fecha_inicio)}
           </div>
-          {/* Plataforma */}
-          {(evento.modalidad==="remoto"||evento.modalidad==="hibrido")&&<div style={{marginBottom:"28px"}}>
-            <ST txt="💻 Plataforma"/>
-            <span style={{display:"inline-flex",alignItems:"center",gap:"8px",padding:"6px 14px",borderRadius:"20px",fontSize:"13px",fontWeight:"600",color:esZoomMC?"#92400E":C.texto,background:esZoomMC?"#FFF3CD":C.grisMed,border:esZoomMC?"1px solid #F59E0B":`1px solid ${C.grisBorde}`}}>
-              💻 {evento.plataforma}{evento.zoom_administrador&&` — Administra: ${evento.zoom_administrador}`}
+          <div style={{fontSize:"16px",fontWeight:"700",color:"#0F172A",marginBottom:"6px"}}>
+            🕐 {evento.hora_inicio?.slice(0,5)} – {evento.hora_termino?.slice(0,5)} hrs{evento.jornada&&<span style={{fontWeight:"400",color:"#6B7280",fontSize:"14px"}}> · {evento.jornada}</span>}
+          </div>
+          <HR/>
+          {/* Badges tipo + modalidad */}
+          <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center",marginBottom:"4px"}}>
+            <span style={{display:"inline-flex",alignItems:"center",padding:"5px 14px",borderRadius:"6px",fontSize:"13px",fontWeight:"600",color:(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c,background:(B_TIPO[evento.tipo]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>🎙 {evento.tipo}</span>
+            <span style={{display:"inline-flex",alignItems:"center",padding:"5px 14px",borderRadius:"6px",fontSize:"13px",fontWeight:"600",color:(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c,background:(B_MOD[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c}`,whiteSpace:"nowrap"}}>
+              {evento.modalidad==="presencial"?"📍":evento.modalidad==="hibrido"?"🔀":"💻"} {LBL[evento.modalidad]||evento.modalidad}
             </span>
-          </div>}
-          {/* Lugar */}
-          {(evento.modalidad==="presencial"||evento.modalidad==="hibrido")&&evento.lugar&&<div style={{marginBottom:"28px"}}>
-            <ST txt="📍 Lugar"/>
-            <div style={{display:"flex",alignItems:"flex-start",gap:"12px",flexWrap:"wrap"}}>
-              <div style={{flex:1,minWidth:"180px"}}>
-                <div style={{fontWeight:"600",fontSize:"21px",color:"#1A1A1A"}}>{evento.lugar}</div>
-                {evento.lugar_detalle&&<div style={{color:"#374151",fontSize:"16px",marginTop:"6px"}}>{evento.lugar_detalle}</div>}
-              </div>
-              <div style={{display:"flex",gap:"8px",flexShrink:0}}>
-                <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((evento.lugar||"")+" "+(evento.lugar_detalle||""))}`} target="_blank" rel="noreferrer"
-                  style={{display:"inline-flex",alignItems:"center",gap:"5px",fontSize:"13px",fontWeight:"600",color:C.azul,textDecoration:"none",padding:"7px 14px",border:`1px solid ${C.azulBorde}`,borderRadius:"8px",background:C.azulClaro,whiteSpace:"nowrap"}}>
-                  📍 Google Maps
-                </a>
-                <CampoCopia valor={`${evento.lugar}${evento.lugar_detalle?", "+evento.lugar_detalle:""}`}/>
-              </div>
+          </div>
+          <HR/>
+          {/* Lugar / Plataforma */}
+          {esPresencial&&evento.lugar&&<div style={{marginBottom:"4px"}}>
+            <SL t="📍 Lugar"/>
+            <div style={{fontSize:"16px",fontWeight:"700",color:"#0F172A"}}>{evento.lugar}</div>
+            {evento.lugar_detalle&&<div style={{fontSize:"13px",color:"#475569",marginTop:"4px"}}>{evento.lugar_detalle}</div>}
+            <div style={{display:"flex",gap:"8px",marginTop:"8px",flexWrap:"wrap"}}>
+              <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((evento.lugar||"")+" "+(evento.lugar_detalle||""))}`} target="_blank" rel="noreferrer"
+                style={{display:"inline-flex",alignItems:"center",gap:"5px",fontSize:"13px",fontWeight:"600",color:"#1971C2",textDecoration:"none",padding:"6px 12px",border:"1px solid #93C5FD",borderRadius:"8px",background:"#EFF6FF"}}>
+                📍 Ver en Maps
+              </a>
+              <CampoCopia valor={`${evento.lugar}${evento.lugar_detalle?", "+evento.lugar_detalle:""}`}/>
             </div>
           </div>}
+          {!esPresencial&&evento.plataforma&&<div style={{marginBottom:"4px"}}>
+            <SL t="💻 Plataforma"/>
+            <PlatformChip platform={evento.plataforma} isMundoChile={esZoomMC} extra={esZoomMC?evento.zoom_administrador:""}/>
+          </div>}
+          {(esPresencial&&evento.lugar)||(!esPresencial&&evento.plataforma)?<HR/>:null}
           {/* Intérpretes (un día) */}
-          {asignaciones.length>0&&<div style={{marginBottom:"28px"}}>
-            <ST txt="🎙 Intérpretes"/>
-            {asignaciones.map((a,i)=><InterpPill key={i} a={a}/>)}
+          {asignaciones.length>0&&<div style={{marginBottom:"4px"}}>
+            <SL t="🎙 Intérpretes"/>
+            <InterpreterRow interpreters={interpRows(asignaciones)}/>
+            {asignaciones.map((a,i)=><div key={i}>{metaRow(a)}</div>)}
           </div>}
           {/* Intérpretes y equipos por día (multidía) */}
           {esMultidia&&dias.map((dia,dIdx)=>{
             const asigsDia=dia.asignaciones_dia||[],eqsDia=dia.equipos_dia||[];
             if(!asigsDia.length&&!eqsDia.length) return null;
             return (
-              <div key={dia.id||dIdx} style={{border:`1.5px solid ${C.grisBorde}`,borderRadius:"10px",marginBottom:"12px",overflow:"hidden"}}>
-                <div style={{background:"#F7FAFC",padding:"10px 16px",fontWeight:"600",color:C.texto,fontSize:"13px"}}>
+              <div key={dia.id||dIdx} style={{border:"1px solid #E5E7EB",borderRadius:"10px",marginBottom:"10px",overflow:"hidden"}}>
+                <div style={{background:"#F8FAFC",padding:"10px 16px",fontWeight:"600",color:"#0F172A",fontSize:"13px"}}>
                   📅 Día {dIdx+1} — {formatLargo(dia.fecha)} · {dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs
                 </div>
                 <div style={{padding:"12px 16px"}}>
-                  {asigsDia.map((a,aIdx)=><InterpPill key={aIdx} a={a}/>)}
+                  <InterpreterRow interpreters={interpRows(asigsDia)}/>
+                  {asigsDia.map((a,ai)=><div key={ai}>{metaRow(a)}</div>)}
                   {eqsDia.map((eq,eIdx)=>(
-                    <div key={eIdx} style={{fontSize:"13px",color:C.textoMed,padding:"8px 12px",background:"#EDF2F7",border:`1px solid ${C.grisBorde}`,borderRadius:"8px",marginTop:"6px"}}>
+                    <div key={eIdx} style={{fontSize:"13px",color:"#6B7280",padding:"6px 10px",background:"#F1F5F9",border:"1px solid #E2E8F0",borderRadius:"6px",marginTop:"6px"}}>
                       🔧 {eq.tipo_equipo==="fijo"?"Sistema fijo":eq.tipo_equipo==="portatil"?"Sistema portátil":"Cabina portátil"}
                       {eq.proveedor_nombre&&` · ${eq.proveedor_nombre}`}{eq.num_receptores>0&&` · ${eq.num_receptores} receptores`}{eq.num_cabinas>0&&` · ${eq.num_cabinas} cabinas`}
                     </div>
@@ -898,30 +869,59 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             );
           })}
           {/* Equipos AV (un día) */}
-          {!esMultidia&&(evento.evento_dias||[]).flatMap(d=>d.equipos_dia||[]).length>0&&<div style={{marginBottom:"16px",background:"#EDF2F7",borderRadius:"10px",padding:"14px 16px"}}>
-            <ST txt="🔧 Equipos AV"/>
+          {!esMultidia&&(evento.evento_dias||[]).flatMap(d=>d.equipos_dia||[]).length>0&&<div style={{marginBottom:"12px",background:"#F1F5F9",borderRadius:"10px",padding:"12px 16px"}}>
+            <SL t="🔧 Equipos AV"/>
             {(evento.evento_dias||[]).flatMap(d=>d.equipos_dia||[]).map((eq,eIdx)=>(
-              <div key={eIdx} style={{fontSize:"13px",color:C.textoMed,marginBottom:"4px"}}>
+              <div key={eIdx} style={{fontSize:"13px",color:"#6B7280",marginBottom:"4px"}}>
                 {eq.tipo_equipo==="fijo"?"Sistema fijo":eq.tipo_equipo==="portatil"?"Sistema portátil":"Cabina portátil"}
                 {eq.proveedor_nombre&&` · ${eq.proveedor_nombre}`}{eq.num_receptores>0&&` · ${eq.num_receptores} receptores`}{eq.num_cabinas>0&&` · ${eq.num_cabinas} cabinas`}
               </div>
             ))}
           </div>}
+          <HR/>
+          {/* Estado */}
+          <div style={{marginBottom:"8px"}}>
+            <SL t="Estado de facturación"/>
+            {(()=>{const be=B_EST(evento.estado);return<span style={{display:"inline-flex",alignItems:"center",padding:"5px 14px",borderRadius:"6px",fontSize:"13px",fontWeight:"600",color:be.c,background:be.bg,border:`2px solid ${be.c}`,whiteSpace:"nowrap"}}>{evento.estado==="Facturado"?"✓ Facturado":"⏳ Facturación Pendiente"}</span>;})()}
+          </div>
+          {/* Programa multidía */}
+          {esMultidia&&dias.length>0&&<><HR/><div style={{marginBottom:"12px"}}>
+            <SL t="📅 Programa del evento"/>
+            <div style={{borderRadius:"10px",overflow:"hidden",border:"1px solid #E5E7EB"}}>
+              <table style={{width:"100%",borderCollapse:"collapse"}}>
+                <thead><tr style={{background:"#1E3A6E",color:"#fff"}}>
+                  {["Día","Fecha","Horario","Jornada"].map(h=><th key={h} style={{padding:"8px 14px",textAlign:"left",fontSize:"12px",fontWeight:"600"}}>{h}</th>)}
+                </tr></thead>
+                <tbody>{dias.map((dia,dIdx)=>(
+                  <tr key={dIdx} style={{background:dIdx%2===0?"#fff":"#F8FAFC",borderBottom:"1px solid #E5E7EB"}}>
+                    <td style={{padding:"8px 14px",fontSize:"13px",fontWeight:"700",color:"#1971C2"}}>Día {dIdx+1}</td>
+                    <td style={{padding:"8px 14px",fontSize:"13px",color:"#0F172A"}}>{formatLargo(dia.fecha)}</td>
+                    <td style={{padding:"8px 14px",fontSize:"13px",color:"#0F172A"}}>{dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs</td>
+                    <td style={{padding:"8px 14px",fontSize:"13px",color:"#475569"}}>{dia.jornada}</td>
+                  </tr>
+                ))}</tbody>
+              </table>
+            </div>
+          </div></>}
           {/* Comentarios */}
-          {evento.comentarios&&<div style={{background:C.gris,borderRadius:"10px",padding:"12px 16px",marginBottom:"16px"}}>
-            <ST txt="💬 Comentarios"/>
-            <div style={{color:C.texto,fontSize:"14px"}}>{evento.comentarios}</div>
+          {evento.comentarios&&<div style={{background:"#F8FAFC",borderRadius:"10px",padding:"12px 16px",marginTop:"12px"}}>
+            <SL t="💬 Comentarios"/>
+            <div style={{color:"#0F172A",fontSize:"14px"}}>{evento.comentarios}</div>
           </div>}
           {/* Historial */}
-          <div style={{fontSize:"12px",color:"#6B6B6B",display:"flex",gap:"16px",flexWrap:"wrap",paddingTop:"8px",borderTop:`1px solid ${C.grisBorde}`}}>
+          <div style={{fontSize:"12px",color:"#6B7280",display:"flex",gap:"16px",flexWrap:"wrap",paddingTop:"12px",marginTop:"12px",borderTop:"1px solid #E5E7EB"}}>
             {evento.created_by_nombre&&<span>Creado por <strong>{evento.created_by_nombre}</strong>{evento.created_at&&" el "+new Date(evento.created_at).toLocaleString("es-CL")}</span>}
             {evento.edited_by_nombre&&<span>Última edición por <strong>{evento.edited_by_nombre}</strong>{evento.updated_at&&" el "+new Date(evento.updated_at).toLocaleString("es-CL")}</span>}
           </div>
         </div>
         {/* Footer */}
-        <div style={{padding:"16px 24px",borderTop:`1px solid ${C.grisBorde}`,flexShrink:0,display:"flex",gap:"10px",justifyContent:"space-between",alignItems:"center",background:C.gris,borderRadius:"0 0 20px 20px"}}>
-          <BotonesAccion/>
-          <button onClick={onCerrar} style={btnD("#868E96")}>Cerrar</button>
+        <div style={{padding:"16px 24px",borderTop:"1px solid #E5E7EB",flexShrink:0,display:"flex",gap:"10px",justifyContent:"space-between",alignItems:"center",background:"#F8FAFC",borderRadius:"0 0 20px 20px"}}>
+          <div style={{display:"flex",gap:"8px",flexWrap:"wrap"}}>
+            <button onClick={onVerFicha} style={btnA("#1971C2")}>📄 Ver ficha</button>
+            <button onClick={onEditar} style={btnA("#E67700")}>✏️ Editar</button>
+            <button onClick={onEliminar} style={btnA("#E03131")}>🗑 Eliminar</button>
+          </div>
+          <button onClick={onCerrar} style={btnA("#6B7280")}>Cerrar</button>
         </div>
       </div>
     </div>
@@ -1370,7 +1370,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
 }
 
 // ─── VISTA AGENDA (F8) ───────────────────────────────────────────────────────
-function VistaAgenda({eventos,clientes,interpretes,pares,onAbrir}) {
+function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,setFiltros,onAbrir}) {
   const todayRef=useRef(null);
   const sorted=[...eventos].sort((a,b)=>a.fecha_inicio.localeCompare(b.fecha_inicio));
   const byWeek={};
@@ -1383,57 +1383,25 @@ function VistaAgenda({eventos,clientes,interpretes,pares,onAbrir}) {
     byWeek[key].push(ev);
   });
   useEffect(()=>{if(todayRef.current)todayRef.current.scrollIntoView({behavior:"smooth",block:"start"});},[]);
-  if(!Object.keys(byWeek).length) return (
-    <div style={{textAlign:"center",padding:"80px 20px",color:"#fff"}}>
-      <div style={{fontSize:"40px",marginBottom:"12px"}}>📅</div>
-      <div style={{fontWeight:"700",fontSize:"18px",color:"#fff"}}>No hay eventos que mostrar</div>
-    </div>
-  );
   return (
-    <div style={{padding:"24px 24px 80px"}}>
+    <div style={{padding:"16px 24px 80px",width:"100%",maxWidth:"100%"}}>
+      <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes}/>
+      {!Object.keys(byWeek).length&&<div style={{textAlign:"center",padding:"80px 20px",color:"#fff"}}>
+        <div style={{fontSize:"40px",marginBottom:"12px"}}>📅</div>
+        <div style={{fontWeight:"700",fontSize:"18px",color:"#fff"}}>No hay eventos que mostrar</div>
+      </div>}
       {Object.entries(byWeek).map(([lunISO,evs])=>{
         const finSem=new Date(desdeISO(lunISO));finSem.setDate(finSem.getDate()+6);
         const hoyISO=hoy();
         const esSemanaActual=lunISO<=hoyISO&&hoyISO<=toISO(finSem);
         return (
-          <div key={lunISO} ref={esSemanaActual?todayRef:null} style={{marginBottom:"36px"}}>
-            <div style={{fontSize:"18px",fontWeight:"700",color:"#fff",textTransform:"uppercase",letterSpacing:"0.75px",marginBottom:"16px",paddingBottom:"12px",borderBottom:"1.5px solid rgba(255,255,255,0.3)"}}>
+          <div key={lunISO} ref={esSemanaActual?todayRef:null} style={{marginBottom:"32px"}}>
+            <div style={{background:"rgba(255,255,255,0.12)",color:"#fff",fontSize:"16px",fontWeight:"700",padding:"10px 16px",borderRadius:"8px",margin:"16px 0 8px",letterSpacing:"0.03em"}}>
               Semana del {formatCorto(lunISO)} al {formatCorto(toISO(finSem))} · {evs.length} evento{evs.length!==1?"s":""}
             </div>
-            {evs.map(ev=>{
-              const cliente=clientes.find(c=>c.id===ev.cliente_id);
-              const evBg=colorCliente(ev.cliente_id);
-              const bt2=B_TIPO[ev.tipo]||{bg:"#EEF2FF",c:"#3B5BDB"};
-              const bm2=B_MOD[ev.modalidad]||{bg:"#F7F7F5",c:"#6B6B6B"};
-              const be2=B_EST(ev.estado);
-              return (
-                <div key={ev.id} onClick={()=>onAbrir(ev)}
-                  style={{display:"flex",gap:"18px",alignItems:"flex-start",padding:"20px 22px",borderRadius:"12px",marginBottom:"16px",border:"1.5px solid rgba(255,255,255,0.15)",background:"#fff",cursor:"pointer",borderLeft:`10px solid ${evBg}`,boxShadow:"0 2px 8px rgba(0,0,0,0.10)",transition:"transform 0.1s"}}
-                  onMouseEnter={e=>e.currentTarget.style.transform="translateY(-1px)"}
-                  onMouseLeave={e=>e.currentTarget.style.transform="translateY(0)"}>
-                  <div style={{minWidth:"90px",textAlign:"center",background:"#F7F7F5",borderRadius:"8px",padding:"12px 6px",flexShrink:0}}>
-                    <div style={{fontSize:"15px",color:"#6B6B6B",fontWeight:"700",textTransform:"uppercase"}}>{diasNombres[desdeISO(ev.fecha_inicio).getDay()].slice(0,3)}</div>
-                    <div style={{fontSize:"30px",fontWeight:"700",color:"#1A1A1A",lineHeight:1.1}}>{desdeISO(ev.fecha_inicio).getDate()}</div>
-                    <div style={{fontSize:"15px",color:"#6B6B6B"}}>{MESES_C[desdeISO(ev.fecha_inicio).getMonth()]}</div>
-                  </div>
-                  <div style={{flex:1,minWidth:0}}>
-                    <div style={{fontWeight:"700",fontSize:"22px",color:"#1A1A1A",marginBottom:"4px"}}>{cliente?.nombre_empresa||"—"}</div>
-                    {ev.nombre_evento&&<div style={{fontSize:"16px",color:"#374151",marginBottom:"4px"}}>{ev.nombre_evento}</div>}
-                    {cliente?.nombre_contacto&&<div style={{fontSize:"14px",color:"#6B6B6B",fontStyle:"italic",marginBottom:"6px"}}>{cliente.nombre_contacto}</div>}
-                    <div style={{display:"flex",gap:"6px",flexWrap:"wrap",alignItems:"center",marginBottom:"8px"}}>
-                      <span style={{fontSize:"18px",color:"#374151",fontWeight:"600"}}>{ev.hora_inicio?.slice(0,5)}–{ev.hora_termino?.slice(0,5)}</span>
-                      <span style={bS(bt2.bg,bt2.c)}>{ev.tipo}</span>
-                      <span style={bS(bm2.bg,bm2.c)}>{LBL_MODAL[ev.modalidad]||ev.modalidad}</span>
-                      <span style={bS(be2.bg,be2.c)}>{ev.estado==="Facturado"?"Facturado":"Facturación Pendiente"}</span>
-                    </div>
-                    {(ev.asignaciones||[]).length>0&&<div style={{display:"flex",gap:"6px",flexWrap:"wrap"}}>
-                      {(ev.asignaciones||[]).slice(0,3).map((a,ai)=>{const i=interpretes.find(x=>x.id===a.interprete_id);const p=pares.find(x=>x.id===a.par_id);if(!i)return null;const idioma=p?.idioma_origen||"";const bg2=idiomaColor(idioma);const bd2=idiomaBorde(idioma);return<span key={ai} style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"6px 12px",borderRadius:"20px",fontSize:"15px",fontWeight:"500",color:"#fff",background:bg2,border:`2px solid ${bd2}`,maxWidth:"220px"}}><FlagImg idioma={idioma}/><span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{i.nombre}{i.apellido?" "+i.apellido:""}</span></span>;})}
-                      {(ev.asignaciones||[]).length>3&&<span style={{fontSize:"15px",color:"#6B6B6B",alignSelf:"center",fontWeight:"600"}}>+{(ev.asignaciones||[]).length-3} más</span>}
-                    </div>}
-                  </div>
-                </div>
-              );
-            })}
+            {evs.map(ev=>(
+              <EventCard key={ev.id} ev={ev} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} onClick={()=>onAbrir(ev)}/>
+            ))}
           </div>
         );
       })}
@@ -1611,20 +1579,23 @@ export default function App() {
     for(let i=0;i<pri;i++) celdas.push(null);
     for(let i=1;i<=total;i++) celdas.push(i);
     return (
-      <div style={{padding:"20px 24px 80px",overflowX:"auto"}}>
+      <div style={{padding:"16px 24px 80px",overflowX:"auto"}}>
+        <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes}/>
         <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:"4px",minWidth:"800px"}}>
-          {DIAS_SEM.map(d=><div key={d} style={{textAlign:"center",fontWeight:"700",fontSize:"12px",color:"rgba(255,255,255,0.85)",padding:"8px 0",textTransform:"uppercase"}}>{d}</div>)}
+          {DIAS_SEM.map(d=><div key={d} style={{textAlign:"center",fontWeight:"700",fontSize:"13px",color:"#FFFFFF",padding:"8px 0",textTransform:"uppercase"}}>{d}</div>)}
           {celdas.map((dia,i)=>{
-            if(!dia) return <div key={i}/>;
+            if(!dia) return <div key={i} style={{background:"rgba(255,255,255,0.35)",borderRadius:"8px",minHeight:"90px"}}/>;
             const iso=`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-${String(dia).padStart(2,"0")}`;
             const evs=evsDia(iso), esHoy=iso===hoy();
             return <div key={i} onClick={()=>{setDiaActual(iso);setVista("dia");}}
-              style={{minHeight:"100px",border:`1.5px solid ${esHoy?"#3a7bd5":"#E5E5E3"}`,borderRadius:"10px",padding:"10px",cursor:"pointer",background:esHoy?"#3a7bd5":"#FFFFFF"}}
-              onMouseEnter={e=>{if(!esHoy)e.currentTarget.style.background="#F7F7F5";}} onMouseLeave={e=>{if(!esHoy)e.currentTarget.style.background="#FFFFFF";}}>
-              <div style={{marginBottom:"4px"}}><span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:"28px",height:"28px",borderRadius:"50%",background:esHoy?"rgba(255,255,255,0.25)":"transparent",color:esHoy?"#fff":C.texto,fontWeight:"700",fontSize:"14px"}}>{dia}</span></div>
+              style={{minHeight:"90px",border:esHoy?"2px solid #4C6EF5":"none",borderRadius:"8px",padding:"8px",cursor:"pointer",background:"#FFFFFF",boxSizing:"border-box"}}
+              onMouseEnter={e=>e.currentTarget.style.background="#F8FAFC"} onMouseLeave={e=>e.currentTarget.style.background="#FFFFFF"}>
+              <div style={{marginBottom:"4px"}}>
+                <span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:"26px",height:"26px",borderRadius:"50%",background:esHoy?"#4C6EF5":"transparent",color:esHoy?"#FFFFFF":"#0F172A",fontWeight:"700",fontSize:"13px"}}>{dia}</span>
+              </div>
               {evs.slice(0,2).map((ev,j)=><div key={j} onClick={e=>{e.stopPropagation();abrirEvento(ev);}} style={{fontSize:"11px",fontWeight:"600",background:colorCliente(ev.cliente_id),color:"#fff",borderRadius:"4px",padding:"3px 8px",marginBottom:"2px",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{clientes.find(c=>c.id===ev.cliente_id)?.nombre_empresa||ev.nombre_evento||"Evento"}</div>)}
-              {evs.length>2&&<div style={{fontSize:"11px",color:esHoy?"rgba(255,255,255,0.85)":C.textoSuave,fontWeight:"600",marginTop:"1px"}}>+{evs.length-2} más</div>}
-              {evs.length>0&&<div style={{fontSize:"11px",color:esHoy?"rgba(255,255,255,0.7)":"#9B9B9B",fontWeight:"500",marginTop:"2px"}}>{evs.length} evento{evs.length!==1?"s":""}</div>}
+              {evs.length>2&&<div style={{fontSize:"11px",color:"#6B7280",fontWeight:"600",marginTop:"1px"}}>+{evs.length-2} más</div>}
+              {evs.length>0&&<div style={{fontSize:"11px",color:"#9CA3AF",fontWeight:"500",marginTop:"2px"}}>{evs.length} evento{evs.length!==1?"s":""}</div>}
             </div>;
           })}
         </div>
@@ -1641,50 +1612,52 @@ export default function App() {
 
     if(esMobile) return (
       <div style={{padding:"10px 12px 80px"}}>
-        {evsFinSemana.length>0&&<div onClick={()=>{setDiaActual(toISO(diasFS[0]));setVista("dia");}} style={{background:"#FFF3CD",border:"1px solid #F59E0B",borderRadius:"8px",padding:"8px 16px",marginBottom:"12px",cursor:"pointer",display:"flex",alignItems:"center",gap:"8px",color:"#92400E",fontSize:"13px",fontWeight:"600"}}>
-          ⚡ Ver {evsFinSemana.length} evento{evsFinSemana.length!==1?"s":""} activo{evsFinSemana.length!==1?"s":""} este fin de semana
+        <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes}/>
+        {evsFinSemana.length>0&&<div onClick={()=>{setDiaActual(toISO(diasFS[0]));setVista("dia");}} style={{background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.3)",borderRadius:"8px",padding:"8px 16px",marginBottom:"12px",cursor:"pointer",display:"flex",alignItems:"center",gap:"8px",color:"#fff",fontSize:"13px",fontWeight:"600"}}>
+          ⚡ Ver {evsFinSemana.length} evento{evsFinSemana.length!==1?"s":""} este fin de semana
         </div>}
         {diasLF.map((d,i)=>{
           const iso=toISO(d),evs=evsDia(iso),esHoy=iso===hoy();
-          return <div key={i} style={{marginBottom:"10px",border:`2px solid ${esHoy?C.azul:C.grisBorde}`,borderRadius:"14px",overflow:"hidden"}}>
-            <div style={{background:esHoy?C.azul:evs.length?C.grisMed:C.gris,padding:"12px 16px",display:"flex",alignItems:"center",gap:"12px",cursor:"pointer"}} onClick={()=>{setDiaActual(iso);setVista("dia");}}>
-              <div style={{width:"48px",height:"48px",borderRadius:"50%",background:esHoy?"rgba(255,255,255,0.2)":"#fff",border:`2px solid ${esHoy?"rgba(255,255,255,0.4)":C.grisBorde}`,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
-                <div style={{fontSize:"9px",fontWeight:"800",textTransform:"uppercase",color:esHoy?"#bfdbfe":C.textoSuave}}>{nombresDia[i]}</div>
-                <div style={{fontSize:"20px",fontWeight:"700",lineHeight:1,color:esHoy?"#fff":C.texto}}>{d.getDate()}</div>
+          const mesLargo=MESES_L[d.getMonth()].charAt(0).toUpperCase()+MESES_L[d.getMonth()].slice(1);
+          const colBg=esHoy?"rgba(255,255,255,0.25)":evs.length>0?"rgba(255,255,255,0.13)":"rgba(255,255,255,0.07)";
+          return <div key={i} style={{marginBottom:"10px",background:colBg,borderRadius:"12px",overflow:"hidden"}}>
+            <div style={{padding:"12px 14px",display:"flex",alignItems:"center",gap:"12px",cursor:"pointer"}} onClick={()=>{setDiaActual(iso);setVista("dia");}}>
+              <div style={{textAlign:"center",minWidth:"54px"}}>
+                <div style={{fontSize:"16px",fontWeight:"800",color:"#fff",textTransform:"uppercase",letterSpacing:"0.05em"}}>{nombresDia[i]}</div>
+                <div style={{fontSize:"36px",fontWeight:"900",lineHeight:1,color:"#fff"}}>{d.getDate()}</div>
+                <div style={{fontSize:"12px",color:"rgba(255,255,255,0.75)"}}>{mesLargo}</div>
               </div>
-              <div style={{flex:1}}>
-                <div style={{fontSize:"13px",color:esHoy?"#bfdbfe":C.textoSuave}}>{MESES_L[d.getMonth()]}</div>
-                {evs.length>0?<div style={{fontSize:"20px",fontWeight:"700",color:esHoy?"#fff":C.azul}}>{evs.length} evento{evs.length!==1?"s":""}</div>:<div style={{fontSize:"14px",color:esHoy?"#bfdbfe":C.textoSuave,fontWeight:"600"}}>Sin eventos</div>}
-              </div>
-              <div style={{fontSize:"18px",color:esHoy?"#bfdbfe":C.textoSuave}}>›</div>
+              <div style={{flex:1,color:"#fff",fontWeight:"600",fontSize:"14px"}}>{evs.length>0?`${evs.length} evento${evs.length!==1?"s":""}`:""}</div>
+              <div style={{fontSize:"18px",color:"rgba(255,255,255,0.6)"}}>›</div>
             </div>
-            {evs.length>0&&<div style={{padding:"10px 12px"}}>{evs.map(ev=><TarjetaEvento key={ev.id} ev={ev} diaDe={iso} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)}/>)}</div>}
+            {evs.length>0&&<div style={{padding:"0 10px 10px"}}>{evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)}/>)}</div>}
           </div>;
         })}
       </div>
     );
 
     return (
-      <div style={{padding:"20px 24px 80px"}}>
-        {evsFinSemana.length>0&&<div onClick={()=>{setDiaActual(toISO(diasFS[0]));setVista("dia");}} style={{background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.3)",borderRadius:"8px",padding:"8px 16px",marginBottom:"16px",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:"8px",color:"#fff",fontSize:"13px",fontWeight:"600"}}>
-          ⚡ Ver {evsFinSemana.length} evento{evsFinSemana.length!==1?"s":""} activo{evsFinSemana.length!==1?"s":""} este fin de semana
+      <div style={{padding:"16px 24px 80px"}}>
+        <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes}/>
+        {evsFinSemana.length>0&&<div onClick={()=>{setDiaActual(toISO(diasFS[0]));setVista("dia");}} style={{background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.3)",borderRadius:"8px",padding:"8px 16px",marginBottom:"12px",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:"8px",color:"#fff",fontSize:"13px",fontWeight:"600"}}>
+          ⚡ Ver {evsFinSemana.length} evento{evsFinSemana.length!==1?"s":""} este fin de semana
         </div>}
-        <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:"12px"}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:"8px",padding:"8px"}}>
           {diasLF.map((d,i)=>{
             const iso=toISO(d),evs=evsDia(iso),esHoy=iso===hoy();
             const mesLargo=MESES_L[d.getMonth()].charAt(0).toUpperCase()+MESES_L[d.getMonth()].slice(1);
-            const colBg=esHoy?"rgba(255,255,255,0.30)":evs.length>0?"rgba(255,255,255,0.18)":"rgba(255,255,255,0.10)";
-            return <div key={i} style={{background:colBg,backdropFilter:"blur(4px)",WebkitBackdropFilter:"blur(4px)",borderRadius:"12px",padding:"10px",minHeight:"calc(100vh - 220px)"}}>
-              <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{textAlign:"center",padding:"12px 8px",borderRadius:"10px",marginBottom:"8px",background:"rgba(255,255,255,0.20)",cursor:"pointer",transition:"background 0.15s"}}
-                onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.30)"}
-                onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.20)"}>
-                <div style={{fontSize:"20px",fontWeight:"800",color:"#fff",textTransform:"uppercase",letterSpacing:"1px"}}>{nombresDia[i]}</div>
-                <div style={{fontSize:"42px",fontWeight:"900",lineHeight:1.1,color:"#fff",margin:"4px 0"}}>{d.getDate()}</div>
-                <div style={{fontSize:"16px",color:"rgba(255,255,255,0.85)",fontWeight:"500"}}>{mesLargo} {d.getFullYear()}</div>
-                {evs.length>0&&<div style={{fontSize:"16px",fontWeight:"700",color:"#fff",background:"rgba(255,255,255,0.25)",padding:"4px 16px",borderRadius:"20px",marginTop:"6px",whiteSpace:"nowrap",display:"inline-block"}}>{evs.length} evento{evs.length!==1?"s":""}</div>}
+            const colBg=esHoy?"rgba(255,255,255,0.25)":evs.length>0?"rgba(255,255,255,0.13)":"rgba(255,255,255,0.07)";
+            return <div key={i} style={{background:colBg,backdropFilter:"blur(4px)",WebkitBackdropFilter:"blur(4px)",borderRadius:"12px",padding:"10px",minHeight:"calc(100vh - 260px)"}}>
+              <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{textAlign:"center",padding:"12px 8px",borderRadius:"10px",marginBottom:"8px",background:"rgba(255,255,255,0.15)",cursor:"pointer",transition:"background 0.15s"}}
+                onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"}
+                onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>
+                <div style={{fontSize:"16px",fontWeight:"800",color:"#fff",textTransform:"uppercase",letterSpacing:"0.05em"}}>{nombresDia[i]}</div>
+                <div style={{fontSize:"36px",fontWeight:"900",lineHeight:1,color:"#fff",margin:"4px 0"}}>{d.getDate()}</div>
+                <div style={{fontSize:"12px",color:"rgba(255,255,255,0.75)"}}>{mesLargo} {d.getFullYear()}</div>
+                {evs.length>0&&<div style={{display:"inline-block",background:"rgba(255,255,255,0.20)",color:"#fff",fontSize:"12px",fontWeight:"700",padding:"2px 8px",borderRadius:"10px",marginTop:"6px"}}>{evs.length} evento{evs.length!==1?"s":""}</div>}
               </div>
-              {evs.map(ev=><TarjetaEvento key={ev.id} ev={ev} diaDe={iso} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)}/>)}
-              {evs.length===0&&<div style={{textAlign:"center",color:"rgba(255,255,255,0.6)",fontWeight:"600",fontSize:"14px",padding:"20px 0"}}>Sin eventos</div>}
+              {evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)}/>)}
+              {evs.length===0&&<div style={{textAlign:"center",color:"rgba(255,255,255,0.5)",fontWeight:"600",fontSize:"13px",padding:"20px 0"}}>Sin eventos</div>}
             </div>;
           })}
         </div>
@@ -1695,12 +1668,12 @@ export default function App() {
   // ── Vista DÍA ──
   const renderDia=()=>{
     const evs=evsDia(diaActual);
-    return <div style={{padding:"16px 16px 80px"}}>
+    return <div style={{padding:"16px 24px 80px"}}>
       <div style={{fontWeight:"700",fontSize:"20px",color:"#fff",marginBottom:"16px"}}>
         {formatLargo(diaActual)}<span style={{fontWeight:"400",color:"rgba(255,255,255,0.75)",fontSize:"16px",marginLeft:"12px"}}>{evs.length} evento{evs.length!==1?"s":""}</span>
       </div>
       {evs.length===0?<div style={{textAlign:"center",padding:"60px 20px",color:"rgba(255,255,255,0.7)",border:"2px dashed rgba(255,255,255,0.3)",borderRadius:"16px"}}><div style={{fontSize:"40px",marginBottom:"12px"}}>📅</div><div style={{fontWeight:"700",fontSize:"18px",color:"#fff"}}>Sin eventos este día</div></div>
-      :<div style={{display:"grid",gridTemplateColumns:esMobile?"1fr":"1fr 1fr",gap:"12px"}}>{evs.map(ev=><TarjetaEvento key={ev.id} ev={ev} diaDe={diaActual} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)}/>)}</div>}
+      :<div style={{display:"grid",gridTemplateColumns:esMobile?"1fr":"1fr 1fr",gap:"12px"}}>{evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={diaActual} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)}/>)}</div>}
     </div>;
   };
 
@@ -1717,74 +1690,48 @@ export default function App() {
   const esEditor=perfil?.rol==="editor"||esAdmin;
 
   return (
-    <div style={{fontFamily:"'Segoe UI',system-ui,sans-serif",minHeight:"100vh",background:"linear-gradient(135deg, #1a2a4a 0%, #1e3a6e 50%, #2563a8 100%)",color:C.texto,WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",textRendering:"optimizeLegibility"}}>
+    <div style={{fontFamily:"'Inter','Segoe UI',system-ui,sans-serif",minHeight:"100vh",background:"linear-gradient(135deg, #1a2a4a 0%, #1e3a6e 50%, #2563a8 100%)",color:"#FFFFFF",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",textRendering:"optimizeLegibility"}}>
       {/* ── TOPBAR ── */}
-      <div style={{position:"sticky",top:0,zIndex:100,background:"rgba(0,0,0,0.3)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)"}}>
-        {/* Fila principal: logo | tabs | acciones */}
-        <div style={{padding:"0 16px",display:"flex",alignItems:"center",justifyContent:"space-between",height:"120px",gap:"12px"}}>
-          {/* Logo */}
-          <div style={{flexShrink:0,overflow:"hidden",height:"80px"}}>
-            <img src={LOGO_SRC} alt="MundoChile" style={{height:"104px",display:"block"}}/>
+      <div style={{position:"sticky",top:0,zIndex:100,background:"#162d57",borderBottom:"1px solid rgba(255,255,255,0.10)"}}>
+        <div style={{padding:"0 24px",display:"flex",alignItems:"center",justifyContent:"space-between",height:"64px",gap:"12px"}}>
+          {/* IZQUIERDA: logo + brand */}
+          <div style={{display:"flex",alignItems:"center",gap:"10px",flexShrink:0}}>
+            <div style={{overflow:"hidden",height:"44px",flexShrink:0}}>
+              <img src={LOGO_SRC} alt="MundoChile" style={{height:"58px",display:"block"}}/>
+            </div>
+            <div>
+              <div style={{fontWeight:"800",fontSize:"22px",color:"#FFFFFF",lineHeight:1,letterSpacing:"0.02em"}}>MUNDOCHILE</div>
+              <div style={{fontSize:"11px",color:"rgba(255,255,255,0.70)",marginTop:"2px"}}>Translations & Interpreters · Since 2003</div>
+            </div>
           </div>
-          {/* Tabs centrados */}
-          {pantalla==="calendario"&&<div style={{display:"flex",gap:"4px",alignItems:"center",flex:1,justifyContent:"center",flexWrap:"wrap"}}>
+          {/* CENTRO: tabs */}
+          {pantalla==="calendario"&&<div style={{display:"flex",gap:"4px",alignItems:"center",flex:1,justifyContent:"center"}}>
             {[["semana","Semana"],["dia","Día"],["mes","Mes"],["agenda","Agenda"]].map(([v,l])=>(
-              <button key={v} onClick={()=>setVista(v)} style={{padding:"10px 22px",background:vista===v?"#FFFFFF":"rgba(255,255,255,0.15)",border:"none",borderRadius:"8px",color:vista===v?"#1e3a6e":"#fff",fontWeight:vista===v?"700":"500",cursor:"pointer",fontSize:"16px",fontFamily:"inherit",transition:"all 0.15s"}}>{l}</button>
+              <button key={v} onClick={()=>setVista(v)} style={{padding:"8px 18px",background:vista===v?"#FFFFFF":"rgba(255,255,255,0.12)",border:"none",borderRadius:"8px",color:vista===v?"#1E3A6E":"#FFFFFF",fontWeight:vista===v?"700":"400",cursor:"pointer",fontSize:"14px",fontFamily:"inherit",transition:"all 0.15s"}}>{l}</button>
             ))}
           </div>}
-          {/* Acciones */}
-          <div style={{display:"flex",gap:"6px",alignItems:"center",flexShrink:0,flexWrap:"wrap",justifyContent:"flex-end"}}>
-            {/* Búsqueda */}
+          {/* DERECHA: nav + utilidades */}
+          <div style={{display:"flex",gap:"6px",alignItems:"center",flexShrink:0}}>
+            {pantalla==="calendario"&&vista!=="agenda"&&<>
+              <div style={{textAlign:"right",marginRight:"6px"}}>
+                <div style={{color:"#FFFFFF",fontSize:"17px",fontWeight:"700",lineHeight:1.2}}>{tituloNav()}</div>
+                <div style={{color:"rgba(255,255,255,0.70)",fontSize:"13px"}}>{contadorSubtitulo()}</div>
+              </div>
+              <button onClick={navAnterior} style={{background:"rgba(255,255,255,0.15)",color:"#FFFFFF",border:"none",borderRadius:"8px",padding:"7px 14px",fontSize:"13px",cursor:"pointer",fontFamily:"inherit"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>← Ant</button>
+              <button onClick={()=>{setSemanaOff(0);setMesOff(0);setDiaActual(hoy());}} style={{background:"rgba(255,255,255,0.15)",color:"#FFFFFF",border:"none",borderRadius:"8px",padding:"7px 14px",fontSize:"13px",cursor:"pointer",fontFamily:"inherit"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>Hoy</button>
+              <button onClick={navSiguiente} style={{background:"rgba(255,255,255,0.15)",color:"#FFFFFF",border:"none",borderRadius:"8px",padding:"7px 14px",fontSize:"13px",cursor:"pointer",fontFamily:"inherit"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>Sig →</button>
+            </>}
             {buscando
-              ?<input autoFocus style={{...S.inp,width:"180px",height:"38px",fontSize:"15px",background:"rgba(255,255,255,0.15)",color:"#fff",borderColor:"rgba(255,255,255,0.3)"}} value={busqueda} onChange={e=>setBusqueda(e.target.value)} onBlur={()=>{if(!busqueda)setBuscando(false);}} placeholder="Buscar…"/>
-              :<button onClick={()=>setBuscando(true)} style={{padding:"8px 18px",fontSize:"15px",background:"rgba(255,255,255,0.2)",color:"#fff",border:"1px solid rgba(255,255,255,0.25)",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}} title="Buscar">🔍</button>
+              ?<input autoFocus style={{...S.inp,width:"160px",height:"34px",fontSize:"13px",background:"rgba(255,255,255,0.15)",color:"#fff",borderColor:"rgba(255,255,255,0.3)"}} value={busqueda} onChange={e=>setBusqueda(e.target.value)} onBlur={()=>{if(!busqueda)setBuscando(false);}} placeholder="Buscar…"/>
+              :<button onClick={()=>setBuscando(true)} style={{padding:"7px 12px",fontSize:"14px",background:"rgba(255,255,255,0.15)",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}} title="Buscar">🔍</button>
             }
-            {busqueda&&<button onClick={()=>{setBusqueda("");setBuscando(false);}} style={{padding:"8px 18px",fontSize:"15px",background:"rgba(255,255,255,0.2)",color:"#fff",border:"1px solid rgba(255,255,255,0.25)",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>✕</button>}
-            {/* Filtros */}
-            <button onClick={()=>setMostrarFiltros(f=>!f)} style={{padding:"8px 18px",fontSize:"15px",background:mostrarFiltros||Object.values(filtros).some(Boolean)?"rgba(255,255,255,0.35)":"rgba(255,255,255,0.2)",color:"#fff",border:"1px solid rgba(255,255,255,0.25)",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit",fontWeight:mostrarFiltros||Object.values(filtros).some(Boolean)?"700":"500"}}>
-              {Object.values(filtros).some(Boolean)?"⚙️*":"⚙️"} Filtros
-            </button>
-            {/* Excel */}
-            {esEditor&&<button onClick={exportarExcel} style={{padding:"8px 18px",fontSize:"15px",background:"rgba(22,163,74,0.25)",color:"#6EE7B7",border:"1px solid rgba(22,163,74,0.5)",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>📊 Excel</button>}
-            {/* Nuevo evento */}
-            {esEditor&&<button onClick={()=>setModalEvento({modo:"nuevo",data:evVacio()})} style={{...S.btnA,padding:"10px 24px",fontSize:"16px",background:"#e63946",fontWeight:"700"}}><span style={{color:"#FFFFFF",fontWeight:"700"}}>+</span> Nuevo</button>}
-            {/* Config */}
-            {esAdmin&&<button onClick={()=>setPantalla(p=>p==="config"?"calendario":"config")} style={{padding:"8px 18px",fontSize:"15px",background:pantalla==="config"?"rgba(255,255,255,0.35)":"rgba(255,255,255,0.2)",color:"#fff",border:"1px solid rgba(255,255,255,0.25)",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>⚙️</button>}
-            <button onClick={()=>sb.auth.signOut()} style={{padding:"8px 18px",fontSize:"15px",background:"rgba(255,255,255,0.2)",color:"#fff",border:"1px solid rgba(255,255,255,0.25)",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>Salir</button>
+            {busqueda&&<button onClick={()=>{setBusqueda("");setBuscando(false);}} style={{padding:"7px 10px",fontSize:"13px",background:"rgba(255,255,255,0.15)",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>✕</button>}
+            {esEditor&&<button onClick={exportarExcel} style={{padding:"7px 12px",fontSize:"13px",background:"rgba(22,163,74,0.25)",color:"#6EE7B7",border:"1px solid rgba(22,163,74,0.5)",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}} title="Exportar Excel">📊</button>}
+            {esEditor&&<button onClick={()=>setModalEvento({modo:"nuevo",data:evVacio()})} style={{padding:"7px 16px",fontSize:"14px",background:"#e63946",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit",fontWeight:"700"}}>+ Nuevo</button>}
+            {esAdmin&&<button onClick={()=>setPantalla(p=>p==="config"?"calendario":"config")} style={{padding:"7px 12px",fontSize:"14px",background:pantalla==="config"?"rgba(255,255,255,0.35)":"rgba(255,255,255,0.15)",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>⚙️</button>}
+            <button onClick={()=>sb.auth.signOut()} style={{padding:"7px 12px",fontSize:"13px",background:"rgba(255,255,255,0.15)",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>Salir</button>
           </div>
         </div>
-        {/* Navegación */}
-        {pantalla==="calendario"&&vista!=="agenda"&&<div style={{padding:"8px 16px 12px",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:"8px",borderTop:"1px solid rgba(255,255,255,0.15)"}}>
-          <div>
-            <div style={{fontWeight:"700",fontSize:"20px",color:"#fff"}}>{tituloNav()}</div>
-            <div style={{fontSize:"15px",color:"rgba(255,255,255,0.8)",marginTop:"2px"}}>{contadorSubtitulo()}</div>
-          </div>
-          <div style={{display:"flex",gap:"6px"}}>
-            <button onClick={navAnterior} style={{...S.btnG,background:"rgba(255,255,255,0.15)",color:"#fff",borderColor:"rgba(255,255,255,0.25)"}}>← Anterior</button>
-            <button onClick={()=>{setSemanaOff(0);setMesOff(0);setDiaActual(hoy());}} style={{...S.btnP,background:"rgba(255,255,255,0.25)",color:"#fff",borderColor:"transparent"}}>Hoy</button>
-            <button onClick={navSiguiente} style={{...S.btnG,background:"rgba(255,255,255,0.15)",color:"#fff",borderColor:"rgba(255,255,255,0.25)"}}>Siguiente →</button>
-          </div>
-        </div>}
-        {/* Panel filtros F7 */}
-        {mostrarFiltros&&pantalla==="calendario"&&<div style={{padding:"12px 16px",borderTop:"1px solid rgba(255,255,255,0.15)",background:"rgba(0,0,0,0.2)",display:"flex",gap:"10px",flexWrap:"wrap",alignItems:"flex-end"}}>
-          {[["estado","Estado",["","Pendiente de Facturación","Facturado"],v=>v==="Pendiente de Facturación"?"Facturación Pendiente":v||"Todos"],["modalidad","Modalidad",["","remoto","presencial","hibrido"],v=>v?LBL_MODAL[v]:"Todas"],["tipo","Tipo",["Simultánea","Consecutiva","Whispering"],null]].map(([k,lbl,opts,fmt])=>(
-            <div key={k} style={{minWidth:"130px"}}>
-              <label style={{...S.lbl,color:"rgba(255,255,255,0.85)"}}>{lbl}</label>
-              <select style={{...S.sel,height:"36px",fontSize:"13px"}} value={filtros[k]} onChange={e=>setFiltros(f=>({...f,[k]:e.target.value}))}>
-                {k==="tipo"&&<option value="">Todos</option>}
-                {opts.map(o=><option key={o} value={o}>{fmt?fmt(o):o||"Todos"}</option>)}
-              </select>
-            </div>
-          ))}
-          <div style={{minWidth:"160px"}}>
-            <label style={{...S.lbl,color:"rgba(255,255,255,0.85)"}}>Intérprete</label>
-            <select style={{...S.sel,height:"36px",fontSize:"13px"}} value={filtros.interprete_id} onChange={e=>setFiltros(f=>({...f,interprete_id:e.target.value}))}>
-              <option value="">Todos</option>
-              {interpretes.filter(i=>i.activo!==false).map(i=><option key={i.id} value={i.id}>{i.nombre}{i.apellido?" "+i.apellido:""}</option>)}
-            </select>
-          </div>
-          {Object.values(filtros).some(Boolean)&&<button onClick={()=>setFiltros({estado:"",modalidad:"",tipo:"",interprete_id:""})} style={{...S.btnP,alignSelf:"flex-end",height:"36px"}}>✕ Limpiar</button>}
-        </div>}
       </div>
 
       {/* ── CONTENIDO ── */}
@@ -1792,7 +1739,7 @@ export default function App() {
         {vista==="semana"&&renderSemana()}
         {vista==="dia"&&renderDia()}
         {vista==="mes"&&renderMes()}
-        {vista==="agenda"&&<VistaAgenda eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} onAbrir={abrirEvento}/>}
+        {vista==="agenda"&&<VistaAgenda eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} filtros={filtros} setFiltros={setFiltros} onAbrir={abrirEvento}/>}
       </>}
       {pantalla==="config"&&esAdmin&&<PantallaConfig clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} onActualizar={cargarDatos} perfil={perfil}/>}
 
