@@ -13,8 +13,8 @@ export default function FilterBar({filters, onChange, interpreters=[]}) {
   };
   const LBL = {
     padding:"6px 14px",borderRadius:"20px",
-    fontSize:"15px",fontWeight:"800",fontFamily:"inherit",
-    textTransform:"uppercase",letterSpacing:"0.06em",
+    fontSize:"13px",fontWeight:"700",fontFamily:"inherit",
+    textTransform:"uppercase",letterSpacing:"0.04em",
     color:"#E53E3E",background:"#FFFFFF",
     border:"1.5px solid #E53E3E",
     display:"inline-flex",alignItems:"center",
