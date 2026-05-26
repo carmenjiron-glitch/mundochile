@@ -907,7 +907,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
     ?<div style={{fontSize:"18px",color:"#6B7280",marginTop:"4px",display:"flex",gap:"10px",flexWrap:"wrap",alignItems:"center"}}>
       {a.nro_ot&&<span>OT: {a.nro_ot}</span>}
       {a.nro_boleta&&<span>Boleta: {a.nro_boleta}</span>}
-      {a.hora_presentacion&&<span style={{fontSize:"40px"}}><span style={{fontSize:"40px"}}>🕐</span> {a.hora_presentacion.slice(0,5)}</span>}
+      {a.hora_presentacion&&<span style={{fontSize:"13px"}}><span style={{fontSize:"13px"}}>🕐</span> {a.hora_presentacion.slice(0,5)}</span>}
     </div>:null;
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.65)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(4px)",padding:"16px"}}>
@@ -1150,7 +1150,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
     ?<div style={{fontSize:"18px",color:"#6B7280",marginTop:"4px",display:"flex",gap:"10px",flexWrap:"wrap"}}>
       {a.nro_ot&&<span>OT: {a.nro_ot}</span>}
       {a.nro_boleta&&<span>Boleta: {a.nro_boleta}</span>}
-      {a.hora_presentacion&&<span style={{fontSize:"40px",display:"inline-flex",alignItems:"center",gap:"6px"}}><span style={{fontSize:"40px"}}>🕐</span> {a.hora_presentacion.slice(0,5)}</span>}
+      {a.hora_presentacion&&<span style={{fontSize:"13px",display:"inline-flex",alignItems:"center",gap:"6px"}}><span style={{fontSize:"13px"}}>🕐</span> {a.hora_presentacion.slice(0,5)}</span>}
     </div>:null;
 
   const renderGrupos=(asignaciones)=>{
@@ -1684,7 +1684,7 @@ function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,
   return (
     <div style={{padding:"16px 24px 80px",width:"100%",maxWidth:"100%"}}>
       {!Object.keys(byWeek).length&&<div style={{textAlign:"center",padding:"80px 20px",color:"#fff"}}>
-        <div style={{fontSize:"40px",marginBottom:"12px"}}>📅</div>
+        <div style={{fontSize:"13px",marginBottom:"12px"}}>📅</div>
         <div style={{fontWeight:"700",fontSize:"18px",color:"#fff"}}>No hay eventos que mostrar</div>
       </div>}
       {Object.entries(byWeek).map(([lunISO,evs])=>{
@@ -1997,7 +1997,7 @@ export default function App() {
       <div style={{fontWeight:"700",fontSize:"20px",color:"#fff",marginBottom:"16px"}}>
         {formatLargo(diaActual)}<span style={{fontWeight:"400",color:"rgba(255,255,255,0.75)",fontSize:"16px",marginLeft:"12px"}}>{evs.length} evento{evs.length!==1?"s":""}</span>
       </div>
-      {evs.length===0?<div style={{textAlign:"center",padding:"60px 20px",color:"rgba(255,255,255,0.7)",border:"2px dashed rgba(255,255,255,0.3)",borderRadius:"16px"}}><div style={{fontSize:"40px",marginBottom:"12px"}}>📅</div><div style={{fontWeight:"700",fontSize:"18px",color:"#fff"}}>Sin eventos este día</div></div>
+      {evs.length===0?<div style={{textAlign:"center",padding:"60px 20px",color:"rgba(255,255,255,0.7)",border:"2px dashed rgba(255,255,255,0.3)",borderRadius:"16px"}}><div style={{fontSize:"13px",marginBottom:"12px"}}>📅</div><div style={{fontWeight:"700",fontSize:"18px",color:"#fff"}}>Sin eventos este día</div></div>
       :<div style={{display:"grid",gridTemplateColumns:esMobile?"1fr":"1fr 1fr",gap:"12px"}}>{evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={diaActual} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)}/>)}</div>}
     </div>;
   };
