@@ -815,7 +815,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
         {/* Footer */}
         <div style={{padding:"16px 24px",borderTop:`1px solid ${C.grisBorde}`,flexShrink:0,display:"flex",gap:"10px",justifyContent:"flex-end",background:C.gris,borderRadius:"0 0 20px 20px"}}>
           <button onClick={onCerrar} style={S.btnCancel}>Cancelar</button>
-          <button onClick={guardar} disabled={guardando} style={{...S.btnSave,opacity:guardando?0.7:1,minWidth:"140px"}}>{guardando?"Guardando…":"💾 Guardar"}</button>
+          <button onClick={guardar} disabled={guardando} style={{...S.btnSave,opacity:guardando?0.7:1,minWidth:"140px",pointerEvents:guardando?"none":"auto"}}>{guardando?"Guardando…":"💾 Guardar"}</button>
         </div>
       </div>
     </div>
