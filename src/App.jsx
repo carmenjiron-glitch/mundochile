@@ -54,9 +54,9 @@ const idiomaBorde=(idioma)=>IDIOMA_BORDE[idioma]||"#3451d1";
 const idiomaFlag=(idioma)=>IDIOMA_FLAG[idioma]||"🌐";
 const IDIOMA_CDN={"Inglés":"gb","Francés":"fr","Portugués":"br","Español":"es","Alemán":"de","Italiano":"it","Chino":"cn","Japonés":"jp"};
 function FlagImg({idioma}){const c=IDIOMA_CDN[idioma];if(!c)return<span style={{fontSize:"15px"}}>🌐</span>;return<img src={`https://flagcdn.com/28x21/${c}.png`} style={{width:"28px",height:"21px",objectFit:"cover",borderRadius:"2px",verticalAlign:"middle",display:"inline-block",flexShrink:0}} alt={idioma}/>;}
-const B_TIPO={"Simultánea":{bg:"#EEF2FF",c:"#3B5BDB"},"Consecutiva":{bg:"#FFF8E1",c:"#F57F17"},"Whispering":{bg:"#F3E5F5",c:"#7B1FA2"}};
-const B_MOD={"presencial":{bg:"#FCE4EC",c:"#C62828"},"remoto":{bg:"#E0F2F1",c:"#00695C"},"hibrido":{bg:"#FBE9E7",c:"#BF360C"}};
-const B_EST=(e)=>e==="Facturado"?{bg:"#E3F2FD",c:"#1565C0"}:{bg:"#FFFDE7",c:"#F57F17"};
+const B_TIPO={"Simultánea":{bg:"#EEF2FF",c:"#3B5BDB"},"Consecutiva":{bg:"#FCE4EC",c:"#C2185B"},"Whispering":{bg:"#F3E5F5",c:"#7B1FA2"}};
+const B_MOD={"presencial":{bg:"#E8F5E9",c:"#2E7D32"},"remoto":{bg:"#E0F7FA",c:"#00838F"},"hibrido":{bg:"#FBE9E7",c:"#BF360C"}};
+const B_EST=(e)=>e==="Facturado"?{bg:"#E3F2FD",c:"#1565C0"}:{bg:"#FFF8E1",c:"#F57F17"};
 const bS=(bg,c)=>({display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 14px",borderRadius:"6px",fontSize:"13px",fontWeight:"600",color:c,background:bg,border:`2px solid ${c}`,whiteSpace:"nowrap"});
 const TIPO_ICON={"Simultánea":<IconMic size={12}/>,"Consecutiva":<IconMic size={12}/>,"Whispering":"🤫"};
 const MOD_ICON={"presencial":"📍","remoto":"🖥️","hibrido":"🔀"};

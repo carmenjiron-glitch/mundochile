@@ -1,15 +1,22 @@
+const BADGE_MAP = {
+  "Facturación Pendiente": {bg:"#FFF8E1",c:"#F57F17",b:"#F57F17"},
+  "Facturado":             {bg:"#E3F2FD",c:"#1565C0",b:"#1565C0"},
+  "presencial":            {bg:"#E8F5E9",c:"#2E7D32",b:"#2E7D32"},
+  "remoto":                {bg:"#E0F7FA",c:"#00838F",b:"#00838F"},
+  "hibrido":               {bg:"#FBE9E7",c:"#BF360C",b:"#BF360C"},
+  "Simultánea":            {bg:"#EEF2FF",c:"#3B5BDB",b:"#3B5BDB"},
+  "Consecutiva":           {bg:"#FCE4EC",c:"#C2185B",b:"#C2185B"},
+  "Whispering":            {bg:"#F3E5F5",c:"#7B1FA2",b:"#7B1FA2"},
+};
+
 export default function FilterBar({filters, onChange, interpreters=[]}) {
-  const CHIP_ACTIVO = {
-    padding:"4px 11px",borderRadius:"20px",cursor:"pointer",
-    fontSize:"12px",fontWeight:"600",fontFamily:"inherit",
-    background:"rgba(255,255,255,0.28)",color:"#FFFFFF",
-    border:"1.5px solid rgba(255,255,255,0.70)",whiteSpace:"nowrap"
-  };
-  const CHIP_INACTIVO = {
-    padding:"4px 11px",borderRadius:"20px",cursor:"pointer",
-    fontSize:"12px",fontWeight:"400",fontFamily:"inherit",
-    background:"rgba(255,255,255,0.10)",color:"rgba(255,255,255,0.65)",
-    border:"1px solid rgba(255,255,255,0.22)",whiteSpace:"nowrap"
+  const BASE = {padding:"4px 11px",borderRadius:"20px",cursor:"pointer",fontSize:"12px",fontFamily:"inherit",whiteSpace:"nowrap"};
+  const CHIP_INACTIVO = {...BASE,fontWeight:"400",background:"rgba(255,255,255,0.10)",color:"rgba(255,255,255,0.65)",border:"1px solid rgba(255,255,255,0.22)"};
+  const CHIP_ACTIVO_GENERICO = {...BASE,fontWeight:"600",background:"rgba(255,255,255,0.28)",color:"#FFFFFF",border:"1.5px solid rgba(255,255,255,0.70)"};
+  const chipActivo = (v) => {
+    const bd = BADGE_MAP[v];
+    if (!bd) return CHIP_ACTIVO_GENERICO;
+    return {...BASE,fontWeight:"700",background:bd.bg,color:bd.c,border:`1.5px solid ${bd.b}`};
   };
   const LBL = {
     padding:"4px 11px",borderRadius:"20px",
@@ -33,19 +40,19 @@ export default function FilterBar({filters, onChange, interpreters=[]}) {
       <span style={LBL}>Estado</span>
       {[["","Todos"],["Facturación Pendiente","Pendiente"],["Facturado","Facturado"]].map(([v,l])=>(
         <button key={v} onClick={()=>onChange({...filters,estado:v})}
-          style={filters.estado===v ? CHIP_ACTIVO : CHIP_INACTIVO}>{l}</button>
+          style={filters.estado===v ? chipActivo(v) : CHIP_INACTIVO}>{l}</button>
       ))}
 
       <span style={{...LBL,marginLeft:"4px"}}>Modalidad</span>
       {[["","Todas"],["presencial","Presencial"],["remoto","Remoto"],["hibrido","Híbrido"]].map(([v,l])=>(
         <button key={v} onClick={()=>onChange({...filters,modalidad:v})}
-          style={filters.modalidad===v ? CHIP_ACTIVO : CHIP_INACTIVO}>{l}</button>
+          style={filters.modalidad===v ? chipActivo(v) : CHIP_INACTIVO}>{l}</button>
       ))}
 
       <span style={{...LBL,marginLeft:"4px"}}>Tipo</span>
       {[["","Todos"],["Simultánea","Simultánea"],["Consecutiva","Consecutiva"],["Whispering","Whispering"]].map(([v,l])=>(
         <button key={v} onClick={()=>onChange({...filters,tipo:v})}
-          style={filters.tipo===v ? CHIP_ACTIVO : CHIP_INACTIVO}>{l}</button>
+          style={filters.tipo===v ? chipActivo(v) : CHIP_INACTIVO}>{l}</button>
       ))}
 
       <span style={{...LBL,marginLeft:"4px"}}>Intérprete</span>

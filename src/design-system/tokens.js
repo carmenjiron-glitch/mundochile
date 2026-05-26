@@ -30,16 +30,16 @@ export const colorCliente = clientColor
 
 export const BADGE = {
   'Simultánea':           {bg:'#EEF2FF',c:'#3B5BDB',b:'#3B5BDB'},
-  'Consecutiva':          {bg:'#FFF8E1',c:'#F57F17',b:'#F57F17'},
+  'Consecutiva':          {bg:'#FCE4EC',c:'#C2185B',b:'#C2185B'},
   'Whispering':           {bg:'#F3E5F5',c:'#7B1FA2',b:'#7B1FA2'},
-  'presencial':           {bg:'#FCE4EC',c:'#C62828',b:'#C62828'},
-  'remoto':               {bg:'#E0F2F1',c:'#00695C',b:'#00695C'},
+  'presencial':           {bg:'#E8F5E9',c:'#2E7D32',b:'#2E7D32'},
+  'remoto':               {bg:'#E0F7FA',c:'#00838F',b:'#00838F'},
   'hibrido':              {bg:'#FBE9E7',c:'#BF360C',b:'#BF360C'},
-  'Presencial':           {bg:'#FCE4EC',c:'#C62828',b:'#C62828'},
-  'Remoto':               {bg:'#E0F2F1',c:'#00695C',b:'#00695C'},
+  'Presencial':           {bg:'#E8F5E9',c:'#2E7D32',b:'#2E7D32'},
+  'Remoto':               {bg:'#E0F7FA',c:'#00838F',b:'#00838F'},
   'Híbrido':              {bg:'#FBE9E7',c:'#BF360C',b:'#BF360C'},
   'Facturado':            {bg:'#E3F2FD',c:'#1565C0',b:'#1565C0'},
-  'Facturación Pendiente':{bg:'#FFFDE7',c:'#F57F17',b:'#F57F17'},
+  'Facturación Pendiente':{bg:'#FFF8E1',c:'#F57F17',b:'#F57F17'},
 }
 
 export const INTERP_LANG = {
