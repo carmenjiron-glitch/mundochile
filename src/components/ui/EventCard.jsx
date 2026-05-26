@@ -1,152 +1,269 @@
+// EventCard.jsx — MundoChile v3.0 — Diseño Trello
 import { colorCliente, INTERP_LANG } from "../../design-system/tokens";
-import Badge from "./Badge";
-import MultiDayPill from "./MultiDayPill";
 import PlatformChip from "./PlatformChip";
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+const desdeISO = s => { const [y,m,d] = s.split("-"); return new Date(+y,+m-1,+d); };
+const LBL_MODAL = { remoto:"Remoto", presencial:"Presencial", hibrido:"Híbrido" };
 
 const nombreCorto = (nombre, apellido) => {
   if (!apellido) return nombre;
-  const completo = `${nombre} ${apellido}`;
-  if (completo.length <= 12) return completo;
-  return `${nombre} ${apellido.charAt(0)}.`;
+  const full = `${nombre} ${apellido}`;
+  return full.length <= 14 ? full : `${nombre} ${apellido.charAt(0)}.`;
 };
 
-const IconAV = ({size=24}) => (
+// ── Íconos SVG nítidos ────────────────────────────────────────────────────────
+const IconAV = ({ size = 14 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+    stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="3" width="20" height="14" rx="2"/>
     <line x1="8" y1="21" x2="16" y2="21"/>
     <line x1="12" y1="17" x2="12" y2="21"/>
   </svg>
-)
+);
 
-const LBL_MODAL = { remoto: "Remoto", presencial: "Presencial", hibrido: "Híbrido" };
-const desdeISO = (s) => { const [y,m,d] = s.split("-"); return new Date(+y,+m-1,+d); };
-
-function FlagImg({ idioma }) {
+// ── Bandera ───────────────────────────────────────────────────────────────────
+const Flag = ({ idioma }) => {
   const t = INTERP_LANG[idioma] || INTERP_LANG.default;
-  if (!t.flag) return <span style={{ fontSize: '13px' }}>🌐</span>;
-  return <img src={`https://flagcdn.com/28x21/${t.flag}.png`} style={{ width: '18px', height: '13px', objectFit: 'cover', borderRadius: '2px', flexShrink: 0 }} alt={idioma} />;
-}
+  if (!t.flag) return <span style={{ fontSize: 12 }}>🌐</span>;
+  return (
+    <img
+      src={`https://flagcdn.com/28x21/${t.flag}.png`}
+      style={{ width: 16, height: 12, objectFit: "cover", borderRadius: 2, flexShrink: 0 }}
+      alt={idioma}
+    />
+  );
+};
 
+// ── Badge rectangular estilo Trello ──────────────────────────────────────────
+const BADGE = {
+  "Simultánea":            { bg:"#EEF2FF", c:"#3B5BDB", b:"#3B5BDB" },
+  "Consecutiva":           { bg:"#FCE4EC", c:"#C2185B", b:"#C2185B" },
+  "Whispering":            { bg:"#F3E5F5", c:"#7B1FA2", b:"#7B1FA2" },
+  "Presencial":            { bg:"#E8F5E9", c:"#2E7D32", b:"#2E7D32" },
+  "Remoto":                { bg:"#E0F7FA", c:"#00838F", b:"#00838F" },
+  "Híbrido":               { bg:"#FBE9E7", c:"#BF360C", b:"#BF360C" },
+  "Facturado":             { bg:"#E3F2FD", c:"#1565C0", b:"#1565C0" },
+  "Facturación Pendiente": { bg:"#FFEB3B", c:"#B71C1C", b:"#F9A825" },
+};
+
+const Chip = ({ label, emoji }) => {
+  const s = BADGE[label] || { bg:"#F1F5F9", c:"#475569", b:"#CBD5E1" };
+  return (
+    <span style={{
+      display:"inline-flex", alignItems:"center", gap:4,
+      padding:"3px 10px", borderRadius:6,
+      fontSize:11, fontWeight:600,
+      color:s.c, background:s.bg, border:`1.5px solid ${s.b}`,
+      whiteSpace:"nowrap", lineHeight:1.4,
+    }}>
+      {emoji}{label}
+    </span>
+  );
+};
+
+// ── Componente principal ──────────────────────────────────────────────────────
 export default function EventCard({ ev, diaDe, clientes, interpretes, pares, proveedores=[], onClick }) {
-  const cliente = clientes.find(c => c.id === ev.cliente_id);
+  const cliente    = clientes.find(c => c.id === ev.cliente_id);
   const borderColor = colorCliente(ev.cliente_id);
   const esPresencial = ev.modalidad === "presencial" || ev.modalidad === "hibrido";
-  const esZoomMC = (ev.plataforma === "Zoom MundoChile" || ev.plataforma === "Zoom");
+  const esZoomMC   = ev.plataforma === "Zoom MundoChile" || ev.plataforma === "Zoom";
+  const modalLabel = LBL_MODAL[ev.modalidad] || ev.modalidad;
+  const estadoLabel = ev.estado === "Facturado" ? "Facturado" : "Facturación Pendiente";
 
-  const todosEquipos = (ev.evento_dias || []).flatMap(d => d.equipos_dia || []);
-  const tieneEquipos = todosEquipos.length > 0;
-  const provNombreEq = tieneEquipos
-    ? (todosEquipos[0].proveedor_nombre || proveedores.find(p => p.id === todosEquipos[0].proveedor_id)?.nombre || "")
-    : "";
-
+  // Multidía
   let diaXdeY = null;
   if (diaDe && ev.fecha_inicio !== ev.fecha_termino) {
     const ini = desdeISO(ev.fecha_inicio);
-    const diaCol = desdeISO(diaDe);
-    const x = Math.round((diaCol - ini) / 86400000) + 1;
-    const y = Math.round((desdeISO(ev.fecha_termino) - ini) / 86400000) + 1;
-    diaXdeY = { x, y };
+    const col = desdeISO(diaDe);
+    diaXdeY = {
+      x: Math.round((col - ini) / 86400000) + 1,
+      y: Math.round((desdeISO(ev.fecha_termino) - ini) / 86400000) + 1,
+    };
   }
+
+  // Equipos AV
+  const todosEquipos = (ev.evento_dias || []).flatMap(d => d.equipos_dia || []);
+  const tieneEquipos = todosEquipos.length > 0;
+  const provNombre   = tieneEquipos
+    ? (todosEquipos[0].proveedor_nombre || proveedores.find(p => p.id === todosEquipos[0].proveedor_id)?.nombre || "")
+    : "";
 
   // Agrupar intérpretes por par de idiomas
   const grupos = {};
   (ev.asignaciones || []).forEach(a => {
-    const par = pares.find(p => p.id === a.par_id);
+    const par   = pares.find(p => p.id === a.par_id);
     const interp = interpretes.find(x => x.id === a.interprete_id);
     if (!interp) return;
-    const key = par?.descripcion || "Sin par";
+    const key   = par?.descripcion || "Sin par";
     const idioma = par?.idioma_origen || "";
-    if (!grupos[key]) grupos[key] = { idioma, interpretes: [] };
-    grupos[key].interpretes.push({ ...interp, isHost: !!a.es_host_zoom, hora_presentacion: a.hora_presentacion || null });
+    if (!grupos[key]) grupos[key] = { idioma, items: [] };
+    grupos[key].items.push({
+      nombre: interp.nombre,
+      apellido: interp.apellido,
+      isHost: !!a.es_host_zoom,
+      hora: a.hora_presentacion || null,
+    });
   });
-  const gruposEntries = Object.entries(grupos);
-
-  const estadoLabel = ev.estado === "Facturado" ? "Facturado" : "Facturación Pendiente";
-  const modalLabel = LBL_MODAL[ev.modalidad] || ev.modalidad;
 
   return (
     <div
       onClick={onClick}
       style={{
-        background: '#FFFFFF',
-        borderLeft: `14px solid ${borderColor}`,
-        borderTop: `4px solid ${borderColor}`,
-        borderRadius: '0 10px 4px 0',
-        padding: '18px 20px',
-        marginBottom: '10px',
-        boxShadow: '0 2px 10px rgba(0,0,0,0.10)',
-        cursor: 'pointer',
-        width: '100%',
-        boxSizing: 'border-box',
-        transition: 'box-shadow 0.15s, transform 0.15s',
+        background:     "#FFFFFF",
+        borderLeft:     `8px solid ${borderColor}`,
+        borderTop:      `3px solid ${borderColor}`,
+        borderRadius:   "0 8px 8px 0",
+        padding:        "14px 16px",
+        marginBottom:   "10px",
+        boxShadow:      "0 1px 4px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)",
+        cursor:         "pointer",
+        width:          "100%",
+        boxSizing:      "border-box",
+        transition:     "box-shadow 0.15s, transform 0.12s",
+        userSelect:     "none",
       }}
-      onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 6px 24px rgba(0,0,0,0.22)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-      onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.10)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+      onMouseEnter={e => {
+        e.currentTarget.style.boxShadow  = "0 4px 16px rgba(0,0,0,0.18)";
+        e.currentTarget.style.transform  = "translateY(-2px)";
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.boxShadow  = "0 1px 4px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)";
+        e.currentTarget.style.transform  = "translateY(0)";
+      }}
     >
-      <div style={{ fontSize: '22px', fontWeight: '800', color: '#0F172A', lineHeight: 1.2 }}>
+      {/* Multidía */}
+      {diaXdeY && (
+        <div style={{ marginBottom: 8 }}>
+          <span style={{
+            display:"inline-flex", alignItems:"center", gap:4,
+            padding:"2px 10px", borderRadius:20,
+            fontSize:11, fontWeight:700,
+            color:"#1971C2", background:"#DBEAFE", border:"1.5px solid #93C5FD",
+          }}>
+            📅 Multidía · Día {diaXdeY.x} de {diaXdeY.y}
+          </span>
+        </div>
+      )}
+
+      {/* Nombre cliente */}
+      <div style={{ fontSize:18, fontWeight:800, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em" }}>
         {cliente?.nombre_empresa || "—"}
       </div>
+
+      {/* Nombre evento */}
       {ev.nombre_evento && (
-        <div style={{ fontSize: '15px', fontWeight: '600', color: '#374151', marginTop: '2px' }}>
+        <div style={{ fontSize:13, fontWeight:500, color:"#374151", marginTop:2 }}>
           {ev.nombre_evento}
         </div>
       )}
+
+      {/* Contacto */}
       {cliente?.nombre_contacto && (
-        <div style={{ fontSize: '14px', color: '#6B7280', fontStyle: 'italic', fontWeight: '700', marginTop: '2px' }}>
+        <div style={{ fontSize:12, color:"#6B7280", fontStyle:"italic", marginTop:2 }}>
           Contacto: {cliente.nombre_contacto}
         </div>
       )}
-      <div style={{ margin: '8px 0' }} />
-      <div style={{ fontSize: '16px', fontWeight: '700', color: '#0F172A' }}>
-        {ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)} hrs
+
+      {/* Horario */}
+      <div style={{
+        fontSize:15, fontWeight:700, color:"#0F172A",
+        marginTop:10, marginBottom:8,
+        display:"flex", alignItems:"center", gap:6,
+      }}>
+        🕐 {ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)} hrs
       </div>
-      {diaXdeY && (
-        <div style={{ marginTop: '4px' }}>
-          <MultiDayPill currentDay={diaXdeY.x} totalDays={diaXdeY.y} />
-        </div>
-      )}
-      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center', marginTop: '8px' }}>
-        <Badge type={ev.tipo} />
-        <Badge type={modalLabel} />
+
+      {/* Badges tipo + modalidad */}
+      <div style={{ display:"flex", gap:5, flexWrap:"wrap", alignItems:"center" }}>
+        <Chip label={ev.tipo} emoji={ev.tipo==="Simultánea"?"🎤 ":ev.tipo==="Consecutiva"?"🎤 ":"🤫 "} />
+        <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?"📍 ":ev.modalidad==="hibrido"?"🔀 ":"💻 "} />
       </div>
+
+      {/* Plataforma / Lugar */}
       {!esPresencial && ev.plataforma && (
-        <div style={{ marginTop: '6px' }}>
-          <PlatformChip platform={ev.plataforma === "Zoom" ? "Zoom MundoChile" : ev.plataforma} isMundoChile={esZoomMC} extra={esZoomMC ? ev.zoom_administrador : ''} />
+        <div style={{ marginTop:6 }}>
+          <PlatformChip
+            platform={ev.plataforma === "Zoom" ? "Zoom MundoChile" : ev.plataforma}
+            isMundoChile={esZoomMC}
+            extra={esZoomMC ? ev.zoom_administrador : ""}
+          />
         </div>
       )}
       {esPresencial && ev.lugar && (
-        <div style={{ fontSize: '13px', color: '#475569', marginTop: '6px' }}>📍 {ev.lugar}</div>
+        <div style={{ fontSize:12, color:"#475569", marginTop:6 }}>📍 {ev.lugar}</div>
       )}
-      <div style={{ marginTop: '6px' }}>
-        <Badge type={estadoLabel} />
+
+      {/* Estado */}
+      <div style={{ marginTop:6 }}>
+        <Chip label={estadoLabel} emoji={estadoLabel==="Facturado"?"✓ ":"🟠 "} />
       </div>
-      {gruposEntries.map(([key, grupo]) => {
-        const t = INTERP_LANG[grupo.idioma] || INTERP_LANG.default;
-        const esPort = grupo.idioma === 'Portugués';
-        const bubbleBg = esPort ? '#FFFFFF' : t.bg;
-        const bubbleColor = esPort ? '#0F3311' : '#FFFFFF';
-        const bubbleBorder = esPort ? '2px solid #0F3311' : `2px solid ${t.border}`;
-        const titleColor = esPort ? '#0F3311' : t.bg;
+
+      {/* Intérpretes agrupados */}
+      {Object.entries(grupos).map(([key, grupo]) => {
+        const t       = INTERP_LANG[grupo.idioma] || INTERP_LANG.default;
+        const esPort  = grupo.idioma === "Portugués";
+        const bg      = esPort ? "#FFFFFF"  : t.bg;
+        const color   = esPort ? "#0F3311"  : "#FFFFFF";
+        const border  = esPort ? "1.5px solid #0F3311" : `1.5px solid ${t.border}`;
+        const titleC  = esPort ? "#0F3311"  : t.bg;
+        const hp      = grupo.items.find(i => i.hora)?.hora;
+
         return (
-          <div key={key} style={{ marginTop: '8px' }}>
-            <div style={{ fontSize: '13px', fontWeight: '900', color: titleColor, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '5px', filter: 'brightness(0.65)' }}>{key}</div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5px' }}>
-              {grupo.interpretes.map((interp, i) => (
-                <span key={i} title={`${interp.nombre}${interp.apellido ? ' ' + interp.apellido : ''}`} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '5px', padding: '4px 7px', borderRadius: '6px', fontSize: '14px', fontWeight: '500', color: bubbleColor, background: bubbleBg, border: bubbleBorder, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'default' }}>
-                  {interp.isHost && <span style={{ fontSize: '11px' }}>🔑</span>}
-                  <FlagImg idioma={grupo.idioma} />
-                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', color: bubbleColor }}>{nombreCorto(interp.nombre, interp.apellido)}</span>
+          <div key={key} style={{ marginTop:10 }}>
+            {/* Título del par */}
+            <div style={{
+              fontSize:11, fontWeight:800, color:titleC,
+              textTransform:"uppercase", letterSpacing:"0.07em",
+              marginBottom:5, opacity:0.85,
+            }}>
+              {key}
+            </div>
+
+            {/* Pills intérpretes — 2 columnas */}
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:5 }}>
+              {grupo.items.map((interp, i) => (
+                <span
+                  key={i}
+                  title={`${interp.nombre}${interp.apellido ? " " + interp.apellido : ""}`}
+                  style={{
+                    display:"inline-flex", alignItems:"center", justifyContent:"center",
+                    gap:5, padding:"5px 8px", borderRadius:6,
+                    fontSize:12, fontWeight:600,
+                    color, background:bg, border,
+                    overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
+                    cursor:"default",
+                  }}
+                >
+                  {interp.isHost && <span style={{ fontSize:11 }}>🔑</span>}
+                  <Flag idioma={grupo.idioma} />
+                  <span style={{ overflow:"hidden", textOverflow:"ellipsis", color }}>
+                    {nombreCorto(interp.nombre, interp.apellido)}
+                  </span>
                 </span>
               ))}
             </div>
-            {(()=>{const hp=grupo.interpretes.find(i=>i.hora_presentacion)?.hora_presentacion;return hp?<div style={{fontSize:'9px',fontWeight:'500',color:'#475569',marginTop:'4px',display:'inline-flex',alignItems:'center',gap:'4px'}}><span style={{fontSize:'9px'}}>🕐</span> Presentación intérpretes: {hp.slice(0,5)} hrs</div>:null;})()}
+
+            {/* Hora de presentación */}
+            {hp && (
+              <div style={{
+                fontSize:11, color:"#64748B", marginTop:4,
+                display:"inline-flex", alignItems:"center", gap:4,
+              }}>
+                🕐 Presentación: {hp.slice(0,5)} hrs
+              </div>
+            )}
           </div>
         );
       })}
+
+      {/* Equipos AV */}
       {tieneEquipos && (
-        <div style={{ fontSize: '11px', color: '#6B7280', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-          <IconAV size={16}/> {provNombreEq || "Equipos AV"}
+        <div style={{
+          fontSize:11, color:"#6B7280", marginTop:8,
+          display:"flex", alignItems:"center", gap:5,
+        }}>
+          <IconAV size={13} /> {provNombre || "Equipos AV"}
         </div>
       )}
     </div>
