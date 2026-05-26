@@ -35,42 +35,50 @@ export default function FilterBar({filters, onChange, interpreters=[]}) {
       padding:"4px 0",
       background:"transparent",borderRadius:"0",
       marginBottom:"0",alignItems:"center",
-      justifyContent:"flex-start",overflowX:"auto",width:"100%"
+      justifyContent:"space-between",overflowX:"auto",width:"100%"
     }}>
-      <span style={LBL}>Estado</span>
-      {[["","Todos"],["Facturación Pendiente","Pendiente"],["Facturado","Facturado"]].map(([v,l])=>(
-        <button key={v} onClick={()=>onChange({...filters,estado:v})}
-          style={filters.estado===v ? chipActivo(v) : CHIP_INACTIVO}>{l}</button>
-      ))}
-
-      <span style={{...LBL,marginLeft:"4px"}}>Modalidad</span>
-      {[["","Todas"],["presencial","Presencial"],["remoto","Remoto"],["hibrido","Híbrido"]].map(([v,l])=>(
-        <button key={v} onClick={()=>onChange({...filters,modalidad:v})}
-          style={filters.modalidad===v ? chipActivo(v) : CHIP_INACTIVO}>{l}</button>
-      ))}
-
-      <span style={{...LBL,marginLeft:"4px"}}>Tipo</span>
-      {[["","Todos"],["Simultánea","Simultánea"],["Consecutiva","Consecutiva"],["Whispering","Whispering"]].map(([v,l])=>(
-        <button key={v} onClick={()=>onChange({...filters,tipo:v})}
-          style={filters.tipo===v ? chipActivo(v) : CHIP_INACTIVO}>{l}</button>
-      ))}
-
-      <span style={{...LBL,marginLeft:"4px"}}>Intérprete</span>
-      <select value={filters.interprete_id||""}
-        onChange={e=>onChange({...filters,interprete_id:e.target.value})}
-        style={{
-          background:"rgba(255,255,255,0.10)",color:"rgba(255,255,255,0.85)",
-          border:"1px solid rgba(255,255,255,0.22)",borderRadius:"20px",
-          padding:"3px 8px",fontSize:"12px",maxWidth:"120px",
-          flexShrink:1,cursor:"pointer",outline:"none"
-        }}>
-        <option value="" style={{color:"#000"}}>Todos</option>
-        {interpreters.filter(i=>i.activo!==false).map(i=>(
-          <option key={i.id} value={i.id} style={{color:"#000"}}>
-            {i.nombre}{i.apellido?" "+i.apellido:""}
-          </option>
+      <div style={{display:"flex",alignItems:"center",gap:"4px"}}>
+        <span style={LBL}>Estado</span>
+        {[["","Todos"],["Facturación Pendiente","Pendiente"],["Facturado","Facturado"]].map(([v,l])=>(
+          <button key={v} onClick={()=>onChange({...filters,estado:v})}
+            style={filters.estado===v ? chipActivo(v) : CHIP_INACTIVO}>{l}</button>
         ))}
-      </select>
+      </div>
+
+      <div style={{display:"flex",alignItems:"center",gap:"4px"}}>
+        <span style={LBL}>Modalidad</span>
+        {[["","Todas"],["presencial","Presencial"],["remoto","Remoto"],["hibrido","Híbrido"]].map(([v,l])=>(
+          <button key={v} onClick={()=>onChange({...filters,modalidad:v})}
+            style={filters.modalidad===v ? chipActivo(v) : CHIP_INACTIVO}>{l}</button>
+        ))}
+      </div>
+
+      <div style={{display:"flex",alignItems:"center",gap:"4px"}}>
+        <span style={LBL}>Tipo</span>
+        {[["","Todos"],["Simultánea","Simultánea"],["Consecutiva","Consecutiva"],["Whispering","Whispering"]].map(([v,l])=>(
+          <button key={v} onClick={()=>onChange({...filters,tipo:v})}
+            style={filters.tipo===v ? chipActivo(v) : CHIP_INACTIVO}>{l}</button>
+        ))}
+      </div>
+
+      <div style={{display:"flex",alignItems:"center",gap:"4px"}}>
+        <span style={LBL}>Intérprete</span>
+        <select value={filters.interprete_id||""}
+          onChange={e=>onChange({...filters,interprete_id:e.target.value})}
+          style={{
+            background:"rgba(255,255,255,0.10)",color:"rgba(255,255,255,0.85)",
+            border:"1px solid rgba(255,255,255,0.22)",borderRadius:"20px",
+            padding:"3px 8px",fontSize:"12px",maxWidth:"120px",
+            flexShrink:1,cursor:"pointer",outline:"none"
+          }}>
+          <option value="" style={{color:"#000"}}>Todos</option>
+          {interpreters.filter(i=>i.activo!==false).map(i=>(
+            <option key={i.id} value={i.id} style={{color:"#000"}}>
+              {i.nombre}{i.apellido?" "+i.apellido:""}
+            </option>
+          ))}
+        </select>
+      </div>
 
       {hayFiltro&&(
         <button onClick={()=>onChange({estado:"",modalidad:"",tipo:"",interprete_id:""})}

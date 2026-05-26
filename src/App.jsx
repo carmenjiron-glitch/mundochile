@@ -112,9 +112,9 @@ const HORAS = (() => { const h=[]; for(let x=7;x<=22;x++) for(let m of [0,15,30,
 
 // ─── ESTILOS BASE ─────────────────────────────────────────────────────────────
 const S = {
-  inp: {width:"100%",padding:"9px 12px",border:`1.5px solid ${C.grisBorde}`,borderRadius:"8px",fontSize:"16px",color:C.texto,background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",height:"48px"},
-  sel: {width:"100%",padding:"9px 12px",border:`1.5px solid ${C.grisBorde}`,borderRadius:"8px",fontSize:"16px",color:C.texto,background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",cursor:"pointer",height:"48px"},
-  lbl: {fontSize:"14px",fontWeight:"600",color:"#383838",textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:"5px",display:"block"},
+  inp: {width:"100%",padding:"9px 12px",border:`1.5px solid ${C.grisBorde}`,borderRadius:"8px",fontSize:"26px",color:C.texto,background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",height:"48px"},
+  sel: {width:"100%",padding:"9px 12px",border:`1.5px solid ${C.grisBorde}`,borderRadius:"8px",fontSize:"26px",color:C.texto,background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",cursor:"pointer",height:"48px"},
+  lbl: {fontSize:"22px",fontWeight:"600",color:"#383838",textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:"5px",display:"block"},
   fila:{display:"flex",gap:"16px",flexWrap:"wrap"},
   camp:{flex:"1",minWidth:"140px"},
   btnA:{padding:"10px 20px",background:"#3a7bd5",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
@@ -490,11 +490,11 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
     const interp=interpretes.find(x=>x.id===a.interprete_id);
     return (
       <div style={{border:`1.5px solid ${a.es_host_zoom?"#E03131":C.grisBorde}`,borderRadius:"10px",padding:"14px",marginBottom:"10px",background:C.gris,boxShadow:a.es_host_zoom?"0 0 0 2px #fecaca":undefined}}>
-        {alerta&&<div style={{background:"#fef3c7",border:"1px solid #f59e0b",borderRadius:"8px",padding:"10px 14px",marginBottom:"10px",fontSize:"13px",color:"#92400e"}}>
+        {alerta&&<div style={{background:"#fef3c7",border:"1px solid #f59e0b",borderRadius:"8px",padding:"10px 14px",marginBottom:"10px",fontSize:"21px",color:"#92400e"}}>
           <div style={{fontWeight:"600",marginBottom:"8px"}}>⚠️ {interp?.nombre||"Este intérprete"} ya tiene asignado "{alerta.nombre_evento||"otro evento"}" el {formatLargo(alerta.fecha_inicio)}. ¿Deseas agregarlo de todos modos?</div>
           <div style={{display:"flex",gap:"8px"}}>
-            <button onClick={()=>setAlerta(null)} style={{padding:"5px 12px",background:"#92400e",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"700",fontSize:"12px",fontFamily:"inherit"}}>Sí, agregar igual</button>
-            <button onClick={()=>{edit("interprete_id","");setAlerta(null);}} style={{padding:"5px 12px",background:"none",color:"#92400e",border:"1px solid #92400e",borderRadius:"6px",cursor:"pointer",fontWeight:"700",fontSize:"12px",fontFamily:"inherit"}}>Cambiar intérprete</button>
+            <button onClick={()=>setAlerta(null)} style={{padding:"5px 12px",background:"#92400e",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"700",fontSize:"19px",fontFamily:"inherit"}}>Sí, agregar igual</button>
+            <button onClick={()=>{edit("interprete_id","");setAlerta(null);}} style={{padding:"5px 12px",background:"none",color:"#92400e",border:"1px solid #92400e",borderRadius:"6px",cursor:"pointer",fontWeight:"700",fontSize:"19px",fontFamily:"inherit"}}>Cambiar intérprete</button>
           </div>
         </div>}
         <div style={S.fila}>
@@ -505,9 +505,9 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                 <option value="">Seleccionar…</option>
                 {interpretes.filter(i=>i.activo).map(i=><option key={i.id} value={i.id}>{i.nombre}{i.apellido?" "+i.apellido:""}{i.es_host_zoom?" 🔑":""}{i.ciudad?` · ${i.ciudad}`:""}</option>)}
               </select>
-              <button onClick={()=>onNuevoInterprete(idx,dIdx)} style={{...S.btnP,fontSize:"21px",fontWeight:"700",width:"48px",height:"48px",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>+</button>
+              <button onClick={()=>onNuevoInterprete(idx,dIdx)} style={{...S.btnP,fontSize:"34px",fontWeight:"700",width:"48px",height:"48px",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>+</button>
             </div>
-            {interp&&<div style={{fontSize:"11px",color:C.textoSuave,marginTop:"4px",display:"flex",gap:"8px",flexWrap:"wrap"}}>
+            {interp&&<div style={{fontSize:"18px",color:C.textoSuave,marginTop:"4px",display:"flex",gap:"8px",flexWrap:"wrap"}}>
               {interp.ciudad&&<span>📍 {interp.ciudad}</span>}
               {interp.modalidad_trabajo&&<span>{interp.modalidad_trabajo==="ambas"?"💻📍":interp.modalidad_trabajo==="online"?"💻 Online":"📍 Presencial"}</span>}
             </div>}
@@ -526,10 +526,10 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           <div style={S.camp}><label style={S.lbl}>🕐 Hora presentación</label><SelHora value={a.hora_presentacion} onChange={v=>edit("hora_presentacion",v)} placeholder="Misma del evento"/></div>
         </div>
         <div style={{display:"flex",gap:"16px",marginTop:"10px",flexWrap:"wrap",alignItems:"center"}}>
-          <label style={{display:"flex",gap:"6px",alignItems:"center",cursor:"pointer",fontSize:"13px",color:a.es_host_zoom?C.rojo:C.textoMed,fontWeight:a.es_host_zoom?"700":"400"}}>
+          <label style={{display:"flex",gap:"6px",alignItems:"center",cursor:"pointer",fontSize:"21px",color:a.es_host_zoom?C.rojo:C.textoMed,fontWeight:a.es_host_zoom?"700":"400"}}>
             <input type="checkbox" checked={!!a.es_host_zoom} onChange={e=>edit("es_host_zoom",e.target.checked)}/> 🔑 Host Zoom MundoChile
           </label>
-          <div style={{marginLeft:"auto"}}><button onClick={rem} style={{background:"none",border:"none",cursor:"pointer",color:C.rojo,fontWeight:"700",fontSize:"13px"}}>✕ Quitar</button></div>
+          <div style={{marginLeft:"auto"}}><button onClick={rem} style={{background:"none",border:"none",cursor:"pointer",color:C.rojo,fontWeight:"700",fontSize:"21px"}}>✕ Quitar</button></div>
         </div>
       </div>
     );
@@ -553,16 +553,16 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
       <div style={{background:"#fff",borderRadius:"20px",width:"100%",maxWidth:"760px",maxHeight:"90vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,0.25)"}}>
         {/* Header */}
         <div style={{padding:"20px 24px",borderBottom:"none",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0,background:form.id?"#E67700":"#3a7bd5",borderRadius:"20px 20px 0 0"}}>
-          <div style={{fontSize:"18px",fontWeight:"600",color:"#FFFFFF"}}>{form.id?<><span style={{filter:"brightness(10)"}}>✏️</span> Editar evento</>:"Nuevo evento"}</div>
-          <button onClick={onCerrar} style={{background:"none",border:"none",cursor:"pointer",fontSize:"28px",color:"#FFFFFF",lineHeight:1,fontWeight:"300",opacity:1}}>×</button>
+          <div style={{fontSize:"29px",fontWeight:"600",color:"#FFFFFF"}}>{form.id?<><span style={{filter:"brightness(10)"}}>✏️</span> Editar evento</>:"Nuevo evento"}</div>
+          <button onClick={onCerrar} style={{background:"none",border:"none",cursor:"pointer",fontSize:"45px",color:"#FFFFFF",lineHeight:1,fontWeight:"300",opacity:1}}>×</button>
         </div>
         {/* Tabs */}
         <div style={{display:"flex",borderBottom:`1px solid ${C.grisBorde}`,flexShrink:0}}>
-          {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"10px 18px",background:tab===t.id?"#3a7bd5":"#AECBEF",border:"none",borderRadius:"8px",cursor:"pointer",color:tab===t.id?"#fff":"#173060",fontWeight:tab===t.id?"700":"600",fontSize:"14px",fontFamily:"inherit",margin:"6px 4px",opacity:1}}>{t.lbl}</button>)}
+          {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"10px 18px",background:tab===t.id?"#3a7bd5":"#AECBEF",border:"none",borderRadius:"8px",cursor:"pointer",color:tab===t.id?"#fff":"#173060",fontWeight:tab===t.id?"700":"600",fontSize:"22px",fontFamily:"inherit",margin:"6px 4px",opacity:1}}>{t.lbl}</button>)}
         </div>
         {/* Cuerpo */}
         <div data-modal-scroll style={{overflowY:"auto",flex:1,padding:"20px 24px"}}>
-          {error&&<div style={{background:C.rojoClaro,color:C.rojo,padding:"10px 14px",borderRadius:"8px",marginBottom:"20px",fontSize:"14px",fontWeight:"600"}}>{error}</div>}
+          {error&&<div style={{background:C.rojoClaro,color:C.rojo,padding:"10px 14px",borderRadius:"8px",marginBottom:"20px",fontSize:"22px",fontWeight:"600"}}>{error}</div>}
 
           {/* ── TAB GENERAL ── */}
           {tab==="general"&&<>
@@ -574,7 +574,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                   <option value="">Seleccionar cliente…</option>
                   {clientes.map(c=><option key={c.id} value={c.id}>{c.nombre_empresa}</option>)}
                 </select>
-                <button onClick={onNuevoCliente} style={{padding:"0",width:"48px",height:"48px",background:"#1E3A6E",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"26px",fontWeight:"300",fontFamily:"inherit",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,lineHeight:1}}>+</button>
+                <button onClick={onNuevoCliente} style={{padding:"0",width:"48px",height:"48px",background:"#1E3A6E",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"42px",fontWeight:"300",fontFamily:"inherit",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,lineHeight:1}}>+</button>
               </div>
             </div>
             {form.cliente_id&&<div style={{marginBottom:"20px"}}>
@@ -584,7 +584,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                   <option value="">Seleccionar contacto…</option>
                   {contactos.filter(c=>c.cliente_id===Number(form.cliente_id)&&c.activo!==false).map(c=><option key={c.id} value={c.id}>{c.nombre}{c.cargo?` — ${c.cargo}`:""}</option>)}
                 </select>
-                <button onClick={()=>setModalNuevoContacto({cliente_id:form.cliente_id})} style={{padding:"0",width:"48px",height:"48px",background:"#3B82F6",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"26px",fontWeight:"300",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,lineHeight:1}}>+</button>
+                <button onClick={()=>setModalNuevoContacto({cliente_id:form.cliente_id})} style={{padding:"0",width:"48px",height:"48px",background:"#3B82F6",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"42px",fontWeight:"300",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,lineHeight:1}}>+</button>
               </div>
             </div>}
             {/* Nombre del evento */}
@@ -596,9 +596,9 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
             <div style={{marginBottom:"20px"}}>
               <label style={{...S.lbl,marginBottom:"8px"}}>Referencias del cliente</label>
               <div style={S.fila}>
-                <div style={S.camp}><label style={{...S.lbl,fontSize:"11px"}}>N° OC</label><input style={S.inp} value={form.nro_oc} onChange={e=>setF("nro_oc",e.target.value)} placeholder="OC-0000"/></div>
-                <div style={S.camp}><label style={{...S.lbl,fontSize:"11px"}} title="Hoja de Entrada de Servicios">N° HES <span style={{fontSize:"10px",color:C.textoSuave,fontWeight:"400",textTransform:"none"}}>(Hoja Entrada Servicios)</span></label><input style={S.inp} value={form.nro_hes||""} onChange={e=>setF("nro_hes",e.target.value)} placeholder="HES-000"/></div>
-                <div style={S.camp}><label style={{...S.lbl,fontSize:"11px"}}>Otros</label><input style={S.inp} value={form.nro_otros||""} onChange={e=>setF("nro_otros",e.target.value)} placeholder="Ref. adicional…"/></div>
+                <div style={S.camp}><label style={{...S.lbl,fontSize:"18px"}}>N° OC</label><input style={S.inp} value={form.nro_oc} onChange={e=>setF("nro_oc",e.target.value)} placeholder="OC-0000"/></div>
+                <div style={S.camp}><label style={{...S.lbl,fontSize:"18px"}} title="Hoja de Entrada de Servicios">N° HES <span style={{fontSize:"16px",color:C.textoSuave,fontWeight:"400",textTransform:"none"}}>(Hoja Entrada Servicios)</span></label><input style={S.inp} value={form.nro_hes||""} onChange={e=>setF("nro_hes",e.target.value)} placeholder="HES-000"/></div>
+                <div style={S.camp}><label style={{...S.lbl,fontSize:"18px"}}>Otros</label><input style={S.inp} value={form.nro_otros||""} onChange={e=>setF("nro_otros",e.target.value)} placeholder="Ref. adicional…"/></div>
               </div>
             </div>
             {/* Tipo + Modalidad */}
@@ -623,20 +623,20 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
             {form.jornada==="Otro horario personalizado"&&!esMultidia&&<div style={{marginBottom:"20px"}}><label style={S.lbl}>✍️ Horario personalizado</label><input style={S.inp} value={form.jornada_personalizada} onChange={e=>setF("jornada_personalizada",e.target.value)}/></div>}
             {/* Plataforma (remoto/híbrido) */}
             {(form.modalidad==="remoto"||form.modalidad==="hibrido")&&<>
-              <div style={{...S.fila,marginBottom:"20px"}}>
-                <div style={S.camp}><label style={S.lbl}>💻 Plataforma</label>
+              <div style={{...S.fila,marginBottom:"20px",alignItems:"flex-start",flexWrap:"nowrap",gap:"12px"}}>
+                <div style={{...S.camp,minWidth:"140px",flex:"0 0 auto"}}><label style={S.lbl}>💻 Plataforma</label>
                   <select style={S.sel} value={form.plataforma} onChange={e=>setF("plataforma",e.target.value)}>{PLATAFORMAS.map(p=><option key={p}>{p}</option>)}</select></div>
-                {(form.plataforma==="Zoom MundoChile"||form.plataforma==="Zoom")&&<div style={S.camp}><label style={S.lbl}>🔑 Administrador Zoom</label>
+                {(form.plataforma==="Zoom MundoChile"||form.plataforma==="Zoom")&&<div style={{...S.camp,minWidth:"160px",flex:"0 0 auto"}}><label style={S.lbl}>🔑 Administrador Zoom</label>
                   <select style={S.sel} value={zoomOtro?"__otro__":(ZOOM_ADMIN.includes(form.zoom_administrador)?form.zoom_administrador:"")} onChange={e=>{if(e.target.value==="__otro__"){setZoomOtro(true);setF("zoom_administrador","");}else{setZoomOtro(false);setF("zoom_administrador",e.target.value);}}}>
                     <option value="">Sin asignar</option>{ZOOM_ADMIN.map(z=><option key={z}>{z}</option>)}<option value="__otro__">Otro…</option>
                   </select>
                   {zoomOtro&&<input style={{...S.inp,marginTop:"6px"}} value={form.zoom_administrador||""} onChange={e=>setF("zoom_administrador",e.target.value)} placeholder="Nombre del administrador…"/>}
                 </div>}
-                {(form.plataforma==="Zoom MundoChile"||form.plataforma==="Zoom")&&<div style={{...S.camp,minWidth:"280px"}}>
+                {(form.plataforma==="Zoom MundoChile"||form.plataforma==="Zoom")&&<div style={{...S.camp,minWidth:"238px",maxWidth:"238px"}}>
                   <label style={S.lbl}>🔗 Link de conexión Zoom</label>
                   <div style={{display:"flex",gap:"6px",alignItems:"center"}}>
                     <input style={{...S.inp,flex:1}} value={form.zoom_link||""} onChange={e=>setF("zoom_link",e.target.value)} placeholder="https://zoom.us/j/…"/>
-                    <button onClick={()=>{if(form.zoom_link)navigator.clipboard.writeText(form.zoom_link);}} title="Copiar link" style={{padding:"0",width:"48px",height:"48px",background:"#EFF6FF",color:"#1D4ED8",border:"1.5px solid #BFDBFE",borderRadius:"8px",cursor:"pointer",fontSize:"20px",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>📋</button>
+                    <button onClick={()=>{if(form.zoom_link)navigator.clipboard.writeText(form.zoom_link);}} title="Copiar link" style={{padding:"0",width:"48px",height:"48px",background:"#EFF6FF",color:"#1D4ED8",border:"1.5px solid #BFDBFE",borderRadius:"8px",cursor:"pointer",fontSize:"32px",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>📋</button>
                   </div>
                 </div>}
               </div>
@@ -685,7 +685,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           {/* ── TAB INTÉRPRETES (un día) ── */}
           {tab==="interpretes"&&!esMultidia&&<>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"20px"}}>
-              <div style={{fontWeight:"600",color:C.rojo,fontSize:"17px",display:"flex",alignItems:"center",gap:"6px"}}><IconMic size={20}/> Intérpretes asignados</div>
+              <div style={{fontWeight:"600",color:C.rojo,fontSize:"27px",display:"flex",alignItems:"center",gap:"6px"}}><IconMic size={20}/> Intérpretes asignados</div>
               <button onClick={()=>addAsig()} style={S.btnA}>+ Agregar intérprete</button>
             </div>
             {form.asignaciones.length===0&&<div style={{textAlign:"center",color:C.textoSuave,padding:"40px 20px",border:`2px dashed ${C.grisBorde}`,borderRadius:"12px"}}>Sin intérpretes — Agrega uno arriba</div>}
@@ -703,14 +703,14 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           {/* ── TAB EQUIPOS AV (un día) ── */}
           {tab==="equipos"&&!esMultidia&&<>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"20px"}}>
-              <div style={{fontWeight:"600",color:C.verde,fontSize:"17px",display:"flex",alignItems:"center",gap:"6px"}}><IconAV size={20}/> Equipos AV</div>
+              <div style={{fontWeight:"600",color:C.verde,fontSize:"27px",display:"flex",alignItems:"center",gap:"6px"}}><IconAV size={20}/> Equipos AV</div>
               <button onClick={()=>setForm(f=>({...f,equipos:[...(f.equipos||[]),eqVacio()]}))} style={S.btnA}>+ Agregar equipos</button>
             </div>
             {(form.equipos||[]).length===0&&<div style={{textAlign:"center",color:C.textoSuave,padding:"40px 20px",border:`2px dashed ${C.grisBorde}`,borderRadius:"12px"}}>Sin equipos AV — Agrega uno arriba</div>}
             {(form.equipos||[]).map((eq,eIdx)=>(
               <div key={eIdx} style={{border:`1px solid ${C.grisBorde}`,borderRadius:"10px",padding:"14px",marginBottom:"10px",background:"#fff"}}>
                 <div style={{display:"flex",justifyContent:"space-between",marginBottom:"10px"}}>
-                  <div style={{fontWeight:"700",color:C.azul,fontSize:"13px"}}>Equipo #{eIdx+1}</div>
+                  <div style={{fontWeight:"700",color:C.azul,fontSize:"21px"}}>Equipo #{eIdx+1}</div>
                   <button onClick={()=>setForm(f=>{const eqs=[...(f.equipos||[])];eqs.splice(eIdx,1);return{...f,equipos:eqs};})} style={{background:"none",border:"none",cursor:"pointer",color:C.rojo,fontWeight:"700"}}>✕</button>
                 </div>
                 <div style={S.fila}>
@@ -775,7 +775,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           {/* ── TAB POR DÍA ── */}
           {tab==="dias"&&esMultidia&&form.dias.map((dia,dIdx)=>(
             <div key={dia.fecha} style={{border:`2px solid ${C.grisBorde}`,borderRadius:"14px",marginBottom:"16px",overflow:"hidden"}}>
-              <div style={{background:C.grisMed,padding:"12px 16px",fontWeight:"600",color:C.azul,fontSize:"14px"}}>
+              <div style={{background:C.grisMed,padding:"12px 16px",fontWeight:"600",color:C.azul,fontSize:"22px"}}>
                 📅 Día {dIdx+1} de {form.dias.length} — {formatLargo(dia.fecha)}
               </div>
               <div style={{padding:"16px"}}>
@@ -805,7 +805,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                   {(dia.equipos||[]).map((eq,eIdx)=>(
                     <div key={eIdx} style={{border:`1px solid ${C.grisBorde}`,borderRadius:"10px",padding:"14px",marginBottom:"10px",background:"#fff"}}>
                       <div style={{display:"flex",justifyContent:"space-between",marginBottom:"10px"}}>
-                        <div style={{fontWeight:"700",color:C.azul,fontSize:"13px"}}>Equipo #{eIdx+1}</div>
+                        <div style={{fontWeight:"700",color:C.azul,fontSize:"21px"}}>Equipo #{eIdx+1}</div>
                         <button onClick={()=>setForm(f=>{const ds=[...f.dias],eqs=[...(ds[dIdx].equipos||[])];eqs.splice(eIdx,1);ds[dIdx]={...ds[dIdx],equipos:eqs};return{...f,dias:ds};})} style={{background:"none",border:"none",cursor:"pointer",color:C.rojo,fontWeight:"700"}}>✕</button>
                       </div>
                       <div style={S.fila}>
@@ -857,7 +857,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                         </div>
                       </div>
                       <div style={{marginTop:"12px",paddingTop:"12px",borderTop:`1px solid ${C.grisBorde}`}}>
-                        <div style={{fontWeight:"700",color:C.textoMed,fontSize:"12px",marginBottom:"10px",textTransform:"uppercase"}}>🔩 Montaje</div>
+                        <div style={{fontWeight:"700",color:C.textoMed,fontSize:"19px",marginBottom:"10px",textTransform:"uppercase"}}>🔩 Montaje</div>
                         <div style={S.fila}>
                           <div style={S.camp}><label style={S.lbl}>Día de montaje</label><input style={S.inp} type="date" value={eq.dia_montaje||""} onChange={e=>editEq(dIdx,eIdx,"dia_montaje",e.target.value)}/></div>
                           <div style={S.camp}><label style={S.lbl}>Hora de montaje</label><SelHora value={eq.hora_montaje} onChange={v=>editEq(dIdx,eIdx,"hora_montaje",v)}/></div>
