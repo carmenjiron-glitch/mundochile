@@ -56,8 +56,8 @@ const IDIOMA_CDN={"Inglés":"gb","Francés":"fr","Portugués":"br","Español":"e
 function FlagImg({idioma}){const c=IDIOMA_CDN[idioma];if(!c)return<span style={{fontSize:"15px"}}>🌐</span>;return<img src={`https://flagcdn.com/28x21/${c}.png`} style={{width:"28px",height:"21px",objectFit:"cover",borderRadius:"2px",verticalAlign:"middle",display:"inline-block",flexShrink:0}} alt={idioma}/>;}
 const B_TIPO={"Simultánea":{bg:"#EEF2FF",c:"#3B5BDB"},"Consecutiva":{bg:"#FCE4EC",c:"#C2185B"},"Whispering":{bg:"#F3E5F5",c:"#7B1FA2"}};
 const B_MOD={"presencial":{bg:"#E8F5E9",c:"#2E7D32"},"remoto":{bg:"#E0F7FA",c:"#00838F"},"hibrido":{bg:"#FBE9E7",c:"#BF360C"}};
-const B_EST=(e)=>e==="Facturado"?{bg:"#E3F2FD",c:"#1565C0"}:{bg:"#FFF5F5",c:"#C62828"};
-const bS=(bg,c)=>({display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 14px",borderRadius:"6px",fontSize:"13px",fontWeight:"600",color:c,background:bg,border:`2px solid ${c}`,whiteSpace:"nowrap"});
+const B_EST=(e)=>e==="Facturado"?{bg:"#E3F2FD",c:"#1565C0",b:"#1565C0"}:{bg:"#FFC107",c:"#7B3F00",b:"#E65100"};
+const bS=(bg,c,b)=>({display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 14px",borderRadius:"6px",fontSize:"13px",fontWeight:"600",color:c,background:bg,border:`2px solid ${b||c}`,whiteSpace:"nowrap"});
 const TIPO_ICON={"Simultánea":<IconMic size={12}/>,"Consecutiva":<IconMic size={12}/>,"Whispering":"🤫"};
 const MOD_ICON={"presencial":"📍","remoto":"🖥️","hibrido":"🔀"};
 const nombreCorto=(nombre,apellido)=>{if(!apellido)return nombre;const completo=`${nombre} ${apellido}`;if(completo.length<=12)return completo;return`${nombre} ${apellido.charAt(0)}.`;};
@@ -292,7 +292,7 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
         <PlatformChip platform={ev.plataforma==="Zoom"?"Zoom MundoChile":ev.plataforma} isMundoChile={ev.plataforma==="Zoom MundoChile"||ev.plataforma==="Zoom"}/>
       </div>}
       <div style={{display:"flex",gap:"6px",flexWrap:"wrap",alignItems:"center",marginBottom:"10px"}}>
-        <span style={bS(be.bg,be.c)}>{ev.estado==="Facturado"?"Facturado":"Facturación Pendiente"}</span>
+        <span style={bS(be.bg,be.c,be.b)}>{ev.estado==="Facturado"?"Facturado":"Facturación Pendiente"}</span>
       </div>
       {(()=>{
         const grupos={};
@@ -1083,7 +1083,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           {/* Estado */}
           <div style={{marginBottom:"8px"}}>
             <SL t="Estado de facturación"/>
-            {(()=>{const be=B_EST(evento.estado);return<span style={{display:"inline-flex",alignItems:"center",padding:"5px 14px",borderRadius:"6px",fontSize:"13px",fontWeight:"600",color:be.c,background:be.bg,border:`2px solid ${be.c}`,whiteSpace:"nowrap"}}>{evento.estado==="Facturado"?"✓ Facturado":"⏳ Facturación Pendiente"}</span>;})()}
+            {(()=>{const be=B_EST(evento.estado);return<span style={{display:"inline-flex",alignItems:"center",padding:"5px 14px",borderRadius:"6px",fontSize:"13px",fontWeight:"600",color:be.c,background:be.bg,border:`2px solid ${be.b||be.c}`,whiteSpace:"nowrap"}}>{evento.estado==="Facturado"?"✓ Facturado":"⏳ Facturación Pendiente"}</span>;})()}
           </div>
           {/* Programa multidía */}
           {esMultidia&&dias.length>0&&<><HR/><div style={{marginBottom:"12px"}}>
