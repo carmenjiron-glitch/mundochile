@@ -47,7 +47,7 @@ const PALETA_CLIENTE=["#E03131","#C2255C","#9C36B5","#3B5BDB","#1971C2","#0C8599
 const colorCliente=(id)=>PALETA_CLIENTE[(id||0)%12];
 const avatarColor=(str)=>PALETA_CLIENTE[(str||"").split("").reduce((a,c)=>a+c.charCodeAt(0),0)%12];
 const IDIOMA_COLOR={"Inglés":"#4A90D9","Francés":"#8B0000","Portugués":"#1B7A2F","Español":"#C2820A","Alemán":"#555555","Italiano":"#CC5500","Chino":"#DE2910","Japonés":"#6A0DAD"};
-const IDIOMA_BORDE={"Inglés":"#2563A8","Francés":"#5C0000","Portugués":"#0F4D1C","Español":"#8B5E08","Alemán":"#333333","Italiano":"#993D00","Chino":"#9E1D0B","Japonés":"#4A0878"};
+const IDIOMA_BORDE={"Inglés":"#1A4476","Francés":"#5C0000","Portugués":"#0F4D1C","Español":"#8B5E08","Alemán":"#333333","Italiano":"#993D00","Chino":"#9E1D0B","Japonés":"#4A0878"};
 const IDIOMA_FLAG={"Inglés":"🇬🇧","Francés":"🇫🇷","Portugués":"🇧🇷","Español":"🇪🇸","Alemán":"🇩🇪","Italiano":"🇮🇹","Chino":"🇨🇳","Japonés":"🇯🇵"};
 const idiomaColor=(idioma)=>IDIOMA_COLOR[idioma]||"#4C6EF5";
 const idiomaBorde=(idioma)=>IDIOMA_BORDE[idioma]||"#3451d1";
@@ -58,6 +58,7 @@ const B_TIPO={"Simultánea":{bg:"#EEF2FF",c:"#3B5BDB"},"Consecutiva":{bg:"#F0FFF
 const B_MOD={"presencial":{bg:"#FFF0F6",c:"#C2255C"},"remoto":{bg:"#E6FCF5",c:"#0CA678"},"hibrido":{bg:"#FFF4E6",c:"#E67700"}};
 const B_EST=(e)=>e==="Facturado"?{bg:"#E7F5FF",c:"#1971C2"}:{bg:"#FFF9DB",c:"#E67700"};
 const bS=(bg,c)=>({display:"inline-flex",alignItems:"center",padding:"5px 14px",borderRadius:"6px",fontSize:"13px",fontWeight:"600",color:c,background:bg,border:`2px solid ${c}`,whiteSpace:"nowrap"});
+const nombreCorto=(nombre,apellido)=>{if(!apellido)return nombre;const completo=`${nombre} ${apellido}`;if(completo.length<=12)return completo;return`${nombre} ${apellido.charAt(0)}.`;};
 
 
 // ─── CONSTANTES ──────────────────────────────────────────────────────────────
@@ -271,7 +272,7 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
 
   return (
     <div onClick={onClick}
-      style={{borderRadius:"0 10px 10px 0",padding:"20px 22px",background:"#FFFFFF",color:"#1A1A1A",cursor:"pointer",marginBottom:"12px",boxShadow:"0 3px 14px rgba(0,0,0,0.18)",borderLeft:`14px solid ${borderColor}`,position:"relative",transition:"transform 0.12s,box-shadow 0.12s",lineHeight:1.5}}
+      style={{borderRadius:"0 10px 4px 0",padding:"20px 22px",background:"#FFFFFF",color:"#1A1A1A",cursor:"pointer",marginBottom:"12px",boxShadow:"0 3px 14px rgba(0,0,0,0.18)",borderLeft:`14px solid ${borderColor}`,borderTop:`4px solid ${borderColor}`,position:"relative",transition:"transform 0.12s,box-shadow 0.12s",lineHeight:1.5}}
       onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 6px 20px rgba(0,0,0,0.20)";}}
       onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="0 3px 14px rgba(0,0,0,0.18)";}}>
       {dotColor&&<div style={{position:"absolute",top:"12px",right:"12px",width:"12px",height:"12px",borderRadius:"50%",background:"#e63946",animation:"mcpulse 2s ease-in-out infinite"}}/>}
@@ -283,12 +284,14 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
       <div style={{display:"flex",gap:"6px",flexWrap:"wrap",alignItems:"center",marginBottom:"10px"}}>
         <span style={bS(bt.bg,bt.c)}>{ev.tipo}</span>
         <span style={bS(bm.bg,bm.c)}>{LBL_MODAL[ev.modalidad]||ev.modalidad}</span>
-        <span style={bS(be.bg,be.c)}>{ev.estado==="Facturado"?"Facturado":"Facturación Pendiente"}</span>
       </div>
       {esPresencial&&ev.lugar&&<div style={{fontSize:"13px",color:"#475569",marginBottom:"8px"}}>📌 {ev.lugar}</div>}
       {!esPresencial&&ev.plataforma&&<div style={{marginBottom:"8px"}}>
         <PlatformChip platform={ev.plataforma==="Zoom"?"Zoom MundoChile":ev.plataforma} isMundoChile={ev.plataforma==="Zoom MundoChile"||ev.plataforma==="Zoom"}/>
       </div>}
+      <div style={{display:"flex",gap:"6px",flexWrap:"wrap",alignItems:"center",marginBottom:"10px"}}>
+        <span style={bS(be.bg,be.c)}>{ev.estado==="Facturado"?"Facturado":"Facturación Pendiente"}</span>
+      </div>
       {(()=>{
         const grupos={};
         (ev.asignaciones||[]).forEach(a=>{
@@ -305,18 +308,18 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
           const bd=idiomaBorde(grupo.idioma);
           const esPort=grupo.idioma==="Portugués";
           const bubbleBg=esPort?"#FFFFFF":bg;
-          const bubbleColor=esPort?"#1B5E20":"#FFFFFF";
-          const bubbleBorder=esPort?"2px solid #1B5E20":`2px solid ${bd}`;
-          const titleColor=esPort?"#1B5E20":bg;
+          const bubbleColor=esPort?"#0F3311":"#FFFFFF";
+          const bubbleBorder=esPort?"2px solid #0F3311":`2px solid ${bd}`;
+          const titleColor=esPort?"#0F3311":bg;
           return(
             <div key={key} style={{marginTop:"8px"}}>
-              <div style={{fontSize:"10px",fontWeight:"900",color:titleColor,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"5px"}}>{key}</div>
+              <div style={{fontSize:"12px",fontWeight:"900",color:titleColor,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"5px"}}>{key}</div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
                 {grupo.interpretes.map((interp,i)=>(
-                  <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"5px 8px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",color:bubbleColor,background:bubbleBg,border:bubbleBorder,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                  <span key={i} title={`${interp.nombre}${interp.apellido?" "+interp.apellido:""}`} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"5px 8px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",color:bubbleColor,background:bubbleBg,border:bubbleBorder,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",cursor:"default"}}>
                     {interp.isHost&&<span style={{fontSize:"11px",color:bubbleColor}}>🔑</span>}
                     <FlagImg idioma={grupo.idioma}/>
-                    <span style={{overflow:"hidden",textOverflow:"ellipsis",color:bubbleColor}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
+                    <span style={{overflow:"hidden",textOverflow:"ellipsis",color:bubbleColor}}>{nombreCorto(interp.nombre,interp.apellido)}</span>
                   </span>
                 ))}
               </div>

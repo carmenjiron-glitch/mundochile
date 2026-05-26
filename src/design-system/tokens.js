@@ -43,7 +43,7 @@ export const BADGE = {
 }
 
 export const INTERP_LANG = {
-  'Inglés':    {bg:'#4A90D9',border:'#2563A8',flag:'gb'},
+  'Inglés':    {bg:'#4A90D9',border:'#1A4476',flag:'gb'},
   'Francés':   {bg:'#8B0000',border:'#5C0000',flag:'fr'},
   'Portugués': {bg:'#1B7A2F',border:'#0F4D1C',flag:'br'},
   'Español':   {bg:'#C2820A',border:'#8B5E08',flag:'es'},
