@@ -271,24 +271,36 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
       {!esPresencial&&ev.plataforma&&<div style={{marginBottom:"8px"}}>
         <PlatformChip platform={ev.plataforma==="Zoom"?"Zoom MundoChile":ev.plataforma} isMundoChile={ev.plataforma==="Zoom MundoChile"||ev.plataforma==="Zoom"}/>
       </div>}
-      {(ev.asignaciones||[]).length>0&&<div style={{fontSize:"13px",fontWeight:"700",color:"#6B6B6B",textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:"8px",marginTop:"10px"}}>🎙 Intérpretes</div>}
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px"}}>
-        {(ev.asignaciones||[]).map((a,i)=>{
-          const interp=interpretes.find(x=>x.id===a.interprete_id);
+      {(()=>{
+        const grupos={};
+        (ev.asignaciones||[]).forEach(a=>{
           const par=pares.find(p=>p.id===a.par_id);
-          if(!interp) return null;
+          const interp=interpretes.find(x=>x.id===a.interprete_id);
+          if(!interp) return;
+          const key=par?.descripcion||"Sin par";
           const idioma=par?.idioma_origen||"";
-          const bg=idiomaColor(idioma);
-          const bd=idiomaBorde(idioma);
-          const esHost=a.es_host_zoom;
-          return (
-            <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"8px",padding:"8px 16px",borderRadius:"20px",fontSize:"15px",fontWeight:"500",color:"#fff",background:bg,border:esHost?`2px solid #E03131`:`2px solid ${bd}`,boxSizing:"border-box",width:"100%"}}>
-              {esHost&&<span style={{fontSize:"13px"}}>🔑</span>}<FlagImg idioma={idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
-              {par&&<span style={{opacity:0.85,fontSize:"12px"}}> · {par.idioma_origen} — {par.idioma_destino}</span>}
-            </span>
+          if(!grupos[key]) grupos[key]={idioma,interpretes:[]};
+          grupos[key].interpretes.push({...interp,isHost:!!a.es_host_zoom});
+        });
+        return Object.entries(grupos).map(([key,grupo])=>{
+          const bg=idiomaColor(grupo.idioma);
+          const bd=idiomaBorde(grupo.idioma);
+          return(
+            <div key={key} style={{marginTop:"8px"}}>
+              <div style={{fontSize:"10px",fontWeight:"800",color:bg,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"5px"}}>{key}</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
+                {grupo.interpretes.map((interp,i)=>(
+                  <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"5px 8px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",color:"#FFFFFF",background:bg,border:`2px solid ${bd}`,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                    {interp.isHost&&<span style={{fontSize:"11px"}}>🔑</span>}
+                    <FlagImg idioma={grupo.idioma}/>
+                    <span style={{overflow:"hidden",textOverflow:"ellipsis"}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
           );
-        })}
-      </div>
+        });
+      })()}
       {tieneEquipos&&<div style={{fontSize:"13px",fontWeight:"700",color:"#6B6B6B",textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:"6px",marginTop:"10px"}}>🔧 Equipos AV</div>}
       {tieneEquipos&&<span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"6px 14px",borderRadius:"8px",fontSize:"14px",fontWeight:"500",color:"#495057",background:"#F1F3F5",border:"1px solid #DEE2E6"}}>{provNombreEq||"Equipos AV"}</span>}
     </div>
