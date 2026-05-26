@@ -136,7 +136,7 @@ const evVacio = () => ({
   fecha_inicio:hoy(), fecha_termino:hoy(), hora_inicio:"09:00", hora_termino:"13:00",
   jornada:"Media Jornada", jornada_personalizada:"", lugar:"", lugar_detalle:"",
   modalidad:"remoto", plataforma:"Zoom MundoChile", zoom_owner:"mundochile",
-  zoom_administrador:"", estado:"Facturación Pendiente", comentarios:"",
+  zoom_administrador:"", zoom_link:"", estado:"Facturación Pendiente", comentarios:"",
   nro_hes:"", nro_otros:"", comentarios_av:"",
   asignaciones:[], dias:[], equipos:[],
 });
@@ -390,7 +390,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
         jornada:form.jornada||"Media Jornada", jornada_personalizada:form.jornada_personalizada||"",
         lugar:form.lugar||"", lugar_detalle:form.lugar_detalle||"", modalidad:form.modalidad||"remoto",
         plataforma:form.plataforma||"", zoom_owner:form.zoom_owner||"mundochile",
-        zoom_administrador:form.zoom_administrador||"", estado:form.estado||"Facturación Pendiente",
+        zoom_administrador:form.zoom_administrador||"", zoom_link:form.zoom_link||"", estado:form.estado||"Facturación Pendiente",
         comentarios:form.comentarios||"", edited_by:perfil?.id||null, edited_by_nombre:perfil?.nombre||"",
       };
       let eventoId=form.id;
@@ -621,6 +621,13 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                     <option value="">Sin asignar</option>{ZOOM_ADMIN.map(z=><option key={z}>{z}</option>)}<option value="__otro__">Otro…</option>
                   </select>
                   {zoomOtro&&<input style={{...S.inp,marginTop:"6px"}} value={form.zoom_administrador||""} onChange={e=>setF("zoom_administrador",e.target.value)} placeholder="Nombre del administrador…"/>}
+                </div>}
+                {(form.plataforma==="Zoom MundoChile"||form.plataforma==="Zoom")&&<div style={{...S.camp,minWidth:"280px"}}>
+                  <label style={S.lbl}>🔗 Link de conexión Zoom</label>
+                  <div style={{display:"flex",gap:"6px",alignItems:"center"}}>
+                    <input style={{...S.inp,flex:1}} value={form.zoom_link||""} onChange={e=>setF("zoom_link",e.target.value)} placeholder="https://zoom.us/j/…"/>
+                    <button onClick={()=>{if(form.zoom_link)navigator.clipboard.writeText(form.zoom_link);}} title="Copiar link" style={{padding:"0",width:"48px",height:"48px",background:"#EFF6FF",color:"#1D4ED8",border:"1.5px solid #BFDBFE",borderRadius:"8px",cursor:"pointer",fontSize:"20px",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>📋</button>
+                  </div>
                 </div>}
               </div>
             </>}
@@ -949,6 +956,13 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           {!esPresencial&&evento.plataforma&&<div style={{marginBottom:"4px"}}>
             <SL t="💻 Plataforma"/>
             <PlatformChip platform={evento.plataforma} isMundoChile={esZoomMC} extra={esZoomMC?evento.zoom_administrador:""}/>
+            {evento.zoom_link&&(
+              <div style={{display:"flex",alignItems:"center",gap:"8px",marginTop:"8px",padding:"8px 12px",background:"#EFF6FF",borderRadius:"8px",border:"1px solid #BFDBFE"}}>
+                <span style={{fontSize:"13px",color:"#1D4ED8",flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>🔗 {evento.zoom_link}</span>
+                <button onClick={()=>navigator.clipboard.writeText(evento.zoom_link)} style={{padding:"5px 12px",background:"#1D4ED8",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontSize:"12px",fontWeight:"600",whiteSpace:"nowrap",flexShrink:0}}>📋 Copiar</button>
+                <a href={evento.zoom_link} target="_blank" rel="noreferrer" style={{padding:"5px 12px",background:"#059669",color:"#fff",borderRadius:"6px",cursor:"pointer",fontSize:"12px",fontWeight:"600",whiteSpace:"nowrap",textDecoration:"none",flexShrink:0}}>🚀 Abrir</a>
+              </div>
+            )}
           </div>}
           {(esPresencial&&evento.lugar)||(!esPresencial&&evento.plataforma)?<HR/>:null}
           {/* Intérpretes (un día) */}
