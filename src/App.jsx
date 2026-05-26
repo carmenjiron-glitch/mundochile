@@ -905,10 +905,10 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
     return acc;
   },[]);
   const metaRow=(a)=>(a.nro_ot||a.nro_boleta||a.hora_presentacion)
-    ?<div style={{fontSize:"18px",color:"#6B7280",marginTop:"4px",display:"flex",gap:"10px",flexWrap:"wrap"}}>
+    ?<div style={{fontSize:"18px",color:"#6B7280",marginTop:"4px",display:"flex",gap:"10px",flexWrap:"wrap",alignItems:"center"}}>
       {a.nro_ot&&<span>OT: {a.nro_ot}</span>}
       {a.nro_boleta&&<span>Boleta: {a.nro_boleta}</span>}
-      {a.hora_presentacion&&<span>🕐 {a.hora_presentacion.slice(0,5)}</span>}
+      {a.hora_presentacion&&<span style={{fontSize:"40px"}}><span style={{fontSize:"40px"}}>🕐</span> {a.hora_presentacion.slice(0,5)}</span>}
     </div>:null;
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.65)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(4px)",padding:"16px"}}>
