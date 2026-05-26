@@ -39,7 +39,7 @@ export const BADGE = {
   'Remoto':               {bg:'#E0F7FA',c:'#00838F',b:'#00838F'},
   'Híbrido':              {bg:'#FBE9E7',c:'#BF360C',b:'#BF360C'},
   'Facturado':            {bg:'#E3F2FD',c:'#1565C0',b:'#1565C0'},
-  'Facturación Pendiente':{bg:'#FFC107',c:'#7B3F00',b:'#E65100'},
+  'Facturación Pendiente':{bg:'#FFE500',c:'#7B3F00',b:'#CCB800'},
 }
 
 export const INTERP_LANG = {

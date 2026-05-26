@@ -1,5 +1,5 @@
 const BADGE_MAP = {
-  "Facturación Pendiente": {bg:"#FFC107",c:"#7B3F00",b:"#E65100"},
+  "Facturación Pendiente": {bg:"#FFE500",c:"#7B3F00",b:"#CCB800"},
   "Facturado":             {bg:"#E3F2FD",c:"#1565C0",b:"#1565C0"},
   "presencial":            {bg:"#E8F5E9",c:"#2E7D32",b:"#2E7D32"},
   "remoto":                {bg:"#E0F7FA",c:"#00838F",b:"#00838F"},
