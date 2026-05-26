@@ -2,5 +2,15 @@
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "framework": "vite"
+  "framework": "vite",
+  "env": {
+    "VITE_SUPABASE_URL": "https://ebhetndpsowxocgaqyfs.supabase.co",
+    "VITE_SUPABASE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImViaGV0bmRwc293eG9jcWFxeWZzIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODE5MjQ4MCwiZXhwIjoyMDkzNzY4NDgwfQ.RpPj39Pisbb8I5W13EwAsCP8Qd6hcw4gyeMXsUt5ss8"
+  },
+  "build": {
+    "env": {
+      "VITE_SUPABASE_URL": "https://ebhetndpsowxocgaqyfs.supabase.co",
+      "VITE_SUPABASE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImViaGV0bmRwc293eG9jcWFxeWZzIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODE5MjQ4MCwiZXhwIjoyMDkzNzY4NDgwfQ.RpPj39Pisbb8I5W13EwAsCP8Qd6hcw4gyeMXsUt5ss8"
+    }
+  }
 }
