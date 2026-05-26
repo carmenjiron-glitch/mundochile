@@ -147,13 +147,13 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
       )}
 
       {/* Nombre cliente */}
-      <div style={{ fontSize:18, fontWeight:800, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em" }}>
+      <div style={{ fontSize:16, fontWeight:700, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em" }}>
         {cliente?.nombre_empresa || "—"}
       </div>
 
       {/* Nombre evento */}
       {ev.nombre_evento && (
-        <div style={{ fontSize:13, fontWeight:500, color:"#374151", marginTop:2 }}>
+        <div style={{ fontSize:12, fontWeight:500, color:"#374151", marginTop:2 }}>
           {ev.nombre_evento}
         </div>
       )}
@@ -167,7 +167,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
       {/* Horario */}
       <div style={{
-        fontSize:15, fontWeight:700, color:"#0F172A",
+        fontSize:14, fontWeight:700, color:"#0F172A",
         marginTop:10, marginBottom:8,
         display:"flex", alignItems:"center", gap:6,
       }}>

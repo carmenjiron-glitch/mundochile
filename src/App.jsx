@@ -152,7 +152,7 @@ function ToastContainer({toasts,onRemove}) {
         <div key={t.id} style={{background:"#fff",border:`1.5px solid ${t.type==="error"?C.rojo:t.type==="success"?C.verde:C.grisBorde}`,borderLeft:`5px solid ${t.type==="error"?C.rojo:t.type==="success"?C.verde:C.azul}`,borderRadius:"10px",padding:"12px 16px",boxShadow:"0 4px 20px rgba(0,0,0,0.15)",display:"flex",alignItems:"flex-start",gap:"10px"}}>
           <div style={{flex:1,fontSize:"14px",color:C.texto,fontWeight:"600"}}>{t.msg}</div>
           {t.retry&&<button onClick={t.retry} style={{...S.btnP,fontSize:"11px",padding:"4px 8px",whiteSpace:"nowrap"}}>↺ Reintentar</button>}
-          <button onClick={()=>onRemove(t.id)} style={{background:"none",border:"none",cursor:"pointer",color:C.textoSuave,fontSize:"18px",lineHeight:1,padding:0,flexShrink:0}}>✕</button>
+          <button onClick={()=>onRemove(t.id)} style={{background:"none",border:"none",cursor:"pointer",color:C.textoSuave,fontSize:"12px",lineHeight:1,padding:0,flexShrink:0}}>✕</button>
         </div>
       ))}
     </div>
@@ -234,7 +234,7 @@ function PantallaLogin({onLogin}) {
           <label style={S.lbl}>🔒 Contraseña</label>
           <div style={{position:"relative"}}>
             <input style={{...S.inp,paddingRight:"42px"}} type={ver?"text":"password"} value={pass} onChange={e=>setPass(e.target.value)} onKeyDown={e=>e.key==="Enter"&&ingresar()} placeholder="••••••••"/>
-            <button onClick={()=>setVer(v=>!v)} style={{position:"absolute",right:"10px",top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",fontSize:"18px",color:C.textoSuave}}>{ver?"🙈":"👁"}</button>
+            <button onClick={()=>setVer(v=>!v)} style={{position:"absolute",right:"10px",top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",fontSize:"12px",color:C.textoSuave}}>{ver?"🙈":"👁"}</button>
           </div>
         </div>
         <button onClick={ingresar} disabled={carg} style={{...S.btnA,width:"100%",padding:"14px",fontSize:"16px",opacity:carg?0.7:1}}>{carg?"Ingresando…":"Ingresar"}</button>
@@ -278,10 +278,10 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
       onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="0 3px 14px rgba(0,0,0,0.18)";}}>
       {dotColor&&<div style={{position:"absolute",top:"12px",right:"12px",width:"12px",height:"12px",borderRadius:"50%",background:"#e63946",animation:"mcpulse 2s ease-in-out infinite"}}/>}
       {diaXdeY&&<div style={{marginBottom:"8px"}}><span style={{display:"inline-flex",alignItems:"center",padding:"4px 14px",borderRadius:"20px",fontSize:"14px",fontWeight:"700",color:"#1971C2",background:"#E8F4FD",border:"2px solid #1971C2"}}>📅 Multidía · Día {diaXdeY.x} de {diaXdeY.y}</span></div>}
-      <div style={{fontSize:"26px",fontWeight:"800",color:"#1A1A1A",letterSpacing:"0.1px",lineHeight:1.2,marginBottom:"4px",paddingRight:dotColor?"20px":"0"}}>{cliente?.nombre_empresa||"—"}</div>
-      {ev.nombre_evento&&<div style={{fontSize:"16px",fontWeight:"400",color:"#374151",marginBottom:"6px"}}>{ev.nombre_evento}</div>}
-      {cliente?.nombre_contacto&&<div style={{fontSize:"20px",fontWeight:"700",color:"#6B6B6B",fontStyle:"italic",marginBottom:"8px"}}>Contacto: {cliente.nombre_contacto}</div>}
-      <div style={{fontSize:"18px",fontWeight:"700",color:"#1A1A1A",marginBottom:"10px"}}>{ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)} hrs</div>
+      <div style={{fontSize:"16px",fontWeight:"700",color:"#1A1A1A",letterSpacing:"0.1px",lineHeight:1.2,marginBottom:"4px",paddingRight:dotColor?"20px":"0"}}>{cliente?.nombre_empresa||"—"}</div>
+      {ev.nombre_evento&&<div style={{fontSize:"12px",fontWeight:"500",color:"#374151",marginBottom:"6px"}}>{ev.nombre_evento}</div>}
+      {cliente?.nombre_contacto&&<div style={{fontSize:"12px",fontWeight:"500",color:"#6B6B6B",fontStyle:"italic",marginBottom:"8px"}}>Contacto: {cliente.nombre_contacto}</div>}
+      <div style={{fontSize:"14px",fontWeight:"700",color:"#1A1A1A",marginBottom:"10px"}}>{ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)} hrs</div>
       <div style={{display:"flex",gap:"6px",flexWrap:"wrap",alignItems:"center",marginBottom:"10px"}}>
         <span style={bS(bt.bg,bt.c)}>{TIPO_ICON[ev.tipo]}{ev.tipo}</span>
         <span style={bS(bm.bg,bm.c)}>{MOD_ICON[ev.modalidad]}{LBL_MODAL[ev.modalidad]||ev.modalidad}</span>
@@ -492,8 +492,8 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
         {alerta&&<div style={{background:"#fef3c7",border:"1px solid #f59e0b",borderRadius:"8px",padding:"10px 14px",marginBottom:"10px",fontSize:"11px",color:"#92400e"}}>
           <div style={{fontWeight:"600",marginBottom:"8px"}}>⚠️ {interp?.nombre||"Este intérprete"} ya tiene asignado "{alerta.nombre_evento||"otro evento"}" el {formatLargo(alerta.fecha_inicio)}. ¿Deseas agregarlo de todos modos?</div>
           <div style={{display:"flex",gap:"8px"}}>
-            <button onClick={()=>setAlerta(null)} style={{padding:"5px 12px",background:"#92400e",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"700",fontSize:"19px",fontFamily:"inherit"}}>Sí, agregar igual</button>
-            <button onClick={()=>{edit("interprete_id","");setAlerta(null);}} style={{padding:"5px 12px",background:"none",color:"#92400e",border:"1px solid #92400e",borderRadius:"6px",cursor:"pointer",fontWeight:"700",fontSize:"19px",fontFamily:"inherit"}}>Cambiar intérprete</button>
+            <button onClick={()=>setAlerta(null)} style={{padding:"5px 12px",background:"#92400e",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"700",fontSize:"11px",fontFamily:"inherit"}}>Sí, agregar igual</button>
+            <button onClick={()=>{edit("interprete_id","");setAlerta(null);}} style={{padding:"5px 12px",background:"none",color:"#92400e",border:"1px solid #92400e",borderRadius:"6px",cursor:"pointer",fontWeight:"700",fontSize:"11px",fontFamily:"inherit"}}>Cambiar intérprete</button>
           </div>
         </div>}
         <div style={S.fila}>
@@ -506,7 +506,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
               </select>
               <button onClick={()=>onNuevoInterprete(idx,dIdx)} style={{...S.btnP,fontSize:"17px",fontWeight:"700",width:"48px",height:"48px",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>+</button>
             </div>
-            {interp&&<div style={{fontSize:"18px",color:C.textoSuave,marginTop:"4px",display:"flex",gap:"8px",flexWrap:"wrap"}}>
+            {interp&&<div style={{fontSize:"12px",color:C.textoSuave,marginTop:"4px",display:"flex",gap:"8px",flexWrap:"wrap"}}>
               {interp.ciudad&&<span>📍 {interp.ciudad}</span>}
               {interp.modalidad_trabajo&&<span>{interp.modalidad_trabajo==="ambas"?"💻📍":interp.modalidad_trabajo==="online"?"💻 Online":"📍 Presencial"}</span>}
             </div>}
@@ -553,7 +553,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
         {/* Header */}
         <div style={{padding:"20px 24px",borderBottom:"none",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0,background:form.id?"#E67700":"#3a7bd5",borderRadius:"20px 20px 0 0"}}>
           <div style={{fontSize:"15px",fontWeight:"600",color:"#FFFFFF"}}>{form.id?<><span style={{filter:"brightness(10)"}}>✏️</span> Editar evento</>:"Nuevo evento"}</div>
-          <button onClick={onCerrar} style={{background:"none",border:"none",cursor:"pointer",fontSize:"23px",color:"#FFFFFF",lineHeight:1,fontWeight:"300",opacity:1}}>×</button>
+          <button onClick={onCerrar} style={{background:"none",border:"none",cursor:"pointer",fontSize:"16px",color:"#FFFFFF",lineHeight:1,fontWeight:"300",opacity:1}}>×</button>
         </div>
         {/* Tabs */}
         <div style={{display:"flex",borderBottom:`1px solid ${C.grisBorde}`,flexShrink:0}}>
@@ -573,7 +573,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                   <option value="">Seleccionar cliente…</option>
                   {clientes.map(c=><option key={c.id} value={c.id}>{c.nombre_empresa}</option>)}
                 </select>
-                <button onClick={onNuevoCliente} style={{padding:"0",width:"48px",height:"48px",background:"#1E3A6E",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"21px",fontWeight:"300",fontFamily:"inherit",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,lineHeight:1}}>+</button>
+                <button onClick={onNuevoCliente} style={{padding:"0",width:"48px",height:"48px",background:"#1E3A6E",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"15px",fontWeight:"300",fontFamily:"inherit",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,lineHeight:1}}>+</button>
               </div>
             </div>
             {form.cliente_id&&<div style={{marginBottom:"20px"}}>
@@ -583,7 +583,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                   <option value="">Seleccionar contacto…</option>
                   {contactos.filter(c=>c.cliente_id===Number(form.cliente_id)&&c.activo!==false).map(c=><option key={c.id} value={c.id}>{c.nombre}{c.cargo?` — ${c.cargo}`:""}</option>)}
                 </select>
-                <button onClick={()=>setModalNuevoContacto({cliente_id:form.cliente_id})} style={{padding:"0",width:"48px",height:"48px",background:"#3B82F6",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"21px",fontWeight:"300",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,lineHeight:1}}>+</button>
+                <button onClick={()=>setModalNuevoContacto({cliente_id:form.cliente_id})} style={{padding:"0",width:"48px",height:"48px",background:"#3B82F6",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"15px",fontWeight:"300",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,lineHeight:1}}>+</button>
               </div>
             </div>}
             {/* Nombre del evento */}
@@ -595,9 +595,9 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
             <div style={{marginBottom:"20px"}}>
               <label style={{...S.lbl,marginBottom:"8px"}}>Referencias del cliente</label>
               <div style={S.fila}>
-                <div style={S.camp}><label style={{...S.lbl,fontSize:"18px"}}>N° OC</label><input style={S.inp} value={form.nro_oc} onChange={e=>setF("nro_oc",e.target.value)} placeholder="OC-0000"/></div>
-                <div style={S.camp}><label style={{...S.lbl,fontSize:"18px"}} title="Hoja de Entrada de Servicios">N° HES <span style={{fontSize:"16px",color:C.textoSuave,fontWeight:"400",textTransform:"none"}}>(Hoja Entrada Servicios)</span></label><input style={S.inp} value={form.nro_hes||""} onChange={e=>setF("nro_hes",e.target.value)} placeholder="HES-000"/></div>
-                <div style={S.camp}><label style={{...S.lbl,fontSize:"18px"}}>Otros</label><input style={S.inp} value={form.nro_otros||""} onChange={e=>setF("nro_otros",e.target.value)} placeholder="Ref. adicional…"/></div>
+                <div style={S.camp}><label style={{...S.lbl,fontSize:"12px"}}>N° OC</label><input style={S.inp} value={form.nro_oc} onChange={e=>setF("nro_oc",e.target.value)} placeholder="OC-0000"/></div>
+                <div style={S.camp}><label style={{...S.lbl,fontSize:"12px"}} title="Hoja de Entrada de Servicios">N° HES <span style={{fontSize:"16px",color:C.textoSuave,fontWeight:"400",textTransform:"none"}}>(Hoja Entrada Servicios)</span></label><input style={S.inp} value={form.nro_hes||""} onChange={e=>setF("nro_hes",e.target.value)} placeholder="HES-000"/></div>
+                <div style={S.camp}><label style={{...S.lbl,fontSize:"12px"}}>Otros</label><input style={S.inp} value={form.nro_otros||""} onChange={e=>setF("nro_otros",e.target.value)} placeholder="Ref. adicional…"/></div>
               </div>
             </div>
             {/* Tipo + Modalidad */}
@@ -743,7 +743,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                 <div style={{marginTop:"10px"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"6px"}}>
                     <label style={S.lbl}>Contactos proveedor</label>
-                    <button onClick={()=>setForm(f=>{const eqs=[...(f.equipos||[])];let cs=[];try{cs=JSON.parse(eqs[eIdx].proveedor_contacto||"[]");}catch{cs=[];}cs.push({tipo:"celular",valor:""});eqs[eIdx]={...eqs[eIdx],proveedor_contacto:JSON.stringify(cs)};return{...f,equipos:eqs};})} style={{...S.btnP,padding:"4px 10px",fontSize:"18px",fontWeight:"700"}}>+</button>
+                    <button onClick={()=>setForm(f=>{const eqs=[...(f.equipos||[])];let cs=[];try{cs=JSON.parse(eqs[eIdx].proveedor_contacto||"[]");}catch{cs=[];}cs.push({tipo:"celular",valor:""});eqs[eIdx]={...eqs[eIdx],proveedor_contacto:JSON.stringify(cs)};return{...f,equipos:eqs};})} style={{...S.btnP,padding:"4px 10px",fontSize:"12px",fontWeight:"700"}}>+</button>
                   </div>
                   <div style={{maxHeight:"160px",overflowY:"auto",display:"flex",flexDirection:"column",gap:"6px"}}>
                     {(()=>{let cs=[];try{cs=JSON.parse(eq.proveedor_contacto||"[]");}catch{cs=eq.proveedor_contacto?[{tipo:"celular",valor:eq.proveedor_contacto}]:[];}
@@ -838,7 +838,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                       <div style={{marginTop:"10px"}}>
                         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"6px"}}>
                           <label style={S.lbl}>Contactos proveedor</label>
-                          <button onClick={()=>{let cs=[];try{cs=JSON.parse(eq.proveedor_contacto||"[]");}catch{cs=[];}cs.push({tipo:"celular",valor:""});editEq(dIdx,eIdx,"proveedor_contacto",JSON.stringify(cs));}} style={{...S.btnP,padding:"4px 10px",fontSize:"18px",fontWeight:"700"}}>+</button>
+                          <button onClick={()=>{let cs=[];try{cs=JSON.parse(eq.proveedor_contacto||"[]");}catch{cs=[];}cs.push({tipo:"celular",valor:""});editEq(dIdx,eIdx,"proveedor_contacto",JSON.stringify(cs));}} style={{...S.btnP,padding:"4px 10px",fontSize:"12px",fontWeight:"700"}}>+</button>
                         </div>
                         <div style={{maxHeight:"160px",overflowY:"auto",display:"flex",flexDirection:"column",gap:"6px"}}>
                           {(()=>{let cs=[];try{cs=JSON.parse(eq.proveedor_contacto||"[]");}catch{cs=eq.proveedor_contacto?[{tipo:"celular",valor:eq.proveedor_contacto}]:[];}
@@ -856,7 +856,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                         </div>
                       </div>
                       <div style={{marginTop:"12px",paddingTop:"12px",borderTop:`1px solid ${C.grisBorde}`}}>
-                        <div style={{fontWeight:"700",color:C.textoMed,fontSize:"19px",marginBottom:"10px",textTransform:"uppercase"}}>🔩 Montaje</div>
+                        <div style={{fontWeight:"700",color:C.textoMed,fontSize:"11px",marginBottom:"10px",textTransform:"uppercase"}}>🔩 Montaje</div>
                         <div style={S.fila}>
                           <div style={S.camp}><label style={S.lbl}>Día de montaje</label><input style={S.inp} type="date" value={eq.dia_montaje||""} onChange={e=>editEq(dIdx,eIdx,"dia_montaje",e.target.value)}/></div>
                           <div style={S.camp}><label style={S.lbl}>Hora de montaje</label><SelHora value={eq.hora_montaje} onChange={v=>editEq(dIdx,eIdx,"hora_montaje",v)}/></div>
@@ -904,7 +904,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
     return acc;
   },[]);
   const metaRow=(a)=>(a.nro_ot||a.nro_boleta||a.hora_presentacion)
-    ?<div style={{fontSize:"18px",color:"#6B7280",marginTop:"4px",display:"flex",gap:"10px",flexWrap:"wrap",alignItems:"center"}}>
+    ?<div style={{fontSize:"12px",color:"#6B7280",marginTop:"4px",display:"flex",gap:"10px",flexWrap:"wrap",alignItems:"center"}}>
       {a.nro_ot&&<span>OT: {a.nro_ot}</span>}
       {a.nro_boleta&&<span>Boleta: {a.nro_boleta}</span>}
       {a.hora_presentacion&&<span style={{fontSize:"13px"}}><span style={{fontSize:"13px"}}>🕐</span> {a.hora_presentacion.slice(0,5)}</span>}
@@ -916,7 +916,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
         <div style={{background:"#FFFFFF",padding:"20px 24px",borderRadius:"20px 20px 0 0",flexShrink:0,borderBottom:`10px solid ${colorCliente(evento.cliente_id)}`,position:"sticky",top:0,zIndex:10,boxShadow:"0 2px 8px rgba(0,0,0,0.08)"}}>
           <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:"16px"}}>
             <div style={{flex:1,minWidth:0}}>
-              <div style={{fontSize:"22px",fontWeight:"800",color:"#0F172A",lineHeight:1.2}}>{cliente?.nombre_empresa||"—"}</div>
+              <div style={{fontSize:"20px",fontWeight:"800",color:"#0F172A",lineHeight:1.2}}>{cliente?.nombre_empresa||"—"}</div>
               {cliente?.nombre_contacto&&<div style={{fontSize:"16px",fontWeight:"700",color:"#6B7280",fontStyle:"italic",marginTop:"4px"}}>Contacto: {cliente.nombre_contacto}</div>}
               {evento.nro_oc&&<div style={{fontSize:"12px",color:"#6B7280",marginTop:"4px"}}>N° OC: {evento.nro_oc}</div>}
             </div>
@@ -933,8 +933,8 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
         {/* Cuerpo */}
         <div style={{overflowY:"auto",flex:1,padding:"24px 28px"}}>
           {/* Evento + Fecha + Horario */}
-          {evento.nombre_evento&&<div style={{fontSize:"18px",fontWeight:"700",color:"#0F172A",marginBottom:"8px"}}>{evento.nombre_evento}</div>}
-          <div style={{fontSize:"20px",fontWeight:"600",color:"#1E293B",marginBottom:"4px"}}>
+          {evento.nombre_evento&&<div style={{fontSize:"12px",fontWeight:"700",color:"#0F172A",marginBottom:"8px"}}>{evento.nombre_evento}</div>}
+          <div style={{fontSize:"12px",fontWeight:"600",color:"#1E293B",marginBottom:"4px"}}>
             📅 {esMultidia?`${formatMedioES(evento.fecha_inicio)} → ${formatMedioES(evento.fecha_termino)}`:formatLargo(evento.fecha_inicio)}
           </div>
           <div style={{fontSize:"16px",fontWeight:"700",color:"#0F172A",marginBottom:"6px"}}>
@@ -1147,7 +1147,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
   const btFicha=(bg)=>({padding:"7px 16px",background:bg,color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"600",fontSize:"13px",fontFamily:"inherit"});
 
   const metaFicha=(a)=>(a.nro_ot||a.nro_boleta||a.hora_presentacion)
-    ?<div style={{fontSize:"18px",color:"#6B7280",marginTop:"4px",display:"flex",gap:"10px",flexWrap:"wrap"}}>
+    ?<div style={{fontSize:"12px",color:"#6B7280",marginTop:"4px",display:"flex",gap:"10px",flexWrap:"wrap"}}>
       {a.nro_ot&&<span>OT: {a.nro_ot}</span>}
       {a.nro_boleta&&<span>Boleta: {a.nro_boleta}</span>}
       {a.hora_presentacion&&<span style={{fontSize:"13px",display:"inline-flex",alignItems:"center",gap:"6px"}}><span style={{fontSize:"13px"}}>🕐</span> {a.hora_presentacion.slice(0,5)}</span>}
@@ -1176,7 +1176,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
         <div style={{fontSize:"15px",fontWeight:"900",color:titleColor,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"5px",filter:"brightness(0.65)"}}>{key}</div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
           {grupo.items.map(({interp,isHost},i)=>(
-            <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"8px 12px",borderRadius:"6px",fontSize:"18px",fontWeight:"500",color:bubbleColor,background:bubbleBg,border:bubbleBorder,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+            <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"8px 12px",borderRadius:"6px",fontSize:"12px",fontWeight:"500",color:bubbleColor,background:bubbleBg,border:bubbleBorder,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
               {isHost&&<span style={{fontSize:"17px"}}>🔑</span>}
               <FlagImg idioma={grupo.idioma}/>
               <span style={{overflow:"hidden",textOverflow:"ellipsis",color:bubbleColor}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
@@ -1196,7 +1196,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
         <div style={{padding:"12px 20px",borderBottom:"1px solid #E2E8F0",background:"#fff",borderRadius:"20px 20px 0 0",flexShrink:0}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"8px"}}>
             <div style={{fontWeight:"500",color:"#0F172A",fontSize:"14px"}}>Campos visibles</div>
-            <button onClick={onCerrar} style={{background:"none",border:"none",cursor:"pointer",fontSize:"20px",color:"#9CA3AF",lineHeight:1}}>✕</button>
+            <button onClick={onCerrar} style={{background:"none",border:"none",cursor:"pointer",fontSize:"12px",color:"#9CA3AF",lineHeight:1}}>✕</button>
           </div>
           <div style={{display:"flex",flexWrap:"wrap",gap:"6px"}}>
             {CAMPOS_OPC.map(({k,l})=><button key={k} onClick={()=>toggleCampo(k)}
@@ -1215,7 +1215,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
               </div>
             </div>
             <div style={{flex:1,minWidth:0}}>
-              <div style={{fontSize:"18px",fontWeight:"900",color:"#fff",letterSpacing:"0.04em",lineHeight:1}}>MundoChile</div>
+              <div style={{fontSize:"12px",fontWeight:"900",color:"#fff",letterSpacing:"0.04em",lineHeight:1}}>MundoChile</div>
               <div style={{fontSize:"10px",color:"rgba(255,255,255,0.70)",marginTop:"2px",letterSpacing:"0.05em"}}>TRANSLATIONS & INTERPRETERS</div>
             </div>
             <div style={{textAlign:"right",flexShrink:0}}>
@@ -1228,45 +1228,45 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 12px"}}>
 
             {campos.cliente&&<Sec label="Cliente" accent="#E03131" fullWidth>
-              <div style={{fontSize:"26px",fontWeight:"800",color:"#E03131",lineHeight:1.1}}>{cliente?.nombre_empresa||"—"}</div>
+              <div style={{fontSize:"15px",fontWeight:"800",color:"#E03131",lineHeight:1.1}}>{cliente?.nombre_empresa||"—"}</div>
               {cliente?.nombre_contacto&&<div style={{fontSize:"14px",color:"#6B7280",fontStyle:"italic",marginTop:"4px"}}>{cliente.nombre_contacto}</div>}
             </Sec>}
 
             {campos.evento&&evento.nombre_evento&&<Sec label="Evento" accent="#3B5BDB" fullWidth>
-              <div style={{fontSize:"22px",fontWeight:"700",color:"#1E293B"}}>{evento.nombre_evento}</div>
+              <div style={{fontSize:"16px",fontWeight:"700",color:"#1E293B"}}>{evento.nombre_evento}</div>
               {evento.nro_oc&&<div style={{fontSize:"13px",color:"#6B7280",marginTop:"4px"}}>N° OC: {evento.nro_oc}</div>}
             </Sec>}
 
             {campos.tipo&&<Sec label="Tipo de interpretación" accent="#9C36B5">
-              <div style={{fontSize:"20px",fontWeight:"700",color:"#0F172A",display:"flex",alignItems:"center",gap:"8px"}}><IconMic size={20}/> {evento.tipo}</div>
+              <div style={{fontSize:"12px",fontWeight:"700",color:"#0F172A",display:"flex",alignItems:"center",gap:"8px"}}><IconMic size={20}/> {evento.tipo}</div>
             </Sec>}
 
             {campos.modalidad&&<Sec label="Modalidad" accent="#C2255C">
-              <div style={{fontSize:"20px",fontWeight:"700",color:"#0F172A"}}>
+              <div style={{fontSize:"12px",fontWeight:"700",color:"#0F172A"}}>
                 {evento.modalidad==="presencial"?"📍":evento.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evento.modalidad]}
               </div>
             </Sec>}
 
             {campos.fecha&&<Sec label="Fecha" accent="#E67700">
-              <div style={{fontSize:"18px",fontWeight:"700",color:"#0F172A"}}>
+              <div style={{fontSize:"12px",fontWeight:"700",color:"#0F172A"}}>
                 {esMultidia?`${formatCorto(evento.fecha_inicio)} → ${formatCorto(evento.fecha_termino)}`:formatLargo(evento.fecha_inicio)}
               </div>
             </Sec>}
 
             {campos.horario&&<Sec label="Horario" accent="#E67700">
-              <div style={{fontSize:"22px",fontWeight:"700",color:"#0F172A"}}>
+              <div style={{fontSize:"16px",fontWeight:"700",color:"#0F172A"}}>
                 {evento.hora_inicio?.slice(0,5)} – {evento.hora_termino?.slice(0,5)} hrs
               </div>
             </Sec>}
 
             {campos.jornada&&evento.jornada&&<Sec label="Jornada" accent="#475569" fullWidth>
-              <div style={{fontSize:"18px",fontWeight:"600",color:"#0F172A"}}>
+              <div style={{fontSize:"12px",fontWeight:"600",color:"#0F172A"}}>
                 ⏱ {evento.jornada}{evento.jornada_personalizada?` — ${evento.jornada_personalizada}`:""}
               </div>
             </Sec>}
 
             {campos.lugar&&esPresencial&&evento.lugar&&<Sec label="Lugar" accent="#2F9E44" fullWidth>
-              <div style={{fontSize:"20px",fontWeight:"700",color:"#0F172A"}}>📍 {evento.lugar}</div>
+              <div style={{fontSize:"12px",fontWeight:"700",color:"#0F172A"}}>📍 {evento.lugar}</div>
               {evento.lugar_detalle&&<div style={{fontSize:"14px",color:"#475569",marginTop:"4px"}}>{evento.lugar_detalle}</div>}
             </Sec>}
 
@@ -1316,7 +1316,7 @@ function ModalNuevoCliente({onGuardar,onCerrar}) {
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.7)",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px"}}>
       <div style={{background:"#fff",borderRadius:"16px",padding:"28px 24px",width:"100%",maxWidth:"480px",boxShadow:"0 20px 60px rgba(0,0,0,0.25)"}}>
-        <div style={{fontWeight:"700",fontSize:"18px",color:C.texto,marginBottom:"20px"}}>🏢 Nuevo cliente</div>
+        <div style={{fontWeight:"700",fontSize:"12px",color:C.texto,marginBottom:"20px"}}>🏢 Nuevo cliente</div>
         <div style={{marginBottom:"20px"}}><label style={S.lbl}>Nombre empresa *</label><input style={S.inp} value={f.nombre_empresa} onChange={e=>u("nombre_empresa",e.target.value)}/></div>
         <div style={{...S.fila,marginBottom:"20px"}}>
           <div style={S.camp}><label style={S.lbl}>Contacto</label><input style={S.inp} value={f.nombre_contacto} onChange={e=>u("nombre_contacto",e.target.value)}/></div>
@@ -1343,7 +1343,7 @@ function ModalNuevoInterprete({onGuardar,onCerrar}) {
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.7)",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px"}}>
       <div style={{background:"#fff",borderRadius:"16px",padding:"28px 24px",width:"100%",maxWidth:"520px",boxShadow:"0 20px 60px rgba(0,0,0,0.25)"}}>
-        <div style={{fontWeight:"700",fontSize:"18px",color:C.texto,marginBottom:"20px"}}>👤 Nuevo intérprete</div>
+        <div style={{fontWeight:"700",fontSize:"12px",color:C.texto,marginBottom:"20px"}}>👤 Nuevo intérprete</div>
         <div style={{...S.fila,marginBottom:"20px"}}>
           <div style={S.camp}><label style={S.lbl}>Nombre *</label><input style={S.inp} value={f.nombre} onChange={e=>u("nombre",e.target.value)}/></div>
           <div style={S.camp}><label style={S.lbl}>Apellido</label><input style={S.inp} value={f.apellido} onChange={e=>u("apellido",e.target.value)}/></div>
@@ -1685,7 +1685,7 @@ function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,
     <div style={{padding:"16px 24px 80px",width:"100%",maxWidth:"100%"}}>
       {!Object.keys(byWeek).length&&<div style={{textAlign:"center",padding:"80px 20px",color:"#fff"}}>
         <div style={{fontSize:"13px",marginBottom:"12px"}}>📅</div>
-        <div style={{fontWeight:"700",fontSize:"18px",color:"#fff"}}>No hay eventos que mostrar</div>
+        <div style={{fontWeight:"700",fontSize:"12px",color:"#fff"}}>No hay eventos que mostrar</div>
       </div>}
       {Object.entries(byWeek).map(([lunISO,evs])=>{
         const finSem=new Date(desdeISO(lunISO));finSem.setDate(finSem.getDate()+6);
@@ -1715,7 +1715,7 @@ function ModalNuevoContacto({clienteId,onGuardar,onCerrar}) {
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.7)",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px"}}>
       <div style={{background:"#fff",borderRadius:"16px",padding:"28px 24px",width:"100%",maxWidth:"440px",boxShadow:"0 20px 60px rgba(0,0,0,0.25)"}}>
-        <div style={{fontWeight:"700",fontSize:"18px",color:"#0F172A",marginBottom:"20px"}}>👤 Nuevo contacto</div>
+        <div style={{fontWeight:"700",fontSize:"12px",color:"#0F172A",marginBottom:"20px"}}>👤 Nuevo contacto</div>
         <div style={{marginBottom:"16px"}}><label style={S.lbl}>Nombre *</label><input style={S.inp} value={f.nombre} onChange={e=>u("nombre",e.target.value)} placeholder="Nombre completo"/></div>
         <div style={{marginBottom:"16px"}}><label style={S.lbl}>Cargo</label><input style={S.inp} value={f.cargo} onChange={e=>u("cargo",e.target.value)} placeholder="Gerente, Coordinador…"/></div>
         <div style={{display:"flex",gap:"12px",marginBottom:"16px"}}>
@@ -1950,11 +1950,11 @@ export default function App() {
             <div style={{padding:"12px 14px",display:"flex",alignItems:"center",gap:"12px",cursor:"pointer"}} onClick={()=>{setDiaActual(iso);setVista("dia");}}>
               <div style={{textAlign:"center",minWidth:"54px"}}>
                 <div style={{fontSize:"16px",fontWeight:"800",color:"#fff",textTransform:"uppercase",letterSpacing:"0.05em"}}>{nombresDia[i]}</div>
-                <div style={{fontSize:"36px",fontWeight:"900",lineHeight:1,color:"#fff"}}>{d.getDate()}</div>
+                <div style={{fontSize:"32px",fontWeight:"900",lineHeight:1,color:"#fff"}}>{d.getDate()}</div>
                 <div style={{fontSize:"12px",color:"rgba(255,255,255,0.75)"}}>{mesLargo}</div>
               </div>
               <div style={{flex:1,color:"#fff",fontWeight:"600",fontSize:"14px"}}>{evs.length>0?`${evs.length} evento${evs.length!==1?"s":""}`:""}</div>
-              <div style={{fontSize:"18px",color:"rgba(255,255,255,0.6)"}}>›</div>
+              <div style={{fontSize:"12px",color:"rgba(255,255,255,0.6)"}}>›</div>
             </div>
             {evs.length>0&&<div style={{padding:"0 10px 10px"}}>{evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)}/>)}</div>}
           </div>;
@@ -1977,7 +1977,7 @@ export default function App() {
                 onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"}
                 onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>
                 <div style={{fontSize:"16px",fontWeight:"800",color:"#fff",textTransform:"uppercase",letterSpacing:"0.05em"}}>{nombresDia[i]}</div>
-                <div style={{fontSize:"36px",fontWeight:"900",lineHeight:1,color:"#fff",margin:"4px 0"}}>{d.getDate()}</div>
+                <div style={{fontSize:"32px",fontWeight:"900",lineHeight:1,color:"#fff",margin:"4px 0"}}>{d.getDate()}</div>
                 <div style={{fontSize:"12px",color:"rgba(255,255,255,0.75)"}}>{mesLargo} {d.getFullYear()}</div>
                 {evs.length>0&&<div style={{display:"inline-block",background:"rgba(255,255,255,0.20)",color:"#fff",fontSize:"12px",fontWeight:"700",padding:"2px 8px",borderRadius:"10px",marginTop:"6px"}}>{evs.length} evento{evs.length!==1?"s":""}</div>}
               </div>
@@ -1994,10 +1994,10 @@ export default function App() {
   const renderDia=()=>{
     const evs=evsDia(diaActual);
     return <div style={{padding:"16px 24px 80px"}}>
-      <div style={{fontWeight:"700",fontSize:"20px",color:"#fff",marginBottom:"16px"}}>
+      <div style={{fontWeight:"700",fontSize:"12px",color:"#fff",marginBottom:"16px"}}>
         {formatLargo(diaActual)}<span style={{fontWeight:"400",color:"rgba(255,255,255,0.75)",fontSize:"16px",marginLeft:"12px"}}>{evs.length} evento{evs.length!==1?"s":""}</span>
       </div>
-      {evs.length===0?<div style={{textAlign:"center",padding:"60px 20px",color:"rgba(255,255,255,0.7)",border:"2px dashed rgba(255,255,255,0.3)",borderRadius:"16px"}}><div style={{fontSize:"13px",marginBottom:"12px"}}>📅</div><div style={{fontWeight:"700",fontSize:"18px",color:"#fff"}}>Sin eventos este día</div></div>
+      {evs.length===0?<div style={{textAlign:"center",padding:"60px 20px",color:"rgba(255,255,255,0.7)",border:"2px dashed rgba(255,255,255,0.3)",borderRadius:"16px"}}><div style={{fontSize:"13px",marginBottom:"12px"}}>📅</div><div style={{fontWeight:"700",fontSize:"12px",color:"#fff"}}>Sin eventos este día</div></div>
       :<div style={{display:"grid",gridTemplateColumns:esMobile?"1fr":"1fr 1fr",gap:"12px"}}>{evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={diaActual} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)}/>)}</div>}
     </div>;
   };
@@ -2027,7 +2027,7 @@ export default function App() {
               </div>
             </div>
             <div>
-              <div style={{fontWeight:"800",fontSize:"21px",color:"#FFFFFF",lineHeight:1,letterSpacing:"0.01em"}}>MundoChile</div>
+              <div style={{fontWeight:"800",fontSize:"15px",color:"#FFFFFF",lineHeight:1,letterSpacing:"0.01em"}}>MundoChile</div>
               <div style={{fontSize:"11px",color:"rgba(255,255,255,0.70)",marginTop:"3px"}}>Translations & Interpreters · Since 2003</div>
             </div>
           </div>
