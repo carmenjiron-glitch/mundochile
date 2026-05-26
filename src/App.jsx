@@ -54,10 +54,12 @@ const idiomaBorde=(idioma)=>IDIOMA_BORDE[idioma]||"#3451d1";
 const idiomaFlag=(idioma)=>IDIOMA_FLAG[idioma]||"🌐";
 const IDIOMA_CDN={"Inglés":"gb","Francés":"fr","Portugués":"br","Español":"es","Alemán":"de","Italiano":"it","Chino":"cn","Japonés":"jp"};
 function FlagImg({idioma}){const c=IDIOMA_CDN[idioma];if(!c)return<span style={{fontSize:"15px"}}>🌐</span>;return<img src={`https://flagcdn.com/28x21/${c}.png`} style={{width:"28px",height:"21px",objectFit:"cover",borderRadius:"2px",verticalAlign:"middle",display:"inline-block",flexShrink:0}} alt={idioma}/>;}
-const B_TIPO={"Simultánea":{bg:"#EEF2FF",c:"#3B5BDB"},"Consecutiva":{bg:"#F0FFF4",c:"#2F9E44"},"Whispering":{bg:"#F5F3FF",c:"#9C36B5"}};
-const B_MOD={"presencial":{bg:"#FFF0F6",c:"#C2255C"},"remoto":{bg:"#E6FCF5",c:"#0CA678"},"hibrido":{bg:"#FFF4E6",c:"#E67700"}};
-const B_EST=(e)=>e==="Facturado"?{bg:"#E7F5FF",c:"#1971C2"}:{bg:"#FFF9DB",c:"#E67700"};
-const bS=(bg,c)=>({display:"inline-flex",alignItems:"center",padding:"5px 14px",borderRadius:"6px",fontSize:"13px",fontWeight:"600",color:c,background:bg,border:`2px solid ${c}`,whiteSpace:"nowrap"});
+const B_TIPO={"Simultánea":{bg:"#EEF2FF",c:"#3B5BDB"},"Consecutiva":{bg:"#FFF8E1",c:"#F57F17"},"Whispering":{bg:"#F3E5F5",c:"#7B1FA2"}};
+const B_MOD={"presencial":{bg:"#FCE4EC",c:"#C62828"},"remoto":{bg:"#E0F2F1",c:"#00695C"},"hibrido":{bg:"#FBE9E7",c:"#BF360C"}};
+const B_EST=(e)=>e==="Facturado"?{bg:"#E3F2FD",c:"#1565C0"}:{bg:"#FFFDE7",c:"#F57F17"};
+const bS=(bg,c)=>({display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 14px",borderRadius:"6px",fontSize:"13px",fontWeight:"600",color:c,background:bg,border:`2px solid ${c}`,whiteSpace:"nowrap"});
+const TIPO_ICON={"Simultánea":<IconMic size={12}/>,"Consecutiva":<IconMic size={12}/>,"Whispering":"🤫"};
+const MOD_ICON={"presencial":"📍","remoto":"🖥️","hibrido":"🔀"};
 const nombreCorto=(nombre,apellido)=>{if(!apellido)return nombre;const completo=`${nombre} ${apellido}`;if(completo.length<=12)return completo;return`${nombre} ${apellido.charAt(0)}.`;};
 
 
@@ -282,8 +284,8 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
       {cliente?.nombre_contacto&&<div style={{fontSize:"20px",fontWeight:"700",color:"#6B6B6B",fontStyle:"italic",marginBottom:"8px"}}>Contacto: {cliente.nombre_contacto}</div>}
       <div style={{fontSize:"18px",fontWeight:"700",color:"#1A1A1A",marginBottom:"10px"}}>{ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)} hrs</div>
       <div style={{display:"flex",gap:"6px",flexWrap:"wrap",alignItems:"center",marginBottom:"10px"}}>
-        <span style={bS(bt.bg,bt.c)}>{ev.tipo}</span>
-        <span style={bS(bm.bg,bm.c)}>{LBL_MODAL[ev.modalidad]||ev.modalidad}</span>
+        <span style={bS(bt.bg,bt.c)}>{TIPO_ICON[ev.tipo]}{ev.tipo}</span>
+        <span style={bS(bm.bg,bm.c)}>{MOD_ICON[ev.modalidad]}{LBL_MODAL[ev.modalidad]||ev.modalidad}</span>
       </div>
       {esPresencial&&ev.lugar&&<div style={{fontSize:"13px",color:"#475569",marginBottom:"8px"}}>📌 {ev.lugar}</div>}
       {!esPresencial&&ev.plataforma&&<div style={{marginBottom:"8px"}}>

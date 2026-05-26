@@ -30,16 +30,16 @@ export const colorCliente = clientColor
 
 export const BADGE = {
   'Simultánea':           {bg:'#EEF2FF',c:'#3B5BDB',b:'#3B5BDB'},
-  'Consecutiva':          {bg:'#F0FFF4',c:'#2F9E44',b:'#2F9E44'},
-  'Whispering':           {bg:'#F5F3FF',c:'#9C36B5',b:'#9C36B5'},
-  'presencial':           {bg:'#FFF0F6',c:'#C2255C',b:'#C2255C'},
-  'remoto':               {bg:'#E6FCF5',c:'#0CA678',b:'#0CA678'},
-  'hibrido':              {bg:'#FFF4E6',c:'#E67700',b:'#E67700'},
-  'Presencial':           {bg:'#FFF0F6',c:'#C2255C',b:'#C2255C'},
-  'Remoto':               {bg:'#E6FCF5',c:'#0CA678',b:'#0CA678'},
-  'Híbrido':              {bg:'#FFF4E6',c:'#E67700',b:'#E67700'},
-  'Facturado':            {bg:'#E7F5FF',c:'#1971C2',b:'#1971C2'},
-  'Facturación Pendiente':{bg:'#FFF9DB',c:'#E67700',b:'#E67700'},
+  'Consecutiva':          {bg:'#FFF8E1',c:'#F57F17',b:'#F57F17'},
+  'Whispering':           {bg:'#F3E5F5',c:'#7B1FA2',b:'#7B1FA2'},
+  'presencial':           {bg:'#FCE4EC',c:'#C62828',b:'#C62828'},
+  'remoto':               {bg:'#E0F2F1',c:'#00695C',b:'#00695C'},
+  'hibrido':              {bg:'#FBE9E7',c:'#BF360C',b:'#BF360C'},
+  'Presencial':           {bg:'#FCE4EC',c:'#C62828',b:'#C62828'},
+  'Remoto':               {bg:'#E0F2F1',c:'#00695C',b:'#00695C'},
+  'Híbrido':              {bg:'#FBE9E7',c:'#BF360C',b:'#BF360C'},
+  'Facturado':            {bg:'#E3F2FD',c:'#1565C0',b:'#1565C0'},
+  'Facturación Pendiente':{bg:'#FFFDE7',c:'#F57F17',b:'#F57F17'},
 }
 
 export const INTERP_LANG = {
