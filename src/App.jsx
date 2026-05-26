@@ -56,7 +56,7 @@ const IDIOMA_CDN={"Inglés":"gb","Francés":"fr","Portugués":"br","Español":"e
 function FlagImg({idioma}){const c=IDIOMA_CDN[idioma];if(!c)return<span style={{fontSize:"15px"}}>🌐</span>;return<img src={`https://flagcdn.com/28x21/${c}.png`} style={{width:"28px",height:"21px",objectFit:"cover",borderRadius:"2px",verticalAlign:"middle",display:"inline-block",flexShrink:0}} alt={idioma}/>;}
 const B_TIPO={"Simultánea":{bg:"#EEF2FF",c:"#3B5BDB"},"Consecutiva":{bg:"#FCE4EC",c:"#C2185B"},"Whispering":{bg:"#F3E5F5",c:"#7B1FA2"}};
 const B_MOD={"presencial":{bg:"#E8F5E9",c:"#2E7D32"},"remoto":{bg:"#E0F7FA",c:"#00838F"},"hibrido":{bg:"#FBE9E7",c:"#BF360C"}};
-const B_EST=(e)=>e==="Facturado"?{bg:"#E3F2FD",c:"#1565C0"}:{bg:"#FFF8E1",c:"#F57F17"};
+const B_EST=(e)=>e==="Facturado"?{bg:"#E3F2FD",c:"#1565C0"}:{bg:"#FFF5F5",c:"#C62828"};
 const bS=(bg,c)=>({display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 14px",borderRadius:"6px",fontSize:"13px",fontWeight:"600",color:c,background:bg,border:`2px solid ${c}`,whiteSpace:"nowrap"});
 const TIPO_ICON={"Simultánea":<IconMic size={12}/>,"Consecutiva":<IconMic size={12}/>,"Whispering":"🤫"};
 const MOD_ICON={"presencial":"📍","remoto":"🖥️","hibrido":"🔀"};
@@ -896,7 +896,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
   const LBL_LARGA={txt:"13px",fw:"700",c:"#0F172A",tt:"uppercase",ls:"0.04em"};
   const SL=({t})=><div style={{fontSize:LBL_LARGA.txt,fontWeight:LBL_LARGA.fw,color:LBL_LARGA.c,textTransform:LBL_LARGA.tt,letterSpacing:LBL_LARGA.ls,marginBottom:"6px"}}>{t}</div>;
   const HR=()=><hr style={{border:"none",borderTop:"1px solid #E5E7EB",margin:"16px 0"}}/>;
-  const btnA=(bg)=>({padding:"8px 18px",background:bg,color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"600",fontSize:"14px",fontFamily:"inherit"});
+  const btnA=(bg)=>({padding:"8px 18px",background:bg,color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"13px",fontFamily:"inherit"});
   const interpRows=(asigs)=>asigs.reduce((acc,a)=>{
     const interp=interpretes.find(x=>x.id===a.interprete_id);
     const par=pares.find(p=>p.id===a.par_id);
