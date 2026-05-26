@@ -28,8 +28,8 @@ const C = {
 const PALETA_CLIENTE=["#E03131","#C2255C","#9C36B5","#3B5BDB","#1971C2","#0C8599","#2F9E44","#E67700","#D9480F","#5C7CFA","#F06595","#20C997"];
 const colorCliente=(id)=>PALETA_CLIENTE[(id||0)%12];
 const avatarColor=(str)=>PALETA_CLIENTE[(str||"").split("").reduce((a,c)=>a+c.charCodeAt(0),0)%12];
-const IDIOMA_COLOR={"Inglés":"#4A90D9","Francés":"#002395","Portugués":"#009C3B","Español":"#AA151B","Alemán":"#555555","Italiano":"#009246","Chino":"#DE2910","Japonés":"#BC002D"};
-const IDIOMA_BORDE={"Inglés":"#2563a8","Francés":"#001570","Portugués":"#006B28","Español":"#750e12","Alemán":"#333333","Italiano":"#006330","Chino":"#9e1d0b","Japonés":"#84001f"};
+const IDIOMA_COLOR={"Inglés":"#4A90D9","Francés":"#002395","Portugués":"#1565C0","Español":"#AA151B","Alemán":"#555555","Italiano":"#009246","Chino":"#DE2910","Japonés":"#BC002D"};
+const IDIOMA_BORDE={"Inglés":"#2563a8","Francés":"#001570","Portugués":"#0D47A1","Español":"#750e12","Alemán":"#333333","Italiano":"#006330","Chino":"#9e1d0b","Japonés":"#84001f"};
 const IDIOMA_FLAG={"Inglés":"🇬🇧","Francés":"🇫🇷","Portugués":"🇧🇷","Español":"🇪🇸","Alemán":"🇩🇪","Italiano":"🇮🇹","Chino":"🇨🇳","Japonés":"🇯🇵"};
 const idiomaColor=(idioma)=>IDIOMA_COLOR[idioma]||"#4C6EF5";
 const idiomaBorde=(idioma)=>IDIOMA_BORDE[idioma]||"#3451d1";
@@ -270,7 +270,7 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
       {lugarOPlat&&<div style={{fontSize:"15px",color:"#374151",marginBottom:"10px"}}>{esPresencial?"📍":"💻"} {lugarOPlat}</div>}
       {!esPresencial&&esZoomMC&&<div style={{marginBottom:"8px"}}><span style={{display:"inline-flex",alignItems:"center",padding:"6px 16px",borderRadius:"8px",fontSize:"14px",fontWeight:"700",color:"#92400E",background:"#FFF3CD",border:"2px solid #F59E0B"}}>💻 Zoom MundoChile{ev.zoom_administrador?` · ${ev.zoom_administrador}`:""}</span></div>}
       {(ev.asignaciones||[]).length>0&&<div style={{fontSize:"13px",fontWeight:"700",color:"#6B6B6B",textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:"8px",marginTop:"10px"}}>🎙 Intérpretes</div>}
-      <div style={{display:"flex",gap:"6px",flexWrap:"wrap"}}>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px"}}>
         {(ev.asignaciones||[]).map((a,i)=>{
           const interp=interpretes.find(x=>x.id===a.interprete_id);
           const par=pares.find(p=>p.id===a.par_id);
@@ -280,7 +280,7 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
           const bd=idiomaBorde(idioma);
           const esHost=a.es_host_zoom;
           return (
-            <span key={i} style={{display:"inline-flex",alignItems:"center",gap:"8px",padding:"8px 16px",borderRadius:"20px",fontSize:"15px",fontWeight:"500",color:"#fff",background:bg,border:esHost?`2px solid #E03131`:`2px solid ${bd}`,boxSizing:"border-box",marginBottom:"4px"}}>
+            <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"8px",padding:"8px 16px",borderRadius:"20px",fontSize:"15px",fontWeight:"500",color:"#fff",background:bg,border:esHost?`2px solid #E03131`:`2px solid ${bd}`,boxSizing:"border-box",width:"100%"}}>
               {esHost&&<span style={{fontSize:"13px"}}>🔑</span>}<FlagImg idioma={idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
               {par&&<span style={{opacity:0.85,fontSize:"12px"}}> · {par.idioma_origen} — {par.idioma_destino}</span>}
             </span>

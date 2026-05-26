@@ -45,7 +45,7 @@ export const BADGE = {
 export const INTERP_LANG = {
   'Inglés':    {bg:'#4A90D9',border:'#2563A8',flag:'gb'},
   'Francés':   {bg:'#002395',border:'#001570',flag:'fr'},
-  'Portugués': {bg:'#009C3B',border:'#006B28',flag:'br'},
+  'Portugués': {bg:'#1565C0',border:'#0D47A1',flag:'br'},
   'Español':   {bg:'#AA151B',border:'#750E12',flag:'es'},
   'Alemán':    {bg:'#555555',border:'#333333',flag:'de'},
   'Italiano':  {bg:'#009246',border:'#006330',flag:'it'},
@@ -76,7 +76,7 @@ export const tokens = {
   interpreter: {
     'Inglés':    { bg: '#4A90D9', border: '#2563A8', flag: 'gb' },
     'Francés':   { bg: '#002395', border: '#001570', flag: 'fr' },
-    'Portugués': { bg: '#009C3B', border: '#006B28', flag: 'br' },
+    'Portugués': { bg: '#1565C0', border: '#0D47A1', flag: 'br' },
     'Español':   { bg: '#AA151B', border: '#750E12', flag: 'es' },
     'Alemán':    { bg: '#555555', border: '#333333', flag: 'de' },
     'Italiano':  { bg: '#009246', border: '#006330', flag: 'it' },
