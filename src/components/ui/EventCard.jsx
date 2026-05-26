@@ -130,10 +130,10 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
         const titleColor = esPort ? '#0F3311' : t.bg;
         return (
           <div key={key} style={{ marginTop: '8px' }}>
-            <div style={{ fontSize: '13px', fontWeight: '900', color: titleColor, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '5px' }}>{key}</div>
+            <div style={{ fontSize: '13px', fontWeight: '900', color: titleColor, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '5px', filter: 'brightness(0.75)' }}>{key}</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5px' }}>
               {grupo.interpretes.map((interp, i) => (
-                <span key={i} title={`${interp.nombre}${interp.apellido ? ' ' + interp.apellido : ''}`} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '5px', padding: '4px 7px', borderRadius: '20px', fontSize: '14px', fontWeight: '500', color: bubbleColor, background: bubbleBg, border: bubbleBorder, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'default' }}>
+                <span key={i} title={`${interp.nombre}${interp.apellido ? ' ' + interp.apellido : ''}`} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '5px', padding: '4px 7px', borderRadius: '20px', fontSize: '14px', fontWeight: '600', color: bubbleColor, background: bubbleBg, border: bubbleBorder, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'default' }}>
                   {interp.isHost && <span style={{ fontSize: '11px' }}>🔑</span>}
                   <FlagImg idioma={grupo.idioma} />
                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', color: bubbleColor }}>{nombreCorto(interp.nombre, interp.apellido)}</span>
