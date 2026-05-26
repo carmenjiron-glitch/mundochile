@@ -232,7 +232,7 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
   const provNombreEq=tieneEquipos?(todosEquipos[0].proveedor_nombre||proveedores.find(p=>p.id===todosEquipos[0].proveedor_id)?.nombre||""):"";
   const esPresencial=ev.modalidad==="presencial"||ev.modalidad==="hibrido";
   const lugarOPlat=esPresencial?ev.lugar:ev.plataforma;
-  const esZoomMC=ev.plataforma==="Zoom MundoChile";
+  const esZoomMC=(ev.plataforma==="Zoom MundoChile"||ev.plataforma==="Zoom");
 
   const hoyCal=hoy();
   const manana=toISO(new Date(desdeISO(hoyCal).getTime()+86400000));
@@ -267,8 +267,10 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
         <span style={bS(bm.bg,bm.c)}>{LBL_MODAL[ev.modalidad]||ev.modalidad}</span>
         <span style={bS(be.bg,be.c)}>{ev.estado==="Facturado"?"Facturado":"Facturación Pendiente"}</span>
       </div>
-      {lugarOPlat&&<div style={{fontSize:"15px",color:"#374151",marginBottom:"10px"}}>{esPresencial?"📍":"💻"} {lugarOPlat}</div>}
-      {!esPresencial&&esZoomMC&&<div style={{marginBottom:"8px"}}><span style={{display:"inline-flex",alignItems:"center",padding:"6px 16px",borderRadius:"8px",fontSize:"14px",fontWeight:"700",color:"#92400E",background:"#FFF3CD",border:"2px solid #F59E0B"}}>💻 Zoom MundoChile{ev.zoom_administrador?` · ${ev.zoom_administrador}`:""}</span></div>}
+      {esPresencial&&ev.lugar&&<div style={{fontSize:"13px",color:"#475569",marginBottom:"8px"}}>📌 {ev.lugar}</div>}
+      {!esPresencial&&ev.plataforma&&<div style={{marginBottom:"8px"}}>
+        <PlatformChip platform={ev.plataforma==="Zoom"?"Zoom MundoChile":ev.plataforma} isMundoChile={ev.plataforma==="Zoom MundoChile"||ev.plataforma==="Zoom"}/>
+      </div>}
       {(ev.asignaciones||[]).length>0&&<div style={{fontSize:"13px",fontWeight:"700",color:"#6B6B6B",textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:"8px",marginTop:"10px"}}>🎙 Intérpretes</div>}
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px"}}>
         {(ev.asignaciones||[]).map((a,i)=>{
@@ -573,7 +575,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
               <div style={{...S.fila,marginBottom:"20px"}}>
                 <div style={S.camp}><label style={S.lbl}>💻 Plataforma</label>
                   <select style={S.sel} value={form.plataforma} onChange={e=>setF("plataforma",e.target.value)}>{PLATAFORMAS.map(p=><option key={p}>{p}</option>)}</select></div>
-                {form.plataforma==="Zoom MundoChile"&&<div style={S.camp}><label style={S.lbl}>🔑 Administrador Zoom</label>
+                {(form.plataforma==="Zoom MundoChile"||form.plataforma==="Zoom")&&<div style={S.camp}><label style={S.lbl}>🔑 Administrador Zoom</label>
                   <select style={S.sel} value={zoomOtro?"__otro__":(ZOOM_ADMIN.includes(form.zoom_administrador)?form.zoom_administrador:"")} onChange={e=>{if(e.target.value==="__otro__"){setZoomOtro(true);setF("zoom_administrador","");}else{setZoomOtro(false);setF("zoom_administrador",e.target.value);}}}>
                     <option value="">Sin asignar</option>{ZOOM_ADMIN.map(z=><option key={z}>{z}</option>)}<option value="__otro__">Otro…</option>
                   </select>
@@ -828,7 +830,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
   useEffect(()=>setAsignaciones(evento?.asignaciones||[]),[evento]);
   if(!evento) return null;
   const cliente=clientes.find(c=>c.id===evento.cliente_id);
-  const esZoomMC=evento.plataforma==="Zoom MundoChile";
+  const esZoomMC=(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom");
   const esPresencial=evento.modalidad==="presencial"||evento.modalidad==="hibrido";
   const esMultidia=evento.fecha_inicio!==evento.fecha_termino;
   const dias=((evento.evento_dias||evento.dias||[]).sort((a,b)=>(a.orden||0)-(b.orden||0)));
@@ -1106,7 +1108,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
             </Sec>}
 
             {campos.plataforma&&!esPresencial&&<Sec label="Plataforma" accent="#0C8599" fullWidth>
-              <PlatformChip platform={evento.plataforma} isMundoChile={evento.plataforma==="Zoom MundoChile"} extra={evento.plataforma==="Zoom MundoChile"?evento.zoom_administrador:""}/>
+              <PlatformChip platform={evento.plataforma==="Zoom"?"Zoom MundoChile":evento.plataforma} isMundoChile={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")} extra={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")?evento.zoom_administrador:""}/>
             </Sec>}
 
             {campos.interpretes&&(evento.asignaciones||[]).length>0&&<Sec label="Intérpretes" accent="#7048E8" fullWidth>
