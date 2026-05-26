@@ -49,7 +49,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
       onClick={onClick}
       style={{
         background: '#FFFFFF',
-        borderLeft: `7px solid ${borderColor}`,
+        borderLeft: `14px solid ${borderColor}`,
         borderRadius: '0 10px 10px 0',
         padding: '18px 20px',
         marginBottom: '10px',
@@ -71,7 +71,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
         </div>
       )}
       {cliente?.nombre_contacto && (
-        <div style={{ fontSize: '14px', color: '#6B7280', fontStyle: 'italic', fontWeight: '500', marginTop: '2px' }}>
+        <div style={{ fontSize: '14px', color: '#6B7280', fontStyle: 'italic', fontWeight: '700', marginTop: '2px' }}>
           Contacto: {cliente.nombre_contacto}
         </div>
       )}
