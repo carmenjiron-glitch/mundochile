@@ -1,17 +1,22 @@
-import { colorCliente } from "../../design-system/tokens";
+import { colorCliente, INTERP_LANG } from "../../design-system/tokens";
 import Badge from "./Badge";
 import MultiDayPill from "./MultiDayPill";
 import PlatformChip from "./PlatformChip";
-import InterpreterRow from "./InterpreterRow";
 
 const LBL_MODAL = { remoto: "Remoto", presencial: "Presencial", hibrido: "Híbrido" };
 const desdeISO = (s) => { const [y,m,d] = s.split("-"); return new Date(+y,+m-1,+d); };
+
+function FlagImg({ idioma }) {
+  const t = INTERP_LANG[idioma] || INTERP_LANG.default;
+  if (!t.flag) return <span style={{ fontSize: '13px' }}>🌐</span>;
+  return <img src={`https://flagcdn.com/28x21/${t.flag}.png`} style={{ width: '18px', height: '13px', objectFit: 'cover', borderRadius: '2px', flexShrink: 0 }} alt={idioma} />;
+}
 
 export default function EventCard({ ev, diaDe, clientes, interpretes, pares, proveedores=[], onClick }) {
   const cliente = clientes.find(c => c.id === ev.cliente_id);
   const borderColor = colorCliente(ev.cliente_id);
   const esPresencial = ev.modalidad === "presencial" || ev.modalidad === "hibrido";
-  const esZoomMC = ev.plataforma === "Zoom MundoChile";
+  const esZoomMC = (ev.plataforma === "Zoom MundoChile" || ev.plataforma === "Zoom");
 
   const todosEquipos = (ev.evento_dias || []).flatMap(d => d.equipos_dia || []);
   const tieneEquipos = todosEquipos.length > 0;
@@ -28,18 +33,18 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
     diaXdeY = { x, y };
   }
 
-  const interpRows = (ev.asignaciones || []).reduce((acc, a) => {
-    const interp = interpretes.find(x => x.id === a.interprete_id);
+  // Agrupar intérpretes por par de idiomas
+  const grupos = {};
+  (ev.asignaciones || []).forEach(a => {
     const par = pares.find(p => p.id === a.par_id);
-    if (!interp) return acc;
-    acc.push({
-      name: `${interp.nombre}${interp.apellido ? " " + interp.apellido : ""}`,
-      language: par?.idioma_origen || "",
-      isHost: !!a.es_host_zoom,
-      languagePair: par?.descripcion || "",
-    });
-    return acc;
-  }, []);
+    const interp = interpretes.find(x => x.id === a.interprete_id);
+    if (!interp) return;
+    const key = par?.descripcion || "Sin par";
+    const idioma = par?.idioma_origen || "";
+    if (!grupos[key]) grupos[key] = { idioma, interpretes: [] };
+    grupos[key].interpretes.push({ ...interp, isHost: !!a.es_host_zoom });
+  });
+  const gruposEntries = Object.entries(grupos);
 
   const estadoLabel = ev.estado === "Facturado" ? "Facturado" : "Facturación Pendiente";
   const modalLabel = LBL_MODAL[ev.modalidad] || ev.modalidad;
@@ -91,17 +96,29 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
       </div>
       {!esPresencial && ev.plataforma && (
         <div style={{ marginTop: '6px' }}>
-          <PlatformChip platform={ev.plataforma} isMundoChile={esZoomMC} extra={esZoomMC ? ev.zoom_administrador : ''} />
+          <PlatformChip platform={ev.plataforma === "Zoom" ? "Zoom MundoChile" : ev.plataforma} isMundoChile={esZoomMC} extra={esZoomMC ? ev.zoom_administrador : ''} />
         </div>
       )}
       {esPresencial && ev.lugar && (
         <div style={{ fontSize: '13px', color: '#475569', marginTop: '6px' }}>📍 {ev.lugar}</div>
       )}
-      {interpRows.length > 0 && (
-        <div style={{ marginTop: '8px' }}>
-          <InterpreterRow interpreters={interpRows} />
-        </div>
-      )}
+      {gruposEntries.map(([key, grupo]) => {
+        const t = INTERP_LANG[grupo.idioma] || INTERP_LANG.default;
+        return (
+          <div key={key} style={{ marginTop: '8px' }}>
+            <div style={{ fontSize: '10px', fontWeight: '800', color: t.bg, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '5px' }}>{key}</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5px' }}>
+              {grupo.interpretes.map((interp, i) => (
+                <span key={i} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '5px', padding: '5px 8px', borderRadius: '20px', fontSize: '12px', fontWeight: '500', color: '#FFFFFF', background: t.bg, border: `2px solid ${t.border}`, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {interp.isHost && <span style={{ fontSize: '11px' }}>🔑</span>}
+                  <FlagImg idioma={grupo.idioma} />
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{interp.nombre}{interp.apellido ? ' ' + interp.apellido : ''}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        );
+      })}
       {tieneEquipos && (
         <div style={{ fontSize: '11px', color: '#6B7280', marginTop: '4px' }}>
           🔧 {provNombreEq || "Equipos AV"}
