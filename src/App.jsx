@@ -315,17 +315,17 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
           const titleColor=esPort?"#0F3311":bg;
           return(
             <div key={key} style={{marginTop:"8px"}}>
-              <div style={{fontSize:"13px",fontWeight:"900",color:titleColor,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"5px",filter:"brightness(0.75)"}}>{key}</div>
+              <div style={{fontSize:"13px",fontWeight:"900",color:titleColor,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"5px",filter:"brightness(0.65)"}}>{key}</div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
                 {grupo.interpretes.map((interp,i)=>(
-                  <span key={i} title={`${interp.nombre}${interp.apellido?" "+interp.apellido:""}`} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"4px 7px",borderRadius:"20px",fontSize:"14px",fontWeight:"600",color:bubbleColor,background:bubbleBg,border:bubbleBorder,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",cursor:"default"}}>
+                  <span key={i} title={`${interp.nombre}${interp.apellido?" "+interp.apellido:""}`} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"4px 7px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:bubbleColor,background:bubbleBg,border:bubbleBorder,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",cursor:"default"}}>
                     {interp.isHost&&<span style={{fontSize:"11px",color:bubbleColor}}>🔑</span>}
                     <FlagImg idioma={grupo.idioma}/>
                     <span style={{overflow:"hidden",textOverflow:"ellipsis",color:bubbleColor}}>{nombreCorto(interp.nombre,interp.apellido)}</span>
                   </span>
                 ))}
               </div>
-              {(()=>{const hp=grupo.interpretes.find(i=>i.hora_presentacion)?.hora_presentacion;return hp?<div style={{fontSize:"15px",fontWeight:"600",color:"#1E293B",marginTop:"6px",padding:"4px 8px",background:"#F1F5F9",borderRadius:"6px",display:"inline-block"}}>🕐 Horario presentación intérpretes: {hp.slice(0,5)} hrs</div>:null;})()}
+              {(()=>{const hp=grupo.interpretes.find(i=>i.hora_presentacion)?.hora_presentacion;return hp?<div style={{fontSize:"9px",fontWeight:"500",color:"#475569",marginTop:"4px",display:"inline-flex",alignItems:"center",gap:"4px"}}>🕐 Presentación intérpretes: {hp.slice(0,5)} hrs</div>:null;})()}
             </div>
           );
         });
