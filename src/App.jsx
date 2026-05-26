@@ -123,7 +123,7 @@ const S = {
   btnG:{padding:"10px 20px",background:"#FFF5F5",color:"#E53E3E",border:"1.5px solid #FC8181",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
   btnSave:{padding:"11px 22px",background:"#2F9E44",color:"#fff",border:"2px solid #1B5E20",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"16px",fontFamily:"inherit"},
   btnDel:{padding:"10px 20px",background:"#E03131",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
-  btnCancel:{padding:"10px 20px",background:"#FFF5F5",color:"#E53E3E",border:"1.5px solid #FC8181",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",fontFamily:"inherit"},
+  btnCancel:{padding:"11px 22px",background:"#FFF5F5",color:"#E53E3E",border:"1.5px solid #FC8181",borderRadius:"8px",cursor:"pointer",fontWeight:"600",fontSize:"16px",fontFamily:"inherit"},
   btnEdit:{padding:"6px 12px",background:"#E67700",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",fontFamily:"inherit"},
   btnFicha:{padding:"6px 12px",background:"#1971C2",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",fontFamily:"inherit"},
   btnDup:{padding:"6px 12px",background:"#9C36B5",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",fontFamily:"inherit"},
@@ -133,11 +133,11 @@ const S = {
 // ─── ESTADO VACÍO ─────────────────────────────────────────────────────────────
 const evVacio = () => ({
   id:null, cliente_id:"", nro_oc:"", nombre_evento:"", tipo:"Simultánea",
-  fecha_inicio:hoy(), fecha_termino:hoy(), hora_inicio:"09:00", hora_termino:"13:00",
+  fecha_inicio:toISO(new Date(new Date().getTime()+86400000)), fecha_termino:toISO(new Date(new Date().getTime()+86400000)), hora_inicio:"09:00", hora_termino:"13:00",
   jornada:"Media Jornada", jornada_personalizada:"", lugar:"", lugar_detalle:"",
   modalidad:"remoto", plataforma:"Zoom MundoChile", zoom_owner:"mundochile",
   zoom_administrador:"", zoom_link:"", estado:"Facturación Pendiente", comentarios:"",
-  nro_hes:"", nro_otros:"", comentarios_av:"",
+  nro_hes:"", nro_otros:"", comentarios_av:"", contacto_id:"",
   asignaciones:[], dias:[], equipos:[],
 });
 const asigVacia = () => ({interprete_id:"",par_id:"",nro_ot:"",nro_boleta:"",es_boleta_adicional:false,es_host_zoom:false,rol:"Principal",hora_presentacion:"",estado_pago:"Pendiente"});
@@ -337,7 +337,7 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
 }
 
 // ─── MODAL EVENTO ─────────────────────────────────────────────────────────────
-function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugares=[],todos_eventos,perfil,onGuardar,onCerrar,onNuevoCliente,onNuevoInterprete,onLugarCreado}) {
+function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugares=[],contactos=[],todos_eventos,perfil,onGuardar,onCerrar,onNuevoCliente,onNuevoInterprete,onLugarCreado}) {
   const [form,setForm]=useState(()=>eventoInicial?JSON.parse(JSON.stringify(eventoInicial)):evVacio());
   const [tab,setTab]=useState("general");
   const [guardando,setGuardando]=useState(false);
@@ -390,7 +390,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
         jornada:form.jornada||"Media Jornada", jornada_personalizada:form.jornada_personalizada||"",
         lugar:form.lugar||"", lugar_detalle:form.lugar_detalle||"", modalidad:form.modalidad||"remoto",
         plataforma:form.plataforma||"", zoom_owner:form.zoom_owner||"mundochile",
-        zoom_administrador:form.zoom_administrador||"", zoom_link:form.zoom_link||"", estado:form.estado||"Facturación Pendiente",
+        zoom_administrador:form.zoom_administrador||"", zoom_link:form.zoom_link||"", contacto_id:form.contacto_id?Number(form.contacto_id):null, estado:form.estado||"Facturación Pendiente",
         comentarios:form.comentarios||"", edited_by:perfil?.id||null, edited_by_nombre:perfil?.nombre||"",
       };
       let eventoId=form.id;
@@ -577,6 +577,16 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                 <button onClick={onNuevoCliente} style={{padding:"0",width:"48px",height:"48px",background:"#1E3A6E",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"26px",fontWeight:"300",fontFamily:"inherit",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,lineHeight:1}}>+</button>
               </div>
             </div>
+            {form.cliente_id&&<div style={{marginBottom:"20px"}}>
+              <label style={S.lbl}>👤 Contacto</label>
+              <div style={{display:"flex",gap:"8px"}}>
+                <select style={S.sel} value={form.contacto_id||""} onChange={e=>setF("contacto_id",e.target.value?Number(e.target.value):"")}>
+                  <option value="">Seleccionar contacto…</option>
+                  {contactos.filter(c=>c.cliente_id===Number(form.cliente_id)&&c.activo!==false).map(c=><option key={c.id} value={c.id}>{c.nombre}{c.cargo?` — ${c.cargo}`:""}</option>)}
+                </select>
+                <button onClick={()=>setModalNuevoContacto({cliente_id:form.cliente_id})} style={{padding:"0",width:"48px",height:"48px",background:"#3B82F6",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"26px",fontWeight:"300",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,lineHeight:1}}>+</button>
+              </div>
+            </div>}
             {/* Nombre del evento */}
             <div style={{marginBottom:"20px"}}>
               <label style={S.lbl}>Nombre del evento</label>
@@ -1693,6 +1703,28 @@ function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,
 // ══════════════════════════════════════════════════════════════════════════════
 // APP PRINCIPAL
 // ══════════════════════════════════════════════════════════════════════════════
+function ModalNuevoContacto({clienteId,onGuardar,onCerrar}) {
+  const [f,setF]=useState({nombre:"",cargo:"",email:"",telefono:""});
+  const u=(k,v)=>setF(x=>({...x,[k]:v}));
+  return (
+    <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.7)",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px"}}>
+      <div style={{background:"#fff",borderRadius:"16px",padding:"28px 24px",width:"100%",maxWidth:"440px",boxShadow:"0 20px 60px rgba(0,0,0,0.25)"}}>
+        <div style={{fontWeight:"700",fontSize:"18px",color:"#0F172A",marginBottom:"20px"}}>👤 Nuevo contacto</div>
+        <div style={{marginBottom:"16px"}}><label style={S.lbl}>Nombre *</label><input style={S.inp} value={f.nombre} onChange={e=>u("nombre",e.target.value)} placeholder="Nombre completo"/></div>
+        <div style={{marginBottom:"16px"}}><label style={S.lbl}>Cargo</label><input style={S.inp} value={f.cargo} onChange={e=>u("cargo",e.target.value)} placeholder="Gerente, Coordinador…"/></div>
+        <div style={{display:"flex",gap:"12px",marginBottom:"16px"}}>
+          <div style={{flex:1}}><label style={S.lbl}>Email</label><input style={S.inp} type="email" value={f.email} onChange={e=>u("email",e.target.value)} placeholder="correo@empresa.com"/></div>
+          <div style={{flex:1}}><label style={S.lbl}>Teléfono</label><input style={S.inp} value={f.telefono} onChange={e=>u("telefono",e.target.value)} placeholder="+56 9 0000 0000"/></div>
+        </div>
+        <div style={{display:"flex",gap:"10px",justifyContent:"flex-end"}}>
+          <button onClick={onCerrar} style={S.btnCancel}>Cancelar</button>
+          <button onClick={()=>f.nombre&&onGuardar(f)} style={S.btnSave}>💾 Guardar</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   // TEMP: login desactivado — para reactivar cambiar SKIP_LOGIN a false
   const SKIP_LOGIN = true;
@@ -1705,6 +1737,7 @@ export default function App() {
   const [pares,setPares]=useState([]);
   const [proveedores,setProveedores]=useState([]);
   const [lugares,setLugares]=useState([]);
+  const [contactos,setContactos]=useState([]);
   const [cargando,setCargando]=useState(false);
   const [vista,setVista]=useState("semana");
   const [semanaOff,setSemanaOff]=useState(0);
@@ -1716,6 +1749,7 @@ export default function App() {
   const [modalFicha,setModalFicha]=useState(null);
   const [modalNuevoCli,setModalNuevoCli]=useState(false);
   const [modalNuevoInt,setModalNuevoInt]=useState(null);
+  const [modalNuevoContacto,setModalNuevoContacto]=useState(null);
   // Búsqueda, filtros y toasts
   const [busqueda,setBusqueda]=useState("");
   const [buscando,setBuscando]=useState(false);
@@ -1757,13 +1791,14 @@ export default function App() {
 
   const cargarDatos=useCallback(async()=>{
     setCargando(true);
-    const[evR,cliR,intR,parR,provR,lugR]=await Promise.all([
+    const[evR,cliR,intR,parR,provR,lugR,conR]=await Promise.all([
       sb.from("eventos").select("*, asignaciones(*), evento_dias(*, asignaciones_dia(*), equipos_dia(*))").order("fecha_inicio"),
       sb.from("clientes").select("*").order("nombre_empresa"),
       sb.from("interpretes").select("*").order("nombre"),
       sb.from("pares_idiomas").select("*").order("idioma_origen"),
       sb.from("proveedores").select("*").order("nombre"),
       sb.from("lugares").select("*").order("nombre"),
+      sb.from("contactos").select("*").order("nombre"),
     ]);
     if(evR.data) setEventos(evR.data);
     if(cliR.data) setClientes(cliR.data);
@@ -1771,6 +1806,7 @@ export default function App() {
     if(parR.data) setPares(parR.data);
     if(provR.data) setProveedores(provR.data);
     if(lugR.data) setLugares(lugR.data);
+    if(conR.data) setContactos(conR.data);
     setCargando(false);
   },[]);
 
@@ -2032,11 +2068,12 @@ export default function App() {
       {pantalla==="config"&&esAdmin&&<PantallaConfig clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} onActualizar={cargarDatos} perfil={perfil}/>}
 
       {/* ── MODALES ── */}
-      {modalEvento&&<ModalEvento eventoInicial={modalEvento.data} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} todos_eventos={eventos} perfil={perfil} onGuardar={()=>{setModalEvento(null);cargarDatos();addToast("Evento guardado correctamente","success");}} onCerrar={()=>setModalEvento(null)} onNuevoCliente={()=>setModalNuevoCli(true)} onNuevoInterprete={(ai,di)=>setModalNuevoInt({ai,di})} onLugarCreado={cargarDatos}/>}
+      {modalEvento&&<ModalEvento eventoInicial={modalEvento.data} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} contactos={contactos} todos_eventos={eventos} perfil={perfil} onGuardar={()=>{setModalEvento(null);cargarDatos();addToast("Evento guardado correctamente","success");}} onCerrar={()=>setModalEvento(null)} onNuevoCliente={()=>setModalNuevoCli(true)} onNuevoInterprete={(ai,di)=>setModalNuevoInt({ai,di})} onLugarCreado={cargarDatos}/>}
       {modalDetalle&&<ModalDetalle evento={modalDetalle} clientes={clientes} interpretes={interpretes} pares={pares} perfil={perfil} onEditar={()=>editarEvento(modalDetalle)} onEliminar={()=>eliminarEvento(modalDetalle.id)} onCerrar={()=>setModalDetalle(null)} onVerFicha={()=>{setModalFicha(modalDetalle);setModalDetalle(null);}} addToast={addToast}/>}
       {modalFicha&&<ModalFicha evento={modalFicha} clientes={clientes} interpretes={interpretes} pares={pares} onCerrar={()=>setModalFicha(null)}/>}
       {modalNuevoCli&&<ModalNuevoCliente onGuardar={async(d)=>{const{data}=await sb.from("clientes").insert(d).select().single();await cargarDatos();setModalNuevoCli(false);if(data&&modalEvento){setModalEvento(prev=>({...prev,data:{...prev.data,cliente_id:data.id}}));}addToast("Cliente creado","success");}} onCerrar={()=>setModalNuevoCli(false)}/>}
       {modalNuevoInt&&<ModalNuevoInterprete onGuardar={async(d)=>{await sb.from("interpretes").insert(d);await cargarDatos();setModalNuevoInt(null);addToast("Intérprete creado","success");}} onCerrar={()=>setModalNuevoInt(null)}/>}
+      {modalNuevoContacto&&<ModalNuevoContacto clienteId={modalNuevoContacto.cliente_id} onGuardar={async(d)=>{await sb.from("contactos").insert({...d,cliente_id:Number(modalNuevoContacto.cliente_id)});await cargarDatos();setModalNuevoContacto(null);addToast("Contacto creado","success");}} onCerrar={()=>setModalNuevoContacto(null)}/>}
       <ToastContainer toasts={toasts} onRemove={removeToast}/>
     </div>
   );
