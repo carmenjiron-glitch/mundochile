@@ -347,7 +347,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
         jornada:form.jornada||"Media Jornada", jornada_personalizada:form.jornada_personalizada||"",
         lugar:form.lugar||"", lugar_detalle:form.lugar_detalle||"", modalidad:form.modalidad||"remoto",
         plataforma:form.plataforma||"", zoom_owner:form.zoom_owner||"mundochile",
-        zoom_administrador:form.zoom_administrador||"", estado:form.estado||"Pendiente",
+        zoom_administrador:form.zoom_administrador||"", estado:form.estado||"Facturación Pendiente",
         comentarios:form.comentarios||"", edited_by:perfil?.id||null, edited_by_nombre:perfil?.nombre||"",
       };
       let eventoId=form.id;
