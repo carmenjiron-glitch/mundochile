@@ -9,6 +9,24 @@ import PlatformChip from "./components/ui/PlatformChip.jsx";
 import InterpreterRow from "./components/ui/InterpreterRow.jsx";
 import FilterBar from "./components/FilterBar.jsx";
 
+const IconMic = ({size=24}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+    <line x1="12" y1="19" x2="12" y2="23"/>
+    <line x1="8" y1="23" x2="16" y2="23"/>
+  </svg>
+)
+const IconAV = ({size=24}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+    <line x1="8" y1="21" x2="16" y2="21"/>
+    <line x1="12" y1="17" x2="12" y2="21"/>
+  </svg>
+)
+
 // ─── SUPABASE ────────────────────────────────────────────────────────────────
 const SB_URL = import.meta.env.VITE_SUPABASE_URL;
 const SB_KEY = import.meta.env.VITE_SUPABASE_KEY;
@@ -306,7 +324,7 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
           );
         });
       })()}
-      {tieneEquipos&&<div style={{fontSize:"13px",fontWeight:"700",color:"#6B6B6B",textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:"6px",marginTop:"10px"}}>🔧 Equipos AV</div>}
+      {tieneEquipos&&<div style={{fontSize:"13px",fontWeight:"700",color:"#6B6B6B",textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:"6px",marginTop:"10px",display:"flex",alignItems:"center",gap:"5px"}}><IconAV size={16}/> Equipos AV</div>}
       {tieneEquipos&&<span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"6px 14px",borderRadius:"8px",fontSize:"14px",fontWeight:"500",color:"#495057",background:"#F1F3F5",border:"1px solid #DEE2E6"}}>{provNombreEq||"Equipos AV"}</span>}
     </div>
   );
@@ -522,7 +540,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
 
   const TABS=esMultidia
     ?[{id:"general",lbl:"📋 Detalles"},{id:"dias",lbl:"📅 Por Día"}]
-    :[{id:"general",lbl:"📋 Detalles"},{id:"interpretes",lbl:"🎙 Intérpretes"},{id:"equipos",lbl:"🔧 Equipos AV"}];
+    :[{id:"general",lbl:"📋 Detalles"},{id:"interpretes",lbl:<><IconMic size={16}/> Intérpretes</>},{id:"equipos",lbl:<><IconAV size={16}/> Equipos AV</>}];
 
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.65)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(4px)",padding:"16px"}}>
@@ -569,7 +587,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
             </div>
             {/* Tipo + Modalidad */}
             <div style={{...S.fila,marginBottom:"20px"}}>
-              <div style={S.camp}><label style={S.lbl}>🎙 Tipo de interpretación</label>
+              <div style={S.camp}><label style={{...S.lbl,display:"flex",alignItems:"center",gap:"5px"}}><IconMic size={16}/> Tipo de interpretación</label>
                 <select style={S.sel} value={form.tipo} onChange={e=>setF("tipo",e.target.value)}>{TIPOS.map(t=><option key={t}>{t}</option>)}</select></div>
               <div style={S.camp}><label style={S.lbl}>🔄 Modalidad</label>
                 <select style={S.sel} value={form.modalidad} onChange={e=>setF("modalidad",e.target.value)}>{MODALIDADES.map(m=><option key={m} value={m}>{LBL_MODAL[m]}</option>)}</select></div>
@@ -644,7 +662,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           {/* ── TAB INTÉRPRETES (un día) ── */}
           {tab==="interpretes"&&!esMultidia&&<>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"20px"}}>
-              <div style={{fontWeight:"600",color:C.rojo,fontSize:"17px"}}>🎙 Intérpretes asignados</div>
+              <div style={{fontWeight:"600",color:C.rojo,fontSize:"17px",display:"flex",alignItems:"center",gap:"6px"}}><IconMic size={20}/> Intérpretes asignados</div>
               <button onClick={()=>addAsig()} style={S.btnA}>+ Agregar intérprete</button>
             </div>
             {form.asignaciones.length===0&&<div style={{textAlign:"center",color:C.textoSuave,padding:"40px 20px",border:`2px dashed ${C.grisBorde}`,borderRadius:"12px"}}>Sin intérpretes — Agrega uno arriba</div>}
@@ -662,7 +680,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           {/* ── TAB EQUIPOS AV (un día) ── */}
           {tab==="equipos"&&!esMultidia&&<>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"20px"}}>
-              <div style={{fontWeight:"600",color:C.verde,fontSize:"17px"}}>🔧 Equipos AV</div>
+              <div style={{fontWeight:"600",color:C.verde,fontSize:"17px",display:"flex",alignItems:"center",gap:"6px"}}><IconAV size={20}/> Equipos AV</div>
               <button onClick={()=>setForm(f=>({...f,equipos:[...(f.equipos||[]),eqVacio()]}))} style={S.btnA}>+ Agregar equipos</button>
             </div>
             {(form.equipos||[]).length===0&&<div style={{textAlign:"center",color:C.textoSuave,padding:"40px 20px",border:`2px dashed ${C.grisBorde}`,borderRadius:"12px"}}>Sin equipos AV — Agrega uno arriba</div>}
@@ -749,7 +767,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                 {/* Intérpretes del día */}
                 <div style={{marginTop:"12px"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
-                    <div style={{fontWeight:"700",color:C.rojo}}>🎙 Intérpretes de este día</div>
+                    <div style={{fontWeight:"700",color:C.rojo,display:"flex",alignItems:"center",gap:"5px"}}><IconMic size={16}/> Intérpretes de este día</div>
                     <button onClick={()=>addAsig(dIdx)} style={S.btnP}>+ Agregar</button>
                   </div>
                   {(dia.asignaciones||[]).length===0&&<div style={{color:C.textoSuave,fontSize:"13px",textAlign:"center",padding:"12px",border:`1.5px dashed ${C.grisBorde}`,borderRadius:"8px"}}>Sin intérpretes para este día</div>}
@@ -758,7 +776,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                 {/* Equipos AV */}
                 {form.modalidad!=="remoto"&&<div style={{marginTop:"14px"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
-                    <div style={{fontWeight:"700",color:C.verde}}>🔧 Equipos AV de este día</div>
+                    <div style={{fontWeight:"700",color:C.verde,display:"flex",alignItems:"center",gap:"5px"}}><IconAV size={16}/> Equipos AV de este día</div>
                     <button onClick={()=>addEq(dIdx)} style={S.btnP}>+ Agregar equipos</button>
                   </div>
                   {(dia.equipos||[]).map((eq,eIdx)=>(
@@ -903,7 +921,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           <HR/>
           {/* Badges tipo + modalidad */}
           <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center",marginBottom:"4px"}}>
-            <span style={{display:"inline-flex",alignItems:"center",padding:"5px 14px",borderRadius:"6px",fontSize:"13px",fontWeight:"600",color:(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c,background:(B_TIPO[evento.tipo]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>🎙 {evento.tipo}</span>
+            <span style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 14px",borderRadius:"6px",fontSize:"13px",fontWeight:"600",color:(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c,background:(B_TIPO[evento.tipo]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}><IconMic size={16}/> {evento.tipo}</span>
             <span style={{display:"inline-flex",alignItems:"center",padding:"5px 14px",borderRadius:"6px",fontSize:"13px",fontWeight:"600",color:(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c,background:(B_MOD[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c}`,whiteSpace:"nowrap"}}>
               {evento.modalidad==="presencial"?"📍":evento.modalidad==="hibrido"?"🔀":"💻"} {LBL[evento.modalidad]||evento.modalidad}
             </span>
@@ -942,7 +960,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             const entries=Object.entries(grupos);
             if(!entries.length) return null;
             return(<div style={{marginBottom:"4px"}}>
-              <SL t="🎙 Intérpretes"/>
+              <SL t={<><IconMic size={20}/> Intérpretes</>}/>
               {entries.map(([key,grupo])=>{
                 const bg=idiomaColor(grupo.idioma);
                 const bd=idiomaBorde(grupo.idioma);
@@ -1012,8 +1030,8 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                     });
                   })()}
                   {eqsDia.map((eq,eIdx)=>(
-                    <div key={eIdx} style={{fontSize:"13px",color:"#6B7280",padding:"6px 10px",background:"#F1F5F9",border:"1px solid #E2E8F0",borderRadius:"6px",marginTop:"6px"}}>
-                      🔧 {eq.tipo_equipo==="fijo"?"Sistema fijo":eq.tipo_equipo==="portatil"?"Sistema portátil":"Cabina portátil"}
+                    <div key={eIdx} style={{fontSize:"13px",color:"#6B7280",padding:"6px 10px",background:"#F1F5F9",border:"1px solid #E2E8F0",borderRadius:"6px",marginTop:"6px",display:"flex",alignItems:"center",gap:"6px"}}>
+                      <IconAV size={16}/> {eq.tipo_equipo==="fijo"?"Sistema fijo":eq.tipo_equipo==="portatil"?"Sistema portátil":"Cabina portátil"}
                       {eq.proveedor_nombre&&` · ${eq.proveedor_nombre}`}{eq.num_receptores>0&&` · ${eq.num_receptores} receptores`}{eq.num_cabinas>0&&` · ${eq.num_cabinas} cabinas`}
                     </div>
                   ))}
@@ -1023,7 +1041,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           })}
           {/* Equipos AV (un día) */}
           {!esMultidia&&(evento.evento_dias||[]).flatMap(d=>d.equipos_dia||[]).length>0&&<div style={{marginBottom:"12px",background:"#F1F5F9",borderRadius:"10px",padding:"12px 16px"}}>
-            <SL t="🔧 Equipos AV"/>
+            <SL t={<><IconAV size={20}/> Equipos AV</>}/>
             {(evento.evento_dias||[]).flatMap(d=>d.equipos_dia||[]).map((eq,eIdx)=>(
               <div key={eIdx} style={{fontSize:"13px",color:"#6B7280",marginBottom:"4px"}}>
                 {eq.tipo_equipo==="fijo"?"Sistema fijo":eq.tipo_equipo==="portatil"?"Sistema portátil":"Cabina portátil"}
@@ -1082,10 +1100,10 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
   const nP=(id)=>pares.find(p=>p.id===id)?.descripcion||"—";
   const dias=((evento.evento_dias||evento.dias||[]).sort((a,b)=>(a.orden||0)-(b.orden||0)));
   const CAMPOS_OPC=[
-    {k:"cliente",l:"🏢 Cliente"},{k:"evento",l:"📌 Evento"},{k:"tipo",l:"🎙 Tipo"},
+    {k:"cliente",l:"🏢 Cliente"},{k:"evento",l:"📌 Evento"},{k:"tipo",l:<><IconMic size={14}/> Tipo</>},
     {k:"modalidad",l:"🔄 Modalidad"},{k:"fecha",l:"📅 Fecha"},{k:"horario",l:"🕐 Horario"},
     {k:"jornada",l:"⏱ Jornada"},{k:"lugar",l:"📍 Lugar"},{k:"plataforma",l:"💻 Plataforma"},
-    {k:"interpretes",l:"🎙 Intérpretes"},{k:"equipos",l:"🔧 Equipos AV"},{k:"comentarios",l:"💬 Comentarios"},
+    {k:"interpretes",l:<><IconMic size={14}/> Intérpretes</>},{k:"equipos",l:<><IconAV size={14}/> Equipos AV</>},{k:"comentarios",l:"💬 Comentarios"},
   ];
   const DEFAULTS={cliente:true,evento:true,tipo:true,modalidad:true,fecha:true,horario:true,jornada:true,lugar:true,plataforma:true,interpretes:true,equipos:false,comentarios:false};
   const [campos,setCampos]=useState(()=>({...DEFAULTS,...JSON.parse(localStorage.getItem("mc_ficha_campos")||"{}")}));
@@ -1158,7 +1176,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
             </Sec>}
 
             {campos.tipo&&<Sec label="Tipo de interpretación" accent="#9C36B5">
-              <div style={{fontSize:"20px",fontWeight:"700",color:"#0F172A"}}>🎙 {evento.tipo}</div>
+              <div style={{fontSize:"20px",fontWeight:"700",color:"#0F172A",display:"flex",alignItems:"center",gap:"8px"}}><IconMic size={20}/> {evento.tipo}</div>
             </Sec>}
 
             {campos.modalidad&&<Sec label="Modalidad" accent="#C2255C">
@@ -1230,8 +1248,8 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
 
             {campos.equipos&&(evento.evento_dias||[]).flatMap(d=>d.equipos_dia||[]).length>0&&<Sec label="Equipos AV" accent="#E67700" fullWidth>
               {(evento.evento_dias||[]).flatMap(d=>d.equipos_dia||[]).map((eq,i)=>(
-                <div key={i} style={{fontSize:"15px",color:"#0F172A",marginBottom:"4px"}}>
-                  🔧 {eq.tipo_equipo==="fijo"?"Sistema fijo":eq.tipo_equipo==="portatil"?"Sistema portátil":"Cabina portátil"}
+                <div key={i} style={{fontSize:"15px",color:"#0F172A",marginBottom:"4px",display:"flex",alignItems:"center",gap:"6px"}}>
+                  <IconAV size={20}/> {eq.tipo_equipo==="fijo"?"Sistema fijo":eq.tipo_equipo==="portatil"?"Sistema portátil":"Cabina portátil"}
                   {eq.proveedor_nombre&&` · ${eq.proveedor_nombre}`}{eq.num_receptores>0&&` · ${eq.num_receptores} receptores`}
                 </div>
               ))}

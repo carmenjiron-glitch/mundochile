@@ -3,6 +3,15 @@ import Badge from "./Badge";
 import MultiDayPill from "./MultiDayPill";
 import PlatformChip from "./PlatformChip";
 
+const IconAV = ({size=24}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+    <line x1="8" y1="21" x2="16" y2="21"/>
+    <line x1="12" y1="17" x2="12" y2="21"/>
+  </svg>
+)
+
 const LBL_MODAL = { remoto: "Remoto", presencial: "Presencial", hibrido: "Híbrido" };
 const desdeISO = (s) => { const [y,m,d] = s.split("-"); return new Date(+y,+m-1,+d); };
 
@@ -125,8 +134,8 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
         );
       })}
       {tieneEquipos && (
-        <div style={{ fontSize: '11px', color: '#6B7280', marginTop: '4px' }}>
-          🔧 {provNombreEq || "Equipos AV"}
+        <div style={{ fontSize: '11px', color: '#6B7280', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <IconAV size={16}/> {provNombreEq || "Equipos AV"}
         </div>
       )}
     </div>
