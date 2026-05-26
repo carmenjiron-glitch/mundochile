@@ -1126,8 +1126,6 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
   const cliente=clientes.find(c=>c.id===evento.cliente_id);
   const esMultidia=evento.fecha_inicio!==evento.fecha_termino;
   const esPresencial=evento.modalidad==="presencial"||evento.modalidad==="hibrido";
-  const nI=(id)=>{const i=interpretes.find(x=>x.id===id);return i?`${i.nombre}${i.apellido?" "+i.apellido:""}`:""};
-  const nP=(id)=>pares.find(p=>p.id===id)?.descripcion||"—";
   const dias=((evento.evento_dias||evento.dias||[]).sort((a,b)=>(a.orden||0)-(b.orden||0)));
   const CAMPOS_OPC=[
     {k:"cliente",l:"🏢 Cliente"},{k:"evento",l:"📌 Evento"},{k:"tipo",l:<><IconMic size={14}/> Tipo</>},
@@ -1139,14 +1137,18 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
   const [campos,setCampos]=useState(()=>({...DEFAULTS,...JSON.parse(localStorage.getItem("mc_ficha_campos")||"{}")}));
   const toggleCampo=(k)=>{const n={...campos,[k]:!campos[k]};setCampos(n);localStorage.setItem("mc_ficha_campos",JSON.stringify(n));};
 
-  const imprimir=()=>{
+  const generarJPG=async()=>{
     const el=document.getElementById("ficha-mc");
-    const w=window.open("","_blank");
-    w.document.write(`<html><head><title>Ficha MundoChile</title><style>*{box-sizing:border-box}body{font-family:'Segoe UI',sans-serif;padding:24px;color:#0f172a;background:#f8fafc;-webkit-font-smoothing:antialiased}@media print{body{padding:16px}}</style></head><body>${el.innerHTML}</body></html>`);
-    w.document.close(); w.print();
+    if(!el) return;
+    try {
+      const canvas=await html2canvas(el,{scale:2,useCORS:true,backgroundColor:"#F8FAFC",logging:false});
+      const link=document.createElement("a");
+      link.download=`Ficha_${cliente?.nombre_empresa||"evento"}_${evento.fecha_inicio}.jpg`;
+      link.href=canvas.toDataURL("image/jpeg",0.95);
+      link.click();
+    } catch(e){console.error("Error generando JPG:",e);}
   };
 
-  // Sección con label bar + valor
   const Sec=({label,accent="#1E3A6E",children,fullWidth=false})=>(
     <div style={{borderRadius:"8px",overflow:"hidden",marginBottom:"12px",gridColumn:fullWidth?"1/-1":"auto"}}>
       <div style={{background:`${accent}18`,padding:"6px 16px",fontSize:"11px",fontWeight:"700",color:accent==="#1E3A6E"?"#1E3A6E":"#374151",textTransform:"uppercase",letterSpacing:"0.06em"}}>{label}</div>
@@ -1156,34 +1158,76 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
 
   const btFicha=(bg)=>({padding:"7px 16px",background:bg,color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"600",fontSize:"13px",fontFamily:"inherit"});
 
+  const metaFicha=(a)=>(a.nro_ot||a.nro_boleta||a.hora_presentacion)
+    ?<div style={{fontSize:"18px",color:"#6B7280",marginTop:"4px",display:"flex",gap:"10px",flexWrap:"wrap"}}>
+      {a.nro_ot&&<span>OT: {a.nro_ot}</span>}
+      {a.nro_boleta&&<span>Boleta: {a.nro_boleta}</span>}
+      {a.hora_presentacion&&<span>🕐 {a.hora_presentacion.slice(0,5)}</span>}
+    </div>:null;
+
+  const renderGrupos=(asignaciones)=>{
+    const grupos={};
+    (asignaciones||[]).forEach(a=>{
+      const par=pares.find(p=>p.id===a.par_id);
+      const interp=interpretes.find(x=>x.id===a.interprete_id);
+      if(!interp) return;
+      const key=par?.descripcion||"Sin par";
+      const idioma=par?.idioma_origen||"";
+      if(!grupos[key]) grupos[key]={idioma,items:[]};
+      grupos[key].items.push({interp,isHost:!!a.es_host_zoom,asig:a});
+    });
+    return Object.entries(grupos).map(([key,grupo])=>{
+      const bg=idiomaColor(grupo.idioma);
+      const bd=idiomaBorde(grupo.idioma);
+      const esPort=grupo.idioma==="Portugués";
+      const bubbleBg=esPort?"#FFFFFF":bg;
+      const bubbleColor=esPort?"#1B5E20":"#FFFFFF";
+      const bubbleBorder=esPort?"2px solid #1B5E20":`2px solid ${bd}`;
+      const titleColor=esPort?"#1B5E20":bg;
+      return(<div key={key} style={{marginBottom:"10px"}}>
+        <div style={{fontSize:"15px",fontWeight:"900",color:titleColor,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"5px",filter:"brightness(0.65)"}}>{key}</div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
+          {grupo.items.map(({interp,isHost},i)=>(
+            <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"8px 12px",borderRadius:"6px",fontSize:"18px",fontWeight:"500",color:bubbleColor,background:bubbleBg,border:bubbleBorder,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+              {isHost&&<span style={{fontSize:"17px"}}>🔑</span>}
+              <FlagImg idioma={grupo.idioma}/>
+              <span style={{overflow:"hidden",textOverflow:"ellipsis",color:bubbleColor}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
+            </span>
+          ))}
+        </div>
+        {grupo.items.map(({asig},i)=>metaFicha(asig)?<div key={i}>{metaFicha(asig)}</div>:null)}
+      </div>);
+    });
+  };
+
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.75)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(6px)",padding:"16px",overflowY:"auto"}}>
       <div style={{background:"#F8FAFC",borderRadius:"20px",width:"100%",maxWidth:"700px",maxHeight:"92vh",boxShadow:"0 24px 80px rgba(0,0,0,0.3)",display:"flex",flexDirection:"column"}}>
 
-        {/* Selector campos — compacto */}
+        {/* Selector campos */}
         <div style={{padding:"12px 20px",borderBottom:"1px solid #E2E8F0",background:"#fff",borderRadius:"20px 20px 0 0",flexShrink:0}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"8px"}}>
-            <div style={{fontWeight:"700",color:"#0F172A",fontSize:"14px"}}>Campos visibles</div>
+            <div style={{fontWeight:"500",color:"#0F172A",fontSize:"14px"}}>Campos visibles</div>
             <button onClick={onCerrar} style={{background:"none",border:"none",cursor:"pointer",fontSize:"20px",color:"#9CA3AF",lineHeight:1}}>✕</button>
           </div>
           <div style={{display:"flex",flexWrap:"wrap",gap:"6px"}}>
             {CAMPOS_OPC.map(({k,l})=><button key={k} onClick={()=>toggleCampo(k)}
-              style={{padding:"4px 12px",borderRadius:"20px",cursor:"pointer",fontSize:"12px",fontWeight:"600",fontFamily:"inherit",background:campos[k]?"#1E3A6E":"#E2E8F0",color:campos[k]?"#fff":"#6B7280",border:"none"}}>{l}</button>)}
+              style={{padding:"4px 12px",borderRadius:"20px",cursor:"pointer",fontSize:"12px",fontWeight:"400",fontFamily:"inherit",background:campos[k]?"#1E3A6E":"#E2E8F0",color:campos[k]?"#fff":"#6B7280",border:"none"}}>{l}</button>)}
           </div>
         </div>
 
-        {/* Ficha imprimible */}
+        {/* Ficha */}
         <div id="ficha-mc" ref={fichaRef} style={{flex:1,overflowY:"auto",padding:"16px 20px 20px",background:"#F8FAFC"}}>
 
-          {/* Header compacto ~70px */}
+          {/* Header */}
           <div style={{display:"flex",alignItems:"center",height:"64px",padding:"0 16px",borderRadius:"8px",background:"#1E3A6E",color:"#fff",marginBottom:"12px",flexShrink:0}}>
             <div style={{flexShrink:0,marginRight:"12px",display:"flex",alignItems:"center"}}>
-              <div style={{width:"58px",height:"58px",borderRadius:"50%",background:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",padding:"2px",boxShadow:"0 1px 4px rgba(0,0,0,0.15)"}}>
-                <img src={LOGO_SRC} alt="MundoChile" style={{width:"54px",height:"54px",objectFit:"contain",display:"block"}}/>
+              <div style={{width:"64px",height:"64px",borderRadius:"50%",background:"#FFFFFF",overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 2px 8px rgba(0,0,0,0.15)"}}>
+                <img src={LOGO_SRC} alt="MundoChile" style={{width:"58px",height:"58px",objectFit:"contain",borderRadius:"50%"}}/>
               </div>
             </div>
             <div style={{flex:1,minWidth:0}}>
-              <div style={{fontSize:"18px",fontWeight:"900",color:"#fff",letterSpacing:"0.04em",lineHeight:1}}>MUNDOCHILE</div>
+              <div style={{fontSize:"18px",fontWeight:"900",color:"#fff",letterSpacing:"0.04em",lineHeight:1}}>MundoChile</div>
               <div style={{fontSize:"10px",color:"rgba(255,255,255,0.70)",marginTop:"2px",letterSpacing:"0.05em"}}>TRANSLATIONS & INTERPRETERS</div>
             </div>
             <div style={{textAlign:"right",flexShrink:0}}>
@@ -1192,7 +1236,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
             </div>
           </div>
 
-          {/* Contenido: 90% — secciones con color */}
+          {/* Contenido */}
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 12px"}}>
 
             {campos.cliente&&<Sec label="Cliente" accent="#E03131" fullWidth>
@@ -1242,37 +1286,13 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
               <PlatformChip platform={evento.plataforma==="Zoom"?"Zoom MundoChile":evento.plataforma} isMundoChile={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")} extra={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")?evento.zoom_administrador:""}/>
             </Sec>}
 
-            {campos.interpretes&&(evento.asignaciones||[]).length>0&&<Sec label="Intérpretes" accent="#7048E8" fullWidth>
-              <div style={{display:"flex",flexWrap:"wrap",gap:"8px",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>
-                {evento.asignaciones.map((a,i)=>{
-                  const interp=interpretes.find(x=>x.id===a.interprete_id);
-                  const par=pares.find(p=>p.id===a.par_id);
-                  if(!interp) return null;
-                  return(
-                    <div key={i} style={{display:"flex",flexDirection:"column",gap:"4px"}}>
-                      <InterpreterRow interpreters={[{name:`${interp.nombre}${interp.apellido?" "+interp.apellido:""}`,language:par?.idioma_origen||"",isHost:!!a.es_host_zoom}]}/>
-                      <div style={{fontSize:"12px",color:"#6B7280",paddingLeft:"4px"}}>
-                        🌐 {nP(a.par_id)}
-                        {a.nro_ot&&<span> · OT: <strong>{a.nro_ot}</strong></span>}
-                        {a.nro_boleta&&<span> · Boleta: <strong>{a.nro_boleta}{a.es_boleta_adicional?" (B#)":""}</strong></span>}
-                        {a.hora_presentacion&&<span> · 🕐 <strong>{a.hora_presentacion.slice(0,5)}</strong></span>}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+            {campos.interpretes&&!esMultidia&&(evento.asignaciones||[]).length>0&&<Sec label="Intérpretes" accent="#7048E8" fullWidth>
+              {renderGrupos(evento.asignaciones)}
             </Sec>}
 
             {campos.interpretes&&esMultidia&&dias.map((dia,dIdx)=>(
               <Sec key={dIdx} label={`Día ${dIdx+1} de ${dias.length} — ${formatLargo(dia.fecha)} · ${dia.hora_inicio?.slice(0,5)}–${dia.hora_termino?.slice(0,5)} hrs`} accent="#7048E8" fullWidth>
-                <div style={{display:"flex",flexWrap:"wrap",gap:"8px",WebkitFontSmoothing:"antialiased"}}>
-                  {(dia.asignaciones_dia||[]).map((a,aIdx)=>{
-                    const interp=interpretes.find(x=>x.id===a.interprete_id);
-                    const par=pares.find(p=>p.id===a.par_id);
-                    if(!interp) return null;
-                    return <InterpreterRow key={aIdx} interpreters={[{name:`${interp.nombre}${interp.apellido?" "+interp.apellido:""}`,language:par?.idioma_origen||"",isHost:!!a.es_host_zoom}]}/>;
-                  })}
-                </div>
+                {renderGrupos(dia.asignaciones_dia||[])}
               </Sec>
             ))}
 
@@ -1290,13 +1310,12 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
             </Sec>}
 
           </div>
-          <div style={{fontSize:"10px",color:"#9CA3AF",textAlign:"center",marginTop:"8px",letterSpacing:"0.05em"}}>MUNDOCHILE · GESTIÓN DE INTERPRETACIONES · CONFIDENCIAL</div>
         </div>
 
         {/* Footer */}
         <div style={{padding:"12px 20px",borderTop:"1px solid #E2E8F0",display:"flex",gap:"8px",justifyContent:"center",flexWrap:"wrap",alignItems:"center",background:"#fff",borderRadius:"0 0 20px 20px",flexShrink:0}}>
-          <button onClick={imprimir} style={btFicha("#1E3A6E")}>🖨 Imprimir</button>
-          <button onClick={onCerrar} style={{...btFicha("#fff"),color:"#6B7280",border:"1px solid #E2E8F0"}}>Cerrar</button>
+          <button onClick={generarJPG} style={{...btFicha("#1E3A6E"),padding:"10px 20px",fontSize:"14px",fontWeight:"600"}}>📸 Generar Ficha JPG</button>
+          <button onClick={onCerrar} style={S.btnCancel}>× Cerrar</button>
         </div>
       </div>
     </div>
