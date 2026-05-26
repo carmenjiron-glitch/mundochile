@@ -1712,16 +1712,20 @@ export default function App() {
     setModalDetalle(data||ev);
   };
 
-  const editarEvento=(ev)=>{
-    const esDia=ev.fecha_inicio===ev.fecha_termino;
-    const diasForm=(ev.evento_dias||[])
+  const editarEvento=async(ev)=>{
+    const{data}=await sb.from("eventos")
+      .select("*, asignaciones(*), evento_dias(*, asignaciones_dia(*), equipos_dia(*))")
+      .eq("id",ev.id).single();
+    const evFresh=data||ev;
+    const esDia=evFresh.fecha_inicio===evFresh.fecha_termino;
+    const diasForm=(evFresh.evento_dias||[])
       .filter(d=>!esDia)
       .sort((a,b)=>a.orden-b.orden)
       .map(d=>({...d,asignaciones:(d.asignaciones_dia||[]).map(a=>({...asigVacia(),...a})),equipos:d.equipos_dia||[]}));
-    const equiposSingles=esDia&&(ev.evento_dias||[]).length>0?(ev.evento_dias[0].equipos_dia||[]):[];
-    const asigs=(ev.asignaciones||[]).map(a=>({...asigVacia(),...a}));
+    const equiposSingles=esDia&&(evFresh.evento_dias||[]).length>0?(evFresh.evento_dias[0].equipos_dia||[]):[];
+    const asigs=(evFresh.asignaciones||[]).map(a=>({...asigVacia(),...a}));
     setModalDetalle(null);
-    setModalEvento({modo:"editar",data:{...ev,asignaciones:asigs,dias:diasForm,equipos:equiposSingles}});
+    setModalEvento({modo:"editar",data:{...evFresh,asignaciones:asigs,dias:diasForm,equipos:equiposSingles}});
   };
 
   const eliminarEvento=async(id)=>{
