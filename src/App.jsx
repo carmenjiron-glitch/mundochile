@@ -864,7 +864,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             <div style={{display:"flex",flexDirection:"column",gap:"6px",alignItems:"flex-end",flexShrink:0}}>
               <div style={{display:"flex",gap:"6px",flexWrap:"wrap"}}>
                 <button onClick={onVerFicha} style={btnA("#1971C2")}>📄 Ficha</button>
-                <button onClick={onEditar} style={btnA("#E67700")}>✏️ Editar</button>
+                <button onClick={onEditar} style={btnA("#E67700")}><span style={{filter:"brightness(10)"}}>✏️</span> Editar</button>
                 <button onClick={onEliminar} style={btnA("#E03131")}>🗑 Eliminar</button>
               </div>
               <button onClick={onCerrar} style={{background:"#FFF5F5",border:"1.5px solid #FC8181",cursor:"pointer",fontSize:"13px",color:"#E53E3E",padding:"5px 14px",borderRadius:"6px",fontFamily:"inherit",fontWeight:"600"}}>✕ Cerrar</button>
@@ -1356,7 +1356,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
               </div>
             </div>
             <div style={{display:"flex",gap:"6px",flexShrink:0}}>
-              <button onClick={()=>{setEditando(i.id);setFormEdit({...i});}} style={S.btnEdit}>✏️ Editar</button>
+              <button onClick={()=>{setEditando(i.id);setFormEdit({...i});}} style={S.btnEdit}><span style={{filter:"brightness(10)"}}>✏️</span> Editar</button>
               <button onClick={async()=>{await sb.from("interpretes").update({activo:!i.activo}).eq("id",i.id);onActualizar();}}
                 style={{...S.btnP,background:i.activo?C.rojoClaro:C.verdeClaro,color:i.activo?C.rojo:C.verde,borderColor:i.activo?C.rojo:C.verde}}>
                 {i.activo?"Desactivar":"Activar"}
@@ -1405,7 +1405,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
                 </div>
               </div>
             </div>
-            <button onClick={()=>{setEditando(c.id);setFormEdit({...c});}} style={S.btnEdit}>✏️ Editar</button>
+            <button onClick={()=>{setEditando(c.id);setFormEdit({...c});}} style={S.btnEdit}><span style={{filter:"brightness(10)"}}>✏️</span> Editar</button>
           </div>);
         })}
       </>}
@@ -1487,7 +1487,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
               {l.direccion&&<div style={{fontSize:"13px",color:C.textoMed,marginTop:"3px"}}>{l.direccion}</div>}
             </div>
             <div style={{display:"flex",gap:"6px"}}>
-              <button onClick={()=>{setEditando(l.id);setFormEdit({...l});}} style={S.btnEdit}>✏️ Editar</button>
+              <button onClick={()=>{setEditando(l.id);setFormEdit({...l});}} style={S.btnEdit}><span style={{filter:"brightness(10)"}}>✏️</span> Editar</button>
               <button onClick={async()=>{await sb.from("lugares").update({activo:!l.activo}).eq("id",l.id);onActualizar();}}
                 style={{...S.btnP,background:l.activo?C.rojoClaro:C.verdeClaro,color:l.activo?C.rojo:C.verde,borderColor:l.activo?C.rojo:C.verde}}>
                 {l.activo?"Desactivar":"Activar"}
