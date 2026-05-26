@@ -510,7 +510,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
       <div style={{background:"#fff",borderRadius:"20px",width:"100%",maxWidth:"760px",maxHeight:"90vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,0.25)"}}>
         {/* Header */}
         <div style={{padding:"20px 24px",borderBottom:"none",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0,background:form.id?"#E67700":"#3a7bd5",borderRadius:"20px 20px 0 0"}}>
-          <div style={{fontSize:"18px",fontWeight:"600",color:"#FFFFFF"}}>{form.id?"✏️ Editar evento":"Nuevo evento"}</div>
+          <div style={{fontSize:"18px",fontWeight:"600",color:"#FFFFFF"}}>{form.id?<><span style={{filter:"brightness(10)"}}>✏️</span> Editar evento</>:"Nuevo evento"}</div>
           <button onClick={onCerrar} style={{background:"none",border:"none",cursor:"pointer",fontSize:"28px",color:"#FFFFFF",lineHeight:1,fontWeight:"300",opacity:1}}>×</button>
         </div>
         {/* Tabs */}
