@@ -315,10 +315,10 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
           const titleColor=esPort?"#0F3311":bg;
           return(
             <div key={key} style={{marginTop:"8px"}}>
-              <div style={{fontSize:"17px",fontWeight:"900",color:titleColor,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"5px"}}>{key}</div>
+              <div style={{fontSize:"13px",fontWeight:"900",color:titleColor,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"5px"}}>{key}</div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
                 {grupo.interpretes.map((interp,i)=>(
-                  <span key={i} title={`${interp.nombre}${interp.apellido?" "+interp.apellido:""}`} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"5px 8px",borderRadius:"20px",fontSize:"18px",fontWeight:"500",color:bubbleColor,background:bubbleBg,border:bubbleBorder,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",cursor:"default"}}>
+                  <span key={i} title={`${interp.nombre}${interp.apellido?" "+interp.apellido:""}`} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"4px 7px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:bubbleColor,background:bubbleBg,border:bubbleBorder,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",cursor:"default"}}>
                     {interp.isHost&&<span style={{fontSize:"11px",color:bubbleColor}}>🔑</span>}
                     <FlagImg idioma={grupo.idioma}/>
                     <span style={{overflow:"hidden",textOverflow:"ellipsis",color:bubbleColor}}>{nombreCorto(interp.nombre,interp.apellido)}</span>
@@ -1667,7 +1667,6 @@ function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,
   useEffect(()=>{if(todayRef.current)todayRef.current.scrollIntoView({behavior:"smooth",block:"start"});},[]);
   return (
     <div style={{padding:"16px 24px 80px",width:"100%",maxWidth:"100%"}}>
-      <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes}/>
       {!Object.keys(byWeek).length&&<div style={{textAlign:"center",padding:"80px 20px",color:"#fff"}}>
         <div style={{fontSize:"40px",marginBottom:"12px"}}>📅</div>
         <div style={{fontWeight:"700",fontSize:"18px",color:"#fff"}}>No hay eventos que mostrar</div>
@@ -1867,7 +1866,6 @@ export default function App() {
     for(let i=1;i<=total;i++) celdas.push(i);
     return (
       <div style={{padding:"16px 24px 80px",overflowX:"auto"}}>
-        <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes}/>
         <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:"4px",minWidth:"800px"}}>
           {DIAS_SEM.map(d=><div key={d} style={{textAlign:"center",fontWeight:"700",fontSize:"13px",color:"#FFFFFF",padding:"8px 0",textTransform:"uppercase"}}>{d}</div>)}
           {celdas.map((dia,i)=>{
@@ -1899,7 +1897,6 @@ export default function App() {
 
     if(esMobile) return (
       <div style={{padding:"10px 12px 80px"}}>
-        <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes}/>
         {evsFinSemana.length>0&&<div onClick={()=>{setDiaActual(toISO(diasFS[0]));setVista("dia");}} style={{background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.3)",borderRadius:"8px",padding:"8px 16px",marginBottom:"12px",cursor:"pointer",display:"flex",alignItems:"center",gap:"8px",color:"#fff",fontSize:"13px",fontWeight:"600"}}>
           ⚡ Ver {evsFinSemana.length} evento{evsFinSemana.length!==1?"s":""} este fin de semana
         </div>}
@@ -1925,7 +1922,6 @@ export default function App() {
 
     return (
       <div style={{padding:"16px 24px 80px"}}>
-        <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes}/>
         {evsFinSemana.length>0&&<div onClick={()=>{setDiaActual(toISO(diasFS[0]));setVista("dia");}} style={{background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.3)",borderRadius:"8px",padding:"8px 16px",marginBottom:"12px",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:"8px",color:"#fff",fontSize:"13px",fontWeight:"600"}}>
           ⚡ Ver {evsFinSemana.length} evento{evsFinSemana.length!==1?"s":""} este fin de semana
         </div>}
@@ -2025,6 +2021,9 @@ export default function App() {
 
       {/* ── CONTENIDO ── */}
       {pantalla==="calendario"&&<>
+        <div style={{position:"sticky",top:"100px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",padding:"6px 24px",width:"100%"}}>
+          <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes}/>
+        </div>
         {vista==="semana"&&renderSemana()}
         {vista==="dia"&&renderDia()}
         {vista==="mes"&&renderMes()}

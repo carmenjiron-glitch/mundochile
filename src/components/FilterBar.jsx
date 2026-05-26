@@ -32,10 +32,10 @@ export default function FilterBar({filters, onChange, interpreters=[]}) {
   return (
     <div style={{
       display:"flex",flexWrap:"nowrap",gap:"4px",
-      padding:"6px 12px",
-      background:"rgba(0,0,0,0.15)",borderRadius:"10px",
+      padding:"4px 0",
+      background:"transparent",borderRadius:"0",
       marginBottom:"0",alignItems:"center",
-      justifyContent:"center",overflowX:"auto"
+      justifyContent:"flex-start",overflowX:"auto",width:"100%"
     }}>
       <span style={LBL}>Estado</span>
       {[["","Todos"],["Facturación Pendiente","Pendiente"],["Facturado","Facturado"]].map(([v,l])=>(
