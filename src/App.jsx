@@ -2,7 +2,6 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { createClient } from "@supabase/supabase-js";
 import * as XLSX from "xlsx";
-import html2canvas from "html2canvas";
 import EventCard from "./components/ui/EventCard.jsx";
 import MultiDayPill from "./components/ui/MultiDayPill.jsx";
 import PlatformChip from "./components/ui/PlatformChip.jsx";
@@ -113,7 +112,7 @@ const HORAS = (() => { const h=[]; for(let x=7;x<=22;x++) for(let m of [0,15,30,
 // ─── ESTILOS BASE ─────────────────────────────────────────────────────────────
 const S = {
   inp: {width:"100%",padding:"9px 12px",border:`1.5px solid ${C.grisBorde}`,borderRadius:"8px",fontSize:"13px",color:C.texto,background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",height:"48px"},
-  sel: {width:"100%",padding:"9px 12px",border:`1.5px solid ${C.grisBorde}`,borderRadius:"8px",fontSize:"13px",color:C.texto,background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",cursor:"pointer",height:"48px"},
+  sel: {width:"100%",padding:"9px 12px",border:`1.5px solid ${C.grisBorde}`,borderRadius:"8px",fontSize:"15px",color:C.texto,background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",cursor:"pointer",height:"48px"},
   lbl: {fontSize:"11px",fontWeight:"600",color:"#383838",textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:"5px",display:"block"},
   fila:{display:"flex",gap:"16px",flexWrap:"wrap"},
   camp:{flex:"1",minWidth:"140px"},
@@ -1137,17 +1136,6 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
   const [campos,setCampos]=useState(()=>({...DEFAULTS,...JSON.parse(localStorage.getItem("mc_ficha_campos")||"{}")}));
   const toggleCampo=(k)=>{const n={...campos,[k]:!campos[k]};setCampos(n);localStorage.setItem("mc_ficha_campos",JSON.stringify(n));};
 
-  const generarJPG=async()=>{
-    const el=document.getElementById("ficha-mc");
-    if(!el) return;
-    try {
-      const canvas=await html2canvas(el,{scale:2,useCORS:true,backgroundColor:"#F8FAFC",logging:false});
-      const link=document.createElement("a");
-      link.download=`Ficha_${cliente?.nombre_empresa||"evento"}_${evento.fecha_inicio}.jpg`;
-      link.href=canvas.toDataURL("image/jpeg",0.95);
-      link.click();
-    } catch(e){console.error("Error generando JPG:",e);}
-  };
 
   const Sec=({label,accent="#1E3A6E",children,fullWidth=false})=>(
     <div style={{borderRadius:"8px",overflow:"hidden",marginBottom:"12px",gridColumn:fullWidth?"1/-1":"auto"}}>
@@ -1314,8 +1302,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
 
         {/* Footer */}
         <div style={{padding:"12px 20px",borderTop:"1px solid #E2E8F0",display:"flex",gap:"8px",justifyContent:"center",flexWrap:"wrap",alignItems:"center",background:"#fff",borderRadius:"0 0 20px 20px",flexShrink:0}}>
-          <button onClick={generarJPG} style={{...btFicha("#1E3A6E"),padding:"10px 20px",fontSize:"14px",fontWeight:"600"}}>📸 Generar Ficha JPG</button>
-          <button onClick={onCerrar} style={S.btnCancel}>× Cerrar</button>
+<button onClick={onCerrar} style={S.btnCancel}>× Cerrar</button>
         </div>
       </div>
     </div>
