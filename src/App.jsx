@@ -905,7 +905,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
     return acc;
   },[]);
   const metaRow=(a)=>(a.nro_ot||a.nro_boleta||a.hora_presentacion)
-    ?<div style={{fontSize:"12px",color:"#6B7280",marginTop:"4px",display:"flex",gap:"10px",flexWrap:"wrap"}}>
+    ?<div style={{fontSize:"18px",color:"#6B7280",marginTop:"4px",display:"flex",gap:"10px",flexWrap:"wrap"}}>
       {a.nro_ot&&<span>OT: {a.nro_ot}</span>}
       {a.nro_boleta&&<span>Boleta: {a.nro_boleta}</span>}
       {a.hora_presentacion&&<span>🕐 {a.hora_presentacion.slice(0,5)}</span>}
@@ -1000,11 +1000,11 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                 const bubbleBorder=esPort?"2px solid #1B5E20":`2px solid ${bd}`;
                 const titleColor=esPort?"#1B5E20":bg;
                 return(<div key={key} style={{marginBottom:"10px"}}>
-                  <div style={{fontSize:"10px",fontWeight:"900",color:titleColor,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"5px"}}>{key}</div>
+                  <div style={{fontSize:"15px",fontWeight:"900",color:titleColor,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"5px"}}>{key}</div>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
                     {grupo.items.map(({interp,isHost},i)=>(
-                      <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"5px 8px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",color:bubbleColor,background:bubbleBg,border:bubbleBorder,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
-                        {isHost&&<span style={{fontSize:"11px"}}>🔑</span>}
+                      <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"8px 12px",borderRadius:"20px",fontSize:"18px",fontWeight:"500",color:bubbleColor,background:bubbleBg,border:bubbleBorder,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                        {isHost&&<span style={{fontSize:"17px"}}>🔑</span>}
                         <FlagImg idioma={grupo.idioma}/>
                         <span style={{overflow:"hidden",textOverflow:"ellipsis",color:bubbleColor}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
                       </span>
@@ -1045,11 +1045,11 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                       const bubbleBorder=esPort?"2px solid #1B5E20":`2px solid ${bd}`;
                       const titleColor=esPort?"#1B5E20":bg;
                       return(<div key={key} style={{marginBottom:"8px"}}>
-                        <div style={{fontSize:"10px",fontWeight:"900",color:titleColor,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"4px"}}>{key}</div>
+                        <div style={{fontSize:"15px",fontWeight:"900",color:titleColor,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"4px"}}>{key}</div>
                         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"4px"}}>
                           {grupo.items.map(({interp,isHost},i)=>(
-                            <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"5px 8px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",color:bubbleColor,background:bubbleBg,border:bubbleBorder,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
-                              {isHost&&<span style={{fontSize:"11px"}}>🔑</span>}
+                            <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"8px 12px",borderRadius:"20px",fontSize:"18px",fontWeight:"500",color:bubbleColor,background:bubbleBg,border:bubbleBorder,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                              {isHost&&<span style={{fontSize:"17px"}}>🔑</span>}
                               <FlagImg idioma={grupo.idioma}/>
                               <span style={{overflow:"hidden",textOverflow:"ellipsis",color:bubbleColor}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
                             </span>
