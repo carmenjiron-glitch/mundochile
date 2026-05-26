@@ -36,6 +36,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
       name: `${interp.nombre}${interp.apellido ? " " + interp.apellido : ""}`,
       language: par?.idioma_origen || "",
       isHost: !!a.es_host_zoom,
+      languagePair: par?.descripcion || "",
     });
     return acc;
   }, []);
@@ -48,30 +49,30 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
       onClick={onClick}
       style={{
         background: '#FFFFFF',
-        borderLeft: `8px solid ${borderColor}`,
+        borderLeft: `7px solid ${borderColor}`,
         borderRadius: '0 10px 10px 0',
-        padding: '16px 18px',
+        padding: '18px 20px',
         marginBottom: '10px',
         boxShadow: '0 2px 10px rgba(0,0,0,0.10)',
         cursor: 'pointer',
         width: '100%',
         boxSizing: 'border-box',
-        transition: 'box-shadow 0.15s',
+        transition: 'box-shadow 0.15s, transform 0.15s',
       }}
-      onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 18px rgba(0,0,0,0.18)'}
-      onMouseLeave={e => e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.10)'}
+      onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 6px 24px rgba(0,0,0,0.22)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+      onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.10)'; e.currentTarget.style.transform = 'translateY(0)'; }}
     >
       <div style={{ fontSize: '22px', fontWeight: '800', color: '#0F172A', lineHeight: 1.2 }}>
         {cliente?.nombre_empresa || "—"}
       </div>
       {ev.nombre_evento && (
-        <div style={{ fontSize: '15px', fontWeight: '600', color: '#1E293B', marginTop: '2px' }}>
+        <div style={{ fontSize: '15px', fontWeight: '600', color: '#374151', marginTop: '2px' }}>
           {ev.nombre_evento}
         </div>
       )}
       {cliente?.nombre_contacto && (
-        <div style={{ fontSize: '13px', color: '#6B7280', fontStyle: 'italic', marginTop: '2px' }}>
-          {cliente.nombre_contacto}
+        <div style={{ fontSize: '14px', color: '#6B7280', fontStyle: 'italic', fontWeight: '500', marginTop: '2px' }}>
+          Contacto: {cliente.nombre_contacto}
         </div>
       )}
       <div style={{ margin: '8px 0' }} />
@@ -94,7 +95,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
         </div>
       )}
       {esPresencial && ev.lugar && (
-        <div style={{ fontSize: '12px', color: '#475569', marginTop: '6px' }}>📍 {ev.lugar}</div>
+        <div style={{ fontSize: '13px', color: '#475569', marginTop: '6px' }}>📍 {ev.lugar}</div>
       )}
       {interpRows.length > 0 && (
         <div style={{ marginTop: '8px' }}>

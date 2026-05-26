@@ -1852,8 +1852,8 @@ export default function App() {
   return (
     <div style={{fontFamily:"'Inter','Segoe UI',system-ui,sans-serif",minHeight:"100vh",background:"linear-gradient(135deg, #1a2a4a 0%, #1e3a6e 50%, #2563a8 100%)",color:"#FFFFFF",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",textRendering:"optimizeLegibility"}}>
       {/* ── TOPBAR ── */}
-      <div style={{position:"sticky",top:0,zIndex:100,background:"#162d57",borderBottom:"1px solid rgba(255,255,255,0.10)"}}>
-        <div style={{padding:"0 28px",display:"flex",alignItems:"center",justifyContent:"space-between",height:"100px",gap:"14px"}}>
+      <div style={{position:"sticky",top:0,zIndex:100,background:"#162654"}}>
+        <div style={{padding:"0 24px",display:"flex",alignItems:"center",justifyContent:"space-between",height:"96px",gap:"14px"}}>
           {/* IZQUIERDA: logo + brand */}
           <div style={{display:"flex",alignItems:"center",gap:"10px",flexShrink:0}}>
             <div style={{flexShrink:0,display:"flex",alignItems:"center"}}>
@@ -1863,7 +1863,7 @@ export default function App() {
             </div>
             <div>
               <div style={{fontWeight:"800",fontSize:"21px",color:"#FFFFFF",lineHeight:1,letterSpacing:"0.01em"}}>MundoChile</div>
-              <div style={{fontSize:"13px",color:"rgba(255,255,255,0.75)",marginTop:"3px"}}>Translations & Interpreters · Since 2003</div>
+              <div style={{fontSize:"11px",color:"rgba(255,255,255,0.70)",marginTop:"3px"}}>Translations & Interpreters · Since 2003</div>
             </div>
           </div>
           {/* CENTRO: tabs */}

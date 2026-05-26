@@ -5,8 +5,13 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  background-color: #1E3A6E;
+  background: linear-gradient(135deg, #1A2F5A 0%, #1e3a6e 50%, #2563a8 100%);
   color: #FFFFFF;
   min-height: 100vh;
   margin: 0;
+}
+
+@keyframes mcpulse {
+  0%,100% { opacity:0.3; transform:scale(0.8); }
+  50% { opacity:1; transform:scale(1.2); }
 }

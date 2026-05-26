@@ -8,7 +8,7 @@ export default function FilterBar({filters, onChange, interpreters=[]}) {
   const CHIP_INACTIVO = {
     padding:"4px 11px",borderRadius:"20px",cursor:"pointer",
     fontSize:"12px",fontWeight:"400",fontFamily:"inherit",
-    background:"rgba(255,255,255,0.10)",color:"rgba(255,255,255,0.60)",
+    background:"rgba(255,255,255,0.10)",color:"rgba(255,255,255,0.65)",
     border:"1px solid rgba(255,255,255,0.22)",whiteSpace:"nowrap"
   };
   const LBL = {
@@ -54,7 +54,7 @@ export default function FilterBar({filters, onChange, interpreters=[]}) {
         style={{
           background:"rgba(255,255,255,0.10)",color:"rgba(255,255,255,0.85)",
           border:"1px solid rgba(255,255,255,0.22)",borderRadius:"20px",
-          padding:"3px 8px",fontSize:"12px",maxWidth:"110px",
+          padding:"3px 8px",fontSize:"12px",maxWidth:"120px",
           flexShrink:1,cursor:"pointer",outline:"none"
         }}>
         <option value="" style={{color:"#000"}}>Todos</option>
