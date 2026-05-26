@@ -894,7 +894,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
         <div style={{overflowY:"auto",flex:1,padding:"24px 28px"}}>
           {/* Evento + Fecha + Horario */}
           {evento.nombre_evento&&<div style={{fontSize:"18px",fontWeight:"700",color:"#0F172A",marginBottom:"8px"}}>{evento.nombre_evento}</div>}
-          <div style={{fontSize:"15px",color:"#475569",marginBottom:"4px"}}>
+          <div style={{fontSize:"20px",fontWeight:"600",color:"#1E293B",marginBottom:"4px"}}>
             📅 {esMultidia?`${formatMedioES(evento.fecha_inicio)} → ${formatMedioES(evento.fecha_termino)}`:formatLargo(evento.fecha_inicio)}
           </div>
           <div style={{fontSize:"16px",fontWeight:"700",color:"#0F172A",marginBottom:"6px"}}>
