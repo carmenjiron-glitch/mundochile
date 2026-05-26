@@ -1162,7 +1162,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
     ?<div style={{fontSize:"18px",color:"#6B7280",marginTop:"4px",display:"flex",gap:"10px",flexWrap:"wrap"}}>
       {a.nro_ot&&<span>OT: {a.nro_ot}</span>}
       {a.nro_boleta&&<span>Boleta: {a.nro_boleta}</span>}
-      {a.hora_presentacion&&<span>🕐 {a.hora_presentacion.slice(0,5)}</span>}
+      {a.hora_presentacion&&<span style={{fontSize:"40px",display:"inline-flex",alignItems:"center",gap:"6px"}}><span style={{fontSize:"40px"}}>🕐</span> {a.hora_presentacion.slice(0,5)}</span>}
     </div>:null;
 
   const renderGrupos=(asignaciones)=>{
@@ -1223,7 +1223,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
           <div style={{display:"flex",alignItems:"center",height:"64px",padding:"0 16px",borderRadius:"8px",background:"#1E3A6E",color:"#fff",marginBottom:"12px",flexShrink:0}}>
             <div style={{flexShrink:0,marginRight:"12px",display:"flex",alignItems:"center"}}>
               <div style={{width:"64px",height:"64px",borderRadius:"50%",background:"#FFFFFF",overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 2px 8px rgba(0,0,0,0.15)"}}>
-                <img src={LOGO_SRC} alt="MundoChile" style={{width:"58px",height:"58px",objectFit:"contain",borderRadius:"50%"}}/>
+                <img src={LOGO_SRC} alt="MundoChile" style={{width:"56px",height:"56px",objectFit:"contain"}}/>
               </div>
             </div>
             <div style={{flex:1,minWidth:0}}>
