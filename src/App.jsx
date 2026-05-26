@@ -325,7 +325,7 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
                   </span>
                 ))}
               </div>
-              {(()=>{const hp=grupo.interpretes.find(i=>i.hora_presentacion)?.hora_presentacion;return hp?<div style={{fontSize:"9px",fontWeight:"500",color:"#475569",marginTop:"4px",display:"inline-flex",alignItems:"center",gap:"4px"}}>🕐 Presentación intérpretes: {hp.slice(0,5)} hrs</div>:null;})()}
+              {(()=>{const hp=grupo.interpretes.find(i=>i.hora_presentacion)?.hora_presentacion;return hp?<div style={{fontSize:"18px",fontWeight:"500",color:"#475569",marginTop:"4px",display:"inline-flex",alignItems:"center",gap:"4px"}}><span style={{fontSize:"18px"}}>🕐</span> Presentación intérpretes: {hp.slice(0,5)} hrs</div>:null;})()}
             </div>
           );
         });
