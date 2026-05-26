@@ -44,14 +44,14 @@ export const BADGE = {
 
 export const INTERP_LANG = {
   'Inglés':    {bg:'#4A90D9',border:'#2563A8',flag:'gb'},
-  'Francés':   {bg:'#002395',border:'#001570',flag:'fr'},
-  'Portugués': {bg:'#1565C0',border:'#0D47A1',flag:'br'},
-  'Español':   {bg:'#AA151B',border:'#750E12',flag:'es'},
+  'Francés':   {bg:'#8B0000',border:'#5C0000',flag:'fr'},
+  'Portugués': {bg:'#1B7A2F',border:'#0F4D1C',flag:'br'},
+  'Español':   {bg:'#C2820A',border:'#8B5E08',flag:'es'},
   'Alemán':    {bg:'#555555',border:'#333333',flag:'de'},
-  'Italiano':  {bg:'#009246',border:'#006330',flag:'it'},
+  'Italiano':  {bg:'#CC5500',border:'#993D00',flag:'it'},
   'Chino':     {bg:'#DE2910',border:'#9E1D0B',flag:'cn'},
-  'Japonés':   {bg:'#BC002D',border:'#84001F',flag:'jp'},
-  default:     {bg:'#4C6EF5',border:'#3451D1',flag:null},
+  'Japonés':   {bg:'#6A0DAD',border:'#4A0878',flag:'jp'},
+  default:     {bg:'#0C6E8C',border:'#084F65',flag:null},
 }
 
 // backwards compat for existing components
@@ -75,13 +75,13 @@ export const tokens = {
   },
   interpreter: {
     'Inglés':    { bg: '#4A90D9', border: '#2563A8', flag: 'gb' },
-    'Francés':   { bg: '#002395', border: '#001570', flag: 'fr' },
-    'Portugués': { bg: '#1565C0', border: '#0D47A1', flag: 'br' },
-    'Español':   { bg: '#AA151B', border: '#750E12', flag: 'es' },
+    'Francés':   { bg: '#8B0000', border: '#5C0000', flag: 'fr' },
+    'Portugués': { bg: '#1B7A2F', border: '#0F4D1C', flag: 'br' },
+    'Español':   { bg: '#C2820A', border: '#8B5E08', flag: 'es' },
     'Alemán':    { bg: '#555555', border: '#333333', flag: 'de' },
-    'Italiano':  { bg: '#009246', border: '#006330', flag: 'it' },
+    'Italiano':  { bg: '#CC5500', border: '#993D00', flag: 'it' },
     'Chino':     { bg: '#DE2910', border: '#9E1D0B', flag: 'cn' },
-    'Japonés':   { bg: '#BC002D', border: '#84001F', flag: 'jp' },
-    default:     { bg: '#4C6EF5', border: '#3451D1', flag: null },
+    'Japonés':   { bg: '#6A0DAD', border: '#4A0878', flag: 'jp' },
+    default:     { bg: '#0C6E8C', border: '#084F65', flag: null },
   },
 }

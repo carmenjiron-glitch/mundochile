@@ -28,8 +28,8 @@ const C = {
 const PALETA_CLIENTE=["#E03131","#C2255C","#9C36B5","#3B5BDB","#1971C2","#0C8599","#2F9E44","#E67700","#D9480F","#5C7CFA","#F06595","#20C997"];
 const colorCliente=(id)=>PALETA_CLIENTE[(id||0)%12];
 const avatarColor=(str)=>PALETA_CLIENTE[(str||"").split("").reduce((a,c)=>a+c.charCodeAt(0),0)%12];
-const IDIOMA_COLOR={"Inglés":"#4A90D9","Francés":"#002395","Portugués":"#1565C0","Español":"#AA151B","Alemán":"#555555","Italiano":"#009246","Chino":"#DE2910","Japonés":"#BC002D"};
-const IDIOMA_BORDE={"Inglés":"#2563a8","Francés":"#001570","Portugués":"#0D47A1","Español":"#750e12","Alemán":"#333333","Italiano":"#006330","Chino":"#9e1d0b","Japonés":"#84001f"};
+const IDIOMA_COLOR={"Inglés":"#4A90D9","Francés":"#8B0000","Portugués":"#1B7A2F","Español":"#C2820A","Alemán":"#555555","Italiano":"#CC5500","Chino":"#DE2910","Japonés":"#6A0DAD"};
+const IDIOMA_BORDE={"Inglés":"#2563A8","Francés":"#5C0000","Portugués":"#0F4D1C","Español":"#8B5E08","Alemán":"#333333","Italiano":"#993D00","Chino":"#9E1D0B","Japonés":"#4A0878"};
 const IDIOMA_FLAG={"Inglés":"🇬🇧","Francés":"🇫🇷","Portugués":"🇧🇷","Español":"🇪🇸","Alemán":"🇩🇪","Italiano":"🇮🇹","Chino":"🇨🇳","Japonés":"🇯🇵"};
 const idiomaColor=(idioma)=>IDIOMA_COLOR[idioma]||"#4C6EF5";
 const idiomaBorde=(idioma)=>IDIOMA_BORDE[idioma]||"#3451d1";
