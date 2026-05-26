@@ -285,15 +285,20 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
         return Object.entries(grupos).map(([key,grupo])=>{
           const bg=idiomaColor(grupo.idioma);
           const bd=idiomaBorde(grupo.idioma);
+          const esPort=grupo.idioma==="Portugués";
+          const bubbleBg=esPort?"#FFFFFF":bg;
+          const bubbleColor=esPort?"#1B5E20":"#FFFFFF";
+          const bubbleBorder=esPort?"2px solid #1B5E20":`2px solid ${bd}`;
+          const titleColor=esPort?"#1B5E20":bg;
           return(
             <div key={key} style={{marginTop:"8px"}}>
-              <div style={{fontSize:"10px",fontWeight:"800",color:bg,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"5px"}}>{key}</div>
+              <div style={{fontSize:"10px",fontWeight:"900",color:titleColor,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"5px"}}>{key}</div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
                 {grupo.interpretes.map((interp,i)=>(
-                  <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"5px 8px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",color:"#FFFFFF",background:bg,border:`2px solid ${bd}`,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
-                    {interp.isHost&&<span style={{fontSize:"11px"}}>🔑</span>}
+                  <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"5px 8px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",color:bubbleColor,background:bubbleBg,border:bubbleBorder,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                    {interp.isHost&&<span style={{fontSize:"11px",color:bubbleColor}}>🔑</span>}
                     <FlagImg idioma={grupo.idioma}/>
-                    <span style={{overflow:"hidden",textOverflow:"ellipsis"}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
+                    <span style={{overflow:"hidden",textOverflow:"ellipsis",color:bubbleColor}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
                   </span>
                 ))}
               </div>
@@ -923,11 +928,45 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           </div>}
           {(esPresencial&&evento.lugar)||(!esPresencial&&evento.plataforma)?<HR/>:null}
           {/* Intérpretes (un día) */}
-          {asignaciones.length>0&&<div style={{marginBottom:"4px"}}>
-            <SL t="🎙 Intérpretes"/>
-            <InterpreterRow interpreters={interpRows(asignaciones)}/>
-            {asignaciones.map((a,i)=><div key={i}>{metaRow(a)}</div>)}
-          </div>}
+          {(()=>{
+            const grupos={};
+            asignaciones.forEach(a=>{
+              const par=pares.find(p=>p.id===a.par_id);
+              const interp=interpretes.find(x=>x.id===a.interprete_id);
+              if(!interp) return;
+              const key=par?.descripcion||"Sin par";
+              const idioma=par?.idioma_origen||"";
+              if(!grupos[key]) grupos[key]={idioma,items:[]};
+              grupos[key].items.push({interp,isHost:!!a.es_host_zoom,asig:a});
+            });
+            const entries=Object.entries(grupos);
+            if(!entries.length) return null;
+            return(<div style={{marginBottom:"4px"}}>
+              <SL t="🎙 Intérpretes"/>
+              {entries.map(([key,grupo])=>{
+                const bg=idiomaColor(grupo.idioma);
+                const bd=idiomaBorde(grupo.idioma);
+                const esPort=grupo.idioma==="Portugués";
+                const bubbleBg=esPort?"#FFFFFF":bg;
+                const bubbleColor=esPort?"#1B5E20":"#FFFFFF";
+                const bubbleBorder=esPort?"2px solid #1B5E20":`2px solid ${bd}`;
+                const titleColor=esPort?"#1B5E20":bg;
+                return(<div key={key} style={{marginBottom:"10px"}}>
+                  <div style={{fontSize:"10px",fontWeight:"900",color:titleColor,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"5px"}}>{key}</div>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
+                    {grupo.items.map(({interp,isHost},i)=>(
+                      <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"5px 8px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",color:bubbleColor,background:bubbleBg,border:bubbleBorder,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                        {isHost&&<span style={{fontSize:"11px"}}>🔑</span>}
+                        <FlagImg idioma={grupo.idioma}/>
+                        <span style={{overflow:"hidden",textOverflow:"ellipsis",color:bubbleColor}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
+                      </span>
+                    ))}
+                  </div>
+                  {grupo.items.map(({asig},i)=>metaRow(asig)?<div key={i}>{metaRow(asig)}</div>:null)}
+                </div>);
+              })}
+            </div>);
+          })()}
           {/* Intérpretes y equipos por día (multidía) */}
           {esMultidia&&dias.map((dia,dIdx)=>{
             const asigsDia=dia.asignaciones_dia||[],eqsDia=dia.equipos_dia||[];
@@ -938,8 +977,40 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                   📅 Día {dIdx+1} — {formatLargo(dia.fecha)} · {dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs
                 </div>
                 <div style={{padding:"12px 16px"}}>
-                  <InterpreterRow interpreters={interpRows(asigsDia)}/>
-                  {asigsDia.map((a,ai)=><div key={ai}>{metaRow(a)}</div>)}
+                  {(()=>{
+                    const gDia={};
+                    asigsDia.forEach(a=>{
+                      const par=pares.find(p=>p.id===a.par_id);
+                      const interp=interpretes.find(x=>x.id===a.interprete_id);
+                      if(!interp) return;
+                      const key=par?.descripcion||"Sin par";
+                      const idioma=par?.idioma_origen||"";
+                      if(!gDia[key]) gDia[key]={idioma,items:[]};
+                      gDia[key].items.push({interp,isHost:!!a.es_host_zoom,asig:a});
+                    });
+                    return Object.entries(gDia).map(([key,grupo])=>{
+                      const bg=idiomaColor(grupo.idioma);
+                      const bd=idiomaBorde(grupo.idioma);
+                      const esPort=grupo.idioma==="Portugués";
+                      const bubbleBg=esPort?"#FFFFFF":bg;
+                      const bubbleColor=esPort?"#1B5E20":"#FFFFFF";
+                      const bubbleBorder=esPort?"2px solid #1B5E20":`2px solid ${bd}`;
+                      const titleColor=esPort?"#1B5E20":bg;
+                      return(<div key={key} style={{marginBottom:"8px"}}>
+                        <div style={{fontSize:"10px",fontWeight:"900",color:titleColor,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"4px"}}>{key}</div>
+                        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"4px"}}>
+                          {grupo.items.map(({interp,isHost},i)=>(
+                            <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"5px 8px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",color:bubbleColor,background:bubbleBg,border:bubbleBorder,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                              {isHost&&<span style={{fontSize:"11px"}}>🔑</span>}
+                              <FlagImg idioma={grupo.idioma}/>
+                              <span style={{overflow:"hidden",textOverflow:"ellipsis",color:bubbleColor}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
+                            </span>
+                          ))}
+                        </div>
+                        {grupo.items.map(({asig},i)=>metaRow(asig)?<div key={i}>{metaRow(asig)}</div>:null)}
+                      </div>);
+                    });
+                  })()}
                   {eqsDia.map((eq,eIdx)=>(
                     <div key={eIdx} style={{fontSize:"13px",color:"#6B7280",padding:"6px 10px",background:"#F1F5F9",border:"1px solid #E2E8F0",borderRadius:"6px",marginTop:"6px"}}>
                       🔧 {eq.tipo_equipo==="fijo"?"Sistema fijo":eq.tipo_equipo==="portatil"?"Sistema portátil":"Cabina portátil"}

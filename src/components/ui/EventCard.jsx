@@ -104,15 +104,20 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
       )}
       {gruposEntries.map(([key, grupo]) => {
         const t = INTERP_LANG[grupo.idioma] || INTERP_LANG.default;
+        const esPort = grupo.idioma === 'Portugués';
+        const bubbleBg = esPort ? '#FFFFFF' : t.bg;
+        const bubbleColor = esPort ? '#1B5E20' : '#FFFFFF';
+        const bubbleBorder = esPort ? '2px solid #1B5E20' : `2px solid ${t.border}`;
+        const titleColor = esPort ? '#1B5E20' : t.bg;
         return (
           <div key={key} style={{ marginTop: '8px' }}>
-            <div style={{ fontSize: '10px', fontWeight: '800', color: t.bg, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '5px' }}>{key}</div>
+            <div style={{ fontSize: '10px', fontWeight: '900', color: titleColor, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '5px' }}>{key}</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5px' }}>
               {grupo.interpretes.map((interp, i) => (
-                <span key={i} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '5px', padding: '5px 8px', borderRadius: '20px', fontSize: '12px', fontWeight: '500', color: '#FFFFFF', background: t.bg, border: `2px solid ${t.border}`, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span key={i} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '5px', padding: '5px 8px', borderRadius: '20px', fontSize: '12px', fontWeight: '500', color: bubbleColor, background: bubbleBg, border: bubbleBorder, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {interp.isHost && <span style={{ fontSize: '11px' }}>🔑</span>}
                   <FlagImg idioma={grupo.idioma} />
-                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{interp.nombre}{interp.apellido ? ' ' + interp.apellido : ''}</span>
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', color: bubbleColor }}>{interp.nombre}{interp.apellido ? ' ' + interp.apellido : ''}</span>
                 </span>
               ))}
             </div>
