@@ -194,7 +194,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
       {/* Badges tipo + modalidad */}
       <div style={{ display:"flex", gap:5, flexWrap:"wrap", alignItems:"center" }}>
-        <Chip label={ev.tipo} emoji={ev.tipo==="Simultánea"?"🎤 ":ev.tipo==="Consecutiva"?"🎤 ":"🤫 "} />
+        <Chip label={ev.tipo} emoji={ev.tipo==="Simultánea"?"🎙️ ":ev.tipo==="Consecutiva"?"🎤 ":"🤫 "} />
         <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?"📍 ":ev.modalidad==="hibrido"?"🔀 ":"💻 "} />
       </div>
 
