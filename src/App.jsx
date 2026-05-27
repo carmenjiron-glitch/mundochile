@@ -312,9 +312,13 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
           const bubbleColor=esPort?"#0F3311":"#FFFFFF";
           const bubbleBorder=esPort?"2px solid #0F3311":`2px solid ${bd}`;
           const titleColor=esPort?"#0F3311":bg;
+          const hp=grupo.interpretes.find(i=>i.hora_presentacion)?.hora_presentacion;
           return(
             <div key={key} style={{marginTop:"8px"}}>
-              <div style={{fontSize:"15px",fontWeight:"500",color:titleColor,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"5px",filter:"brightness(0.65)"}}>{key}</div>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"6px"}}>
+                <span style={{fontSize:"12px",fontWeight:"600",color:titleColor,textTransform:"uppercase",letterSpacing:"0.06em",filter:"brightness(0.65)"}}>{key}</span>
+                {hp&&<span style={{fontSize:"12px",color:"#6B7280",display:"flex",alignItems:"center",gap:"4px"}}>🕐 {hp.slice(0,5)} hrs</span>}
+              </div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
                 {grupo.interpretes.map((interp,i)=>(
                   <span key={i} title={`${interp.nombre}${interp.apellido?" "+interp.apellido:""}`} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:bubbleColor,background:bubbleBg,border:bubbleBorder,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",cursor:"default"}}>
@@ -324,7 +328,6 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
                   </span>
                 ))}
               </div>
-              {(()=>{const hp=grupo.interpretes.find(i=>i.hora_presentacion)?.hora_presentacion;return hp?<div style={{fontSize:"11px",fontWeight:"500",color:"#475569",marginTop:"4px",display:"inline-flex",alignItems:"center",gap:"4px"}}><span style={{fontSize:"11px"}}>🕐</span> Presentación intérpretes: {hp.slice(0,5)} hrs</div>:null;})()}
             </div>
           );
         });
@@ -903,11 +906,10 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
     acc.push({name:`${interp.nombre}${interp.apellido?" "+interp.apellido:""}`,language:par?.idioma_origen||"",isHost:!!a.es_host_zoom});
     return acc;
   },[]);
-  const metaRow=(a)=>(a.nro_ot||a.nro_boleta||a.hora_presentacion)
-    ?<div style={{fontSize:"14px",color:"#6B7280",marginTop:"4px",display:"flex",gap:"10px",flexWrap:"wrap",alignItems:"center"}}>
+  const metaRow=(a)=>(a.nro_ot||a.nro_boleta)
+    ?<div style={{fontSize:"13px",color:"#6B7280",marginTop:"4px",display:"flex",gap:"10px",flexWrap:"wrap",alignItems:"center"}}>
       {a.nro_ot&&<span>OT: {a.nro_ot}</span>}
       {a.nro_boleta&&<span>Boleta: {a.nro_boleta}</span>}
-      {a.hora_presentacion&&<span style={{fontSize:"15px"}}><span style={{fontSize:"15px"}}>🕐</span> {a.hora_presentacion.slice(0,5)}</span>}
     </div>:null;
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.65)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(4px)",padding:"16px"}}>
@@ -998,8 +1000,12 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                 const bubbleColor=esPort?"#1B5E20":"#FFFFFF";
                 const bubbleBorder=esPort?"2px solid #1B5E20":`2px solid ${bd}`;
                 const titleColor=esPort?"#1B5E20":bg;
-                return(<div key={key} style={{marginBottom:"10px"}}>
-                  <div style={{fontSize:"13px",fontWeight:"500",color:titleColor,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"5px"}}>{key}</div>
+                const hp=grupo.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
+                return(<div key={key} style={{marginBottom:"12px"}}>
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"6px"}}>
+                    <span style={{fontSize:"12px",fontWeight:"600",color:titleColor,textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
+                    {hp&&<span style={{fontSize:"12px",color:"#6B7280",display:"flex",alignItems:"center",gap:"4px"}}>🕐 {hp.slice(0,5)} hrs</span>}
+                  </div>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
                     {grupo.items.map(({interp,isHost},i)=>(
                       <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:bubbleColor,background:bubbleBg,border:bubbleBorder,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
@@ -1043,8 +1049,12 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                       const bubbleColor=esPort?"#1B5E20":"#FFFFFF";
                       const bubbleBorder=esPort?"2px solid #1B5E20":`2px solid ${bd}`;
                       const titleColor=esPort?"#1B5E20":bg;
-                      return(<div key={key} style={{marginBottom:"8px"}}>
-                        <div style={{fontSize:"13px",fontWeight:"500",color:titleColor,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"4px"}}>{key}</div>
+                      const hp=grupo.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
+                      return(<div key={key} style={{marginBottom:"12px"}}>
+                        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"6px"}}>
+                          <span style={{fontSize:"12px",fontWeight:"600",color:titleColor,textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
+                          {hp&&<span style={{fontSize:"12px",color:"#6B7280",display:"flex",alignItems:"center",gap:"4px"}}>🕐 {hp.slice(0,5)} hrs</span>}
+                        </div>
                         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"4px"}}>
                           {grupo.items.map(({interp,isHost},i)=>(
                             <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:bubbleColor,background:bubbleBg,border:bubbleBorder,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
