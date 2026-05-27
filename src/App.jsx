@@ -1868,6 +1868,7 @@ export default function App() {
     if(cargando) return "Cargando…";
     if(vista==="dia"){const n=evsDia(diaActual).length;return `${n} evento${n!==1?"s":""}`;}
     if(vista==="semana"){const semIni=toISO(diasSemana[0]);const semFin=toISO(diasSemana[6]);const n=eventosFiltrados.filter(e=>e.fecha_inicio<=semFin&&e.fecha_termino>=semIni).length;return `${n} evento${n!==1?"s":""} esta semana`;}
+    if(vista==="mes"){const mv=new Date();mv.setMonth(mv.getMonth()+mesOff);const n=eventosFiltrados.filter(e=>{const f=desdeISO(e.fecha_inicio);return f.getFullYear()===mv.getFullYear()&&f.getMonth()===mv.getMonth();}).length;return `${n} evento${n!==1?"s":""}${hayFiltros?" (filtrado)":""}`;  }
     const n=eventosFiltrados.length;return `${n} evento${n!==1?"s":""}${hayFiltros?" (filtrado)":""}`;
   };
 
