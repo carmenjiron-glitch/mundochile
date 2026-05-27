@@ -63,7 +63,7 @@ const Chip = ({ label, emoji }) => {
     <span style={{
       display:"inline-flex", alignItems:"center", gap:4,
       padding:"4px 10px", borderRadius:20,
-      fontSize:12, fontWeight:500,
+      fontSize:12, fontWeight:700,
       color:s.c, background:s.bg, border:`1.5px solid ${s.b}`,
       whiteSpace:"nowrap", lineHeight:1.4,
     }}>
@@ -166,7 +166,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                 display:"inline-flex", alignItems:"center", gap:4,
                 padding:"3px 8px", borderRadius:20,
                 background:"#E8F4FD", color:"#1971C2",
-                fontSize:11, fontWeight:600, lineHeight:1.4,
+                fontSize:12, fontWeight:700, lineHeight:1.4,
                 cursor: esUltimo ? "default" : "pointer",
                 border:"1px solid #BAD7F0",
                 whiteSpace:"nowrap", flexShrink:0,
@@ -257,7 +257,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                   style={{
                     display:"inline-flex", alignItems:"center", justifyContent:"center",
                     gap:5, padding:"4px 10px", borderRadius:20,
-                    fontSize:12, fontWeight:500, lineHeight:1.4,
+                    fontSize:12, fontWeight:700, lineHeight:1.4,
                     color, background:bg, border,
                     overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
                     cursor:"default",
