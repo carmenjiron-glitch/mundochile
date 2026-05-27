@@ -33,13 +33,14 @@ const IconAV = ({ size = 14 }) => (
 );
 
 // ── Bandera ───────────────────────────────────────────────────────────────────
-const Flag = ({ idioma }) => {
+const Flag = ({ idioma, size = 20 }) => {
+  const h = Math.round(size * 0.75);
   const t = INTERP_LANG[idioma] || INTERP_LANG.default;
-  if (!t.flag) return <span style={{ fontSize: 15 }}>🌐</span>;
+  if (!t.flag) return <span style={{ fontSize: h }}>🌐</span>;
   return (
     <img
       src={`https://flagcdn.com/28x21/${t.flag}.png`}
-      style={{ width: 20, height: 15, objectFit: "cover", borderRadius: 2, flexShrink: 0 }}
+      style={{ width: size, height: h, objectFit: "cover", borderRadius: 2, flexShrink: 0 }}
       alt={idioma}
     />
   );
@@ -233,11 +234,14 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
       {/* Intérpretes agrupados */}
       {Object.entries(grupos).map(([key, grupo]) => {
         const pillClr = IDIOMA_PILL_CLR[grupo.idioma] || "#4C6EF5";
-        const bg      = solidPill ? pillClr  : "#FFFFFF";
-        const color   = solidPill ? "#FFFFFF" : "#1A1A1A";
+        const bg      = "#FFFFFF";
+        const color   = "#1A1A1A";
         const border  = solidPill ? `2px solid ${pillClr}` : `3px solid ${pillClr}`;
         const titleC  = pillClr;
         const hp      = grupo.items.find(i => i.hora)?.hora;
+        const pillPad = solidPill ? "2px 6px" : "4px 10px";
+        const pillFs  = solidPill ? 10 : 15;
+        const flagSz  = solidPill ? 19 : 20;
 
         return (
           <div key={key} style={{ marginTop:10 }}>
@@ -258,15 +262,15 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                   title={`${interp.nombre}${interp.apellido ? " " + interp.apellido : ""}`}
                   style={{
                     display:"inline-flex", alignItems:"center", justifyContent:"center",
-                    gap:5, padding:"4px 10px", borderRadius:20,
-                    fontSize:15, fontWeight:700, lineHeight:1.4,
+                    gap:5, padding:pillPad, borderRadius:20,
+                    fontSize:pillFs, fontWeight:700, lineHeight:1.4,
                     color, background:bg, border,
                     overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
                     cursor:"default",
                   }}
                 >
                   {interp.isHost && <span style={{ fontSize:11 }}>🔑</span>}
-                  <Flag idioma={grupo.idioma} />
+                  <Flag idioma={grupo.idioma} size={flagSz} />
                   <span style={{ overflow:"hidden", textOverflow:"ellipsis", color }}>
                     {nombreCorto(interp.nombre, interp.apellido)}
                   </span>
