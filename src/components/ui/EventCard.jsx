@@ -157,7 +157,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
     >
       {/* Nombre cliente + pill multidía */}
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:8, marginBottom:4 }}>
-        <div style={{ fontSize:29, fontWeight:600, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", flex:1 }}>
+        <div style={{ fontSize:19, fontWeight:600, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", flex:1 }}>
           {cliente?.nombre_empresa || "—"}
         </div>
         {diaXdeY && (() => {
@@ -192,7 +192,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
       {/* Contacto */}
       {cliente?.nombre_contacto && (
-        <div style={{ fontSize:19, color:"#6B7280", fontStyle:"italic", marginTop:2 }}>
+        <div style={{ fontSize:12, color:"#6B7280", fontStyle:"italic", marginTop:2 }}>
           Contacto: {cliente.nombre_contacto}
         </div>
       )}
