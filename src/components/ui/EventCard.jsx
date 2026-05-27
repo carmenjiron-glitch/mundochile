@@ -35,11 +35,11 @@ const IconAV = ({ size = 14 }) => (
 // ── Bandera ───────────────────────────────────────────────────────────────────
 const Flag = ({ idioma }) => {
   const t = INTERP_LANG[idioma] || INTERP_LANG.default;
-  if (!t.flag) return <span style={{ fontSize: 12 }}>🌐</span>;
+  if (!t.flag) return <span style={{ fontSize: 15 }}>🌐</span>;
   return (
     <img
       src={`https://flagcdn.com/28x21/${t.flag}.png`}
-      style={{ width: 16, height: 12, objectFit: "cover", borderRadius: 2, flexShrink: 0 }}
+      style={{ width: 20, height: 15, objectFit: "cover", borderRadius: 2, flexShrink: 0 }}
       alt={idioma}
     />
   );
@@ -259,7 +259,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                   style={{
                     display:"inline-flex", alignItems:"center", justifyContent:"center",
                     gap:5, padding:"4px 10px", borderRadius:20,
-                    fontSize:12, fontWeight:700, lineHeight:1.4,
+                    fontSize:15, fontWeight:700, lineHeight:1.4,
                     color, background:bg, border,
                     overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
                     cursor:"default",
