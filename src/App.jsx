@@ -336,7 +336,7 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
 }
 
 // ─── MODAL EVENTO ─────────────────────────────────────────────────────────────
-function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugares=[],contactos=[],todos_eventos,perfil,onGuardar,onCerrar,onNuevoCliente,onNuevoInterprete,onLugarCreado}) {
+function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugares=[],contactos=[],todos_eventos,perfil,onGuardar,onCerrar,onNuevoCliente,onNuevoContacto,onNuevoInterprete,onLugarCreado}) {
   const [form,setForm]=useState(()=>eventoInicial?JSON.parse(JSON.stringify(eventoInicial)):evVacio());
   const [tab,setTab]=useState("general");
   const [guardando,setGuardando]=useState(false);
@@ -583,7 +583,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                   <option value="">Seleccionar contacto…</option>
                   {contactos.filter(c=>c.cliente_id===Number(form.cliente_id)&&c.activo!==false).map(c=><option key={c.id} value={c.id}>{c.nombre}{c.cargo?` — ${c.cargo}`:""}</option>)}
                 </select>
-                <button onClick={()=>setModalNuevoContacto({cliente_id:form.cliente_id})} style={{padding:"0",width:"42px",height:"42px",background:"#3B82F6",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"20px",fontWeight:"300",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,lineHeight:1}}>+</button>
+                <button onClick={()=>onNuevoContacto({cliente_id:form.cliente_id})} style={{padding:"0",width:"42px",height:"42px",background:"#3B82F6",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"20px",fontWeight:"300",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,lineHeight:1}}>+</button>
               </div>
             </div>}
             {/* Nombre del evento */}
@@ -2074,7 +2074,7 @@ export default function App() {
       {pantalla==="config"&&esAdmin&&<PantallaConfig clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} onActualizar={cargarDatos} perfil={perfil}/>}
 
       {/* ── MODALES ── */}
-      {modalEvento&&<ModalEvento eventoInicial={modalEvento.data} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} contactos={contactos} todos_eventos={eventos} perfil={perfil} onGuardar={()=>{setModalEvento(null);cargarDatos();addToast("Evento guardado correctamente","success");}} onCerrar={()=>setModalEvento(null)} onNuevoCliente={(cb)=>setModalNuevoCli({cb})} onNuevoInterprete={(ai,di)=>setModalNuevoInt({ai,di})} onLugarCreado={cargarDatos}/>}
+      {modalEvento&&<ModalEvento eventoInicial={modalEvento.data} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} contactos={contactos} todos_eventos={eventos} perfil={perfil} onGuardar={()=>{setModalEvento(null);cargarDatos();addToast("Evento guardado correctamente","success");}} onCerrar={()=>setModalEvento(null)} onNuevoCliente={(cb)=>setModalNuevoCli({cb})} onNuevoContacto={setModalNuevoContacto} onNuevoInterprete={(ai,di)=>setModalNuevoInt({ai,di})} onLugarCreado={cargarDatos}/>}
       {modalDetalle&&<ModalDetalle evento={modalDetalle} clientes={clientes} interpretes={interpretes} pares={pares} perfil={perfil} onEditar={()=>editarEvento(modalDetalle)} onEliminar={()=>eliminarEvento(modalDetalle.id)} onCerrar={()=>setModalDetalle(null)} onVerFicha={()=>{setModalFicha(modalDetalle);setModalDetalle(null);}} addToast={addToast}/>}
       {modalFicha&&<ModalFicha evento={modalFicha} clientes={clientes} interpretes={interpretes} pares={pares} onCerrar={()=>setModalFicha(null)}/>}
       {modalNuevoCli&&<ModalNuevoCliente onGuardar={async(d)=>{const{data}=await sb.from("clientes").insert(d).select().single();await cargarDatos();const cb=modalNuevoCli?.cb;setModalNuevoCli(false);if(data){cb?.(data.id);addToast("Cliente creado","success");}}} onCerrar={()=>setModalNuevoCli(false)}/>}
