@@ -63,7 +63,7 @@ const Chip = ({ label, emoji }) => {
 };
 
 // ── Componente principal ──────────────────────────────────────────────────────
-export default function EventCard({ ev, diaDe, clientes, interpretes, pares, proveedores=[], onClick }) {
+export default function EventCard({ ev, diaDe, clientes, interpretes, pares, proveedores=[], onClick, onNavegar }) {
   const cliente    = clientes.find(c => c.id === ev.cliente_id);
   const borderColor = colorCliente(ev.cliente_id);
   const esPresencial = ev.modalidad === "presencial" || ev.modalidad === "hibrido";
@@ -106,6 +106,15 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
     });
   });
 
+  const handleIrDiaSiguiente = (e) => {
+    e.stopPropagation();
+    if (!onNavegar || !diaXdeY) return;
+    const ini = desdeISO(ev.fecha_inicio);
+    const sig = new Date(ini.getTime() + diaXdeY.x * 86400000);
+    const iso = `${sig.getFullYear()}-${String(sig.getMonth()+1).padStart(2,"0")}-${String(sig.getDate()).padStart(2,"0")}`;
+    onNavegar(iso);
+  };
+
   return (
     <div
       onClick={onClick}
@@ -132,23 +141,32 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
         e.currentTarget.style.transform  = "translateY(0)";
       }}
     >
-      {/* Multidía */}
-      {diaXdeY && (
-        <div style={{ marginBottom: 8 }}>
-          <span style={{
-            display:"inline-flex", alignItems:"center", gap:4,
-            padding:"2px 10px", borderRadius:20,
-            fontSize:11, fontWeight:700,
-            color:"#1971C2", background:"#DBEAFE", border:"1.5px solid #93C5FD",
-          }}>
-            📅 Multidía · Día {diaXdeY.x} de {diaXdeY.y}
-          </span>
+      {/* Nombre cliente + pill multidía */}
+      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:8, marginBottom:4 }}>
+        <div style={{ fontSize:16, fontWeight:700, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", flex:1 }}>
+          {cliente?.nombre_empresa || "—"}
         </div>
-      )}
-
-      {/* Nombre cliente */}
-      <div style={{ fontSize:16, fontWeight:700, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em" }}>
-        {cliente?.nombre_empresa || "—"}
+        {diaXdeY && (() => {
+          const esUltimo = diaXdeY.x === diaXdeY.y;
+          return (
+            <div
+              onClick={esUltimo ? undefined : handleIrDiaSiguiente}
+              title={esUltimo ? "Último día del evento" : "Ver día siguiente →"}
+              style={{
+                display:"inline-flex", alignItems:"center", gap:4,
+                padding:"3px 8px", borderRadius:20,
+                background:"#E8F4FD", color:"#1971C2",
+                fontSize:11, fontWeight:600, lineHeight:1.4,
+                cursor: esUltimo ? "default" : "pointer",
+                border:"1px solid #BAD7F0",
+                whiteSpace:"nowrap", flexShrink:0,
+                userSelect:"none",
+              }}
+            >
+              📅 Día {diaXdeY.x} de {diaXdeY.y}{!esUltimo && " ›"}
+            </div>
+          );
+        })()}
       </div>
 
       {/* Nombre evento */}
