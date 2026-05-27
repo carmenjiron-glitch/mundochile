@@ -2013,7 +2013,7 @@ export default function App() {
   // ── Vista DÍA ──
   const renderDia=()=>{
     const evs=evsDia(diaActual);
-    return <div style={{padding:"16px 24px 80px"}}>
+    return <div style={{paddingTop:"16px",paddingBottom:"80px",paddingLeft:"24px",paddingRight:"24px",margin:"0 auto",maxWidth:"800px",width:"100%"}}>
       <div style={{fontWeight:"500",fontSize:"14px",color:"#fff",marginBottom:"16px"}}>
         {formatLargo(diaActual)}<span style={{fontWeight:"400",color:"rgba(255,255,255,0.75)",fontSize:"16px",marginLeft:"12px"}}>{evs.length} evento{evs.length!==1?"s":""}</span>
       </div>
