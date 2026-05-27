@@ -192,7 +192,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
       {/* Contacto */}
       {cliente?.nombre_contacto && (
-        <div style={{ fontSize:12, color:"#6B7280", fontStyle:"italic", marginTop:2 }}>
+        <div style={{ fontSize:16, color:"#6B7280", fontStyle:"italic", marginTop:2 }}>
           Contacto: {cliente.nombre_contacto}
         </div>
       )}
