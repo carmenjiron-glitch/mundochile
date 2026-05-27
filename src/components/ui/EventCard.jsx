@@ -48,6 +48,7 @@ const Flag = ({ idioma, size = 20 }) => {
 
 // ── Color pills intérpretes ───────────────────────────────────────────────────
 const IDIOMA_PILL_CLR = {"Inglés":"#4A90D9","Francés":"#002395","Portugués":"#009C3B","Español":"#AA151B","Alemán":"#555555","Italiano":"#009246","Chino":"#DE2910","Japonés":"#BC002D"};
+const darken = (hex, f) => { const n = hex.replace("#",""); const r=Math.round(parseInt(n.slice(0,2),16)*f); const g=Math.round(parseInt(n.slice(2,4),16)*f); const b=Math.round(parseInt(n.slice(4,6),16)*f); return `#${r.toString(16).padStart(2,"0")}${g.toString(16).padStart(2,"0")}${b.toString(16).padStart(2,"0")}`; };
 
 // ── Badge rectangular estilo Trello ──────────────────────────────────────────
 const BADGE = {
@@ -247,9 +248,10 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
           <div key={key} style={{ marginTop:10 }}>
             {/* Título del par */}
             <div style={{
-              fontSize:11, fontWeight:600, color:titleC,
+              fontSize:13, fontWeight:600, color:darken(titleC,0.80),
               textTransform:"uppercase", letterSpacing:"0.07em",
               marginBottom:5, opacity:0.85,
+              whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis",
             }}>
               {key}
             </div>
