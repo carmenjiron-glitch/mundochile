@@ -234,7 +234,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
       {Object.entries(grupos).map(([key, grupo]) => {
         const pillClr = IDIOMA_PILL_CLR[grupo.idioma] || "#4C6EF5";
         const bg      = "#FFFFFF";
-        const color   = pillClr;
+        const color   = "#1A1A1A";
         const border  = `3px solid ${pillClr}`;
         const titleC  = pillClr;
         const hp      = grupo.items.find(i => i.hora)?.hora;

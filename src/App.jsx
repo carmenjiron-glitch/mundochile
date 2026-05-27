@@ -1005,7 +1005,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
               {entries.map(([key,grupo])=>{
                 const pillClr=IDIOMA_PILL_CLR[grupo.idioma]||"#4C6EF5";
                 const bubbleBg="#FFFFFF";
-                const bubbleColor=pillClr;
+                const bubbleColor="#1A1A1A";
                 const bubbleBorder=`3px solid ${pillClr}`;
                 const titleColor=pillClr;
                 const hp=grupo.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
@@ -1052,7 +1052,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                     return Object.entries(gDia).map(([key,grupo])=>{
                       const pillClr=IDIOMA_PILL_CLR[grupo.idioma]||"#4C6EF5";
                       const bubbleBg="#FFFFFF";
-                      const bubbleColor=pillClr;
+                      const bubbleColor="#1A1A1A";
                       const bubbleBorder=`3px solid ${pillClr}`;
                       const titleColor=pillClr;
                       const hp=grupo.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
