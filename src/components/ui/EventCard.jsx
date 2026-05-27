@@ -130,8 +130,8 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
       onClick={onClick}
       style={{
         background:     "#FFFFFF",
-        borderLeft:     `8px solid ${borderColor}`,
-        borderTop:      `3px solid ${borderColor}`,
+        borderLeft:     `16px solid ${borderColor}`,
+        borderTop:      `6px solid ${borderColor}`,
         borderRadius:   "0 8px 8px 0",
         padding:        "14px 16px",
         marginBottom:   "10px",

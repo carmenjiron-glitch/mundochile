@@ -282,7 +282,7 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
 
   return (
     <div onClick={onClick}
-      style={{borderRadius:"0 10px 4px 0",padding:"20px 22px",background:"#FFFFFF",color:"#1A1A1A",cursor:"pointer",marginBottom:"12px",boxShadow:"0 3px 14px rgba(0,0,0,0.18)",borderLeft:`14px solid ${borderColor}`,borderTop:`4px solid ${borderColor}`,position:"relative",transition:"transform 0.12s,box-shadow 0.12s",lineHeight:1.5}}
+      style={{borderRadius:"0 10px 4px 0",padding:"20px 22px",background:"#FFFFFF",color:"#1A1A1A",cursor:"pointer",marginBottom:"12px",boxShadow:"0 3px 14px rgba(0,0,0,0.18)",borderLeft:`28px solid ${borderColor}`,borderTop:`8px solid ${borderColor}`,position:"relative",transition:"transform 0.12s,box-shadow 0.12s",lineHeight:1.5}}
       onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 6px 20px rgba(0,0,0,0.20)";}}
       onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="0 3px 14px rgba(0,0,0,0.18)";}}>
       {dotColor&&<div style={{position:"absolute",top:"12px",right:"12px",width:"12px",height:"12px",borderRadius:"50%",background:"#e63946",animation:"mcpulse 2s ease-in-out infinite"}}/>}
