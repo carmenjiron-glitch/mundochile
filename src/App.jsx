@@ -1418,7 +1418,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
             padding:"10px 18px",borderRadius:"10px",cursor:"pointer",fontFamily:"inherit",fontSize:"14px",
             background:tab===t.id?"#FFFBEB":"#fff",
             color:tab===t.id?C.azul:C.textoMed,
-            fontWeight:tab===t.id?"800":"600",
+            fontWeight:tab===t.id?"600":"600",
             border:tab===t.id?"2px solid #F59E0B":`2px solid ${C.grisBorde}`,
             borderBottom:tab===t.id?"4px solid #F59E0B":`2px solid ${C.grisBorde}`,
             boxShadow:tab===t.id?"0 2px 8px rgba(245,158,11,0.25)":"none"
