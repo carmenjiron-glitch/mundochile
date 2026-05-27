@@ -239,8 +239,8 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
         const border  = solidPill ? `2px solid ${pillClr}` : `3px solid ${pillClr}`;
         const titleC  = pillClr;
         const hp      = grupo.items.find(i => i.hora)?.hora;
-        const pillPad = solidPill ? "2px 6px" : "4px 10px";
-        const pillFs  = solidPill ? 10 : 15;
+        const pillPad = solidPill ? "2px 10px" : "4px 10px";
+        const pillFs  = solidPill ? 12 : 15;
         const flagSz  = solidPill ? 19 : 20;
 
         return (
@@ -263,7 +263,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                   style={{
                     display:"inline-flex", alignItems:"center", justifyContent:"center",
                     gap:5, padding:pillPad, borderRadius:20,
-                    fontSize:pillFs, fontWeight:700, lineHeight:1.4,
+                    fontSize:pillFs, fontWeight:600, lineHeight:1.4,
                     color, background:bg, border,
                     overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
                     cursor:"default",
