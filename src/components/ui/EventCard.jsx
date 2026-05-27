@@ -52,8 +52,8 @@ const Chip = ({ label, emoji }) => {
   return (
     <span style={{
       display:"inline-flex", alignItems:"center", gap:4,
-      padding:"3px 10px", borderRadius:6,
-      fontSize:11, fontWeight:600,
+      padding:"4px 10px", borderRadius:20,
+      fontSize:12, fontWeight:500,
       color:s.c, background:s.bg, border:`1.5px solid ${s.b}`,
       whiteSpace:"nowrap", lineHeight:1.4,
     }}>
@@ -143,7 +143,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
     >
       {/* Nombre cliente + pill multidía */}
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:8, marginBottom:4 }}>
-        <div style={{ fontSize:16, fontWeight:700, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", flex:1 }}>
+        <div style={{ fontSize:16, fontWeight:600, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", flex:1 }}>
           {cliente?.nombre_empresa || "—"}
         </div>
         {diaXdeY && (() => {
@@ -185,7 +185,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
       {/* Horario */}
       <div style={{
-        fontSize:14, fontWeight:700, color:"#0F172A",
+        fontSize:14, fontWeight:600, color:"#0F172A",
         marginTop:10, marginBottom:8,
         display:"flex", alignItems:"center", gap:6,
       }}>
@@ -231,7 +231,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
           <div key={key} style={{ marginTop:10 }}>
             {/* Título del par */}
             <div style={{
-              fontSize:11, fontWeight:800, color:titleC,
+              fontSize:11, fontWeight:600, color:titleC,
               textTransform:"uppercase", letterSpacing:"0.07em",
               marginBottom:5, opacity:0.85,
             }}>
@@ -246,8 +246,8 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                   title={`${interp.nombre}${interp.apellido ? " " + interp.apellido : ""}`}
                   style={{
                     display:"inline-flex", alignItems:"center", justifyContent:"center",
-                    gap:5, padding:"5px 8px", borderRadius:6,
-                    fontSize:12, fontWeight:600,
+                    gap:5, padding:"4px 10px", borderRadius:20,
+                    fontSize:12, fontWeight:500, lineHeight:1.4,
                     color, background:bg, border,
                     overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
                     cursor:"default",

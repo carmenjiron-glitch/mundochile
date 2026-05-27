@@ -324,7 +324,7 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
                   </span>
                 ))}
               </div>
-              {(()=>{const hp=grupo.interpretes.find(i=>i.hora_presentacion)?.hora_presentacion;return hp?<div style={{fontSize:"9px",fontWeight:"500",color:"#475569",marginTop:"4px",display:"inline-flex",alignItems:"center",gap:"4px"}}><span style={{fontSize:"9px"}}>🕐</span> Presentación intérpretes: {hp.slice(0,5)} hrs</div>:null;})()}
+              {(()=>{const hp=grupo.interpretes.find(i=>i.hora_presentacion)?.hora_presentacion;return hp?<div style={{fontSize:"11px",fontWeight:"500",color:"#475569",marginTop:"4px",display:"inline-flex",alignItems:"center",gap:"4px"}}><span style={{fontSize:"11px"}}>🕐</span> Presentación intérpretes: {hp.slice(0,5)} hrs</div>:null;})()}
             </div>
           );
         });
@@ -1216,10 +1216,10 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
             </div>
             <div style={{flex:1,minWidth:0}}>
               <div style={{fontSize:"14px",fontWeight:"500",color:"#fff",letterSpacing:"0.04em",lineHeight:1}}>MundoChile</div>
-              <div style={{fontSize:"10px",color:"rgba(255,255,255,0.70)",marginTop:"2px",letterSpacing:"0.05em"}}>TRANSLATIONS & INTERPRETERS</div>
+              <div style={{fontSize:"11px",color:"rgba(255,255,255,0.70)",marginTop:"2px",letterSpacing:"0.05em"}}>TRANSLATIONS & INTERPRETERS</div>
             </div>
             <div style={{textAlign:"right",flexShrink:0}}>
-              <div style={{fontSize:"10px",color:"rgba(255,255,255,0.65)",textTransform:"uppercase",letterSpacing:"0.05em"}}>Generado el</div>
+              <div style={{fontSize:"11px",color:"rgba(255,255,255,0.65)",textTransform:"uppercase",letterSpacing:"0.05em"}}>Generado el</div>
               <div style={{fontSize:"15px",fontWeight:"500",color:"#fff"}}>{new Date().toLocaleDateString("es-CL",{day:"numeric",month:"long",year:"numeric"})}</div>
             </div>
           </div>
