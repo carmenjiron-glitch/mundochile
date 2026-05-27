@@ -1146,9 +1146,10 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
     {k:"cliente",l:"🏢 Cliente"},{k:"evento",l:"📌 Evento"},{k:"tipo",l:<><IconMic size={14}/> Tipo</>},
     {k:"modalidad",l:"🔄 Modalidad"},{k:"fecha",l:"📅 Fecha"},{k:"horario",l:"🕐 Horario"},
     {k:"jornada",l:"⏱ Jornada"},{k:"lugar",l:"📍 Lugar"},{k:"plataforma",l:"💻 Plataforma"},
+    {k:"facturacion",l:"💰 Facturación"},
     {k:"interpretes",l:<><IconMic size={14}/> Intérpretes</>},{k:"equipos",l:<><IconAV size={14}/> Equipos AV</>},{k:"comentarios",l:"💬 Comentarios"},
   ];
-  const DEFAULTS={cliente:true,evento:true,tipo:true,modalidad:true,fecha:true,horario:true,jornada:true,lugar:true,plataforma:true,interpretes:true,equipos:false,comentarios:false};
+  const DEFAULTS={cliente:true,evento:true,tipo:true,modalidad:true,fecha:true,horario:true,jornada:true,lugar:true,plataforma:true,facturacion:true,interpretes:true,equipos:false,comentarios:false};
   const [campos,setCampos]=useState(()=>({...DEFAULTS,...JSON.parse(localStorage.getItem("mc_ficha_campos")||"{}")}));
   const toggleCampo=(k)=>{const n={...campos,[k]:!campos[k]};setCampos(n);localStorage.setItem("mc_ficha_campos",JSON.stringify(n));};
 
@@ -1181,25 +1182,27 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
       grupos[key].items.push({interp,isHost:!!a.es_host_zoom,asig:a});
     });
     return Object.entries(grupos).map(([key,grupo])=>{
-      const bg=idiomaColor(grupo.idioma);
-      const bd=idiomaBorde(grupo.idioma);
-      const esPort=grupo.idioma==="Portugués";
-      const bubbleBg=esPort?"#FFFFFF":bg;
-      const bubbleColor=esPort?"#1B5E20":"#FFFFFF";
-      const bubbleBorder=esPort?"2px solid #1B5E20":`2px solid ${bd}`;
-      const titleColor=esPort?"#1B5E20":bg;
-      return(<div key={key} style={{marginBottom:"10px"}}>
-        <div style={{fontSize:"16px",fontWeight:"500",color:titleColor,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:"5px",filter:"brightness(0.65)"}}>{key}</div>
+      const pillClr=IDIOMA_PILL_CLR[grupo.idioma]||"#4C6EF5";
+      const bubbleBg="#FFFFFF";
+      const bubbleColor="#1A1A1A";
+      const bubbleBorder=`3px solid ${pillClr}`;
+      const titleColor=pillClr;
+      const hp=grupo.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
+      return(<div key={key} style={{marginBottom:"12px"}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"6px"}}>
+          <span style={{fontSize:"12px",fontWeight:"600",color:titleColor,textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
+          {hp&&<span style={{fontSize:"14px",color:"#6B7280",display:"flex",alignItems:"center",gap:"4px"}}>🕐 {hp.slice(0,5)} hrs</span>}
+        </div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
           {grupo.items.map(({interp,isHost},i)=>(
-            <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:bubbleColor,background:bubbleBg,border:bubbleBorder,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+            <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"3px 8px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:bubbleColor,background:bubbleBg,border:bubbleBorder,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
               {isHost&&<span style={{fontSize:"12px"}}>🔑</span>}
               <FlagImg idioma={grupo.idioma}/>
               <span style={{overflow:"hidden",textOverflow:"ellipsis",color:bubbleColor,fontSize:"13px",fontWeight:"600"}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
             </span>
           ))}
         </div>
-        {grupo.items.map(({asig},i)=>metaFicha(asig)?<div key={i}>{metaFicha(asig)}</div>:null)}
+        {grupo.items.map(({asig},i)=>(asig.nro_ot||asig.nro_boleta)?<div key={i} style={{fontSize:"13px",color:"#6B7280",marginTop:"4px",display:"flex",gap:"10px",flexWrap:"wrap"}}>{asig.nro_ot&&<span>OT: {asig.nro_ot}</span>}{asig.nro_boleta&&<span>Boleta: {asig.nro_boleta}</span>}</div>:null)}
       </div>);
     });
   };
@@ -1254,13 +1257,11 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
             </Sec>}
 
             {campos.tipo&&<Sec label="Tipo de interpretación" accent="#9C36B5">
-              <div style={{fontSize:"14px",fontWeight:"500",color:"#0F172A",display:"flex",alignItems:"center",gap:"8px"}}><IconMic size={20}/> {evento.tipo}</div>
+              <span style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c,background:(B_TIPO[evento.tipo]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>{evento.tipo==="Simultánea"?<IconoSimultanea/>:evento.tipo==="Consecutiva"?"🎤":"🤫"} {evento.tipo}</span>
             </Sec>}
 
             {campos.modalidad&&<Sec label="Modalidad" accent="#C2255C">
-              <div style={{fontSize:"14px",fontWeight:"500",color:"#0F172A"}}>
-                {evento.modalidad==="presencial"?"📍":evento.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evento.modalidad]}
-              </div>
+              <span style={{display:"inline-flex",alignItems:"center",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c,background:(B_MOD[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?"📍":evento.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evento.modalidad]}</span>
             </Sec>}
 
             {campos.fecha&&<Sec label="Fecha" accent="#E67700">
@@ -1289,6 +1290,8 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
             {campos.plataforma&&!esPresencial&&<Sec label="Plataforma" accent="#0C8599" fullWidth>
               <PlatformChip platform={evento.plataforma==="Zoom"?"Zoom MundoChile":evento.plataforma} isMundoChile={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")} extra={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")?evento.zoom_administrador:""}/>
             </Sec>}
+
+            {campos.facturacion&&<Sec label="Estado de facturación" accent="#1565C0" fullWidth>{(()=>{const be=B_EST(evento.estado);return<span style={{display:"inline-flex",alignItems:"center",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:be.c,background:be.bg,border:`2px solid ${be.b||be.c}`,whiteSpace:"nowrap"}}>{evento.estado==="Facturado"?"✓ Facturado":"🟠 Facturación Pendiente"}</span>;})()}</Sec>}
 
             {campos.interpretes&&!esMultidia&&(evento.asignaciones||[]).length>0&&<Sec label="Intérpretes" accent="#7048E8" fullWidth>
               {renderGrupos(evento.asignaciones)}
