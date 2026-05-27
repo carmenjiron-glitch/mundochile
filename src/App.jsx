@@ -56,6 +56,7 @@ const colorCliente=(id)=>PALETA_CLIENTE[(id||0)%12];
 const avatarColor=(str)=>PALETA_CLIENTE[(str||"").split("").reduce((a,c)=>a+c.charCodeAt(0),0)%12];
 const IDIOMA_COLOR={"Inglés":"#4A90D9","Francés":"#8B0000","Portugués":"#1B7A2F","Español":"#C2820A","Alemán":"#555555","Italiano":"#CC5500","Chino":"#DE2910","Japonés":"#6A0DAD"};
 const IDIOMA_BORDE={"Inglés":"#1A4476","Francés":"#5C0000","Portugués":"#0F4D1C","Español":"#8B5E08","Alemán":"#333333","Italiano":"#993D00","Chino":"#9E1D0B","Japonés":"#4A0878"};
+const IDIOMA_PILL_CLR={"Inglés":"#4A90D9","Francés":"#002395","Portugués":"#009C3B","Español":"#AA151B","Alemán":"#555555","Italiano":"#009246","Chino":"#DE2910","Japonés":"#BC002D"};
 const IDIOMA_FLAG={"Inglés":"🇬🇧","Francés":"🇫🇷","Portugués":"🇧🇷","Español":"🇪🇸","Alemán":"🇩🇪","Italiano":"🇮🇹","Chino":"🇨🇳","Japonés":"🇯🇵"};
 const idiomaColor=(idioma)=>IDIOMA_COLOR[idioma]||"#4C6EF5";
 const idiomaBorde=(idioma)=>IDIOMA_BORDE[idioma]||"#3451d1";
@@ -1002,13 +1003,11 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             return(<div style={{marginBottom:"4px"}}>
               <SL t={<><IconMic size={20}/> Intérpretes</>}/>
               {entries.map(([key,grupo])=>{
-                const bg=idiomaColor(grupo.idioma);
-                const bd=idiomaBorde(grupo.idioma);
-                const esPort=grupo.idioma==="Portugués";
-                const bubbleBg=esPort?"#FFFFFF":bg;
-                const bubbleColor=esPort?"#1B5E20":"#FFFFFF";
-                const bubbleBorder=esPort?"2px solid #1B5E20":`2px solid ${bd}`;
-                const titleColor=esPort?"#1B5E20":bg;
+                const pillClr=IDIOMA_PILL_CLR[grupo.idioma]||"#4C6EF5";
+                const bubbleBg="#FFFFFF";
+                const bubbleColor=pillClr;
+                const bubbleBorder=`3px solid ${pillClr}`;
+                const titleColor=pillClr;
                 const hp=grupo.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
                 return(<div key={key} style={{marginBottom:"12px"}}>
                   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"6px"}}>
@@ -1051,13 +1050,11 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                       gDia[key].items.push({interp,isHost:!!a.es_host_zoom,asig:a});
                     });
                     return Object.entries(gDia).map(([key,grupo])=>{
-                      const bg=idiomaColor(grupo.idioma);
-                      const bd=idiomaBorde(grupo.idioma);
-                      const esPort=grupo.idioma==="Portugués";
-                      const bubbleBg=esPort?"#FFFFFF":bg;
-                      const bubbleColor=esPort?"#1B5E20":"#FFFFFF";
-                      const bubbleBorder=esPort?"2px solid #1B5E20":`2px solid ${bd}`;
-                      const titleColor=esPort?"#1B5E20":bg;
+                      const pillClr=IDIOMA_PILL_CLR[grupo.idioma]||"#4C6EF5";
+                      const bubbleBg="#FFFFFF";
+                      const bubbleColor=pillClr;
+                      const bubbleBorder=`3px solid ${pillClr}`;
+                      const titleColor=pillClr;
                       const hp=grupo.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
                       return(<div key={key} style={{marginBottom:"12px"}}>
                         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"6px"}}>

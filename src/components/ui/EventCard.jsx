@@ -45,6 +45,9 @@ const Flag = ({ idioma }) => {
   );
 };
 
+// ── Color pills intérpretes ───────────────────────────────────────────────────
+const IDIOMA_PILL_CLR = {"Inglés":"#4A90D9","Francés":"#002395","Portugués":"#009C3B","Español":"#AA151B","Alemán":"#555555","Italiano":"#009246","Chino":"#DE2910","Japonés":"#BC002D"};
+
 // ── Badge rectangular estilo Trello ──────────────────────────────────────────
 const BADGE = {
   "Simultánea":            { bg:"#EEF2FF", c:"#3B5BDB", b:"#3B5BDB" },
@@ -229,12 +232,11 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
       {/* Intérpretes agrupados */}
       {Object.entries(grupos).map(([key, grupo]) => {
-        const t       = INTERP_LANG[grupo.idioma] || INTERP_LANG.default;
-        const esPort  = grupo.idioma === "Portugués";
-        const bg      = esPort ? "#FFFFFF"  : t.bg;
-        const color   = esPort ? "#0F3311"  : "#FFFFFF";
-        const border  = esPort ? "1.5px solid #0F3311" : `1.5px solid ${t.border}`;
-        const titleC  = esPort ? "#0F3311"  : t.bg;
+        const pillClr = IDIOMA_PILL_CLR[grupo.idioma] || "#4C6EF5";
+        const bg      = "#FFFFFF";
+        const color   = pillClr;
+        const border  = `3px solid ${pillClr}`;
+        const titleC  = pillClr;
         const hp      = grupo.items.find(i => i.hora)?.hora;
 
         return (
