@@ -283,16 +283,16 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
 
   return (
     <div onClick={onClick}
-      style={{borderRadius:"0 10px 4px 0",padding:"20px 22px",background:"#FFFFFF",color:"#1A1A1A",cursor:"pointer",marginBottom:"12px",boxShadow:"0 3px 14px rgba(0,0,0,0.18)",borderLeft:`28px solid ${borderColor}`,borderTop:`8px solid ${borderColor}`,position:"relative",transition:"transform 0.12s,box-shadow 0.12s",lineHeight:1.5}}
+      style={{borderRadius:"0 10px 4px 0",padding:"10px 12px",background:"#FFFFFF",color:"#1A1A1A",cursor:"pointer",marginBottom:"12px",boxShadow:"0 3px 14px rgba(0,0,0,0.18)",borderLeft:`28px solid ${borderColor}`,borderTop:`8px solid ${borderColor}`,position:"relative",transition:"transform 0.12s,box-shadow 0.12s",lineHeight:1.5}}
       onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 6px 20px rgba(0,0,0,0.20)";}}
       onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="0 3px 14px rgba(0,0,0,0.18)";}}>
       {dotColor&&<div style={{position:"absolute",top:"12px",right:"12px",width:"12px",height:"12px",borderRadius:"50%",background:"#e63946",animation:"mcpulse 2s ease-in-out infinite"}}/>}
       {diaXdeY&&<div style={{marginBottom:"8px"}}><span style={{display:"inline-flex",alignItems:"center",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"700",lineHeight:"1.4",color:"#1971C2",background:"#E8F4FD",border:"2px solid #1971C2"}}>📅 Multidía · Día {diaXdeY.x} de {diaXdeY.y}</span></div>}
       <div style={{fontSize:"14px",fontWeight:"600",color:"#1A1A1A",letterSpacing:"0.1px",lineHeight:1.2,marginBottom:"4px",paddingRight:dotColor?"20px":"0"}}>{cliente?.nombre_empresa||"—"}</div>
       {ev.nombre_evento&&<div style={{fontSize:"14px",fontWeight:"500",color:"#374151",marginBottom:"6px"}}>{ev.nombre_evento}</div>}
-      {cliente?.nombre_contacto&&<div style={{fontSize:"7px",fontWeight:"500",color:"#6B6B6B",fontStyle:"italic",marginBottom:"8px"}}>Contacto: {cliente.nombre_contacto}</div>}
-      <div style={{fontSize:"17px",fontWeight:"500",color:"#1A1A1A",marginBottom:"10px"}}>{ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)} hrs</div>
-      <div style={{display:"flex",gap:"6px",flexWrap:"wrap",alignItems:"center",marginBottom:"10px"}}>
+      {cliente?.nombre_contacto&&<div style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",fontSize:"0.85em",fontStyle:"italic",color:"#6B7280",marginBottom:"6px"}}>{cliente.nombre_contacto}</div>}
+      <div style={{fontSize:"17px",fontWeight:"500",color:"#1A1A1A",marginBottom:"8px"}}>{ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)} hrs</div>
+      <div style={{display:"flex",gap:"4px",flexWrap:"wrap",alignItems:"center",marginBottom:"8px"}}>
         <span style={bS(bt.bg,bt.c)}>{TIPO_ICON[ev.tipo]}{ev.tipo}</span>
         <span style={bS(bm.bg,bm.c)}>{MOD_ICON[ev.modalidad]}{LBL_MODAL[ev.modalidad]||ev.modalidad}</span>
       </div>
@@ -300,7 +300,7 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
       {!esPresencial&&ev.plataforma&&<div style={{marginBottom:"8px"}}>
         <PlatformChip platform={ev.plataforma==="Zoom"?"Zoom MundoChile":ev.plataforma} isMundoChile={ev.plataforma==="Zoom MundoChile"||ev.plataforma==="Zoom"}/>
       </div>}
-      <div style={{display:"flex",gap:"6px",flexWrap:"wrap",alignItems:"center",marginBottom:"10px"}}>
+      <div style={{display:"flex",gap:"4px",flexWrap:"wrap",alignItems:"center",marginBottom:"8px"}}>
         <span style={bS(be.bg,be.c,be.b)}>{ev.estado==="Facturado"?"Facturado":"🟠 Facturación Pendiente"}</span>
       </div>
       {(()=>{
