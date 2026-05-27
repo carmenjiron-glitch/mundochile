@@ -25,6 +25,15 @@ const IconAV = ({size=24}) => (
     <line x1="12" y1="17" x2="12" y2="21"/>
   </svg>
 )
+const IconoSimultanea = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="9" y="2" width="6" height="12" rx="3"/>
+    <path d="M5 10a7 7 0 0 0 14 0"/>
+    <line x1="12" y1="19" x2="12" y2="22"/>
+    <line x1="8" y1="22" x2="16" y2="22"/>
+  </svg>
+)
 
 // ─── SUPABASE ────────────────────────────────────────────────────────────────
 const SB_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -57,7 +66,7 @@ const B_TIPO={"Simultánea":{bg:"#EEF2FF",c:"#3B5BDB"},"Consecutiva":{bg:"#FCE4E
 const B_MOD={"presencial":{bg:"#E8F5E9",c:"#2E7D32"},"remoto":{bg:"#E0F7FA",c:"#00838F"},"hibrido":{bg:"#FBE9E7",c:"#BF360C"}};
 const B_EST=(e)=>e==="Facturado"?{bg:"#E3F2FD",c:"#1565C0",b:"#1565C0"}:{bg:"#FFEB3B",c:"#C62828",b:"#F9A825"};
 const bS=(bg,c,b)=>({display:"inline-flex",alignItems:"center",gap:"4px",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:c,background:bg,border:`2px solid ${b||c}`,whiteSpace:"nowrap"});
-const TIPO_ICON={"Simultánea":"🎙️","Consecutiva":"🎤","Whispering":"🤫"};
+const TIPO_ICON={"Simultánea":<IconoSimultanea/>,"Consecutiva":"🎤","Whispering":"🤫"};
 const MOD_ICON={"presencial":"📍","remoto":"🖥️","hibrido":"🔀"};
 const nombreCorto=(nombre,apellido)=>{if(!apellido)return nombre;const completo=`${nombre} ${apellido}`;if(completo.length<=12)return completo;return`${nombre} ${apellido.charAt(0)}.`;};
 
@@ -945,7 +954,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           <HR/>
           {/* Badges tipo + modalidad */}
           <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center",marginBottom:"4px"}}>
-            <span style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c,background:(B_TIPO[evento.tipo]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>{evento.tipo==="Simultánea"?"🎙️":evento.tipo==="Consecutiva"?"🎤":"🤫"} {evento.tipo}</span>
+            <span style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c,background:(B_TIPO[evento.tipo]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>{evento.tipo==="Simultánea"?<IconoSimultanea/>:evento.tipo==="Consecutiva"?"🎤":"🤫"} {evento.tipo}</span>
             <span style={{display:"inline-flex",alignItems:"center",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c,background:(B_MOD[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c}`,whiteSpace:"nowrap"}}>
               {evento.modalidad==="presencial"?"📍":evento.modalidad==="hibrido"?"🔀":"💻"} {LBL[evento.modalidad]||evento.modalidad}
             </span>
