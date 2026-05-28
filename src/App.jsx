@@ -1232,8 +1232,8 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
           {/* Header */}
           <div style={{display:"flex",alignItems:"center",height:"64px",padding:"0 16px",borderRadius:"8px",background:"#1E3A6E",color:"#fff",marginBottom:"12px",flexShrink:0}}>
             <div style={{flexShrink:0,marginRight:"12px",display:"flex",alignItems:"center"}}>
-              <div style={{width:"36px",height:"36px",borderRadius:"50%",background:"#FFFFFF",overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 2px 8px rgba(0,0,0,0.15)",margin:"8px"}}>
-                <img src={LOGO_SRC} alt="MundoChile" style={{width:"32px",height:"32px",objectFit:"contain"}}/>
+              <div style={{width:"41px",height:"41px",borderRadius:"50%",background:"#FFFFFF",overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 2px 8px rgba(0,0,0,0.15)",margin:"8px"}}>
+                <img src={LOGO_SRC} alt="MundoChile" style={{width:"37px",height:"37px",objectFit:"contain"}}/>
               </div>
             </div>
             <div style={{flex:1,minWidth:0}}>
