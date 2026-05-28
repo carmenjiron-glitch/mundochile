@@ -1720,6 +1720,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
 // ─── VISTA AGENDA (F8) ───────────────────────────────────────────────────────
 function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,setFiltros,onAbrir}) {
   const todayRef=useRef(null);
+  const scrolledRef=useRef(false);
   const hoyISO=hoy();
   const sorted=[...eventos].sort((a,b)=>a.fecha_inicio.localeCompare(b.fecha_inicio));
   const byDay={};
@@ -1728,17 +1729,25 @@ function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,
     if(!byDay[key])byDay[key]=[];
     byDay[key].push(ev);
   });
-  useEffect(()=>{if(todayRef.current)todayRef.current.scrollIntoView({behavior:"instant",block:"start"});},[]);
+  const fechas=Object.keys(byDay);
+  const targetFecha=fechas.find(f=>f>=hoyISO)||fechas[0]||"";
+  useEffect(()=>{
+    if(!scrolledRef.current&&todayRef.current){
+      todayRef.current.scrollIntoView({behavior:"instant",block:"start"});
+      scrolledRef.current=true;
+    }
+  },[targetFecha]);
   return (
     <div style={{padding:"16px 24px 80px",width:"100%",maxWidth:"100%"}}>
-      {!Object.keys(byDay).length&&<div style={{textAlign:"center",padding:"80px 20px",color:"#fff"}}>
+      {!fechas.length&&<div style={{textAlign:"center",padding:"80px 20px",color:"#fff"}}>
         <div style={{fontSize:"18px",marginBottom:"12px"}}>📅</div>
         <div style={{fontWeight:"500",fontSize:"14px",color:"#fff"}}>No hay eventos que mostrar</div>
       </div>}
       {Object.entries(byDay).map(([fecha,evs])=>{
         const esHoy=fecha===hoyISO;
+        const esTarget=fecha===targetFecha;
         return (
-          <div key={fecha} ref={esHoy?todayRef:null} style={{marginBottom:"32px"}}>
+          <div key={fecha} ref={esTarget?todayRef:null} style={{marginBottom:"32px"}}>
             <div style={{background:esHoy?"rgba(34,197,94,0.18)":"rgba(255,255,255,0.12)",color:"#fff",fontSize:"16px",fontWeight:"500",padding:"10px 16px",borderRadius:"8px",margin:"16px 0 8px",letterSpacing:"0.03em",border:esHoy?"1px solid rgba(34,197,94,0.4)":"1px solid transparent"}}>
               {esHoy?"📅 Hoy — ":""}{formatLargo(fecha)} · {evs.length} evento{evs.length!==1?"s":""}
             </div>
