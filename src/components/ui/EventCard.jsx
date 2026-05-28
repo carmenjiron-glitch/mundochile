@@ -261,8 +261,8 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
         const border  = solidPill ? `2px solid ${pillClr}` : `3px solid ${pillClr}`;
         const titleC  = pillClr;
         const hp      = grupo.items.find(i => i.hora)?.hora;
-        const pillPad = agendaSmall ? "2px 4px" : solidPill ? "1px 4px" : "3px 8px";
-        const pillFs  = agendaSmall ? 9 : solidPill ? 12 : 17;
+        const pillPad = agendaSmall ? "2px 4px" : solidPill ? "1px 4px" : "5px 8px";
+        const pillFs  = agendaSmall ? 9 : solidPill ? 12 : 26;
         const flagSz  = agendaSmall ? 14 : solidPill ? 19 : 20;
 
         return (
@@ -286,7 +286,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                   style={{
                     display:"inline-flex", alignItems:"center", justifyContent:"center",
                     gap:5, padding:pillPad, borderRadius:20,
-                    fontSize:pillFs, fontWeight:600, lineHeight:1.4,
+                    fontSize:pillFs, fontWeight:agendaSmall||solidPill?600:400, lineHeight:1.4,
                     color, background:bg, border,
                     overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
                     cursor:"default",
