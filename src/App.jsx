@@ -971,7 +971,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                 style={{display:"inline-flex",alignItems:"center",gap:"5px",fontSize:"18px",fontWeight:"500",color:"#1971C2",textDecoration:"none",padding:"6px 12px",border:"1px solid #93C5FD",borderRadius:"8px",background:"#EFF6FF"}}>
                 📍 Ver en Maps
               </a>
-              <CampoCopia valor={`${evento.lugar}${evento.lugar_detalle?", "+evento.lugar_detalle:""}`} mostrarValor={false} wrapStyle={{padding:"6px 12px",borderRadius:"8px",border:"1px solid #93C5FD",background:"#EFF6FF"}} btnColor="#1971C2" btnFontSize="23px"/>
+              <CampoCopia valor={`${evento.lugar}${evento.lugar_detalle?", "+evento.lugar_detalle:""}`} mostrarValor={false} wrapStyle={{padding:"6px 12px",borderRadius:"8px",border:"1px solid #93C5FD",background:"#EFF6FF",display:"inline-flex",alignItems:"center",cursor:"pointer"}} btnColor="#1971C2" btnFontSize="35px"/>
             </div>
           </div>}
           {!esPresencial&&evento.plataforma&&<div style={{marginBottom:"4px"}}>
