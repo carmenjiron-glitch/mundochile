@@ -1728,6 +1728,91 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
   );
 }
 
+// ─── VISTA GRILLA ────────────────────────────────────────────────────────────
+function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contactos=[],onAbrir,onVerMultidia}) {
+  const sorted=[...eventos].sort((a,b)=>a.fecha_inicio.localeCompare(b.fecha_inicio));
+  const byMonth={};
+  sorted.forEach(ev=>{
+    const d=desdeISO(ev.fecha_inicio);
+    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
+    if(!byMonth[key]){const m=MESES_L[d.getMonth()];byMonth[key]={label:`${m.charAt(0).toUpperCase()+m.slice(1)} ${d.getFullYear()}`,evs:[]};}
+    byMonth[key].evs.push(ev);
+  });
+  const COLS=["Mes","Orden de Compra","Cliente","Contacto Cliente","# Evento","Detalle Equipos AV","Proveedor","Detalles Instalación","Tipo","Nombre Evento","Lugar","Par de Idiomas","Jornada","Horario","Fecha Inicio","Fecha Término","Comentarios","Intérprete 1","Nro OT","Nro Boleta","Intérprete 2","Nro OT 2"];
+  const thS={background:"#1E3A5F",color:"#FFFFFF",fontSize:"11px",fontWeight:600,padding:"6px 8px",textAlign:"center",position:"sticky",top:"140px",zIndex:10,whiteSpace:"nowrap",borderRight:"1px solid rgba(255,255,255,0.15)",borderBottom:"2px solid rgba(255,255,255,0.2)"};
+  let rowIdx=0;
+  return (
+    <div style={{paddingTop:"160px",paddingBottom:"80px",overflowX:"auto",width:"100%"}}>
+      <table style={{borderCollapse:"collapse",minWidth:"2200px",width:"100%",fontSize:"12px",background:"#fff"}}>
+        <thead>
+          <tr>{COLS.map(col=><th key={col} style={thS}>{col}</th>)}</tr>
+        </thead>
+        {sorted.length===0&&<tbody><tr><td colSpan={COLS.length} style={{textAlign:"center",padding:"60px 20px",color:"#9CA3AF",fontSize:"14px",background:"#fff"}}>No hay eventos que mostrar</td></tr></tbody>}
+        {Object.entries(byMonth).map(([mk,{label,evs}])=>(
+          <tbody key={mk}>
+            <tr><td colSpan={COLS.length} style={{background:"#162654",color:"#FFFFFF",fontSize:"13px",fontWeight:"700",padding:"8px 16px",textTransform:"uppercase",letterSpacing:"0.08em"}}>📅 {label}</td></tr>
+            {evs.map(ev=>{
+              rowIdx++;
+              const ri=rowIdx;
+              const isEven=ri%2===0;
+              const cli=clientes.find(c=>c.id===ev.cliente_id);
+              const contacto=contactos.find(c=>c.id===ev.contacto_id);
+              const contactoNombre=contacto?.nombre||cli?.nombre_contacto||"";
+              const esMultidia=ev.fecha_inicio!==ev.fecha_termino;
+              const asigs=ev.asignaciones||[];
+              const a1=asigs[0]||null;
+              const a2=asigs[1]||null;
+              const i1=a1?interpretes.find(x=>x.id===a1.interprete_id):null;
+              const i2=a2?interpretes.find(x=>x.id===a2.interprete_id):null;
+              const i1N=i1?`${i1.nombre}${i1.apellido?" "+i1.apellido:""}`:"";
+              const i2N=i2?`${i2.nombre}${i2.apellido?" "+i2.apellido:""}`:"";
+              const par=a1?pares.find(p=>p.id===a1.par_id):null;
+              const equipos=(ev.evento_dias||[]).flatMap(d=>d.equipos_dia||[]);
+              const eq=equipos[0]||null;
+              const detalleEq=eq?[eq.tipo_equipo,eq.num_receptores?`${eq.num_receptores} receptores`:null,eq.num_cabinas?`${eq.num_cabinas} cabinas`:null].filter(Boolean).join(", "):"";
+              const provNom=eq?.proveedor_nombre||(eq?.proveedor_id?proveedores.find(p=>p.id===eq.proveedor_id)?.nombre:"")||"";
+              const detalleInst=eq?.instrucciones||eq?.contacto_in_situ||"";
+              const d=desdeISO(ev.fecha_inicio);
+              const mesStr=`${MESES_C[d.getMonth()]} ${d.getFullYear()}`;
+              const rowBg=isEven?"#F9FAFB":"#FFFFFF";
+              const td={padding:"6px 8px",borderBottom:"1px solid #E5E7EB",borderRight:"1px solid #F3F4F6",verticalAlign:"top",color:"#1A1A1A",lineHeight:1.4};
+              return (
+                <tr key={ev.id} style={{background:rowBg,cursor:"pointer"}}
+                  onClick={()=>esMultidia?onVerMultidia(ev.id):onAbrir(ev)}
+                  onMouseEnter={e=>e.currentTarget.style.background="#EFF6FF"}
+                  onMouseLeave={e=>e.currentTarget.style.background=rowBg}>
+                  <td style={td}>{mesStr}</td>
+                  <td style={td}>{ev.nro_oc||""}</td>
+                  <td style={{...td,fontWeight:600}}>{cli?.nombre_empresa||"—"}</td>
+                  <td style={td}>{contactoNombre}</td>
+                  <td style={{...td,textAlign:"center"}}>{ri}</td>
+                  <td style={td}>{detalleEq}</td>
+                  <td style={td}>{provNom}</td>
+                  <td style={td}>{detalleInst}</td>
+                  <td style={td}>{ev.tipo||""}</td>
+                  <td style={td}>{ev.nombre_evento||""}</td>
+                  <td style={td}>{ev.lugar||""}</td>
+                  <td style={td}>{par?.descripcion||""}</td>
+                  <td style={td}>{ev.jornada||""}</td>
+                  <td style={{...td,whiteSpace:"nowrap"}}>{ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)}</td>
+                  <td style={{...td,whiteSpace:"nowrap"}}>{formatCorto(ev.fecha_inicio)}</td>
+                  <td style={{...td,whiteSpace:"nowrap"}}>{formatCorto(ev.fecha_termino)}</td>
+                  <td style={td}>{ev.comentarios||""}</td>
+                  <td style={td}>{i1N}</td>
+                  <td style={td}>{a1?.nro_ot||""}</td>
+                  <td style={td}>{a1?.nro_boleta||""}</td>
+                  <td style={td}>{i2N}</td>
+                  <td style={td}>{a2?.nro_ot||""}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        ))}
+      </table>
+    </div>
+  );
+}
+
 // ─── VISTA AGENDA (F8) ───────────────────────────────────────────────────────
 function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,setFiltros,onAbrir,vista}) {
   const hoyISO=hoy();
@@ -1944,6 +2029,7 @@ export default function App() {
     if(vista==="semana"){const d=diasSemana;const capM=(m)=>MESES_L[m].charAt(0).toUpperCase()+MESES_L[m].slice(1);return `${d[0].getDate()} ${capM(d[0].getMonth())} – ${d[6].getDate()} ${capM(d[6].getMonth())} ${d[6].getFullYear()}`;}
     if(vista==="mes"){const n=new Date();n.setMonth(n.getMonth()+mesOff);return `${MESES_L[n.getMonth()].charAt(0).toUpperCase()+MESES_L[n.getMonth()].slice(1)} ${n.getFullYear()}`;}
     if(vista==="agenda") return "Agenda";
+    if(vista==="grilla") return "Grilla";
     if(vista==="dia"&&modoMultidia&&eventoMultidiaId){const evM=eventosFiltrados.find(e=>e.id===eventoMultidiaId);const cli=clientes.find(c=>c.id===evM?.cliente_id);return `Evento Multidía — ${cli?.nombre_empresa||"—"}`;}
     return formatLargo(diaActual);
   };
@@ -2302,13 +2388,13 @@ export default function App() {
           </div>
           {/* CENTRO: tabs */}
           {pantalla==="calendario"&&<div style={{display:"flex",gap:"8px",alignItems:"center",flex:1,justifyContent:"center"}}>
-            {[["semana","Semana"],["dia","Día"],["mes","Mes"],["agenda","Agenda"]].map(([v,l])=>(
+            {[["semana","Semana"],["dia","Día"],["mes","Mes"],["agenda","Agenda"],["grilla","Grilla"]].map(([v,l])=>(
               <button key={v} onClick={()=>setVista(v)} style={{padding:"9px 16px",background:vista===v?"#FFFFFF":"rgba(255,255,255,0.12)",border:"none",borderRadius:"8px",color:vista===v?"#1E3A6E":"#FFFFFF",fontWeight:vista===v?"600":"400",cursor:"pointer",fontSize:"15px",fontFamily:"inherit",transition:"all 0.15s"}}>{l}</button>
             ))}
           </div>}
           {/* DERECHA: nav + utilidades */}
           <div style={{display:"flex",gap:"6px",alignItems:"center",flexShrink:0}}>
-            {pantalla==="calendario"&&vista!=="agenda"&&<>
+            {pantalla==="calendario"&&vista!=="agenda"&&vista!=="grilla"&&<>
               <div style={{textAlign:"right",marginRight:"6px"}}>
                 <div style={{color:"#FFFFFF",fontSize:"19px",fontWeight:"500",lineHeight:1.2}}>{tituloNav()}</div>
                 <div style={{color:"rgba(255,255,255,0.70)",fontSize:"15px"}}>{contadorSubtitulo()}</div>
@@ -2339,6 +2425,7 @@ export default function App() {
         {vista==="dia"&&renderDia()}
         {vista==="mes"&&renderMes()}
         {vista==="agenda"&&<VistaAgenda vista={vista} eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} filtros={filtros} setFiltros={setFiltros} onAbrir={abrirEvento}/>}
+        {vista==="grilla"&&<VistaGrilla eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} contactos={contactos} onAbrir={abrirEvento} onVerMultidia={verTodosLosDias}/>}
       </>}
       {pantalla==="config"&&esAdmin&&<PantallaConfig clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} onActualizar={cargarDatos} perfil={perfil}/>}
 
