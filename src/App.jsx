@@ -203,10 +203,7 @@ function SelHora({value,onChange,placeholder="Hora"}) {
   const [manual,setManual]=useState(false);
   const esManual=manual||(!!value&&!HORAS.includes(value));
   if(esManual) return (
-    <div style={{display:"flex",gap:"6px"}}>
-      <input style={{...S.inp,flex:1}} value={value||""} onChange={e=>onChange(e.target.value)} placeholder="08:30"/>
-      <button onClick={()=>{setManual(false);onChange("09:00");}} style={{...S.btnG,padding:"9px 10px",fontSize:"14px",whiteSpace:"nowrap",height:"48px"}}>↩ Lista</button>
-    </div>
+    <input style={S.inp} value={value||""} onChange={e=>onChange(e.target.value)} placeholder="08:30"/>
   );
   return (
     <select style={S.sel} value={value||""} onChange={e=>{if(e.target.value==="__otro__"){setManual(true);onChange("");}else onChange(e.target.value);}}>
@@ -635,16 +632,16 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
             {form.jornada==="Otro horario personalizado"&&!esMultidia&&<div style={{marginBottom:"20px"}}><label style={S.lbl}>✍️ Horario personalizado</label><input style={S.inp} value={form.jornada_personalizada} onChange={e=>setF("jornada_personalizada",e.target.value)}/></div>}
             {/* Plataforma (remoto/híbrido) */}
             {(form.modalidad==="remoto"||form.modalidad==="hibrido")&&<>
-              <div style={{...S.fila,marginBottom:"20px",alignItems:"flex-start",flexWrap:"nowrap",gap:"12px"}}>
-                <div style={{...S.camp,minWidth:"140px",flex:"0 0 auto"}}><label style={S.lbl}>💻 Plataforma</label>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1.5fr 1fr",gap:"12px",alignItems:"end",marginBottom:"20px"}}>
+                <div style={S.camp}><label style={S.lbl}>💻 Plataforma</label>
                   <select style={S.sel} value={form.plataforma} onChange={e=>setF("plataforma",e.target.value)}>{PLATAFORMAS.map(p=><option key={p}>{p}</option>)}</select></div>
-                {(form.plataforma==="Zoom MundoChile"||form.plataforma==="Zoom")&&<div style={{...S.camp,minWidth:"160px",flex:"0 0 auto"}}><label style={S.lbl}>🔑 Administrador Zoom</label>
+                {(form.plataforma==="Zoom MundoChile"||form.plataforma==="Zoom")&&<div style={S.camp}><label style={S.lbl}>🔑 Administrador Zoom</label>
                   <select style={S.sel} value={zoomOtro?"__otro__":(ZOOM_ADMIN.includes(form.zoom_administrador)?form.zoom_administrador:"")} onChange={e=>{if(e.target.value==="__otro__"){setZoomOtro(true);setF("zoom_administrador","");}else{setZoomOtro(false);setF("zoom_administrador",e.target.value);}}}>
                     <option value="">Sin asignar</option>{ZOOM_ADMIN.map(z=><option key={z}>{z}</option>)}<option value="__otro__">Otro…</option>
                   </select>
                   {zoomOtro&&<input style={{...S.inp,marginTop:"6px"}} value={form.zoom_administrador||""} onChange={e=>setF("zoom_administrador",e.target.value)} placeholder="Nombre del administrador…"/>}
                 </div>}
-                {(form.plataforma==="Zoom MundoChile"||form.plataforma==="Zoom")&&<div style={{...S.camp,minWidth:"238px",maxWidth:"238px"}}>
+                {(form.plataforma==="Zoom MundoChile"||form.plataforma==="Zoom")&&<div style={S.camp}>
                   <label style={S.lbl}>🔗 Link de conexión Zoom</label>
                   <div style={{display:"flex",gap:"6px",alignItems:"center"}}>
                     <input style={{...S.inp,flex:1}} value={form.zoom_link||""} onChange={e=>setF("zoom_link",e.target.value)} placeholder="https://zoom.us/j/…"/>
