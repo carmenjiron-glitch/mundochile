@@ -1173,20 +1173,10 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
   const [campos,setCampos]=useState(()=>({...DEFAULTS,...JSON.parse(localStorage.getItem("mc_ficha_campos")||"{}")}));
   const toggleCampo=(k)=>{const n={...campos,[k]:!campos[k]};setCampos(n);localStorage.setItem("mc_ficha_campos",JSON.stringify(n));};
 
-  const descargarJPG=async()=>{
-    if(!fichaRef.current)return;
-    const h2c=(await import("html2canvas")).default;
-    const canvas=await h2c(fichaRef.current,{scale:2,useCORS:true,backgroundColor:"#F8FAFC"});
-    const link=document.createElement("a");
-    link.download=`ficha-${(cliente?.nombre_empresa||"evento").replace(/\s+/g,"_")}-${evento.fecha_inicio}.jpg`;
-    link.href=canvas.toDataURL("image/jpeg",0.92);
-    link.click();
-  };
-
   const Sec=({label,children})=>(
     <div style={{overflow:"hidden",borderBottom:"1px solid #E5E7EB"}}>
-      <div style={{background:"#1E3A6E",padding:"4px 10px",fontSize:"11px",fontWeight:"600",color:"#FFFFFF",textTransform:"uppercase",letterSpacing:"0.06em"}}>{label}</div>
-      <div style={{padding:"8px 10px",background:"#FFFFFF",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",fontSize:"13px"}}>{children}</div>
+      <div style={{background:"#2D8CFF",padding:"5px 12px",fontSize:"11px",fontWeight:"600",color:"#FFFFFF",textTransform:"uppercase",letterSpacing:"0.06em",borderRadius:"0"}}>{label}</div>
+      <div style={{padding:"8px 10px",background:"#FFFFFF",borderLeft:"3px solid #2D8CFF",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",fontSize:"13px"}}>{children}</div>
     </div>
   );
 
@@ -1225,7 +1215,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
 
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.75)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(6px)",padding:"16px",overflowY:"auto"}}>
-      <div style={{background:"#F8FAFC",borderRadius:"20px",width:"100%",maxWidth:"820px",maxHeight:"92vh",boxShadow:"0 24px 80px rgba(0,0,0,0.3)",display:"flex",flexDirection:"column"}}>
+      <div style={{background:"#F8FAFF",borderRadius:"20px",width:"100%",maxWidth:"820px",maxHeight:"92vh",boxShadow:"0 8px 32px rgba(45,140,255,0.15)",display:"flex",flexDirection:"column"}}>
 
         {/* Selector campos — FUERA del área exportable */}
         <div style={{padding:"10px 20px",borderBottom:"1px solid #E2E8F0",background:"#fff",borderRadius:"20px 20px 0 0",flexShrink:0}}>
@@ -1235,15 +1225,15 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
           </div>
           <div style={{display:"flex",flexWrap:"wrap",gap:"5px"}}>
             {CAMPOS_OPC.map(({k,l})=><button key={k} onClick={()=>toggleCampo(k)}
-              style={{padding:"3px 10px",borderRadius:"20px",cursor:"pointer",fontSize:"12px",fontWeight:"400",fontFamily:"inherit",background:campos[k]?"#1E3A6E":"#E2E8F0",color:campos[k]?"#fff":"#6B7280",border:"none"}}>{l}</button>)}
+              style={{padding:"3px 10px",borderRadius:"20px",cursor:"pointer",fontSize:"12px",fontWeight:"400",fontFamily:"inherit",background:campos[k]?"#2D8CFF":"#E2E8F0",color:campos[k]?"#fff":"#6B7280",border:"none"}}>{l}</button>)}
           </div>
         </div>
 
         {/* Área exportable */}
-        <div id="ficha-exportable" ref={fichaRef} style={{flex:1,overflowY:"auto",background:"#F8FAFC",padding:"10px 12px 12px"}}>
+        <div id="ficha-exportable" ref={fichaRef} style={{flex:1,overflowY:"auto",background:"#F8FAFF",padding:"10px 12px 12px"}}>
 
           {/* Header */}
-          <div style={{display:"flex",alignItems:"center",padding:"8px 16px",borderRadius:"8px",background:"#1E3A6E",color:"#fff",marginBottom:"8px",flexShrink:0}}>
+          <div style={{display:"flex",alignItems:"center",padding:"8px 16px",borderRadius:"8px",background:"#2D8CFF",color:"#fff",marginBottom:"8px",flexShrink:0}}>
             <div style={{flexShrink:0,marginRight:"10px",display:"flex",alignItems:"center"}}>
               <div style={{width:"38px",height:"38px",borderRadius:"50%",background:"#FFFFFF",overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 2px 8px rgba(0,0,0,0.15)"}}>
                 <img src={LOGO_SRC} alt="MundoChile" style={{width:"34px",height:"34px",objectFit:"contain"}}/>
@@ -1334,8 +1324,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
 
         {/* Footer — fuera del área exportable */}
         <div style={{padding:"10px 20px",borderTop:"1px solid #E2E8F0",display:"flex",gap:"8px",justifyContent:"center",flexWrap:"wrap",alignItems:"center",background:"#fff",borderRadius:"0 0 20px 20px",flexShrink:0}}>
-          <button onClick={descargarJPG} style={{padding:"8px 16px",background:"#1E3A6E",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"13px",fontFamily:"inherit"}}>📥 Descargar JPG</button>
-          <button onClick={onCerrar} style={S.btnCancel}>× Cerrar</button>
+          <button onClick={onCerrar} style={{padding:"10px 24px",background:"#2D8CFF",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"13px",fontFamily:"inherit"}}>× Cerrar</button>
         </div>
       </div>
     </div>
