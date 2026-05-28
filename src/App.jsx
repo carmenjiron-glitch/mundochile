@@ -1436,13 +1436,14 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
   return (
     <div style={{padding:"20px 16px 80px",maxWidth:"900px",margin:"0 auto"}}>
       {/* Tabs */}
-      <div style={{display:"flex",gap:"6px",marginBottom:"20px",flexWrap:"wrap"}}>
+      <div style={{display:"flex",flexWrap:"nowrap",gap:"8px",marginBottom:"20px",alignItems:"center",overflowX:"auto"}}>
         {tabs.map(t=><button key={t.id} onClick={()=>{setTab(t.id);setEditando(null);setFormEdit({});}}
           style={{
-            padding:"10px 18px",borderRadius:"10px",cursor:"pointer",fontFamily:"inherit",fontSize:"17px",
+            padding:"8px 16px",borderRadius:"10px",cursor:"pointer",fontFamily:"inherit",fontSize:"13px",
+            height:"36px",whiteSpace:"nowrap",
             background:tab===t.id?"#FFFBEB":"#fff",
             color:tab===t.id?C.azul:C.textoMed,
-            fontWeight:tab===t.id?"600":"600",
+            fontWeight:"500",
             border:tab===t.id?"2px solid #F59E0B":`2px solid ${C.grisBorde}`,
             borderBottom:tab===t.id?"4px solid #F59E0B":`2px solid ${C.grisBorde}`,
             boxShadow:tab===t.id?"0 2px 8px rgba(245,158,11,0.25)":"none"
