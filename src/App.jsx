@@ -1159,7 +1159,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
 
   const Sec=({label,accent="#1E3A6E",children,fullWidth=false})=>(
     <div style={{borderRadius:"8px",overflow:"hidden",marginBottom:"12px",gridColumn:fullWidth?"1/-1":"auto"}}>
-      <div style={{background:`${accent}18`,padding:"6px 16px",fontSize:"13px",fontWeight:"500",color:accent==="#1E3A6E"?"#1E3A6E":"#374151",textTransform:"uppercase",letterSpacing:"0.06em"}}>{label}</div>
+      <div style={{background:"#1E3A6E",padding:"6px 16px",fontSize:"13px",fontWeight:"500",color:"#FFFFFF",textTransform:"uppercase",letterSpacing:"0.06em"}}>{label}</div>
       <div style={{padding:"12px 16px",background:"#FFFFFF",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>{children}</div>
     </div>
   );
@@ -1250,8 +1250,8 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 12px"}}>
 
             {campos.cliente&&<Sec label="Cliente" accent="#E03131" fullWidth>
-              <div style={{fontSize:"16px",fontWeight:"500",color:"#E03131",lineHeight:1.1}}>{cliente?.nombre_empresa||"—"}</div>
-              {cliente?.nombre_contacto&&<div style={{fontSize:"17px",color:"#6B7280",fontStyle:"italic",marginTop:"4px"}}>{cliente.nombre_contacto}</div>}
+              <div style={{fontSize:"19px",fontWeight:"500",color:"#000000",lineHeight:1.1}}>{cliente?.nombre_empresa||"—"}</div>
+              {cliente?.nombre_contacto&&<div style={{fontSize:"15px",color:"#6B7280",fontStyle:"italic",marginTop:"4px"}}>{cliente.nombre_contacto}</div>}
             </Sec>}
 
             {campos.evento&&evento.nombre_evento&&<Sec label="Evento" accent="#3B5BDB" fullWidth>
