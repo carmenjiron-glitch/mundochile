@@ -78,7 +78,7 @@ const Chip = ({ label, emoji }) => {
 };
 
 // ── Componente principal ──────────────────────────────────────────────────────
-export default function EventCard({ ev, diaDe, clientes, interpretes, pares, proveedores=[], onClick, onNavegar, solidPill=false }) {
+export default function EventCard({ ev, diaDe, clientes, interpretes, pares, proveedores=[], onClick, onNavegar, solidPill=false, pillsHalf=false }) {
   const cliente    = clientes.find(c => c.id === ev.cliente_id);
   const borderColor = colorCliente(ev.cliente_id);
   const esPresencial = ev.modalidad === "presencial" || ev.modalidad === "hibrido";
@@ -278,7 +278,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             </div>
 
             {/* Pills intérpretes — 2 columnas */}
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:5 }}>
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:5, ...(pillsHalf?{maxWidth:"50%"}:{}) }}>
               {grupo.items.map((interp, i) => (
                 <span
                   key={i}

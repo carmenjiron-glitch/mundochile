@@ -1689,34 +1689,30 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
 // ─── VISTA AGENDA (F8) ───────────────────────────────────────────────────────
 function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,setFiltros,onAbrir}) {
   const todayRef=useRef(null);
+  const hoyISO=hoy();
   const sorted=[...eventos].sort((a,b)=>a.fecha_inicio.localeCompare(b.fecha_inicio));
-  const byWeek={};
+  const byDay={};
   sorted.forEach(ev=>{
-    const d=desdeISO(ev.fecha_inicio);
-    const dow=d.getDay()===0?6:d.getDay()-1;
-    const lun=new Date(d);lun.setDate(d.getDate()-dow);
-    const key=toISO(lun);
-    if(!byWeek[key])byWeek[key]=[];
-    byWeek[key].push(ev);
+    const key=ev.fecha_inicio;
+    if(!byDay[key])byDay[key]=[];
+    byDay[key].push(ev);
   });
-  useEffect(()=>{if(todayRef.current)todayRef.current.scrollIntoView({behavior:"smooth",block:"start"});},[]);
+  useEffect(()=>{if(todayRef.current)todayRef.current.scrollIntoView({behavior:"instant",block:"start"});},[]);
   return (
     <div style={{padding:"16px 24px 80px",width:"100%",maxWidth:"100%"}}>
-      {!Object.keys(byWeek).length&&<div style={{textAlign:"center",padding:"80px 20px",color:"#fff"}}>
+      {!Object.keys(byDay).length&&<div style={{textAlign:"center",padding:"80px 20px",color:"#fff"}}>
         <div style={{fontSize:"18px",marginBottom:"12px"}}>📅</div>
         <div style={{fontWeight:"500",fontSize:"14px",color:"#fff"}}>No hay eventos que mostrar</div>
       </div>}
-      {Object.entries(byWeek).map(([lunISO,evs])=>{
-        const finSem=new Date(desdeISO(lunISO));finSem.setDate(finSem.getDate()+6);
-        const hoyISO=hoy();
-        const esSemanaActual=lunISO<=hoyISO&&hoyISO<=toISO(finSem);
+      {Object.entries(byDay).map(([fecha,evs])=>{
+        const esHoy=fecha===hoyISO;
         return (
-          <div key={lunISO} ref={esSemanaActual?todayRef:null} style={{marginBottom:"32px"}}>
-            <div style={{background:"rgba(255,255,255,0.12)",color:"#fff",fontSize:"16px",fontWeight:"500",padding:"10px 16px",borderRadius:"8px",margin:"16px 0 8px",letterSpacing:"0.03em"}}>
-              Semana del {formatCorto(lunISO)} al {formatCorto(toISO(finSem))} · {evs.length} evento{evs.length!==1?"s":""}
+          <div key={fecha} ref={esHoy?todayRef:null} style={{marginBottom:"32px"}}>
+            <div style={{background:esHoy?"rgba(34,197,94,0.18)":"rgba(255,255,255,0.12)",color:"#fff",fontSize:"16px",fontWeight:"500",padding:"10px 16px",borderRadius:"8px",margin:"16px 0 8px",letterSpacing:"0.03em",border:esHoy?"1px solid rgba(34,197,94,0.4)":"1px solid transparent"}}>
+              {esHoy?"📅 Hoy — ":""}{formatLargo(fecha)} · {evs.length} evento{evs.length!==1?"s":""}
             </div>
             {evs.map(ev=>(
-              <EventCard key={ev.id} ev={ev} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} onClick={()=>onAbrir(ev)}/>
+              <EventCard key={ev.id} ev={ev} diaDe={fecha} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} onClick={()=>onAbrir(ev)} pillsHalf={true}/>
             ))}
           </div>
         );
