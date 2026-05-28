@@ -248,7 +248,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
           <div key={key} style={{ marginTop:10 }}>
             {/* Título del par */}
             <div style={{
-              fontSize:13, fontWeight:600, color:darken(titleC,0.80),
+              fontSize:12, fontWeight:600, color:darken(titleC,0.80),
               textTransform:"uppercase", letterSpacing:"0.07em",
               marginBottom:5, opacity:0.85,
               whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis",
