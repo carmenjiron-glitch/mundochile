@@ -539,10 +539,10 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           <div style={S.camp}><label style={S.lbl}>🕐 Hora presentación</label><SelHora value={a.hora_presentacion} onChange={v=>edit("hora_presentacion",v)} placeholder="Misma del evento"/></div>
         </div>
         <div style={{display:"flex",gap:"16px",marginTop:"10px",flexWrap:"wrap",alignItems:"center"}}>
-          <label style={{display:"flex",gap:"6px",alignItems:"center",cursor:"pointer",fontSize:"13px",color:a.es_host_zoom?C.rojo:C.textoMed,fontWeight:a.es_host_zoom?"600":"400"}}>
+          <label style={{display:"flex",gap:"6px",alignItems:"center",cursor:"pointer",fontSize:"13px",color:a.es_host_zoom?"#B82E38":C.textoMed,fontWeight:a.es_host_zoom?"600":"400"}}>
             <input type="checkbox" checked={!!a.es_host_zoom} onChange={e=>edit("es_host_zoom",e.target.checked)}/> 🔑 Host Zoom MundoChile
           </label>
-          <div style={{marginLeft:"auto"}}><button onClick={rem} style={{background:"none",border:"none",cursor:"pointer",color:C.rojo,fontWeight:"500",fontSize:"13px"}}>✕ Quitar</button></div>
+          <div style={{marginLeft:"auto"}}><button onClick={rem} style={{background:"none",border:"none",cursor:"pointer",color:"#B82E38",fontWeight:"500",fontSize:"13px"}}>✕ Quitar</button></div>
         </div>
       </div>
     );
@@ -702,7 +702,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           {/* ── TAB INTÉRPRETES (un día) ── */}
           {tab==="interpretes"&&!esMultidia&&<>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"20px"}}>
-              <div style={{fontWeight:"500",color:C.rojo,fontSize:"17px",display:"flex",alignItems:"center",gap:"6px"}}><IconMic size={20}/> Intérpretes asignados</div>
+              <div style={{fontWeight:"500",color:"#B82E38",fontSize:"17px",display:"flex",alignItems:"center",gap:"6px"}}><IconMic size={20}/> Intérpretes asignados</div>
               <button onClick={()=>addAsig()} style={S.btnA}>+ Agregar intérprete</button>
             </div>
             {form.asignaciones.length===0&&<div style={{textAlign:"center",color:C.textoSuave,padding:"40px 20px",border:`2px dashed ${C.grisBorde}`,borderRadius:"12px"}}>Sin intérpretes — Agrega uno arriba</div>}
@@ -728,7 +728,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
               <div key={eIdx} style={{border:`1px solid ${C.grisBorde}`,borderRadius:"10px",padding:"14px",marginBottom:"10px",background:"#fff"}}>
                 <div style={{display:"flex",justifyContent:"space-between",marginBottom:"10px"}}>
                   <div style={{fontWeight:"500",color:C.azul,fontSize:"13px"}}>Equipo #{eIdx+1}</div>
-                  <button onClick={()=>setForm(f=>{const eqs=[...(f.equipos||[])];eqs.splice(eIdx,1);return{...f,equipos:eqs};})} style={{background:"none",border:"none",cursor:"pointer",color:C.rojo,fontWeight:"500"}}>✕</button>
+                  <button onClick={()=>setForm(f=>{const eqs=[...(f.equipos||[])];eqs.splice(eIdx,1);return{...f,equipos:eqs};})} style={{background:"none",border:"none",cursor:"pointer",color:"#B82E38",fontWeight:"500"}}>✕</button>
                 </div>
                 <div style={S.fila}>
                   <div style={S.camp}><label style={S.lbl}>Tipo de sistema</label>
@@ -773,7 +773,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                           <option value="mail">✉️ Mail</option>
                         </select>
                         <input style={{...S.inp,flex:1}} value={c.valor} onChange={e=>setForm(f=>{const eqs=[...(f.equipos||[])];let cs2=[];try{cs2=JSON.parse(eqs[eIdx].proveedor_contacto||"[]");}catch{cs2=[];}cs2[ci]={...cs2[ci],valor:e.target.value};eqs[eIdx]={...eqs[eIdx],proveedor_contacto:JSON.stringify(cs2)};return{...f,equipos:eqs};})} placeholder={c.tipo==="mail"?"correo@ejemplo.com":"+56 9 0000 0000"}/>
-                        <button onClick={()=>setForm(f=>{const eqs=[...(f.equipos||[])];let cs2=[];try{cs2=JSON.parse(eqs[eIdx].proveedor_contacto||"[]");}catch{cs2=[];}cs2.splice(ci,1);eqs[eIdx]={...eqs[eIdx],proveedor_contacto:JSON.stringify(cs2)};return{...f,equipos:eqs};})} style={{background:"none",border:"none",cursor:"pointer",color:C.rojo,fontSize:"16px",padding:"0 4px"}}>×</button>
+                        <button onClick={()=>setForm(f=>{const eqs=[...(f.equipos||[])];let cs2=[];try{cs2=JSON.parse(eqs[eIdx].proveedor_contacto||"[]");}catch{cs2=[];}cs2.splice(ci,1);eqs[eIdx]={...eqs[eIdx],proveedor_contacto:JSON.stringify(cs2)};return{...f,equipos:eqs};})} style={{background:"none",border:"none",cursor:"pointer",color:"#B82E38",fontSize:"16px",padding:"0 4px"}}>×</button>
                       </div>
                     ));})()}
                   </div>
@@ -807,7 +807,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                 {/* Intérpretes del día */}
                 <div style={{marginTop:"12px"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
-                    <div style={{fontWeight:"500",color:C.rojo,display:"flex",alignItems:"center",gap:"5px"}}><IconMic size={16}/> Intérpretes de este día</div>
+                    <div style={{fontWeight:"500",color:"#B82E38",display:"flex",alignItems:"center",gap:"5px"}}><IconMic size={16}/> Intérpretes de este día</div>
                     <button onClick={()=>addAsig(dIdx)} style={S.btnP}>+ Agregar</button>
                   </div>
                   {(dia.asignaciones||[]).length===0&&<div style={{color:C.textoSuave,fontSize:"15px",textAlign:"center",padding:"12px",border:`1.5px dashed ${C.grisBorde}`,borderRadius:"8px"}}>Sin intérpretes para este día</div>}
@@ -823,7 +823,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                     <div key={eIdx} style={{border:`1px solid ${C.grisBorde}`,borderRadius:"10px",padding:"14px",marginBottom:"10px",background:"#fff"}}>
                       <div style={{display:"flex",justifyContent:"space-between",marginBottom:"10px"}}>
                         <div style={{fontWeight:"500",color:C.azul,fontSize:"13px"}}>Equipo #{eIdx+1}</div>
-                        <button onClick={()=>setForm(f=>{const ds=[...f.dias],eqs=[...(ds[dIdx].equipos||[])];eqs.splice(eIdx,1);ds[dIdx]={...ds[dIdx],equipos:eqs};return{...f,dias:ds};})} style={{background:"none",border:"none",cursor:"pointer",color:C.rojo,fontWeight:"500"}}>✕</button>
+                        <button onClick={()=>setForm(f=>{const ds=[...f.dias],eqs=[...(ds[dIdx].equipos||[])];eqs.splice(eIdx,1);ds[dIdx]={...ds[dIdx],equipos:eqs};return{...f,dias:ds};})} style={{background:"none",border:"none",cursor:"pointer",color:"#B82E38",fontWeight:"500"}}>✕</button>
                       </div>
                       <div style={S.fila}>
                         <div style={S.camp}><label style={S.lbl}>Tipo de sistema</label>
@@ -868,7 +868,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                                 <option value="mail">✉️ Mail</option>
                               </select>
                               <input style={{...S.inp,flex:1}} value={c.valor} onChange={e=>{let cs2=[];try{cs2=JSON.parse(eq.proveedor_contacto||"[]");}catch{cs2=[];}cs2[ci]={...cs2[ci],valor:e.target.value};editEq(dIdx,eIdx,"proveedor_contacto",JSON.stringify(cs2));}} placeholder={c.tipo==="mail"?"correo@ejemplo.com":"+56 9 0000 0000"}/>
-                              <button onClick={()=>{let cs2=[];try{cs2=JSON.parse(eq.proveedor_contacto||"[]");}catch{cs2=[];}cs2.splice(ci,1);editEq(dIdx,eIdx,"proveedor_contacto",JSON.stringify(cs2));}} style={{background:"none",border:"none",cursor:"pointer",color:C.rojo,fontSize:"16px",padding:"0 4px"}}>×</button>
+                              <button onClick={()=>{let cs2=[];try{cs2=JSON.parse(eq.proveedor_contacto||"[]");}catch{cs2=[];}cs2.splice(ci,1);editEq(dIdx,eIdx,"proveedor_contacto",JSON.stringify(cs2));}} style={{background:"none",border:"none",cursor:"pointer",color:"#B82E38",fontSize:"16px",padding:"0 4px"}}>×</button>
                             </div>
                           ));})()}
                         </div>
