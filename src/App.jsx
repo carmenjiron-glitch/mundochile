@@ -1175,8 +1175,8 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
 
   const Sec=({label,children})=>(
     <div style={{overflow:"hidden",borderBottom:"1px solid #E5E7EB"}}>
-      <div style={{background:"#1A6FD4",padding:"5px 12px",fontSize:"11px",fontWeight:"600",color:"#FFFFFF",textTransform:"uppercase",letterSpacing:"0.06em",borderRadius:"0"}}>{label}</div>
-      <div style={{padding:"8px 10px",background:"#FFFFFF",borderLeft:"3px solid #1A6FD4",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",fontSize:"13px"}}>{children}</div>
+      <div style={{background:"#2E7BC4",padding:"5px 12px",fontSize:"11px",fontWeight:"600",color:"#FFFFFF",textTransform:"uppercase",letterSpacing:"0.06em",borderRadius:"0"}}>{label}</div>
+      <div style={{padding:"8px 10px",background:"#FFFFFF",borderLeft:"3px solid #2E7BC4",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",fontSize:"13px"}}>{children}</div>
     </div>
   );
 
@@ -1225,7 +1225,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
           </div>
           <div style={{display:"flex",flexWrap:"wrap",gap:"5px"}}>
             {CAMPOS_OPC.map(({k,l})=><button key={k} onClick={()=>toggleCampo(k)}
-              style={{padding:"3px 10px",borderRadius:"20px",cursor:"pointer",fontSize:"12px",fontWeight:"400",fontFamily:"inherit",background:campos[k]?"#1A6FD4":"#E2E8F0",color:campos[k]?"#fff":"#6B7280",border:"none"}}>{l}</button>)}
+              style={{padding:"3px 10px",borderRadius:"20px",cursor:"pointer",fontSize:"12px",fontWeight:"400",fontFamily:"inherit",background:campos[k]?"#2E7BC4":"#E2E8F0",color:campos[k]?"#fff":"#6B7280",border:"none"}}>{l}</button>)}
           </div>
         </div>
 
@@ -1233,7 +1233,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
         <div id="ficha-exportable" ref={fichaRef} style={{flex:1,overflowY:"auto",background:"#F8FAFF",padding:"10px 12px 12px"}}>
 
           {/* Header */}
-          <div style={{display:"flex",alignItems:"center",padding:"10px 16px",borderRadius:"8px",background:"linear-gradient(135deg, #1A6FD4 0%, #0D4EA6 100%)",color:"#fff",marginBottom:"8px",flexShrink:0}}>
+          <div style={{display:"flex",alignItems:"center",padding:"10px 16px",borderRadius:"8px",background:"linear-gradient(135deg, #2E7BC4 0%, #1A5A9E 100%)",color:"#fff",marginBottom:"8px",flexShrink:0}}>
             <div style={{flexShrink:0,marginRight:"10px",display:"flex",alignItems:"center"}}>
               <div style={{width:"38px",height:"38px",borderRadius:"50%",background:"#FFFFFF",overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 0 0 3px rgba(255,255,255,0.3)"}}>
                 <img src={LOGO_SRC} alt="MundoChile" style={{width:"34px",height:"34px",objectFit:"contain"}}/>
@@ -1251,7 +1251,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
 
           {/* Dos columnas - flat grid para alineación exacta */}
           {(()=>{
-            const AC="#1A6FD4";
+            const AC="#2E7BC4";
             const lH={background:AC,padding:"5px 12px",fontSize:"11px",fontWeight:"600",color:"#FFFFFF",textTransform:"uppercase",letterSpacing:"0.06em",borderRight:"1px solid rgba(255,255,255,0.2)",borderBottom:"1px solid rgba(255,255,255,0.15)"};
             const rH={...lH,borderRight:"none"};
             const lB={padding:"8px 10px",background:"#FFFFFF",borderLeft:`3px solid ${AC}`,WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",fontSize:"13px",borderRight:"1px solid #E5E7EB",borderBottom:"1px solid #E5E7EB"};
@@ -1307,7 +1307,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
 
         {/* Footer — fuera del área exportable */}
         <div style={{padding:"10px 20px",borderTop:"1px solid #E2E8F0",display:"flex",gap:"8px",justifyContent:"center",flexWrap:"wrap",alignItems:"center",background:"#fff",borderRadius:"0 0 20px 20px",flexShrink:0}}>
-          <button onClick={onCerrar} style={{padding:"10px 24px",background:"#1A6FD4",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"13px",fontFamily:"inherit"}}>× Cerrar</button>
+          <button onClick={onCerrar} style={{padding:"10px 24px",background:"#2E7BC4",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"13px",fontFamily:"inherit"}}>× Cerrar</button>
         </div>
       </div>
     </div>
