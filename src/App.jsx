@@ -1769,7 +1769,7 @@ function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,
         const idDia=`agenda-dia-${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
         return (
           <div key={fecha} id={idDia} style={{marginBottom:"32px"}}>
-            <div style={{background:esHoy?"rgba(34,197,94,0.18)":"rgba(255,255,255,0.12)",color:"#fff",fontSize:"16px",fontWeight:"500",padding:"10px 16px",borderRadius:"8px",margin:"16px 0 8px",letterSpacing:"0.03em",border:esHoy?"1px solid rgba(34,197,94,0.4)":"1px solid transparent"}}>
+            <div style={{background:esHoy?"rgba(34,197,94,0.18)":"rgba(255,255,255,0.12)",color:"#fff",fontSize:"14px",fontWeight:"500",padding:"10px 16px",borderRadius:"8px",margin:"16px 0 8px",letterSpacing:"0.03em",border:esHoy?"1px solid rgba(34,197,94,0.4)":"1px solid transparent"}}>
               {esHoy?"📅 Hoy — ":""}{formatLargo(fecha)} · {evs.length} evento{evs.length!==1?"s":""}
             </div>
             {evs.map(ev=>(
