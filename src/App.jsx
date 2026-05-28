@@ -946,6 +946,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                 })()}
               </div>
               {cliente?.nombre_contacto&&<div style={{fontSize:"17px",fontWeight:"500",color:"#6B7280",fontStyle:"italic",marginTop:"4px"}}>Contacto: {cliente.nombre_contacto}</div>}
+              {(evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion)&&<div style={{fontSize:"17px",fontWeight:"500",fontStyle:"normal",color:"#111827",marginTop:"4px"}}><span style={{fontWeight:"600",color:"#6B7280"}}>Nombre del evento: </span>{evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion}</div>}
               {evento.nro_oc&&<div style={{fontSize:"14px",color:"#6B7280",marginTop:"4px"}}>N° OC: {evento.nro_oc}</div>}
             </div>
             <div style={{display:"flex",flexDirection:"column",gap:"6px",alignItems:"flex-end",flexShrink:0}}>
@@ -961,7 +962,6 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
         {/* Cuerpo */}
         <div style={{overflowY:"auto",flex:1,padding:"24px 28px"}}>
           {/* Evento + Fecha + Horario */}
-          {evento.nombre_evento&&<div style={{fontSize:"14px",fontWeight:"500",color:"#0F172A",marginBottom:"8px"}}>{evento.nombre_evento}</div>}
           <div style={{fontSize:"16px",fontWeight:"500",color:"#1E293B",marginBottom:"4px"}}>
             📅 {esMultidia?`${formatMedioES(evento.fecha_inicio)} → ${formatMedioES(evento.fecha_termino)}`:formatLargo(evento.fecha_inicio)}
           </div>
