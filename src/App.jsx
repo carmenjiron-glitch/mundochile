@@ -1731,9 +1731,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
 }
 
 // ─── VISTA AGENDA (F8) ───────────────────────────────────────────────────────
-function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,setFiltros,onAbrir}) {
-  const todayRef=useRef(null);
-  const scrolledRef=useRef(false);
+function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,setFiltros,onAbrir,vista}) {
   const hoyISO=hoy();
   const sorted=[...eventos].sort((a,b)=>a.fecha_inicio.localeCompare(b.fecha_inicio));
   const byDay={};
@@ -1743,13 +1741,14 @@ function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,
     byDay[key].push(ev);
   });
   const fechas=Object.keys(byDay);
-  const targetFecha=fechas.find(f=>f>=hoyISO)||fechas[0]||"";
   useEffect(()=>{
-    if(!scrolledRef.current&&todayRef.current){
-      todayRef.current.scrollIntoView({behavior:"instant",block:"start"});
-      scrolledRef.current=true;
-    }
-  },[targetFecha]);
+    if(vista!=="agenda")return;
+    const h=new Date();
+    const idHoy=`agenda-dia-${h.getFullYear()}-${h.getMonth()}-${h.getDate()}`;
+    const el=document.getElementById(idHoy);
+    if(el){el.scrollIntoView({block:"start",behavior:"instant"});}
+    else{const prox=document.querySelectorAll("[id^='agenda-dia-']");if(prox.length>0)prox[0].scrollIntoView({block:"start",behavior:"instant"});}
+  },[vista]);
   return (
     <div style={{padding:"16px 24px 80px",width:"100%",maxWidth:"100%"}}>
       {!fechas.length&&<div style={{textAlign:"center",padding:"80px 20px",color:"#fff"}}>
@@ -1758,9 +1757,10 @@ function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,
       </div>}
       {Object.entries(byDay).map(([fecha,evs])=>{
         const esHoy=fecha===hoyISO;
-        const esTarget=fecha===targetFecha;
+        const d=desdeISO(fecha);
+        const idDia=`agenda-dia-${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
         return (
-          <div key={fecha} ref={esTarget?todayRef:null} style={{marginBottom:"32px"}}>
+          <div key={fecha} id={idDia} style={{marginBottom:"32px"}}>
             <div style={{background:esHoy?"rgba(34,197,94,0.18)":"rgba(255,255,255,0.12)",color:"#fff",fontSize:"16px",fontWeight:"500",padding:"10px 16px",borderRadius:"8px",margin:"16px 0 8px",letterSpacing:"0.03em",border:esHoy?"1px solid rgba(34,197,94,0.4)":"1px solid transparent"}}>
               {esHoy?"📅 Hoy — ":""}{formatLargo(fecha)} · {evs.length} evento{evs.length!==1?"s":""}
             </div>
@@ -2231,7 +2231,7 @@ export default function App() {
         {vista==="semana"&&renderSemana()}
         {vista==="dia"&&renderDia()}
         {vista==="mes"&&renderMes()}
-        {vista==="agenda"&&<VistaAgenda eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} filtros={filtros} setFiltros={setFiltros} onAbrir={abrirEvento}/>}
+        {vista==="agenda"&&<VistaAgenda vista={vista} eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} filtros={filtros} setFiltros={setFiltros} onAbrir={abrirEvento}/>}
       </>}
       {pantalla==="config"&&esAdmin&&<PantallaConfig clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} onActualizar={cargarDatos} perfil={perfil}/>}
 
