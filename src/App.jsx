@@ -1175,8 +1175,8 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
 
   const Sec=({label,children})=>(
     <div style={{overflow:"hidden",borderBottom:"1px solid #E5E7EB"}}>
-      <div style={{background:"#2D8CFF",padding:"5px 12px",fontSize:"11px",fontWeight:"600",color:"#FFFFFF",textTransform:"uppercase",letterSpacing:"0.06em",borderRadius:"0"}}>{label}</div>
-      <div style={{padding:"8px 10px",background:"#FFFFFF",borderLeft:"3px solid #2D8CFF",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",fontSize:"13px"}}>{children}</div>
+      <div style={{background:"#1A6FD4",padding:"5px 12px",fontSize:"11px",fontWeight:"600",color:"#FFFFFF",textTransform:"uppercase",letterSpacing:"0.06em",borderRadius:"0"}}>{label}</div>
+      <div style={{padding:"8px 10px",background:"#FFFFFF",borderLeft:"3px solid #1A6FD4",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",fontSize:"13px"}}>{children}</div>
     </div>
   );
 
@@ -1225,7 +1225,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
           </div>
           <div style={{display:"flex",flexWrap:"wrap",gap:"5px"}}>
             {CAMPOS_OPC.map(({k,l})=><button key={k} onClick={()=>toggleCampo(k)}
-              style={{padding:"3px 10px",borderRadius:"20px",cursor:"pointer",fontSize:"12px",fontWeight:"400",fontFamily:"inherit",background:campos[k]?"#2D8CFF":"#E2E8F0",color:campos[k]?"#fff":"#6B7280",border:"none"}}>{l}</button>)}
+              style={{padding:"3px 10px",borderRadius:"20px",cursor:"pointer",fontSize:"12px",fontWeight:"400",fontFamily:"inherit",background:campos[k]?"#1A6FD4":"#E2E8F0",color:campos[k]?"#fff":"#6B7280",border:"none"}}>{l}</button>)}
           </div>
         </div>
 
@@ -1233,98 +1233,81 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
         <div id="ficha-exportable" ref={fichaRef} style={{flex:1,overflowY:"auto",background:"#F8FAFF",padding:"10px 12px 12px"}}>
 
           {/* Header */}
-          <div style={{display:"flex",alignItems:"center",padding:"8px 16px",borderRadius:"8px",background:"#2D8CFF",color:"#fff",marginBottom:"8px",flexShrink:0}}>
+          <div style={{display:"flex",alignItems:"center",padding:"10px 16px",borderRadius:"8px",background:"linear-gradient(135deg, #1A6FD4 0%, #0D4EA6 100%)",color:"#fff",marginBottom:"8px",flexShrink:0}}>
             <div style={{flexShrink:0,marginRight:"10px",display:"flex",alignItems:"center"}}>
-              <div style={{width:"38px",height:"38px",borderRadius:"50%",background:"#FFFFFF",overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 2px 8px rgba(0,0,0,0.15)"}}>
+              <div style={{width:"38px",height:"38px",borderRadius:"50%",background:"#FFFFFF",overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 0 0 3px rgba(255,255,255,0.3)"}}>
                 <img src={LOGO_SRC} alt="MundoChile" style={{width:"34px",height:"34px",objectFit:"contain"}}/>
               </div>
             </div>
             <div style={{flex:1,minWidth:0}}>
-              <div style={{fontSize:"14px",fontWeight:"500",color:"#fff",letterSpacing:"0.04em",lineHeight:1}}>MundoChile</div>
-              <div style={{fontSize:"11px",color:"rgba(255,255,255,0.70)",marginTop:"2px",letterSpacing:"0.05em"}}>TRANSLATIONS & INTERPRETERS</div>
+              <div style={{fontSize:"20px",fontWeight:"700",color:"#fff",letterSpacing:"0.02em",lineHeight:1}}>MundoChile</div>
+              <div style={{fontSize:"11px",color:"rgba(255,255,255,0.85)",marginTop:"2px",letterSpacing:"0.15em"}}>TRANSLATIONS & INTERPRETERS</div>
             </div>
             <div style={{textAlign:"right",flexShrink:0}}>
-              <div style={{fontSize:"11px",color:"rgba(255,255,255,0.65)",textTransform:"uppercase",letterSpacing:"0.05em"}}>Generado el</div>
-              <div style={{fontSize:"13px",fontWeight:"500",color:"#fff"}}>{new Date().toLocaleDateString("es-CL",{day:"numeric",month:"long",year:"numeric"})}</div>
+              <div style={{fontSize:"10px",color:"rgba(255,255,255,0.75)",textTransform:"uppercase",letterSpacing:"0.08em"}}>Generado el</div>
+              <div style={{fontSize:"16px",fontWeight:"600",color:"#fff"}}>{new Date().toLocaleDateString("es-CL",{day:"numeric",month:"long",year:"numeric"})}</div>
             </div>
           </div>
 
-          {/* Dos columnas */}
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0",border:"1px solid #E5E7EB",borderRadius:"8px",overflow:"hidden",background:"#fff"}}>
+          {/* Dos columnas - flat grid para alineación exacta */}
+          {(()=>{
+            const AC="#1A6FD4";
+            const lH={background:AC,padding:"5px 12px",fontSize:"11px",fontWeight:"600",color:"#FFFFFF",textTransform:"uppercase",letterSpacing:"0.06em",borderRight:"1px solid rgba(255,255,255,0.2)",borderBottom:"1px solid rgba(255,255,255,0.15)"};
+            const rH={...lH,borderRight:"none"};
+            const lB={padding:"8px 10px",background:"#FFFFFF",borderLeft:`3px solid ${AC}`,WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",fontSize:"13px",borderRight:"1px solid #E5E7EB",borderBottom:"1px solid #E5E7EB"};
+            const rB={...lB,borderRight:"none"};
+            const eS={height:0,padding:0,overflow:"hidden",border:"none",margin:0};
+            const showC=campos.cliente;
+            const showI=campos.interpretes&&!esMultidia&&(evento.asignaciones||[]).length>0;
+            const showT=campos.tipo||campos.modalidad;
+            const showF=campos.facturacion;
+            const showFH=campos.fecha||campos.horario;
+            const showCo=campos.comentarios&&!!evento.comentarios;
+            const showJ=campos.jornada&&!!evento.jornada;
+            const showEv=campos.evento&&!!evento.nombre_evento;
+            const showL=(campos.lugar&&esPresencial&&!!evento.lugar)||(campos.plataforma&&!esPresencial);
+            const showEq=campos.equipos&&(evento.evento_dias||[]).flatMap(d=>d.equipos_dia||[]).length>0;
+            return(
+              <div style={{border:"1px solid #E5E7EB",borderRadius:"8px",overflow:"hidden",display:"grid",gridTemplateColumns:"1fr 1fr",alignItems:"start"}}>
+                {showC?<div style={lH}>Cliente</div>:<div style={eS}/>}
+                {showI?<div style={rH}>Intérpretes</div>:<div style={eS}/>}
+                {showC?<div style={lB}><div style={{fontSize:"18px",fontWeight:"700",color:"#000000",lineHeight:1.2}}>{cliente?.nombre_empresa||"—"}</div>{cliente?.nombre_contacto&&<div style={{fontSize:"13px",color:"#6B7280",fontStyle:"italic",marginTop:"3px"}}>{cliente.nombre_contacto}</div>}</div>:<div style={eS}/>}
+                {showI?<div style={rB}>{renderGrupos(evento.asignaciones)}</div>:<div style={eS}/>}
 
-            {/* COLUMNA IZQUIERDA */}
-            <div style={{borderRight:"1px solid #E5E7EB"}}>
-              {campos.cliente&&<Sec label="Cliente">
-                <div style={{fontSize:"18px",fontWeight:"700",color:"#000000",lineHeight:1.2}}>{cliente?.nombre_empresa||"—"}</div>
-                {cliente?.nombre_contacto&&<div style={{fontSize:"13px",color:"#6B7280",fontStyle:"italic",marginTop:"3px"}}>{cliente.nombre_contacto}</div>}
-              </Sec>}
+                {showT?<div style={lH}>Tipo / Modalidad</div>:<div style={eS}/>}
+                {showF?<div style={rH}>Estado de Facturación</div>:<div style={eS}/>}
+                {showT?<div style={lB}><div style={{display:"flex",gap:"6px",flexWrap:"wrap",alignItems:"center"}}>{campos.tipo&&<span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"3px 8px",borderRadius:"20px",fontSize:"11px",fontWeight:"500",lineHeight:"1.4",color:(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c,background:(B_TIPO[evento.tipo]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>{evento.tipo==="Simultánea"?<IconoSimultanea/>:evento.tipo==="Consecutiva"?"🎤":"🤫"} {evento.tipo}</span>}{campos.modalidad&&<span style={{display:"inline-flex",alignItems:"center",padding:"3px 8px",borderRadius:"20px",fontSize:"11px",fontWeight:"500",lineHeight:"1.4",color:(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c,background:(B_MOD[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?"📍":evento.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evento.modalidad]}</span>}</div></div>:<div style={eS}/>}
+                {showF?<div style={rB}>{(()=>{const be=B_EST(evento.estado);return<span style={{display:"inline-flex",alignItems:"center",padding:"3px 8px",borderRadius:"20px",fontSize:"11px",fontWeight:"500",lineHeight:"1.4",color:be.c,background:be.bg,border:`2px solid ${be.b||be.c}`,whiteSpace:"nowrap"}}>{evento.estado==="Facturado"?"✓ Facturado":"🟠 Facturación Pendiente"}</span>;})()}</div>:<div style={eS}/>}
 
-              {(campos.tipo||campos.modalidad)&&<Sec label="Tipo / Modalidad">
-                <div style={{display:"flex",gap:"6px",flexWrap:"wrap",alignItems:"center"}}>
-                  {campos.tipo&&<span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"3px 8px",borderRadius:"20px",fontSize:"11px",fontWeight:"500",lineHeight:"1.4",color:(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c,background:(B_TIPO[evento.tipo]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>{evento.tipo==="Simultánea"?<IconoSimultanea/>:evento.tipo==="Consecutiva"?"🎤":"🤫"} {evento.tipo}</span>}
-                  {campos.modalidad&&<span style={{display:"inline-flex",alignItems:"center",padding:"3px 8px",borderRadius:"20px",fontSize:"11px",fontWeight:"500",lineHeight:"1.4",color:(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c,background:(B_MOD[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?"📍":evento.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evento.modalidad]}</span>}
-                </div>
-              </Sec>}
+                {showFH?<div style={lH}>Fecha / Horario</div>:<div style={eS}/>}
+                {showCo?<div style={rH}>Comentarios</div>:<div style={eS}/>}
+                {showFH?<div style={lB}><div style={{display:"flex",gap:"12px",flexWrap:"wrap",alignItems:"center"}}>{campos.fecha&&<div style={{fontSize:"13px",fontWeight:"500",color:"#0F172A"}}>{esMultidia?`${formatCorto(evento.fecha_inicio)} → ${formatCorto(evento.fecha_termino)}`:formatLargo(evento.fecha_inicio)}</div>}{campos.horario&&<div style={{fontSize:"13px",fontWeight:"500",color:"#0F172A"}}>🕐 {evento.hora_inicio?.slice(0,5)} – {evento.hora_termino?.slice(0,5)} hrs</div>}</div></div>:<div style={eS}/>}
+                {showCo?<div style={rB}><div style={{fontSize:"12px",color:"#0F172A",lineHeight:1.5}}>{evento.comentarios}</div></div>:<div style={eS}/>}
 
-              {(campos.fecha||campos.horario)&&<Sec label="Fecha / Horario">
-                <div style={{display:"flex",gap:"12px",flexWrap:"wrap",alignItems:"center"}}>
-                  {campos.fecha&&<div style={{fontSize:"13px",fontWeight:"500",color:"#0F172A"}}>{esMultidia?`${formatCorto(evento.fecha_inicio)} → ${formatCorto(evento.fecha_termino)}`:formatLargo(evento.fecha_inicio)}</div>}
-                  {campos.horario&&<div style={{fontSize:"13px",fontWeight:"500",color:"#0F172A"}}>🕐 {evento.hora_inicio?.slice(0,5)} – {evento.hora_termino?.slice(0,5)} hrs</div>}
-                </div>
-              </Sec>}
+                {showJ?<div style={lH}>Jornada</div>:<div style={eS}/>}
+                {showEv?<div style={rH}>Nombre del Evento</div>:<div style={eS}/>}
+                {showJ?<div style={lB}><div style={{fontSize:"13px",fontWeight:"500",color:"#0F172A"}}>⏱ {evento.jornada}{evento.jornada_personalizada?` — ${evento.jornada_personalizada}`:""}</div></div>:<div style={eS}/>}
+                {showEv?<div style={rB}><div style={{fontSize:"13px",fontWeight:"500",color:"#1E293B"}}>{evento.nombre_evento}</div>{evento.nro_oc&&<div style={{fontSize:"12px",color:"#6B7280",marginTop:"3px"}}>N° OC: {evento.nro_oc}</div>}</div>:<div style={eS}/>}
 
-              {campos.jornada&&evento.jornada&&<Sec label="Jornada">
-                <div style={{fontSize:"13px",fontWeight:"500",color:"#0F172A"}}>⏱ {evento.jornada}{evento.jornada_personalizada?` — ${evento.jornada_personalizada}`:""}</div>
-              </Sec>}
+                {showL?<div style={lH}>{esPresencial?"Lugar":"Plataforma"}</div>:<div style={eS}/>}
+                {showEq?<div style={rH}>Equipos AV</div>:<div style={eS}/>}
+                {showL?<div style={lB}>{campos.lugar&&esPresencial&&evento.lugar?<><div style={{fontSize:"13px",fontWeight:"500",color:"#0F172A"}}>📍 {evento.lugar}</div>{evento.lugar_detalle&&<div style={{fontSize:"12px",color:"#475569",marginTop:"3px"}}>{evento.lugar_detalle}</div>}</>:campos.plataforma&&!esPresencial?<PlatformChip platform={evento.plataforma==="Zoom"?"Zoom MundoChile":evento.plataforma} isMundoChile={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")} extra={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")?evento.zoom_administrador:""}/>:null}</div>:<div style={eS}/>}
+                {showEq?<div style={rB}>{(evento.evento_dias||[]).flatMap(d=>d.equipos_dia||[]).map((eq,i)=><div key={i} style={{fontSize:"12px",color:"#0F172A",marginBottom:"3px",display:"flex",alignItems:"center",gap:"5px"}}><IconAV size={14}/> {eq.tipo_equipo==="fijo"?"Sistema fijo":eq.tipo_equipo==="portatil"?"Sistema portátil":"Cabina portátil"}{eq.proveedor_nombre&&` · ${eq.proveedor_nombre}`}{eq.num_receptores>0&&` · ${eq.num_receptores} receptores`}</div>)}</div>:<div style={eS}/>}
 
-              {campos.lugar&&esPresencial&&evento.lugar&&<Sec label="Lugar">
-                <div style={{fontSize:"13px",fontWeight:"500",color:"#0F172A"}}>📍 {evento.lugar}</div>
-                {evento.lugar_detalle&&<div style={{fontSize:"12px",color:"#475569",marginTop:"3px"}}>{evento.lugar_detalle}</div>}
-              </Sec>}
-
-              {campos.plataforma&&!esPresencial&&<Sec label="Plataforma">
-                <PlatformChip platform={evento.plataforma==="Zoom"?"Zoom MundoChile":evento.plataforma} isMundoChile={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")} extra={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")?evento.zoom_administrador:""}/>
-              </Sec>}
-            </div>
-
-            {/* COLUMNA DERECHA */}
-            <div>
-              {campos.interpretes&&!esMultidia&&(evento.asignaciones||[]).length>0&&<Sec label="Intérpretes">
-                {renderGrupos(evento.asignaciones)}
-              </Sec>}
-
-              {campos.interpretes&&esMultidia&&dias.map((dia,dIdx)=>(
-                <Sec key={dIdx} label={`Día ${dIdx+1}/${dias.length} · ${formatCorto(dia.fecha)} · ${dia.hora_inicio?.slice(0,5)}–${dia.hora_termino?.slice(0,5)}`}>
-                  {renderGrupos(dia.asignaciones_dia||[])}
-                </Sec>
-              ))}
-
-              {campos.equipos&&(evento.evento_dias||[]).flatMap(d=>d.equipos_dia||[]).length>0&&<Sec label="Equipos AV">
-                {(evento.evento_dias||[]).flatMap(d=>d.equipos_dia||[]).map((eq,i)=>(
-                  <div key={i} style={{fontSize:"12px",color:"#0F172A",marginBottom:"3px",display:"flex",alignItems:"center",gap:"5px"}}>
-                    <IconAV size={14}/> {eq.tipo_equipo==="fijo"?"Sistema fijo":eq.tipo_equipo==="portatil"?"Sistema portátil":"Cabina portátil"}
-                    {eq.proveedor_nombre&&` · ${eq.proveedor_nombre}`}{eq.num_receptores>0&&` · ${eq.num_receptores} receptores`}
+                {campos.interpretes&&esMultidia&&dias.map((dia,dIdx)=>(
+                  <div key={dIdx} style={{gridColumn:"1/-1",overflow:"hidden",borderBottom:"1px solid #E5E7EB"}}>
+                    <div style={{background:AC,padding:"5px 12px",fontSize:"11px",fontWeight:"600",color:"#FFFFFF",textTransform:"uppercase",letterSpacing:"0.06em"}}>Día {dIdx+1}/{dias.length} · {formatCorto(dia.fecha)} · {dia.hora_inicio?.slice(0,5)}–{dia.hora_termino?.slice(0,5)}</div>
+                    <div style={{padding:"8px 10px",background:"#FFFFFF",borderLeft:`3px solid ${AC}`,WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",fontSize:"13px"}}>{renderGrupos(dia.asignaciones_dia||[])}</div>
                   </div>
                 ))}
-              </Sec>}
-
-              {campos.facturacion&&<Sec label="Estado de facturación">{(()=>{const be=B_EST(evento.estado);return<span style={{display:"inline-flex",alignItems:"center",padding:"3px 8px",borderRadius:"20px",fontSize:"11px",fontWeight:"500",lineHeight:"1.4",color:be.c,background:be.bg,border:`2px solid ${be.b||be.c}`,whiteSpace:"nowrap"}}>{evento.estado==="Facturado"?"✓ Facturado":"🟠 Facturación Pendiente"}</span>;})()}</Sec>}
-
-              {campos.comentarios&&evento.comentarios&&<Sec label="Comentarios">
-                <div style={{fontSize:"12px",color:"#0F172A",lineHeight:1.5}}>{evento.comentarios}</div>
-              </Sec>}
-
-              {campos.evento&&evento.nombre_evento&&<Sec label="Nombre del Evento">
-                <div style={{fontSize:"13px",fontWeight:"500",color:"#1E293B"}}>{evento.nombre_evento}</div>
-                {evento.nro_oc&&<div style={{fontSize:"12px",color:"#6B7280",marginTop:"3px"}}>N° OC: {evento.nro_oc}</div>}
-              </Sec>}
-            </div>
-          </div>
+              </div>
+            );
+          })()}
         </div>
 
         {/* Footer — fuera del área exportable */}
         <div style={{padding:"10px 20px",borderTop:"1px solid #E2E8F0",display:"flex",gap:"8px",justifyContent:"center",flexWrap:"wrap",alignItems:"center",background:"#fff",borderRadius:"0 0 20px 20px",flexShrink:0}}>
-          <button onClick={onCerrar} style={{padding:"10px 24px",background:"#2D8CFF",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"13px",fontFamily:"inherit"}}>× Cerrar</button>
+          <button onClick={onCerrar} style={{padding:"10px 24px",background:"#1A6FD4",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"13px",fontFamily:"inherit"}}>× Cerrar</button>
         </div>
       </div>
     </div>
