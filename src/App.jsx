@@ -2356,9 +2356,12 @@ export default function App() {
               const grupoEntries=Object.entries(grupos);
               return (
                 <div key={ev.id} onClick={()=>abrirEvento(ev)} style={{background:"#FFFFFF",borderLeft:`16px solid ${borderC}`,borderTop:`6px solid ${borderC}`,borderRadius:"0 12px 12px 0",padding:"20px 24px",boxShadow:"0 2px 12px rgba(0,0,0,0.10)",cursor:"pointer"}}>
-                  {/* Nombre cliente + pill multidía */}
+                  {/* Nombre cliente + punto hoy/mañana + pill multidía */}
                   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,marginBottom:4}}>
-                    <div style={{fontSize:"34px",fontWeight:"600",color:"#0F172A",lineHeight:1.2}}>{cli?.nombre_empresa||"—"}</div>
+                    <div style={{display:"flex",alignItems:"center",flexWrap:"nowrap"}}>
+                      <div style={{fontSize:"34px",fontWeight:"600",color:"#0F172A",lineHeight:1.2}}>{cli?.nombre_empresa||"—"}</div>
+                      {(()=>{const hoyD=new Date();const manana=new Date();manana.setDate(hoyD.getDate()+1);const fechaEv=desdeISO(ev.fecha_inicio);const esHoyDot=fechaEv.toDateString()===hoyD.toDateString();const esManDot=fechaEv.toDateString()===manana.toDateString();if(!esHoyDot&&!esManDot)return null;return(<div style={{width:"12px",height:"12px",borderRadius:"50%",background:esHoyDot?"#22C55E":"#EAB308",boxShadow:esHoyDot?"0 0 8px #22C55E":"0 0 8px #EAB308",marginLeft:"16px",flexShrink:0}}/>);})()}
+                    </div>
                     {diaXdeY&&<div style={{display:"inline-flex",alignItems:"center",gap:4,padding:"3px 8px",borderRadius:20,background:"#E8F4FD",color:"#1971C2",fontSize:14,fontWeight:700,border:"1px solid #BAD7F0",whiteSpace:"nowrap",flexShrink:0}}>📅 Día {diaXdeY.x} de {diaXdeY.y}</div>}
                   </div>
                   {cli?.nombre_contacto&&<div style={{fontSize:"16px",fontWeight:"500",color:"#6B7280",fontStyle:"italic",marginBottom:4}}>Contacto: {cli.nombre_contacto}</div>}
