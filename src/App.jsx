@@ -2028,13 +2028,16 @@ export default function App() {
           {diasLF.map((d,i)=>{
             const iso=toISO(d),evs=evsDia(iso),esHoy=iso===hoy();
             const mesLargo=MESES_L[d.getMonth()].charAt(0).toUpperCase()+MESES_L[d.getMonth()].slice(1);
-            const colBg=esHoy?"rgba(255,255,255,0.25)":evs.length>0?"rgba(255,255,255,0.13)":"rgba(255,255,255,0.07)";
+            const colBg=esHoy?"rgba(255,255,255,0.06)":evs.length>0?"rgba(255,255,255,0.13)":"rgba(255,255,255,0.07)";
             return <div key={i} style={{background:colBg,backdropFilter:"blur(4px)",WebkitBackdropFilter:"blur(4px)",borderRadius:"12px",padding:"10px",minHeight:"calc(100vh - 260px)"}}>
-              <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{textAlign:"center",padding:"12px 8px",borderRadius:"10px",marginBottom:"8px",background:"rgba(255,255,255,0.15)",cursor:"pointer",transition:"background 0.15s"}}
+              <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{textAlign:"center",padding:"12px 8px",borderRadius:"10px",marginBottom:"8px",background:esHoy?"rgba(255,255,255,0.15)":"rgba(255,255,255,0.08)",cursor:"pointer",transition:"background 0.15s"}}
                 onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"}
-                onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>
+                onMouseLeave={e=>{e.currentTarget.style.background=esHoy?"rgba(255,255,255,0.15)":"rgba(255,255,255,0.08)";}}>
                 <div style={{fontSize:"16px",fontWeight:"500",color:"#fff",textTransform:"uppercase",letterSpacing:"0.05em"}}>{nombresDia[i]}</div>
-                <div style={{fontSize:"32px",fontWeight:"600",lineHeight:1,color:"#fff",margin:"4px 0"}}>{d.getDate()}</div>
+                {esHoy
+                  ?<div style={{width:"40px",height:"40px",borderRadius:"50%",background:"#F97316",color:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"22px",fontWeight:"700",margin:"4px auto"}}>{d.getDate()}</div>
+                  :<div style={{fontSize:"32px",fontWeight:"600",lineHeight:1,color:"#fff",margin:"4px 0"}}>{d.getDate()}</div>
+                }
                 <div style={{fontSize:"14px",color:"rgba(255,255,255,0.75)"}}>{mesLargo} {d.getFullYear()}</div>
                 {evs.length>0&&<div style={{display:"inline-block",background:"rgba(255,255,255,0.20)",color:"#fff",fontSize:"14px",fontWeight:"500",padding:"2px 8px",borderRadius:"10px",marginTop:"6px"}}>{evs.length} evento{evs.length!==1?"s":""}</div>}
               </div>
