@@ -58,8 +58,8 @@ const BADGE = {
   "Presencial":            { bg:"#E8F5E9", c:"#2E7D32", b:"#2E7D32" },
   "Remoto":                { bg:"#E0F7FA", c:"#00838F", b:"#00838F" },
   "Híbrido":               { bg:"#FBE9E7", c:"#BF360C", b:"#BF360C" },
-  "Facturado":             { bg:"#FFFFFF", c:"#1A1A1A", b:"#C62828", bw:"2px" },
-  "Facturación Pendiente": { bg:"#FFFFFF", c:"#1A1A1A", b:"#C62828", bw:"2px" },
+  "Facturado":             { bg:"#FFFFFF", c:"#1A1A1A", b:"#C62828", bw:"2px", fw:400 },
+  "Facturación Pendiente": { bg:"#FFFFFF", c:"#1A1A1A", b:"#C62828", bw:"2px", fw:400 },
 };
 
 const Chip = ({ label, emoji }) => {
@@ -68,7 +68,7 @@ const Chip = ({ label, emoji }) => {
     <span style={{
       display:"inline-flex", alignItems:"center", gap:4,
       padding:"4px 10px", borderRadius:20,
-      fontSize:12, fontWeight:700,
+      fontSize:12, fontWeight:s.fw||700,
       color:s.c, background:s.bg, border:`${s.bw||"1.5px"} solid ${s.b}`,
       whiteSpace:"nowrap", lineHeight:1.4,
     }}>
