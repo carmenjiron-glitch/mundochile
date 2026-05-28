@@ -62,13 +62,13 @@ const BADGE = {
   "Facturación Pendiente": { bg:"#FFFFFF", c:"#1A1A1A", b:"#E57373", bw:"2px", fw:400 },
 };
 
-const Chip = ({ label, emoji }) => {
+const Chip = ({ label, emoji, fontSize=12, padding="4px 10px" }) => {
   const s = BADGE[label] || { bg:"#F1F5F9", c:"#475569", b:"#CBD5E1" };
   return (
     <span style={{
       display:"inline-flex", alignItems:"center", gap:4,
-      padding:"4px 10px", borderRadius:20,
-      fontSize:12, fontWeight:s.fw||700,
+      padding, borderRadius:20,
+      fontSize, fontWeight:s.fw||700,
       color:s.c, background:s.bg, border:`${s.bw||"1.5px"} solid ${s.b}`,
       whiteSpace:"nowrap", lineHeight:1.4,
     }}>
@@ -230,8 +230,8 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
       {/* Badges tipo + modalidad */}
       <div style={{ display:"flex", gap:5, flexWrap:"wrap", alignItems:"center" }}>
-        <Chip label={ev.tipo} emoji={ev.tipo==="Simultánea"?<IconoSimultanea/>:ev.tipo==="Consecutiva"?"🎤 ":"🤫 "} />
-        <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?"📍 ":ev.modalidad==="hibrido"?"🔀 ":"💻 "} />
+        <Chip label={ev.tipo} emoji={ev.tipo==="Simultánea"?<IconoSimultanea/>:ev.tipo==="Consecutiva"?"🎤 ":"🤫 "} fontSize={agendaSmall?16:12} padding={agendaSmall?"5px 13px":"4px 10px"} />
+        <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?"📍 ":ev.modalidad==="hibrido"?"🔀 ":"💻 "} fontSize={agendaSmall?16:12} padding={agendaSmall?"5px 13px":"4px 10px"} />
       </div>
 
       {/* Plataforma / Lugar */}
@@ -241,6 +241,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             platform={ev.plataforma === "Zoom" ? "Zoom MundoChile" : ev.plataforma}
             isMundoChile={esZoomMC}
             extra={esZoomMC ? ev.zoom_administrador : ""}
+            agendaScale={agendaSmall}
           />
         </div>
       )}
@@ -250,7 +251,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
       {/* Estado */}
       <div style={{ marginTop:6 }}>
-        <Chip label={estadoLabel} emoji={estadoLabel==="Facturado"?"✓ ":"🟠 "} />
+        <Chip label={estadoLabel} emoji={estadoLabel==="Facturado"?"✓ ":"🟠 "} fontSize={agendaSmall?16:12} padding={agendaSmall?"5px 13px":"4px 10px"} />
       </div>
 
       {/* Intérpretes agrupados */}
@@ -261,8 +262,8 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
         const border  = solidPill ? `2px solid ${pillClr}` : `3px solid ${pillClr}`;
         const titleC  = pillClr;
         const hp      = grupo.items.find(i => i.hora)?.hora;
-        const pillPad = agendaSmall ? "2px 4px" : solidPill ? "1px 4px" : "5px 8px";
-        const pillFs  = agendaSmall ? 9 : solidPill ? 12 : 26;
+        const pillPad = agendaSmall ? "3px 5px" : solidPill ? "1px 4px" : "5px 8px";
+        const pillFs  = agendaSmall ? 12 : solidPill ? 12 : 26;
         const flagSz  = agendaSmall ? 14 : solidPill ? 19 : 20;
 
         return (
