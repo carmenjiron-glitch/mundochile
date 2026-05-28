@@ -185,14 +185,14 @@ function Badge({texto,color="#3B5BDB",fondo="#EEF2FF",borde,icono="",solid=false
   return <span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color,background:fondo,border:`2px solid ${borde||color}`}}>{icono}{texto}</span>;
 }
 
-function CampoCopia({valor}) {
+function CampoCopia({valor, mostrarValor=true, wrapStyle={}, btnColor=null, btnFontSize="15px"}) {
   const [ok,setOk]=useState(false);
   if(!valor) return <span style={{color:C.textoSuave}}>—</span>;
   return (
-    <span style={{display:"inline-flex",alignItems:"center",gap:"6px"}}>
-      <span>{valor}</span>
+    <span style={{display:"inline-flex",alignItems:"center",gap:"6px",...wrapStyle}}>
+      {mostrarValor&&<span>{valor}</span>}
       <button onClick={()=>{navigator.clipboard.writeText(valor);setOk(true);setTimeout(()=>setOk(false),1500);}}
-        style={{background:"none",border:"none",cursor:"pointer",color:ok?C.verde:C.textoSuave,fontSize:"15px",padding:0}}>
+        style={{background:"none",border:"none",cursor:"pointer",color:ok?C.verde:(btnColor||C.textoSuave),fontSize:btnFontSize,padding:0}}>
         {ok?"✓":"⧉"}
       </button>
     </span>
@@ -969,12 +969,12 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             <SL t="📍 Lugar"/>
             <div style={{fontSize:"16px",fontWeight:"500",color:"#0F172A"}}>{evento.lugar}</div>
             {evento.lugar_detalle&&<div style={{fontSize:"15px",color:"#475569",marginTop:"4px"}}>{evento.lugar_detalle}</div>}
-            <div style={{display:"flex",gap:"8px",marginTop:"8px",flexWrap:"wrap"}}>
+            <div style={{display:"flex",alignItems:"center",gap:"8px",marginTop:"8px",flexWrap:"wrap"}}>
               <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((evento.lugar||"")+" "+(evento.lugar_detalle||""))}`} target="_blank" rel="noreferrer"
                 style={{display:"inline-flex",alignItems:"center",gap:"5px",fontSize:"18px",fontWeight:"500",color:"#1971C2",textDecoration:"none",padding:"6px 12px",border:"1px solid #93C5FD",borderRadius:"8px",background:"#EFF6FF"}}>
                 📍 Ver en Maps
               </a>
-              <CampoCopia valor={`${evento.lugar}${evento.lugar_detalle?", "+evento.lugar_detalle:""}`}/>
+              <CampoCopia valor={`${evento.lugar}${evento.lugar_detalle?", "+evento.lugar_detalle:""}`} mostrarValor={false} wrapStyle={{padding:"6px 12px",borderRadius:"8px",border:"1px solid #93C5FD",background:"#EFF6FF"}} btnColor="#1971C2" btnFontSize="23px"/>
             </div>
           </div>}
           {!esPresencial&&evento.plataforma&&<div style={{marginBottom:"4px"}}>
