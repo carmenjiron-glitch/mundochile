@@ -2121,7 +2121,7 @@ export default function App() {
           <div style={{display:"flex",flexDirection:"column",gap:"16px"}}>
             {dias.map(({iso,x})=>(
               <div key={iso} onClick={()=>abrirEvento(evM)} style={{background:"#FFFFFF",borderLeft:`16px solid ${borderC}`,borderTop:`6px solid ${borderC}`,borderRadius:"0 12px 12px 0",padding:"20px 24px",boxShadow:"0 2px 12px rgba(0,0,0,0.10)",cursor:"pointer"}}>
-                <div style={{fontSize:"14px",fontWeight:"700",color:borderC,marginBottom:"12px"}}>📅 Día {x} de {totalDias} — {formatLargo(iso)}</div>
+                <div style={{fontSize:"15px",fontWeight:"700",color:"#C62828",marginBottom:"12px"}}>📅 Día {x} de {totalDias} — {formatLargo(iso)}</div>
                 <div style={{fontSize:"34px",fontWeight:"600",color:"#0F172A",lineHeight:1.2,marginBottom:4}}>{cli?.nombre_empresa||"—"}</div>
                 {cli?.nombre_contacto&&<div style={{fontSize:"16px",fontWeight:"500",color:"#6B7280",fontStyle:"italic",marginBottom:4}}>Contacto: {cli.nombre_contacto}</div>}
                 {(evM.nombre_evento||evM.titulo||evM.nombre||evM.descripcion)&&<div style={{fontSize:"16px",fontWeight:"500",color:"#111827",marginTop:2}}><span style={{fontWeight:"600",color:"#6B7280"}}>Nombre del evento: </span>{evM.nombre_evento||evM.titulo||evM.nombre||evM.descripcion}</div>}
