@@ -169,7 +169,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
         return (
           <div style={{
             position:"absolute", top:"8px", right:"8px",
-            width:"10px", height:"10px", borderRadius:"50%",
+            width:"12px", height:"12px", borderRadius:"50%",
             background: esHoy ? "#22C55E" : "#EAB308",
             boxShadow: esHoy ? "0 0 6px #22C55E" : "0 0 6px #EAB308",
             zIndex: 10,
