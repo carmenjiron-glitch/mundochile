@@ -2252,6 +2252,7 @@ export default function App() {
   const renderDia=()=>{
     const SLD=({t})=><div style={{fontSize:"13px",fontWeight:"600",color:"#0F172A",textTransform:"uppercase",letterSpacing:"0.04em",marginBottom:"6px"}}>{t}</div>;
     const HRD=()=><hr style={{border:"none",borderTop:"1px solid #E5E7EB",margin:"14px 0"}}/>;
+    const dk10=(hex)=>{const n=hex.replace("#","");const r=Math.round(parseInt(n.slice(0,2),16)*0.9);const g=Math.round(parseInt(n.slice(2,4),16)*0.9);const b=Math.round(parseInt(n.slice(4,6),16)*0.9);return`#${r.toString(16).padStart(2,"0")}${g.toString(16).padStart(2,"0")}${b.toString(16).padStart(2,"0")}`;};
 
     // ── Modo Multidía ──
     if(modoMultidia&&eventoMultidiaId){
@@ -2297,8 +2298,8 @@ export default function App() {
                 <div style={{fontSize:"16px",fontWeight:"500",color:"#0F172A",marginBottom:"6px"}}>🕐 {evM.hora_inicio?.slice(0,5)} – {evM.hora_termino?.slice(0,5)} hrs{evM.jornada&&<span style={{fontWeight:"400",color:"#6B7280",fontSize:"14px"}}> · {evM.jornada}</span>}</div>
                 <HRD/>
                 <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center",marginBottom:"4px"}}>
-                  <span style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:bTipo.c,background:bTipo.bg,border:`2px solid ${bTipo.c}`,whiteSpace:"nowrap"}}>{evM.tipo==="Simultánea"?<IconoSimultanea/>:evM.tipo==="Consecutiva"?"🎤":"🤫"} {evM.tipo}</span>
-                  <span style={{display:"inline-flex",alignItems:"center",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:bMod.c,background:bMod.bg,border:`2px solid ${bMod.c}`,whiteSpace:"nowrap"}}>{evM.modalidad==="presencial"?"📍":evM.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evM.modalidad]||evM.modalidad}</span>
+                  <span style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:dk10(bTipo.c),background:bTipo.bg,border:`2px solid ${bTipo.c}`,whiteSpace:"nowrap"}}>{evM.tipo==="Simultánea"?<IconoSimultanea/>:evM.tipo==="Consecutiva"?"🎤":"🤫"} {evM.tipo}</span>
+                  <span style={{display:"inline-flex",alignItems:"center",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:dk10(bMod.c),background:bMod.bg,border:`2px solid ${bMod.c}`,whiteSpace:"nowrap"}}>{evM.modalidad==="presencial"?"📍":evM.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evM.modalidad]||evM.modalidad}</span>
                 </div>
                 <HRD/>
                 {esPresD&&evM.lugar&&<div style={{marginBottom:"12px"}}><SLD t="📍 Lugar"/><div style={{fontSize:"15px",fontWeight:"500",color:"#0F172A"}}>{evM.lugar}</div></div>}
@@ -2386,8 +2387,8 @@ export default function App() {
                   <HRD/>
                   {/* Pills tipo + modalidad */}
                   <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center",marginBottom:"4px"}}>
-                    <span style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:bTipo.c,background:bTipo.bg,border:`2px solid ${bTipo.c}`,whiteSpace:"nowrap"}}>{ev.tipo==="Simultánea"?<IconoSimultanea/>:ev.tipo==="Consecutiva"?"🎤":"🤫"} {ev.tipo}</span>
-                    <span style={{display:"inline-flex",alignItems:"center",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:bMod.c,background:bMod.bg,border:`2px solid ${bMod.c}`,whiteSpace:"nowrap"}}>{ev.modalidad==="presencial"?"📍":ev.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[ev.modalidad]||ev.modalidad}</span>
+                    <span style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:dk10(bTipo.c),background:bTipo.bg,border:`2px solid ${bTipo.c}`,whiteSpace:"nowrap"}}>{ev.tipo==="Simultánea"?<IconoSimultanea/>:ev.tipo==="Consecutiva"?"🎤":"🤫"} {ev.tipo}</span>
+                    <span style={{display:"inline-flex",alignItems:"center",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:dk10(bMod.c),background:bMod.bg,border:`2px solid ${bMod.c}`,whiteSpace:"nowrap"}}>{ev.modalidad==="presencial"?"📍":ev.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[ev.modalidad]||ev.modalidad}</span>
                   </div>
                   <HRD/>
                   {/* Lugar / Plataforma */}
