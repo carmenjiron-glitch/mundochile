@@ -79,11 +79,11 @@ const Chip = ({ label, emoji, fontSize=12, padding="4px 10px" }) => {
 
 // ── Componente principal ──────────────────────────────────────────────────────
 export default function EventCard({ ev, diaDe, clientes, interpretes, pares, proveedores=[], onClick, onNavegar, solidPill=false, pillsHalf=false, agendaSmall=false }) {
-  const cliente    = clientes.find(c => c.id === ev.cliente_id);
+  const cliente     = clientes.find(c => c.id === ev.cliente_id);
   const borderColor = colorCliente(ev.cliente_id);
   const esPresencial = ev.modalidad === "presencial" || ev.modalidad === "hibrido";
-  const esZoomMC   = ev.plataforma === "Zoom MundoChile" || ev.plataforma === "Zoom";
-  const modalLabel = LBL_MODAL[ev.modalidad] || ev.modalidad;
+  const esZoomMC    = ev.plataforma === "Zoom MundoChile" || ev.plataforma === "Zoom";
+  const modalLabel  = LBL_MODAL[ev.modalidad] || ev.modalidad;
   const estadoLabel = ev.estado === "Facturado" ? "Facturado" : "Facturación Pendiente";
 
   // Multidía
@@ -107,10 +107,10 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
   // Agrupar intérpretes por par de idiomas
   const grupos = {};
   (ev.asignaciones || []).forEach(a => {
-    const par   = pares.find(p => p.id === a.par_id);
+    const par    = pares.find(p => p.id === a.par_id);
     const interp = interpretes.find(x => x.id === a.interprete_id);
     if (!interp) return;
-    const key   = par?.descripcion || "Sin par";
+    const key    = par?.descripcion || "Sin par";
     const idioma = par?.idioma_origen || "";
     if (!grupos[key]) grupos[key] = { idioma, items: [] };
     grupos[key].items.push({
@@ -130,31 +130,53 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
     onNavegar(iso);
   };
 
+  const pillMultidia = diaXdeY && (() => {
+    const esUltimo = diaXdeY.x === diaXdeY.y;
+    return (
+      <div
+        onClick={esUltimo ? undefined : handleIrDiaSiguiente}
+        title={esUltimo ? "Último día del evento" : "Ver día siguiente →"}
+        style={{
+          display:"inline-flex", alignItems:"center", gap:4,
+          padding:"3px 8px", borderRadius:20,
+          background:"#E8F4FD", color:"#1971C2",
+          fontSize:14, fontWeight:700, lineHeight:1.4,
+          cursor: esUltimo ? "default" : "pointer",
+          border:"1px solid #BAD7F0",
+          whiteSpace:"nowrap", flexShrink:0,
+          userSelect:"none",
+        }}
+      >
+        📅 Día {diaXdeY.x} de {diaXdeY.y}{!esUltimo && " ›"}
+      </div>
+    );
+  })();
+
   return (
     <div
       onClick={onClick}
       style={{
-        background:     "#FFFFFF",
-        borderLeft:     `16px solid ${borderColor}`,
-        borderTop:      `6px solid ${borderColor}`,
-        borderRadius:   "0 8px 8px 0",
-        padding:        "14px 16px",
-        marginBottom:   "10px",
-        boxShadow:      "0 1px 4px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)",
-        cursor:         "pointer",
-        width:          "100%",
-        boxSizing:      "border-box",
-        transition:     "box-shadow 0.15s, transform 0.12s",
-        userSelect:     "none",
-        position:       "relative",
+        background:   "#FFFFFF",
+        borderLeft:   `16px solid ${borderColor}`,
+        borderTop:    `6px solid ${borderColor}`,
+        borderRadius: "0 8px 8px 0",
+        padding:      "14px 16px",
+        marginBottom: "10px",
+        boxShadow:    "0 1px 4px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)",
+        cursor:       "pointer",
+        width:        "100%",
+        boxSizing:    "border-box",
+        transition:   "box-shadow 0.15s, transform 0.12s",
+        userSelect:   "none",
+        position:     "relative",
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.boxShadow  = "0 4px 16px rgba(0,0,0,0.18)";
-        e.currentTarget.style.transform  = "translateY(-2px)";
+        e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.18)";
+        e.currentTarget.style.transform = "translateY(-2px)";
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.boxShadow  = "0 1px 4px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)";
-        e.currentTarget.style.transform  = "translateY(0)";
+        e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)";
+        e.currentTarget.style.transform = "translateY(0)";
       }}
     >
       {/* Indicador hoy/mañana */}
@@ -163,7 +185,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
         const manana = new Date();
         manana.setDate(hoyD.getDate() + 1);
         const fechaEvento = desdeISO(ev.fecha_inicio);
-        const esHoy = fechaEvento.toDateString() === hoyD.toDateString();
+        const esHoy   = fechaEvento.toDateString() === hoyD.toDateString();
         const esManana = fechaEvento.toDateString() === manana.toDateString();
         if (!esHoy && !esManana) return null;
         return (
@@ -171,159 +193,214 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             position:"absolute", top:"8px", right:"8px",
             width:"13px", height:"13px", borderRadius:"50%",
             background: esHoy ? "#22C55E" : "#EAB308",
-            boxShadow: esHoy ? "0 0 6px #22C55E" : "0 0 6px #EAB308",
+            boxShadow:  esHoy ? "0 0 6px #22C55E" : "0 0 6px #EAB308",
             zIndex: 10,
             animation: esHoy ? "flash 1.2s ease-in-out infinite" : "flashYellow 1.8s ease-in-out infinite",
           }}/>
         );
       })()}
-      {/* Nombre cliente + pill multidía */}
-      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:8, marginBottom:4 }}>
-        <div style={{ fontSize:21, fontWeight:600, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", flex:1 }}>
-          {cliente?.nombre_empresa || "—"}
-        </div>
-        {diaXdeY && (() => {
-          const esUltimo = diaXdeY.x === diaXdeY.y;
-          return (
-            <div
-              onClick={esUltimo ? undefined : handleIrDiaSiguiente}
-              title={esUltimo ? "Último día del evento" : "Ver día siguiente →"}
-              style={{
-                display:"inline-flex", alignItems:"center", gap:4,
-                padding:"3px 8px", borderRadius:20,
-                background:"#E8F4FD", color:"#1971C2",
-                fontSize:14, fontWeight:700, lineHeight:1.4,
-                cursor: esUltimo ? "default" : "pointer",
-                border:"1px solid #BAD7F0",
-                whiteSpace:"nowrap", flexShrink:0,
-                userSelect:"none",
-              }}
-            >
-              📅 Día {diaXdeY.x} de {diaXdeY.y}{!esUltimo && " ›"}
-            </div>
-          );
-        })()}
-      </div>
 
-      {/* Contacto */}
-      {cliente?.nombre_contacto && (
-        <div style={{ fontSize:14, color:"#565D68", fontStyle:"italic", marginTop:2 }}>
-          Contacto: {cliente.nombre_contacto}
-        </div>
-      )}
+      {agendaSmall ? (
+        /* ── AGENDA: layout dos columnas ─────────────────────────────────── */
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"16px", alignItems:"start" }}>
 
-      {/* Nombre evento */}
-      {ev.nombre_evento && (
-        <div style={{ fontSize:14, color:"#6B7280", marginTop:2 }}>
-          <span style={{ fontWeight:600 }}>Nombre del evento:</span>{" "}
-          <span style={{ fontWeight:400 }}>{ev.nombre_evento}</span>
-        </div>
-      )}
-
-      {/* Horario */}
-      <div style={{
-        fontSize:14, fontWeight:600, color:"#0F172A",
-        marginTop:10, marginBottom:8,
-        display:"flex", alignItems:"center", gap:6,
-      }}>
-        🕐 {ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)} hrs
-      </div>
-
-      {/* Badges tipo + modalidad */}
-      <div style={{ display:"flex", gap:5, flexWrap:"wrap", alignItems:"center" }}>
-        <Chip label={ev.tipo} emoji={ev.tipo==="Simultánea"?<IconoSimultanea/>:ev.tipo==="Consecutiva"?"🎤 ":"🤫 "} fontSize={agendaSmall?16:12} padding={agendaSmall?"5px 13px":"4px 10px"} />
-        <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?"📍 ":ev.modalidad==="hibrido"?"🔀 ":"💻 "} fontSize={agendaSmall?16:12} padding={agendaSmall?"5px 13px":"4px 10px"} />
-      </div>
-
-      {/* Plataforma / Lugar */}
-      {!esPresencial && ev.plataforma && (
-        <div style={{ marginTop:6 }}>
-          <PlatformChip
-            platform={ev.plataforma === "Zoom" ? "Zoom MundoChile" : ev.plataforma}
-            isMundoChile={esZoomMC}
-            extra={esZoomMC ? ev.zoom_administrador : ""}
-            agendaScale={agendaSmall}
-          />
-        </div>
-      )}
-      {esPresencial && ev.lugar && (
-        <div style={{ fontSize:14, color:"#475569", marginTop:6 }}>📍 {ev.lugar}</div>
-      )}
-
-      {/* Estado */}
-      <div style={{ marginTop:6 }}>
-        <Chip label={estadoLabel} emoji={estadoLabel==="Facturado"?"✓ ":"🟠 "} fontSize={agendaSmall?16:12} padding={agendaSmall?"5px 13px":"4px 10px"} />
-      </div>
-
-      {/* Intérpretes agrupados */}
-      {Object.entries(grupos).map(([key, grupo]) => {
-        const pillClr = IDIOMA_PILL_CLR[grupo.idioma] || "#4C6EF5";
-        const bg      = "#FFFFFF";
-        const color   = "#1A1A1A";
-        const border  = solidPill ? `2px solid ${pillClr}` : `3px solid ${pillClr}`;
-        const titleC  = pillClr;
-        const hp      = grupo.items.find(i => i.hora)?.hora;
-        const pillPad = agendaSmall ? "3px 5px" : solidPill ? "1px 4px" : "5px 8px";
-        const pillFs  = agendaSmall ? 12 : solidPill ? 12 : 26;
-        const flagSz  = agendaSmall ? 14 : solidPill ? 19 : 20;
-
-        return (
-          <div key={key} style={{ marginTop:10 }}>
-            {/* Título del par */}
-            <div style={{
-              fontSize:agendaSmall||solidPill?12:14, fontWeight:600, color:darken(titleC,0.80),
-              textTransform:"uppercase", letterSpacing:"0.07em",
-              marginBottom:5, opacity:0.85,
-              whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis",
-            }}>
-              {key}
+          {/* COLUMNA IZQUIERDA — info del evento */}
+          <div>
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:8, marginBottom:4 }}>
+              <div style={{ fontSize:21, fontWeight:600, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", flex:1 }}>
+                {cliente?.nombre_empresa || "—"}
+              </div>
+              {pillMultidia}
             </div>
 
-            {/* Pills intérpretes — 2 columnas */}
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:5, ...(pillsHalf?{maxWidth:"50%"}:{}) }}>
-              {grupo.items.map((interp, i) => (
-                <span
-                  key={i}
-                  title={`${interp.nombre}${interp.apellido ? " " + interp.apellido : ""}`}
-                  style={{
-                    display:"inline-flex", alignItems:"center", justifyContent:"center",
-                    gap:5, padding:pillPad, borderRadius:20,
-                    fontSize:pillFs, fontWeight:agendaSmall||solidPill?600:300, lineHeight:1.4,
-                    color, background:bg, border,
-                    overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
-                    cursor:"default",
-                  }}
-                >
-                  {interp.isHost && <span style={{ fontSize:11 }}>🔑</span>}
-                  <Flag idioma={grupo.idioma} size={flagSz} />
-                  <span style={{ overflow:"hidden", textOverflow:"ellipsis", color }}>
-                    {nombreCorto(interp.nombre, interp.apellido)}
-                  </span>
-                </span>
-              ))}
+            {cliente?.nombre_contacto && (
+              <div style={{ fontSize:14, color:"#565D68", fontStyle:"italic", marginTop:2 }}>
+                Contacto: {cliente.nombre_contacto}
+              </div>
+            )}
+
+            {ev.nombre_evento && (
+              <div style={{ fontSize:14, color:"#6B7280", marginTop:2 }}>
+                <span style={{ fontWeight:600 }}>Nombre del evento:</span>{" "}
+                <span style={{ fontWeight:400 }}>{ev.nombre_evento}</span>
+              </div>
+            )}
+
+            <div style={{ fontSize:14, fontWeight:600, color:"#0F172A", marginTop:10, marginBottom:8, display:"flex", alignItems:"center", gap:6 }}>
+              🕐 {ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)} hrs
             </div>
 
-            {/* Hora de presentación */}
-            {hp && (
-              <div style={{
-                fontSize:11, color:"#64748B", marginTop:4,
-                display:"inline-flex", alignItems:"center", gap:4,
-              }}>
-                🕐 Presentación: {hp.slice(0,5)} hrs
+            <div style={{ display:"flex", gap:5, flexWrap:"wrap", alignItems:"center" }}>
+              <Chip label={ev.tipo} emoji={ev.tipo==="Simultánea"?<IconoSimultanea/>:ev.tipo==="Consecutiva"?"🎤 ":"🤫 "} fontSize={16} padding="5px 13px" />
+              <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?"📍 ":ev.modalidad==="hibrido"?"🔀 ":"💻 "} fontSize={16} padding="5px 13px" />
+            </div>
+
+            {!esPresencial && ev.plataforma && (
+              <div style={{ marginTop:6 }}>
+                <PlatformChip
+                  platform={ev.plataforma === "Zoom" ? "Zoom MundoChile" : ev.plataforma}
+                  isMundoChile={esZoomMC}
+                  extra={esZoomMC ? ev.zoom_administrador : ""}
+                  agendaScale={true}
+                />
+              </div>
+            )}
+            {esPresencial && ev.lugar && (
+              <div style={{ fontSize:14, color:"#475569", marginTop:6 }}>📍 {ev.lugar}</div>
+            )}
+
+            <div style={{ marginTop:6 }}>
+              <Chip label={estadoLabel} emoji={estadoLabel==="Facturado"?"✓ ":"🟠 "} fontSize={16} padding="5px 13px" />
+            </div>
+
+            {tieneEquipos && (
+              <div style={{ fontSize:11, color:"#6B7280", marginTop:8, display:"flex", alignItems:"center", gap:5 }}>
+                <IconAV size={13} /> {provNombre || "Equipos AV"}
               </div>
             )}
           </div>
-        );
-      })}
 
-      {/* Equipos AV */}
-      {tieneEquipos && (
-        <div style={{
-          fontSize:11, color:"#6B7280", marginTop:8,
-          display:"flex", alignItems:"center", gap:5,
-        }}>
-          <IconAV size={13} /> {provNombre || "Equipos AV"}
+          {/* COLUMNA DERECHA — intérpretes */}
+          <div>
+            <div style={{ textAlign:"center", fontSize:16, fontWeight:"600", marginBottom:"8px", textTransform:"uppercase", color:"#0F172A" }}>
+              INTÉRPRETES
+            </div>
+            {Object.keys(grupos).length === 0 ? (
+              <div style={{ color:"#9CA3AF", fontSize:13, textAlign:"center" }}>Sin intérpretes asignados</div>
+            ) : (
+              Object.entries(grupos).map(([key, grupo]) => {
+                const pillClr = IDIOMA_PILL_CLR[grupo.idioma] || "#4C6EF5";
+                const hp      = grupo.items.find(i => i.hora)?.hora;
+                return (
+                  <div key={key} style={{ marginTop:10 }}>
+                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:5 }}>
+                      <div style={{ fontSize:12, fontWeight:600, color:darken(pillClr,0.80), textTransform:"uppercase", letterSpacing:"0.07em", opacity:0.85, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+                        {key}
+                      </div>
+                      {hp && (
+                        <div style={{ fontSize:11, color:"#64748B", display:"inline-flex", alignItems:"center", gap:4, flexShrink:0 }}>
+                          🕐 {hp.slice(0,5)} hrs
+                        </div>
+                      )}
+                    </div>
+                    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:5 }}>
+                      {grupo.items.map((interp, i) => (
+                        <span key={i}
+                          title={`${interp.nombre}${interp.apellido ? " " + interp.apellido : ""}`}
+                          style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:5, padding:"3px 5px", borderRadius:20, fontSize:12, fontWeight:600, lineHeight:1.4, color:"#1A1A1A", background:"#FFFFFF", border:`2px solid ${pillClr}`, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"default" }}>
+                          {interp.isHost && <span style={{ fontSize:11 }}>🔑</span>}
+                          <Flag idioma={grupo.idioma} size={14} />
+                          <span style={{ overflow:"hidden", textOverflow:"ellipsis", color:"#1A1A1A" }}>
+                            {nombreCorto(interp.nombre, interp.apellido)}
+                          </span>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
         </div>
+      ) : (
+        /* ── SEMANA / DÍA: layout original ──────────────────────────────── */
+        <>
+          {/* Nombre cliente + pill multidía */}
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:8, marginBottom:4 }}>
+            <div style={{ fontSize:21, fontWeight:600, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", flex:1 }}>
+              {cliente?.nombre_empresa || "—"}
+            </div>
+            {pillMultidia}
+          </div>
+
+          {/* Contacto */}
+          {cliente?.nombre_contacto && (
+            <div style={{ fontSize:14, color:"#565D68", fontStyle:"italic", marginTop:2 }}>
+              Contacto: {cliente.nombre_contacto}
+            </div>
+          )}
+
+          {/* Nombre evento */}
+          {ev.nombre_evento && (
+            <div style={{ fontSize:14, color:"#6B7280", marginTop:2 }}>
+              <span style={{ fontWeight:600 }}>Nombre del evento:</span>{" "}
+              <span style={{ fontWeight:400 }}>{ev.nombre_evento}</span>
+            </div>
+          )}
+
+          {/* Horario */}
+          <div style={{ fontSize:14, fontWeight:600, color:"#0F172A", marginTop:10, marginBottom:8, display:"flex", alignItems:"center", gap:6 }}>
+            🕐 {ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)} hrs
+          </div>
+
+          {/* Badges tipo + modalidad */}
+          <div style={{ display:"flex", gap:5, flexWrap:"wrap", alignItems:"center" }}>
+            <Chip label={ev.tipo} emoji={ev.tipo==="Simultánea"?<IconoSimultanea/>:ev.tipo==="Consecutiva"?"🎤 ":"🤫 "} fontSize={12} padding="4px 10px" />
+            <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?"📍 ":ev.modalidad==="hibrido"?"🔀 ":"💻 "} fontSize={12} padding="4px 10px" />
+          </div>
+
+          {/* Plataforma / Lugar */}
+          {!esPresencial && ev.plataforma && (
+            <div style={{ marginTop:6 }}>
+              <PlatformChip
+                platform={ev.plataforma === "Zoom" ? "Zoom MundoChile" : ev.plataforma}
+                isMundoChile={esZoomMC}
+                extra={esZoomMC ? ev.zoom_administrador : ""}
+                agendaScale={false}
+              />
+            </div>
+          )}
+          {esPresencial && ev.lugar && (
+            <div style={{ fontSize:14, color:"#475569", marginTop:6 }}>📍 {ev.lugar}</div>
+          )}
+
+          {/* Estado */}
+          <div style={{ marginTop:6 }}>
+            <Chip label={estadoLabel} emoji={estadoLabel==="Facturado"?"✓ ":"🟠 "} fontSize={12} padding="4px 10px" />
+          </div>
+
+          {/* Intérpretes agrupados */}
+          {Object.entries(grupos).map(([key, grupo]) => {
+            const pillClr = IDIOMA_PILL_CLR[grupo.idioma] || "#4C6EF5";
+            const border  = solidPill ? `2px solid ${pillClr}` : `3px solid ${pillClr}`;
+            const hp      = grupo.items.find(i => i.hora)?.hora;
+            const pillPad = solidPill ? "1px 4px" : "5px 8px";
+            const pillFs  = solidPill ? 12 : 26;
+            const flagSz  = solidPill ? 19 : 20;
+            return (
+              <div key={key} style={{ marginTop:10 }}>
+                <div style={{ fontSize:solidPill?12:14, fontWeight:600, color:darken(pillClr,0.80), textTransform:"uppercase", letterSpacing:"0.07em", marginBottom:5, opacity:0.85, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
+                  {key}
+                </div>
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:5, ...(pillsHalf?{maxWidth:"50%"}:{}) }}>
+                  {grupo.items.map((interp, i) => (
+                    <span key={i}
+                      title={`${interp.nombre}${interp.apellido ? " " + interp.apellido : ""}`}
+                      style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:5, padding:pillPad, borderRadius:20, fontSize:pillFs, fontWeight:solidPill?600:300, lineHeight:1.4, color:"#1A1A1A", background:"#FFFFFF", border, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"default" }}>
+                      {interp.isHost && <span style={{ fontSize:11 }}>🔑</span>}
+                      <Flag idioma={grupo.idioma} size={flagSz} />
+                      <span style={{ overflow:"hidden", textOverflow:"ellipsis", color:"#1A1A1A" }}>
+                        {nombreCorto(interp.nombre, interp.apellido)}
+                      </span>
+                    </span>
+                  ))}
+                </div>
+                {hp && (
+                  <div style={{ fontSize:11, color:"#64748B", marginTop:4, display:"inline-flex", alignItems:"center", gap:4 }}>
+                    🕐 Presentación: {hp.slice(0,5)} hrs
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {/* Equipos AV */}
+          {tieneEquipos && (
+            <div style={{ fontSize:11, color:"#6B7280", marginTop:8, display:"flex", alignItems:"center", gap:5 }}>
+              <IconAV size={13} /> {provNombre || "Equipos AV"}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
