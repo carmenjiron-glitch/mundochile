@@ -1250,8 +1250,8 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 12px"}}>
 
             {campos.cliente&&<Sec label="Cliente" accent="#E03131" fullWidth>
-              <div style={{fontSize:"19px",fontWeight:"500",color:"#000000",lineHeight:1.1}}>{cliente?.nombre_empresa||"—"}</div>
-              {cliente?.nombre_contacto&&<div style={{fontSize:"15px",color:"#6B7280",fontStyle:"italic",marginTop:"4px"}}>{cliente.nombre_contacto}</div>}
+              <div style={{fontSize:"23px",fontWeight:"500",color:"#000000",lineHeight:1.1}}>{cliente?.nombre_empresa||"—"}</div>
+              {cliente?.nombre_contacto&&<div style={{fontSize:"18px",color:"#6B7280",fontStyle:"italic",marginTop:"4px"}}>{cliente.nombre_contacto}</div>}
             </Sec>}
 
             {campos.evento&&evento.nombre_evento&&<Sec label="Evento" accent="#3B5BDB" fullWidth>
