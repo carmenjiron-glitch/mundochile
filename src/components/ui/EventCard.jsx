@@ -78,7 +78,7 @@ const Chip = ({ label, emoji }) => {
 };
 
 // ── Componente principal ──────────────────────────────────────────────────────
-export default function EventCard({ ev, diaDe, clientes, interpretes, pares, proveedores=[], onClick, onNavegar, solidPill=false, pillsHalf=false }) {
+export default function EventCard({ ev, diaDe, clientes, interpretes, pares, proveedores=[], onClick, onNavegar, solidPill=false, pillsHalf=false, agendaSmall=false }) {
   const cliente    = clientes.find(c => c.id === ev.cliente_id);
   const borderColor = colorCliente(ev.cliente_id);
   const esPresencial = ev.modalidad === "presencial" || ev.modalidad === "hibrido";
@@ -261,9 +261,9 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
         const border  = solidPill ? `2px solid ${pillClr}` : `3px solid ${pillClr}`;
         const titleC  = pillClr;
         const hp      = grupo.items.find(i => i.hora)?.hora;
-        const pillPad = solidPill ? "1px 4px" : "3px 8px";
-        const pillFs  = solidPill ? 12 : 17;
-        const flagSz  = solidPill ? 19 : 20;
+        const pillPad = agendaSmall ? "2px 4px" : solidPill ? "1px 4px" : "3px 8px";
+        const pillFs  = agendaSmall ? 9 : solidPill ? 12 : 17;
+        const flagSz  = agendaSmall ? 14 : solidPill ? 19 : 20;
 
         return (
           <div key={key} style={{ marginTop:10 }}>

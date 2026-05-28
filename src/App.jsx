@@ -1712,7 +1712,7 @@ function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,
               {esHoy?"📅 Hoy — ":""}{formatLargo(fecha)} · {evs.length} evento{evs.length!==1?"s":""}
             </div>
             {evs.map(ev=>(
-              <EventCard key={ev.id} ev={ev} diaDe={fecha} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} onClick={()=>onAbrir(ev)} pillsHalf={true}/>
+              <EventCard key={ev.id} ev={ev} diaDe={fecha} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} onClick={()=>onAbrir(ev)} pillsHalf={true} agendaSmall={true}/>
             ))}
           </div>
         );
