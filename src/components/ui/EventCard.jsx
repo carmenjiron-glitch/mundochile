@@ -130,6 +130,15 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
     onNavegar(iso);
   };
 
+  // Dot hoy/mañana
+  const dotHoyD = new Date();
+  const dotMan = new Date();
+  dotMan.setDate(dotHoyD.getDate() + 1);
+  const dotFecha = desdeISO(ev.fecha_inicio);
+  const dotEsHoy = dotFecha.toDateString() === dotHoyD.toDateString();
+  const dotEsMan = dotFecha.toDateString() === dotMan.toDateString();
+  const dotVisible = dotEsHoy || dotEsMan;
+
   const pillMultidia = diaXdeY && (() => {
     const esUltimo = diaXdeY.x === diaXdeY.y;
     return (
@@ -179,26 +188,17 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
         e.currentTarget.style.transform = "translateY(0)";
       }}
     >
-      {/* Indicador hoy/mañana */}
-      {(() => {
-        const hoyD = new Date();
-        const manana = new Date();
-        manana.setDate(hoyD.getDate() + 1);
-        const fechaEvento = desdeISO(ev.fecha_inicio);
-        const esHoy   = fechaEvento.toDateString() === hoyD.toDateString();
-        const esManana = fechaEvento.toDateString() === manana.toDateString();
-        if (!esHoy && !esManana) return null;
-        return (
-          <div style={{
-            position:"absolute", top:"8px", right:"8px",
-            width:"13px", height:"13px", borderRadius:"50%",
-            background: esHoy ? "#22C55E" : "#EAB308",
-            boxShadow:  esHoy ? "0 0 6px #22C55E" : "0 0 6px #EAB308",
-            zIndex: 10,
-            animation: esHoy ? "flash 1.2s ease-in-out infinite" : "flashYellow 1.8s ease-in-out infinite",
-          }}/>
-        );
-      })()}
+      {/* Indicador hoy/mañana — solo absoluto en vistas semana/día */}
+      {!agendaSmall && dotVisible && (
+        <div style={{
+          position:"absolute", top:"8px", right:"8px",
+          width:"13px", height:"13px", borderRadius:"50%",
+          background: dotEsHoy ? "#22C55E" : "#EAB308",
+          boxShadow:  dotEsHoy ? "0 0 6px #22C55E" : "0 0 6px #EAB308",
+          zIndex: 10,
+          animation: dotEsHoy ? "flash 1.2s ease-in-out infinite" : "flashYellow 1.8s ease-in-out infinite",
+        }}/>
+      )}
 
       {agendaSmall ? (
         /* ── AGENDA: layout dos columnas ─────────────────────────────────── */
@@ -206,10 +206,11 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
           {/* COLUMNA IZQUIERDA — info del evento */}
           <div>
-            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:8, marginBottom:4 }}>
-              <div style={{ fontSize:25, fontWeight:600, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", flex:1 }}>
+            <div style={{ display:"flex", alignItems:"center", flexWrap:"nowrap", gap:8, marginBottom:4 }}>
+              <div style={{ fontSize:25, fontWeight:600, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em" }}>
                 {cliente?.nombre_empresa || "—"}
               </div>
+              {dotVisible && <div style={{ width:"13px", height:"13px", borderRadius:"50%", background:dotEsHoy?"#22C55E":"#EAB308", boxShadow:dotEsHoy?"0 0 6px #22C55E":"0 0 6px #EAB308", flexShrink:0, marginLeft:"16px", animation:dotEsHoy?"flash 1.2s ease-in-out infinite":"flashYellow 1.8s ease-in-out infinite" }}/>}
               {pillMultidia}
             </div>
 
@@ -231,8 +232,8 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             </div>
 
             <div style={{ display:"flex", gap:5, flexWrap:"wrap", alignItems:"center" }}>
-              <Chip label={ev.tipo} emoji={ev.tipo==="Simultánea"?<IconoSimultanea/>:ev.tipo==="Consecutiva"?"🎤 ":"🤫 "} fontSize={16} padding="5px 13px" />
-              <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?"📍 ":ev.modalidad==="hibrido"?"🔀 ":"💻 "} fontSize={16} padding="5px 13px" />
+              <Chip label={ev.tipo} emoji={ev.tipo==="Simultánea"?<IconoSimultanea/>:ev.tipo==="Consecutiva"?"🎤 ":"🤫 "} fontSize={14} padding="5px 12px" />
+              <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?"📍 ":ev.modalidad==="hibrido"?"🔀 ":"💻 "} fontSize={14} padding="5px 12px" />
             </div>
 
             {!esPresencial && ev.plataforma && (
@@ -250,7 +251,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             )}
 
             <div style={{ marginTop:6 }}>
-              <Chip label={estadoLabel} emoji={estadoLabel==="Facturado"?"✓ ":"🟠 "} fontSize={16} padding="5px 13px" />
+              <Chip label={estadoLabel} emoji={estadoLabel==="Facturado"?"✓ ":"🟠 "} fontSize={14} padding="5px 12px" />
             </div>
 
             {tieneEquipos && (
