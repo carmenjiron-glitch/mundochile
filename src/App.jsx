@@ -1787,21 +1787,23 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
     return true;
   }),[allRows,mesFiltro,colFiltros]);
   const COLS=["Mes","Orden de Compra","Cliente","Contacto Cliente","# Evento","Detalle Equipos AV","Proveedor","Detalles Instalación","Tipo","Nombre Evento","Lugar","Par de Idiomas","Jornada","Horario","Fecha Inicio","Fecha Término","Comentarios","Intérprete 1","Nro OT","Nro Boleta","Intérprete 2","Nro OT 2"];
-  const thS={background:"#1E3A5F",color:"#FFFFFF",fontSize:"12px",fontWeight:"500",padding:"8px 10px",textAlign:"center",position:"sticky",top:"96px",zIndex:10,whiteSpace:"nowrap",borderRight:"1px solid rgba(255,255,255,0.15)",borderBottom:"2px solid #94A3B8"};
+  const thS={background:"#1E3A5F",color:"#FFFFFF",fontSize:"12px",fontWeight:"500",padding:"8px 10px",textAlign:"center",position:"sticky",top:"96px",zIndex:10,whiteSpace:"nowrap",borderRight:"1px solid rgba(255,255,255,0.15)",borderBottom:"2px solid #94A3B8",marginTop:"0"};
   const renderThFiltro=(col)=>{
     const active=!!colFiltros[col];const isOpen=openCol===col;
-    return(<th key={col} style={{...thS,background:active?"#2D5F9E":"#1E3A5F",cursor:"pointer",userSelect:"none",zIndex:isOpen?20:10}}>
-      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:"4px"}}
-        onClick={e=>{e.stopPropagation();setOpenCol(isOpen?null:col);}}>
-        <span>{col}</span><span style={{fontSize:"9px",opacity:0.7}}>{active?"▲":"▼"}</span>
+    return(<th key={col} style={{...thS,background:active?"#2D5F9E":"#1E3A5F",cursor:"pointer",userSelect:"none",zIndex:isOpen?1000:10}}>
+      <div style={{position:"relative"}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:"4px"}}
+          onClick={e=>{e.stopPropagation();setOpenCol(isOpen?null:col);}}>
+          <span>{col}</span><span style={{fontSize:"9px",opacity:0.7}}>{active?"▲":"▼"}</span>
+        </div>
+        {isOpen&&(<div onClick={e=>e.stopPropagation()}
+          style={{position:"absolute",top:"100%",left:"0",zIndex:1000,minWidth:"160px",background:"#FFFFFF",color:"#1A1A1A",borderRadius:"6px",boxShadow:"0 4px 12px rgba(0,0,0,0.15)",border:"1px solid #E5E7EB",maxHeight:"240px",overflowY:"auto",fontSize:"12px",textAlign:"left",fontWeight:"400"}}>
+          <div onClick={()=>{setColFiltros(f=>{const n={...f};delete n[col];return n;});setOpenCol(null);}}
+            style={{padding:"4px 8px",cursor:"pointer",background:!active?"#EFF6FF":"transparent",fontWeight:!active?"600":"400",borderBottom:"1px solid #E5E7EB"}}>Todos</div>
+          {(uniqueVals[col]||[]).map(v=>(<div key={v} onClick={()=>{setColFiltros(f=>({...f,[col]:v}));setOpenCol(null);}}
+            style={{padding:"4px 8px",cursor:"pointer",background:colFiltros[col]===v?"#DBEAFE":"transparent",fontWeight:colFiltros[col]===v?"600":"400"}}>{v}</div>))}
+        </div>)}
       </div>
-      {isOpen&&(<div onClick={e=>e.stopPropagation()}
-        style={{position:"absolute",top:"100%",left:0,background:"#FFFFFF",color:"#1A1A1A",borderRadius:"6px",boxShadow:"0 4px 12px rgba(0,0,0,0.15)",zIndex:100,minWidth:"180px",maxHeight:"240px",overflowY:"auto",fontSize:"12px",border:"1px solid #E5E7EB",textAlign:"left",fontWeight:"400"}}>
-        <div onClick={()=>{setColFiltros(f=>{const n={...f};delete n[col];return n;});setOpenCol(null);}}
-          style={{padding:"4px 8px",cursor:"pointer",background:!active?"#EFF6FF":"transparent",fontWeight:!active?"600":"400",borderBottom:"1px solid #E5E7EB"}}>Todos</div>
-        {(uniqueVals[col]||[]).map(v=>(<div key={v} onClick={()=>{setColFiltros(f=>({...f,[col]:v}));setOpenCol(null);}}
-          style={{padding:"4px 8px",cursor:"pointer",background:colFiltros[col]===v?"#DBEAFE":"transparent",fontWeight:colFiltros[col]===v?"600":"400"}}>{v}</div>))}
-      </div>)}
     </th>);
   };
   const byMonth={};let rowIdx=0;
@@ -1818,14 +1820,14 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
         {hayFiltros&&<button onClick={()=>{setMesFiltro("");setColFiltros({});}} style={{padding:"6px 12px",background:"#EF4444",color:"#FFFFFF",border:"none",borderRadius:"6px",cursor:"pointer",fontSize:"12px",fontFamily:"inherit"}}>✕ Limpiar filtros</button>}
       </div>
       <div style={{overflowX:"auto",width:"100%"}}>
-      <table style={{borderCollapse:"collapse",minWidth:"2200px",width:"100%",fontSize:"12px",background:"#fff"}}>
+      <table style={{borderCollapse:"collapse",tableLayout:"fixed",minWidth:"2200px",width:"100%",fontSize:"12px",background:"#fff"}}>
         <thead>
           <tr>{COLS.map(col=>FILTERABLE.includes(col)?renderThFiltro(col):<th key={col} style={thS}>{col}</th>)}</tr>
         </thead>
         {filtered.length===0&&<tbody><tr><td colSpan={COLS.length} style={{textAlign:"center",padding:"60px 20px",color:"#9CA3AF",fontSize:"14px",background:"#fff"}}>No hay eventos que mostrar</td></tr></tbody>}
         {Object.entries(byMonth).map(([mk,{label,rows}])=>(
           <tbody key={mk}>
-            <tr><td colSpan={COLS.length} style={{background:"#1E3A5F",color:"#FFFFFF",fontSize:"13px",fontWeight:"600",padding:"8px 12px",textTransform:"uppercase",letterSpacing:"0.08em"}}>📅 {label}</td></tr>
+            <tr><td colSpan={COLS.length} style={{background:"#1E3A5F",color:"#FFFFFF",fontSize:"13px",fontWeight:"600",padding:"8px 12px",textTransform:"uppercase",letterSpacing:"0.08em",margin:"0",marginBottom:"0"}}>📅 {label}</td></tr>
             {rows.map(r=>{
               rowIdx++;
               const ri=rowIdx;
