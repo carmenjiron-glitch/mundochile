@@ -1741,11 +1741,21 @@ function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,
   const fechas=Object.keys(byDay);
   useEffect(()=>{
     if(vista!=="agenda")return;
-    const h=new Date();
-    const idHoy=`agenda-dia-${h.getFullYear()}-${h.getMonth()}-${h.getDate()}`;
-    const el=document.getElementById(idHoy);
-    if(el){el.scrollIntoView({block:"start",behavior:"instant"});}
-    else{const prox=document.querySelectorAll("[id^='agenda-dia-']");if(prox.length>0)prox[0].scrollIntoView({block:"start",behavior:"instant"});}
+    setTimeout(()=>{
+      const hoy=new Date();
+      const year=hoy.getFullYear();
+      const month=hoy.getMonth();
+      const day=hoy.getDate();
+      const posiblesIds=[
+        `agenda-dia-${year}-${month}-${day}`,
+        `agenda-${year}-${month}-${day}`,
+        `dia-${year}-${month}-${day}`,
+        `agenda-dia-${year}-${month+1}-${day}`
+      ];
+      let el=null;
+      for(const id of posiblesIds){el=document.getElementById(id);if(el)break;}
+      if(el){el.scrollIntoView({block:"start",behavior:"instant"});}
+    },100);
   },[vista]);
   return (
     <div style={{padding:"16px 24px 80px",width:"100%",maxWidth:"100%"}}>
