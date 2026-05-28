@@ -207,20 +207,20 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
           {/* COLUMNA IZQUIERDA — info del evento */}
           <div>
             <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:8, marginBottom:4 }}>
-              <div style={{ fontSize:21, fontWeight:600, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", flex:1 }}>
+              <div style={{ fontSize:25, fontWeight:600, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", flex:1 }}>
                 {cliente?.nombre_empresa || "—"}
               </div>
               {pillMultidia}
             </div>
 
             {cliente?.nombre_contacto && (
-              <div style={{ fontSize:14, color:"#565D68", fontStyle:"italic", marginTop:2 }}>
+              <div style={{ fontSize:17, color:"#565D68", fontStyle:"italic", marginTop:2 }}>
                 Contacto: {cliente.nombre_contacto}
               </div>
             )}
 
             {ev.nombre_evento && (
-              <div style={{ fontSize:14, color:"#6B7280", marginTop:2 }}>
+              <div style={{ fontSize:17, color:"#6B7280", marginTop:2 }}>
                 <span style={{ fontWeight:600 }}>Nombre del evento:</span>{" "}
                 <span style={{ fontWeight:400 }}>{ev.nombre_evento}</span>
               </div>
