@@ -147,9 +147,9 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
         title={esUltimo ? "Último día del evento" : "Ver día siguiente →"}
         style={{
           display:"inline-flex", alignItems:"center", gap:4,
-          padding:"3px 8px", borderRadius:20,
+          padding:agendaSmall?"3px 8px":"3px 7px", borderRadius:20,
           background:"#E8F4FD", color:"#1971C2",
-          fontSize:14, fontWeight:700, lineHeight:1.4,
+          fontSize:agendaSmall?14:13, fontWeight:700, lineHeight:1.4,
           cursor: esUltimo ? "default" : "pointer",
           border:"1px solid #BAD7F0",
           whiteSpace:"nowrap", flexShrink:0,
