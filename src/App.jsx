@@ -2154,11 +2154,13 @@ export default function App() {
             if(!dia) return <div key={i} style={{background:"rgba(255,255,255,0.35)",borderRadius:"8px",minHeight:"90px"}}/>;
             const iso=`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-${String(dia).padStart(2,"0")}`;
             const evs=evsDia(iso), esHoy=iso===hoy();
+            const fecha=desdeISO(iso);
             return <div key={i} onClick={()=>{setDiaActual(iso);setVista("dia");}}
               style={{minHeight:"90px",border:esHoy?"2px solid #4C6EF5":"none",borderRadius:"8px",padding:"8px",cursor:"pointer",background:"#FFFFFF",boxSizing:"border-box"}}
               onMouseEnter={e=>e.currentTarget.style.background="#F8FAFC"} onMouseLeave={e=>e.currentTarget.style.background="#FFFFFF"}>
               <div style={{marginBottom:"4px"}}>
                 <span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:"26px",height:"26px",borderRadius:"50%",background:esHoy?"#4C6EF5":"transparent",color:esHoy?"#FFFFFF":"#0F172A",fontWeight:"500",fontSize:"15px"}}>{dia}</span>
+                <div style={{fontSize:"10px",color:"#6B7280",fontWeight:"400",marginTop:"2px"}}>{fecha.toLocaleDateString('es-CL',{weekday:'short'}).toUpperCase()} · {fecha.toLocaleDateString('es-CL',{month:'short'}).toUpperCase()}</div>
               </div>
               {evs.slice(0,2).map((ev,j)=><div key={j} onClick={e=>{e.stopPropagation();abrirEvento(ev);}} style={{fontSize:"13px",fontWeight:"500",background:colorCliente(ev.cliente_id),color:"#fff",borderRadius:"4px",padding:"3px 8px",marginBottom:"2px",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{clientes.find(c=>c.id===ev.cliente_id)?.nombre_empresa||ev.nombre_evento||"Evento"}</div>)}
               {evs.length>2&&<div style={{fontSize:"13px",color:"#6B7280",fontWeight:"500",marginTop:"1px"}}>+{evs.length-2} más</div>}
