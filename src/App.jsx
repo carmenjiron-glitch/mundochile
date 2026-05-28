@@ -1743,6 +1743,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
   const [openCol,setOpenCol]=useState(null);
   const [mesFiltro,setMesFiltro]=useState("");
   useEffect(()=>{if(!openCol)return;const h=()=>setOpenCol(null);document.addEventListener("click",h);return()=>document.removeEventListener("click",h);},[openCol]);
+  useEffect(()=>{setTimeout(()=>{const elH=document.getElementById(`grilla-evento-${toISO(new Date())}`);if(elH)elH.scrollIntoView({block:"center",behavior:"instant"});},150);},[]);
   const allRows=useMemo(()=>[...eventos].sort((a,b)=>a.fecha_inicio.localeCompare(b.fecha_inicio)).map(ev=>{
     const cli=clientes.find(c=>c.id===ev.cliente_id);
     const contacto=contactos.find(c=>c.id===ev.contacto_id);
@@ -1806,6 +1807,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
       </div>
     </th>);
   };
+  const hoyISO=toISO(new Date());
   const byMonth={};let rowIdx=0;
   filtered.forEach(r=>{if(!byMonth[r.mesKey])byMonth[r.mesKey]={label:r.mesLargo,rows:[]};byMonth[r.mesKey].rows.push(r);});
   const hayFiltros=mesFiltro||Object.values(colFiltros).some(Boolean);
@@ -1833,14 +1835,15 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
               const ri=rowIdx;
               const isEven=ri%2===0;
               const {ev,cli,contactoNombre,esMultidia,a1,a2,i1N,i2N,par,detalleEq,provNom,detalleInst,mesStr}=r;
-              const rowBg=isEven?"#F9FAFB":"#FFFFFF";
-              const td={padding:"8px 10px",fontSize:"12px",borderBottom:"1px solid #CBD5E1",borderRight:"1px solid #E2E8F0",verticalAlign:"top",color:"#1A1A1A",lineHeight:1.4};
+              const esHoy=ev.fecha_inicio?.slice(0,10)===hoyISO;
+              const rowBg=esHoy?"#EFF6FF":(isEven?"#F9FAFB":"#FFFFFF");
+              const td={padding:"8px 10px",fontSize:"12px",borderBottom:"1px solid #CBD5E1",borderRight:"1px solid #E2E8F0",verticalAlign:"top",color:"#1A1A1A",lineHeight:1.4,...(esHoy?{fontWeight:"500"}:{})};
               return (
-                <tr key={ev.id} style={{background:rowBg,cursor:"pointer"}}
+                <tr id={`grilla-evento-${ev.fecha_inicio?.slice(0,10)}`} key={ev.id} style={{background:rowBg,cursor:"pointer"}}
                   onClick={()=>esMultidia?onVerMultidia(ev.id):onAbrir(ev)}
                   onMouseEnter={e=>e.currentTarget.style.background="#EFF6FF"}
                   onMouseLeave={e=>e.currentTarget.style.background=rowBg}>
-                  <td style={td}>{mesStr}</td>
+                  <td style={esHoy?{...td,borderLeft:"4px solid #22C55E"}:td}>{mesStr}</td>
                   <td style={td}>{ev.nro_oc||""}</td>
                   <td style={{...td,fontWeight:600}}>{cli?.nombre_empresa||"—"}</td>
                   <td style={td}>{contactoNombre}</td>
