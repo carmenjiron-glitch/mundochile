@@ -1225,12 +1225,12 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
           </div>
           <div style={{display:"flex",flexWrap:"wrap",gap:"5px"}}>
             {CAMPOS_OPC.map(({k,l})=><button key={k} onClick={()=>toggleCampo(k)}
-              style={{padding:"3px 10px",borderRadius:"20px",cursor:"pointer",fontSize:"12px",fontWeight:"400",fontFamily:"inherit",background:campos[k]?"#2E7BC4":"#E2E8F0",color:campos[k]?"#fff":"#6B7280",border:"none"}}>{l}</button>)}
+              style={{padding:"3px 10px",borderRadius:"20px",cursor:"pointer",fontSize:"12px",fontWeight:"500",fontFamily:"inherit",background:campos[k]?"#2E7BC4":"#E2E8F0",color:campos[k]?"#fff":"#6B7280",border:"none",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",letterSpacing:"0.02em"}}>{l}</button>)}
           </div>
         </div>
 
         {/* Área exportable */}
-        <div id="ficha-exportable" ref={fichaRef} style={{flex:1,overflowY:"auto",background:"#F8FAFF",padding:"10px 12px 12px"}}>
+        <div id="ficha-exportable" ref={fichaRef} style={{flex:1,overflowY:"auto",background:"#F8FAFF",padding:"10px 12px 12px",border:"2px solid #1A6FD4",borderRadius:"8px",overflow:"hidden"}}>
 
           {/* Header */}
           <div style={{display:"flex",alignItems:"center",padding:"10px 16px",borderRadius:"8px",background:"linear-gradient(135deg, #2E7BC4 0%, #1A5A9E 100%)",color:"#fff",marginBottom:"8px",flexShrink:0}}>
