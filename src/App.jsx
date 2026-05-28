@@ -65,7 +65,7 @@ const IDIOMA_CDN={"Inglés":"gb","Francés":"fr","Portugués":"br","Español":"e
 function FlagImg({idioma}){const c=IDIOMA_CDN[idioma];if(!c)return<span style={{fontSize:"14px"}}>🌐</span>;return<img src={`https://flagcdn.com/28x21/${c}.png`} style={{width:"25px",height:"18px",objectFit:"cover",borderRadius:"2px",verticalAlign:"middle",display:"inline-block",flexShrink:0}} alt={idioma}/>;}
 const B_TIPO={"Simultánea":{bg:"#EEF2FF",c:"#3B5BDB"},"Consecutiva":{bg:"#FCE4EC",c:"#C2185B"},"Whispering":{bg:"#F3E5F5",c:"#7B1FA2"}};
 const B_MOD={"presencial":{bg:"#E8F5E9",c:"#2E7D32"},"remoto":{bg:"#E0F7FA",c:"#00838F"},"hibrido":{bg:"#FBE9E7",c:"#BF360C"}};
-const B_EST=(e)=>e==="Facturado"?{bg:"#FFFFFF",c:"#1A1A1A",b:"#C62828"}:{bg:"#FFFFFF",c:"#1A1A1A",b:"#C62828"};
+const B_EST=(e)=>e==="Facturado"?{bg:"#FFFFFF",c:"#1A1A1A",b:"#E57373"}:{bg:"#FFFFFF",c:"#1A1A1A",b:"#E57373"};
 const bS=(bg,c,b)=>({display:"inline-flex",alignItems:"center",gap:"4px",padding:"3px 8px",borderRadius:"20px",fontSize:"10px",fontWeight:"700",lineHeight:"1.4",color:c,background:bg,border:`2px solid ${b||c}`,whiteSpace:"nowrap"});
 const TIPO_ICON={"Simultánea":<IconoSimultanea/>,"Consecutiva":"🎤","Whispering":"🤫"};
 const MOD_ICON={"presencial":"📍","remoto":"🖥️","hibrido":"🔀"};
@@ -908,7 +908,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
   const LBL_LARGA={txt:"13px",fw:"600",c:"#0F172A",tt:"uppercase",ls:"0.04em"};
   const B_TIPO_D={"Simultánea":{bg:"#EEF2FF",c:"#2F49AF"},"Consecutiva":{bg:"#FCE4EC",c:"#9B1349"},"Whispering":{bg:"#F3E5F5",c:"#621982"}};
   const B_MOD_D={"presencial":{bg:"#E8F5E9",c:"#256428"},"remoto":{bg:"#E0F7FA",c:"#006972"},"hibrido":{bg:"#FBE9E7",c:"#992B0A"}};
-  const B_EST_D=(e)=>e==="Facturado"?{bg:"#FFFFFF",c:"#1A1A1A",b:"#C62828"}:{bg:"#FFFFFF",c:"#1A1A1A",b:"#C62828"};
+  const B_EST_D=(e)=>e==="Facturado"?{bg:"#FFFFFF",c:"#1A1A1A",b:"#E57373"}:{bg:"#FFFFFF",c:"#1A1A1A",b:"#E57373"};
   const SL=({t})=><div style={{fontSize:LBL_LARGA.txt,fontWeight:LBL_LARGA.fw,color:LBL_LARGA.c,textTransform:LBL_LARGA.tt,letterSpacing:LBL_LARGA.ls,marginBottom:"6px"}}>{t}</div>;
   const HR=()=><hr style={{border:"none",borderTop:"1px solid #E5E7EB",margin:"16px 0"}}/>;
   const btnA=(bg)=>({padding:"8px 16px",background:bg,color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"13px",height:"36px",fontFamily:"inherit"});
