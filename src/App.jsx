@@ -593,7 +593,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
               <div style={{display:"flex",gap:"8px"}}>
                 <select style={S.sel} value={form.contacto_id||""} onChange={e=>setF("contacto_id",e.target.value?Number(e.target.value):"")}>
                   <option value="">Seleccionar contacto…</option>
-                  {contactos.filter(c=>c.cliente_id===Number(form.cliente_id)&&c.activo!==false).map(c=><option key={c.id} value={c.id}>{c.nombre}{c.cargo?` — ${c.cargo}`:""}</option>)}
+                  {contactos.filter(c=>String(c.cliente_id)===String(form.cliente_id)&&c.activo!==false).map(c=><option key={c.id} value={c.id}>{c.nombre}{c.cargo?` — ${c.cargo}`:""}</option>)}
                 </select>
                 <button onClick={()=>onNuevoContacto({cliente_id:form.cliente_id})} style={{padding:"0",width:"42px",height:"42px",background:"#3B82F6",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"20px",fontWeight:"300",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,lineHeight:1}}>+</button>
               </div>
