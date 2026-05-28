@@ -1825,6 +1825,8 @@ export default function App() {
   const [semanaOff,setSemanaOff]=useState(0);
   const [mesOff,setMesOff]=useState(0);
   const [diaActual,setDiaActual]=useState(hoy());
+  const [modoMultidia,setModoMultidia]=useState(false);
+  const [eventoMultidiaId,setEventoMultidiaId]=useState(null);
   const [pantalla,setPantalla]=useState("calendario");
   const [modalEvento,setModalEvento]=useState(null);
   const [modalDetalle,setModalDetalle]=useState(null);
@@ -1938,6 +1940,7 @@ export default function App() {
     if(vista==="semana"){const d=diasSemana;const capM=(m)=>MESES_L[m].charAt(0).toUpperCase()+MESES_L[m].slice(1);return `${d[0].getDate()} ${capM(d[0].getMonth())} – ${d[6].getDate()} ${capM(d[6].getMonth())} ${d[6].getFullYear()}`;}
     if(vista==="mes"){const n=new Date();n.setMonth(n.getMonth()+mesOff);return `${MESES_L[n.getMonth()].charAt(0).toUpperCase()+MESES_L[n.getMonth()].slice(1)} ${n.getFullYear()}`;}
     if(vista==="agenda") return "Agenda";
+    if(vista==="dia"&&modoMultidia&&eventoMultidiaId){const evM=eventosFiltrados.find(e=>e.id===eventoMultidiaId);const cli=clientes.find(c=>c.id===evM?.cliente_id);return `Evento Multidía — ${cli?.nombre_empresa||"—"}`;}
     return formatLargo(diaActual);
   };
   const contadorSubtitulo=()=>{
@@ -1952,6 +1955,14 @@ export default function App() {
     const{data}=await sb.from("eventos").select("*, asignaciones(*), evento_dias(*, asignaciones_dia(*), equipos_dia(*))").eq("id",ev.id).single();
     setModalDetalle(data||ev);
   };
+
+  const verTodosLosDias=(eventoId)=>{
+    setEventoMultidiaId(eventoId);
+    setModoMultidia(true);
+    setVista("dia");
+  };
+
+  useEffect(()=>{if(vista!=="dia"){setModoMultidia(false);setEventoMultidiaId(null);}},[vista]);
 
   const editarEvento=async(ev)=>{
     const{data}=await sb.from("eventos")
@@ -2033,7 +2044,7 @@ export default function App() {
               <div style={{flex:1,color:"#fff",fontWeight:"500",fontSize:"17px"}}>{evs.length>0?`${evs.length} evento${evs.length!==1?"s":""}`:""}</div>
               <div style={{fontSize:"14px",color:"rgba(255,255,255,0.6)"}}>›</div>
             </div>
-            {evs.length>0&&<div style={{padding:"0 10px 10px"}}>{evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} onNavegar={d=>{setDiaActual(d);setVista("dia");}} solidPill/>)}</div>}
+            {evs.length>0&&<div style={{padding:"0 10px 10px"}}>{evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} onNavegar={d=>{setDiaActual(d);setVista("dia");}} onVerMultidia={verTodosLosDias} solidPill/>)}</div>}
           </div>;
         })}
       </div>
@@ -2061,7 +2072,7 @@ export default function App() {
                 <div style={{fontSize:"14px",color:"rgba(255,255,255,0.75)"}}>{mesLargo} {d.getFullYear()}</div>
                 {evs.length>0&&<div style={{display:"inline-block",background:"rgba(255,255,255,0.20)",color:"#fff",fontSize:"14px",fontWeight:"500",padding:"2px 8px",borderRadius:"10px",marginTop:"6px"}}>{evs.length} evento{evs.length!==1?"s":""}</div>}
               </div>
-              {evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} onNavegar={d=>{setDiaActual(d);setVista("dia");}} solidPill/>)}
+              {evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} onNavegar={d=>{setDiaActual(d);setVista("dia");}} onVerMultidia={verTodosLosDias} solidPill/>)}
               {evs.length===0&&<div style={{textAlign:"center",color:"rgba(255,255,255,0.5)",fontWeight:"500",fontSize:"15px",padding:"20px 0"}}>Sin eventos</div>}
             </div>;
           })}
@@ -2072,9 +2083,93 @@ export default function App() {
 
   // ── Vista DÍA ──
   const renderDia=()=>{
-    const evs=evsDia(diaActual);
     const SLD=({t})=><div style={{fontSize:"13px",fontWeight:"600",color:"#0F172A",textTransform:"uppercase",letterSpacing:"0.04em",marginBottom:"6px"}}>{t}</div>;
     const HRD=()=><hr style={{border:"none",borderTop:"1px solid #E5E7EB",margin:"14px 0"}}/>;
+
+    // ── Modo Multidía ──
+    if(modoMultidia&&eventoMultidiaId){
+      const evM=eventosFiltrados.find(e=>e.id===eventoMultidiaId);
+      if(!evM){setModoMultidia(false);setEventoMultidiaId(null);return null;}
+      const cli=clientes.find(c=>c.id===evM.cliente_id);
+      const borderC=colorCliente(evM.cliente_id);
+      const esPresD=evM.modalidad==="presencial"||evM.modalidad==="hibrido";
+      const esZoomMCD=evM.plataforma==="Zoom MundoChile"||evM.plataforma==="Zoom";
+      const bTipo=B_TIPO[evM.tipo]||{bg:"#EEF2FF",c:"#3B5BDB"};
+      const bMod=B_MOD[evM.modalidad]||{bg:"#F7F7F5",c:"#565656"};
+      const bEst=B_EST(evM.estado);
+      const grupos={};
+      (evM.asignaciones||[]).forEach(a=>{
+        const par=pares.find(p=>p.id===a.par_id);
+        const interp=interpretes.find(x=>x.id===a.interprete_id);
+        if(!interp)return;
+        const key=par?.descripcion||"Sin par";
+        const idioma=par?.idioma_origen||"";
+        if(!grupos[key])grupos[key]={idioma,items:[]};
+        grupos[key].items.push({interp,isHost:!!a.es_host_zoom,hora:a.hora_presentacion||null});
+      });
+      const grupoEntries=Object.entries(grupos);
+      const ini=desdeISO(evM.fecha_inicio);
+      const fin=desdeISO(evM.fecha_termino);
+      const totalDias=Math.round((fin-ini)/86400000)+1;
+      const dias=Array.from({length:totalDias},(_,i)=>{const d=new Date(ini.getTime()+i*86400000);return{iso:toISO(d),x:i+1};});
+      return (
+        <div style={{paddingTop:"16px",paddingBottom:"80px",paddingLeft:"24px",paddingRight:"24px",margin:"0 auto",maxWidth:"720px",width:"100%"}}>
+          <div style={{fontWeight:"600",fontSize:"15px",color:"#fff",marginBottom:"20px"}}>
+            📅 Evento Multidía — {cli?.nombre_empresa||"—"}
+            <span style={{fontWeight:"400",color:"rgba(255,255,255,0.75)",fontSize:"13px",marginLeft:"12px"}}>{totalDias} días</span>
+          </div>
+          <div style={{display:"flex",flexDirection:"column",gap:"16px"}}>
+            {dias.map(({iso,x})=>(
+              <div key={iso} onClick={()=>abrirEvento(evM)} style={{background:"#FFFFFF",borderLeft:`16px solid ${borderC}`,borderTop:`6px solid ${borderC}`,borderRadius:"0 12px 12px 0",padding:"20px 24px",boxShadow:"0 2px 12px rgba(0,0,0,0.10)",cursor:"pointer"}}>
+                <div style={{fontSize:"14px",fontWeight:"700",color:borderC,marginBottom:"12px"}}>📅 Día {x} de {totalDias} — {formatLargo(iso)}</div>
+                <div style={{fontSize:"34px",fontWeight:"600",color:"#0F172A",lineHeight:1.2,marginBottom:4}}>{cli?.nombre_empresa||"—"}</div>
+                {cli?.nombre_contacto&&<div style={{fontSize:"16px",fontWeight:"500",color:"#6B7280",fontStyle:"italic",marginBottom:4}}>Contacto: {cli.nombre_contacto}</div>}
+                {(evM.nombre_evento||evM.titulo||evM.nombre||evM.descripcion)&&<div style={{fontSize:"16px",fontWeight:"500",color:"#111827",marginTop:2}}><span style={{fontWeight:"600",color:"#6B7280"}}>Nombre del evento: </span>{evM.nombre_evento||evM.titulo||evM.nombre||evM.descripcion}</div>}
+                <HRD/>
+                <div style={{fontSize:"17px",fontWeight:"500",color:"#1E293B",marginBottom:"4px"}}>📅 {formatMedioES(evM.fecha_inicio)} → {formatMedioES(evM.fecha_termino)}</div>
+                <div style={{fontSize:"16px",fontWeight:"500",color:"#0F172A",marginBottom:"6px"}}>🕐 {evM.hora_inicio?.slice(0,5)} – {evM.hora_termino?.slice(0,5)} hrs{evM.jornada&&<span style={{fontWeight:"400",color:"#6B7280",fontSize:"14px"}}> · {evM.jornada}</span>}</div>
+                <HRD/>
+                <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center",marginBottom:"4px"}}>
+                  <span style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:bTipo.c,background:bTipo.bg,border:`2px solid ${bTipo.c}`,whiteSpace:"nowrap"}}>{evM.tipo==="Simultánea"?<IconoSimultanea/>:evM.tipo==="Consecutiva"?"🎤":"🤫"} {evM.tipo}</span>
+                  <span style={{display:"inline-flex",alignItems:"center",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:bMod.c,background:bMod.bg,border:`2px solid ${bMod.c}`,whiteSpace:"nowrap"}}>{evM.modalidad==="presencial"?"📍":evM.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evM.modalidad]||evM.modalidad}</span>
+                </div>
+                <HRD/>
+                {esPresD&&evM.lugar&&<div style={{marginBottom:"12px"}}><SLD t="📍 Lugar"/><div style={{fontSize:"15px",fontWeight:"500",color:"#0F172A"}}>{evM.lugar}</div></div>}
+                {!esPresD&&evM.plataforma&&<div style={{marginBottom:"12px"}}><SLD t="💻 Plataforma"/><PlatformChip platform={evM.plataforma==="Zoom"?"Zoom MundoChile":evM.plataforma} isMundoChile={esZoomMCD} extra={esZoomMCD?evM.zoom_administrador:""}/></div>}
+                {grupoEntries.length>0&&<div style={{marginBottom:"4px"}}>
+                  <SLD t="🎙 Intérpretes"/>
+                  {grupoEntries.map(([key,grupo])=>{
+                    const pillClr=IDIOMA_PILL_CLR[grupo.idioma]||"#4C6EF5";
+                    const hp=grupo.items.find(i=>i.hora)?.hora;
+                    return(<div key={key} style={{marginBottom:"12px"}}>
+                      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"6px"}}>
+                        <span style={{fontSize:"12px",fontWeight:"600",color:pillClr,textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
+                        {hp&&<span style={{fontSize:"14px",color:"#6B7280",display:"flex",alignItems:"center",gap:"4px"}}>🕐 {hp.slice(0,5)} hrs</span>}
+                      </div>
+                      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
+                        {grupo.items.map(({interp,isHost},i)=>(
+                          <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"3px 8px",borderRadius:"20px",fontSize:"13px",fontWeight:"600",lineHeight:"1.4",color:"#1A1A1A",background:"#FFFFFF",border:`3px solid ${pillClr}`,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                            {isHost&&<span style={{fontSize:"11px"}}>🔑</span>}
+                            <FlagImg idioma={grupo.idioma}/>
+                            <span style={{overflow:"hidden",textOverflow:"ellipsis"}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
+                          </span>
+                        ))}
+                      </div>
+                    </div>);
+                  })}
+                </div>}
+                <HRD/>
+                <div><SLD t="Estado de facturación"/>
+                  <span style={{display:"inline-flex",alignItems:"center",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:bEst.c,background:bEst.bg,border:`2px solid ${bEst.b||bEst.c}`,whiteSpace:"nowrap"}}>{evM.estado==="Facturado"?"✓ Facturado":"🟠 Facturación Pendiente"}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    const evs=evsDia(diaActual);
     return (
       <div style={{paddingTop:"16px",paddingBottom:"80px",paddingLeft:"24px",paddingRight:"24px",margin:"0 auto",maxWidth:"720px",width:"100%"}}>
         <div style={{fontWeight:"500",fontSize:"14px",color:"#fff",marginBottom:"16px"}}>

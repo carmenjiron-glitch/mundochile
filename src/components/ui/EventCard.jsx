@@ -78,7 +78,7 @@ const Chip = ({ label, emoji, fontSize=12, padding="4px 10px" }) => {
 };
 
 // ── Componente principal ──────────────────────────────────────────────────────
-export default function EventCard({ ev, diaDe, clientes, interpretes, pares, proveedores=[], onClick, onNavegar, solidPill=false, pillsHalf=false, agendaSmall=false }) {
+export default function EventCard({ ev, diaDe, clientes, interpretes, pares, proveedores=[], onClick, onNavegar, onVerMultidia=null, solidPill=false, pillsHalf=false, agendaSmall=false }) {
   const cliente     = clientes.find(c => c.id === ev.cliente_id);
   const borderColor = colorCliente(ev.cliente_id);
   const esPresencial = ev.modalidad === "presencial" || ev.modalidad === "hibrido";
@@ -140,23 +140,22 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
   const dotVisible = dotEsHoy || dotEsMan;
 
   const pillMultidia = diaXdeY && (() => {
-    const esUltimo = diaXdeY.x === diaXdeY.y;
     return (
       <div
-        onClick={esUltimo ? undefined : handleIrDiaSiguiente}
-        title={esUltimo ? "Último día del evento" : "Ver día siguiente →"}
+        onClick={e => { e.stopPropagation(); if (onVerMultidia) onVerMultidia(ev.id); }}
+        title="Ver todos los días del evento"
         style={{
           display:"inline-flex", alignItems:"center", gap:4,
           padding:agendaSmall?"3px 8px":"3px 7px", borderRadius:20,
           background:"#E8F4FD", color:"#1971C2",
           fontSize:agendaSmall?14:13, fontWeight:700, lineHeight:1.4,
-          cursor: esUltimo ? "default" : "pointer",
+          cursor: onVerMultidia ? "pointer" : "default",
           border:"1px solid #BAD7F0",
           whiteSpace:"nowrap", flexShrink:0,
           userSelect:"none",
         }}
       >
-        📅 Día {diaXdeY.x} de {diaXdeY.y}{!esUltimo && " ›"}
+        📅 Día {diaXdeY.x} de {diaXdeY.y} ›
       </div>
     );
   })();
