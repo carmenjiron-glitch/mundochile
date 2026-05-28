@@ -1170,7 +1170,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
     ?<div style={{fontSize:"14px",color:"#6B7280",marginTop:"4px",display:"flex",gap:"10px",flexWrap:"wrap"}}>
       {a.nro_ot&&<span>OT: {a.nro_ot}</span>}
       {a.nro_boleta&&<span>Boleta: {a.nro_boleta}</span>}
-      {a.hora_presentacion&&<span style={{fontSize:"15px",display:"inline-flex",alignItems:"center",gap:"6px"}}><span style={{fontSize:"15px"}}>🕐</span> {a.hora_presentacion.slice(0,5)}</span>}
+      {a.hora_presentacion&&<span style={{fontSize:"14px",display:"inline-flex",alignItems:"center",gap:"6px"}}>🕐 Horario de presentación: {a.hora_presentacion.slice(0,5)} hrs</span>}
     </div>:null;
 
   const renderGrupos=(asignaciones)=>{
