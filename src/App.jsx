@@ -1197,18 +1197,18 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
       return(<div key={key} style={{marginBottom:"8px"}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"4px"}}>
           <span style={{fontSize:"10px",fontWeight:"600",color:pillClr,textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
-          {hp&&<span style={{fontSize:"11px",color:"#6B7280"}}>🕐 {hp.slice(0,5)} hrs</span>}
+          {hp&&<span style={{fontSize:"11px",color:"#505860"}}>🕐 {hp.slice(0,5)} hrs</span>}
         </div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"4px"}}>
           {grupo.items.map(({interp,isHost},i)=>(
-            <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"4px",padding:"3px 6px",borderRadius:"20px",fontSize:"11px",fontWeight:"500",lineHeight:"1.4",color:"#1A1A1A",background:"#FFFFFF",border:`2px solid ${pillClr}`,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+            <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"4px",padding:"3px 6px",borderRadius:"20px",fontSize:"11px",fontWeight:"500",lineHeight:"1.4",color:"#141414",background:"#FFFFFF",border:`2px solid ${pillClr}`,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
               {isHost&&<span style={{fontSize:"10px"}}>🔑</span>}
               <FlagImg idioma={grupo.idioma}/>
-              <span style={{overflow:"hidden",textOverflow:"ellipsis",color:"#1A1A1A",fontSize:"11px",fontWeight:"600"}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
+              <span style={{overflow:"hidden",textOverflow:"ellipsis",color:"#141414",fontSize:"11px",fontWeight:"600"}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
             </span>
           ))}
         </div>
-        {grupo.items.map(({asig},i)=>(asig.nro_ot||asig.nro_boleta)?<div key={i} style={{fontSize:"11px",color:"#6B7280",marginTop:"3px",display:"flex",gap:"8px",flexWrap:"wrap"}}>{asig.nro_ot&&<span>OT: {asig.nro_ot}</span>}{asig.nro_boleta&&<span>Boleta: {asig.nro_boleta}</span>}</div>:null)}
+        {grupo.items.map(({asig},i)=>(asig.nro_ot||asig.nro_boleta)?<div key={i} style={{fontSize:"11px",color:"#505860",marginTop:"3px",display:"flex",gap:"8px",flexWrap:"wrap"}}>{asig.nro_ot&&<span>OT: {asig.nro_ot}</span>}{asig.nro_boleta&&<span>Boleta: {asig.nro_boleta}</span>}</div>:null)}
       </div>);
     });
   };
@@ -1271,7 +1271,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
               <div style={{border:"1px solid #E5E7EB",borderRadius:"8px",overflow:"hidden",display:"grid",gridTemplateColumns:"1fr 1fr",alignItems:"start"}}>
                 {showC?<div style={lH}>Cliente</div>:<div style={eS}/>}
                 {showI?<div style={rH}>Intérpretes</div>:<div style={eS}/>}
-                {showC?<div style={lB}><div style={{fontSize:"18px",fontWeight:"700",color:"#000000",lineHeight:1.2}}>{cliente?.nombre_empresa||"—"}</div>{cliente?.nombre_contacto&&<div style={{fontSize:"13px",color:"#6B7280",fontStyle:"italic",marginTop:"3px"}}>{cliente.nombre_contacto}</div>}</div>:<div style={eS}/>}
+                {showC?<div style={lB}><div style={{fontSize:"18px",fontWeight:"700",color:"#000000",lineHeight:1.2}}>{cliente?.nombre_empresa||"—"}</div>{cliente?.nombre_contacto&&<div style={{fontSize:"13px",color:"#505860",fontStyle:"italic",marginTop:"3px"}}>{cliente.nombre_contacto}</div>}</div>:<div style={eS}/>}
                 {showI?<div style={rB}>{renderGrupos(evento.asignaciones)}</div>:<div style={eS}/>}
 
                 {showT?<div style={lH}>Tipo / Modalidad</div>:<div style={eS}/>}
@@ -1281,18 +1281,18 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
 
                 {showFH?<div style={lH}>Fecha / Horario</div>:<div style={eS}/>}
                 {showCo?<div style={rH}>Comentarios</div>:<div style={eS}/>}
-                {showFH?<div style={lB}><div style={{display:"flex",gap:"12px",flexWrap:"wrap",alignItems:"center"}}>{campos.fecha&&<div style={{fontSize:"13px",fontWeight:"500",color:"#0F172A"}}>{esMultidia?`${formatCorto(evento.fecha_inicio)} → ${formatCorto(evento.fecha_termino)}`:formatLargo(evento.fecha_inicio)}</div>}{campos.horario&&<div style={{fontSize:"13px",fontWeight:"500",color:"#0F172A"}}>🕐 {evento.hora_inicio?.slice(0,5)} – {evento.hora_termino?.slice(0,5)} hrs</div>}</div></div>:<div style={eS}/>}
-                {showCo?<div style={rB}><div style={{fontSize:"12px",color:"#0F172A",lineHeight:1.5}}>{evento.comentarios}</div></div>:<div style={eS}/>}
+                {showFH?<div style={lB}><div style={{display:"flex",gap:"12px",flexWrap:"wrap",alignItems:"center"}}>{campos.fecha&&<div style={{fontSize:"13px",fontWeight:"500",color:"#0B1120"}}>{esMultidia?`${formatCorto(evento.fecha_inicio)} → ${formatCorto(evento.fecha_termino)}`:formatLargo(evento.fecha_inicio)}</div>}{campos.horario&&<div style={{fontSize:"13px",fontWeight:"500",color:"#0B1120"}}>🕐 {evento.hora_inicio?.slice(0,5)} – {evento.hora_termino?.slice(0,5)} hrs</div>}</div></div>:<div style={eS}/>}
+                {showCo?<div style={rB}><div style={{fontSize:"12px",color:"#0B1120",lineHeight:1.5}}>{evento.comentarios}</div></div>:<div style={eS}/>}
 
                 {showJ?<div style={lH}>Jornada</div>:<div style={eS}/>}
                 {showEv?<div style={rH}>Nombre del Evento</div>:<div style={eS}/>}
-                {showJ?<div style={lB}><div style={{fontSize:"13px",fontWeight:"500",color:"#0F172A"}}>⏱ {evento.jornada}{evento.jornada_personalizada?` — ${evento.jornada_personalizada}`:""}</div></div>:<div style={eS}/>}
-                {showEv?<div style={rB}><div style={{fontSize:"13px",fontWeight:"500",color:"#1E293B"}}>{evento.nombre_evento}</div>{evento.nro_oc&&<div style={{fontSize:"12px",color:"#6B7280",marginTop:"3px"}}>N° OC: {evento.nro_oc}</div>}</div>:<div style={eS}/>}
+                {showJ?<div style={lB}><div style={{fontSize:"13px",fontWeight:"500",color:"#0B1120"}}>⏱ {evento.jornada}{evento.jornada_personalizada?` — ${evento.jornada_personalizada}`:""}</div></div>:<div style={eS}/>}
+                {showEv?<div style={rB}><div style={{fontSize:"13px",fontWeight:"500",color:"#171F2C"}}>{evento.nombre_evento}</div>{evento.nro_oc&&<div style={{fontSize:"12px",color:"#505860",marginTop:"3px"}}>N° OC: {evento.nro_oc}</div>}</div>:<div style={eS}/>}
 
                 {showL?<div style={lH}>{esPresencial?"Lugar":"Plataforma"}</div>:<div style={eS}/>}
                 {showEq?<div style={rH}>Equipos AV</div>:<div style={eS}/>}
-                {showL?<div style={lB}>{campos.lugar&&esPresencial&&evento.lugar?<><div style={{fontSize:"13px",fontWeight:"500",color:"#0F172A"}}>📍 {evento.lugar}</div>{evento.lugar_detalle&&<div style={{fontSize:"12px",color:"#475569",marginTop:"3px"}}>{evento.lugar_detalle}</div>}</>:campos.plataforma&&!esPresencial?<PlatformChip platform={evento.plataforma==="Zoom"?"Zoom MundoChile":evento.plataforma} isMundoChile={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")} extra={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")?evento.zoom_administrador:""}/>:null}</div>:<div style={eS}/>}
-                {showEq?<div style={rB}>{(evento.evento_dias||[]).flatMap(d=>d.equipos_dia||[]).map((eq,i)=><div key={i} style={{fontSize:"12px",color:"#0F172A",marginBottom:"3px",display:"flex",alignItems:"center",gap:"5px"}}><IconAV size={14}/> {eq.tipo_equipo==="fijo"?"Sistema fijo":eq.tipo_equipo==="portatil"?"Sistema portátil":"Cabina portátil"}{eq.proveedor_nombre&&` · ${eq.proveedor_nombre}`}{eq.num_receptores>0&&` · ${eq.num_receptores} receptores`}</div>)}</div>:<div style={eS}/>}
+                {showL?<div style={lB}>{campos.lugar&&esPresencial&&evento.lugar?<><div style={{fontSize:"13px",fontWeight:"500",color:"#0B1120"}}>📍 {evento.lugar}</div>{evento.lugar_detalle&&<div style={{fontSize:"12px",color:"#35404F",marginTop:"3px"}}>{evento.lugar_detalle}</div>}</>:campos.plataforma&&!esPresencial?<PlatformChip platform={evento.plataforma==="Zoom"?"Zoom MundoChile":evento.plataforma} isMundoChile={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")} extra={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")?evento.zoom_administrador:""}/>:null}</div>:<div style={eS}/>}
+                {showEq?<div style={rB}>{(evento.evento_dias||[]).flatMap(d=>d.equipos_dia||[]).map((eq,i)=><div key={i} style={{fontSize:"12px",color:"#0B1120",marginBottom:"3px",display:"flex",alignItems:"center",gap:"5px"}}><IconAV size={14}/> {eq.tipo_equipo==="fijo"?"Sistema fijo":eq.tipo_equipo==="portatil"?"Sistema portátil":"Cabina portátil"}{eq.proveedor_nombre&&` · ${eq.proveedor_nombre}`}{eq.num_receptores>0&&` · ${eq.num_receptores} receptores`}</div>)}</div>:<div style={eS}/>}
 
                 {campos.interpretes&&esMultidia&&dias.map((dia,dIdx)=>(
                   <div key={dIdx} style={{gridColumn:"1/-1",overflow:"hidden",borderBottom:"1px solid #E5E7EB"}}>
