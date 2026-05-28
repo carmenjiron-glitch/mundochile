@@ -1268,7 +1268,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
             const showL=(campos.lugar&&esPresencial&&!!evento.lugar)||(campos.plataforma&&!esPresencial);
             const showEq=campos.equipos&&(evento.evento_dias||[]).flatMap(d=>d.equipos_dia||[]).length>0;
             return(
-              <div style={{border:"2px solid #1A6FD4",borderRadius:"0 0 8px 8px",overflow:"hidden",display:"grid",gridTemplateColumns:"1fr 1fr",alignItems:"start"}}>
+              <div style={{border:"3px solid #1A6FD4",borderRadius:"0 0 8px 8px",overflow:"hidden",display:"grid",gridTemplateColumns:"1fr 1fr",alignItems:"start"}}>
                 {showC?<div style={lH}>Cliente</div>:<div style={eS}/>}
                 {showI?<div style={rH}>Intérpretes</div>:<div style={eS}/>}
                 {showC?<div style={lB}><div style={{fontSize:"18px",fontWeight:"700",color:"#000000",lineHeight:1.2}}>{cliente?.nombre_empresa||"—"}</div>{cliente?.nombre_contacto&&<div style={{fontSize:"14px",color:"#484f56",fontStyle:"italic",marginTop:"3px"}}>{cliente.nombre_contacto}</div>}</div>:<div style={eS}/>}
