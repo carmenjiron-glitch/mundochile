@@ -1480,7 +1480,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
         {/* Header: buscador + botón nuevo */}
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"20px",gap:"12px"}}>
           <input
-            style={{...S.inp,maxWidth:"320px",height:"40px",fontSize:"14px"}}
+            style={{padding:"8px 12px",border:"1px solid #D1D5DB",borderRadius:"8px",fontSize:"13px",color:"#1A1A1A",background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",width:"240px"}}
             placeholder="Buscar intérprete..."
             value={busquedaInterp}
             onChange={e=>setBusquedaInterp(e.target.value)}
@@ -1558,7 +1558,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
                 {/* Col 2: Nombre + íconos */}
                 <div>
                   <div style={{display:"flex",alignItems:"center",gap:"6px",flexWrap:"nowrap"}}>
-                    <span style={{fontWeight:"600",fontSize:"14px",color:"#0F172A"}}>{nombreCompleto}</span>
+                    <span style={{fontWeight:"600",fontSize:"14px",color:"#111827"}}>{nombreCompleto}</span>
                     {i.es_host_zoom&&<span title="Host Zoom MundoChile" style={{fontSize:"13px",cursor:"help"}}>🔑</span>}
                     {(i.modalidad_trabajo==="ambas"||i.modalidad_trabajo==="online")&&<span title="Maneja plataforma Zoom" style={{fontSize:"13px",cursor:"help"}}>💻</span>}
                     {(i.modalidad_trabajo==="ambas"||i.modalidad_trabajo==="presencial")&&<span title="Disponible presencial" style={{fontSize:"13px",cursor:"help"}}>📍</span>}
@@ -1581,18 +1581,18 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
                 </div>
                 {/* Col 4: Contacto */}
                 <div>
-                  {i.email&&<div style={{fontSize:"12px",color:"#6B7280",marginBottom:"2px"}}>✉ {i.email}</div>}
-                  {i.telefono&&<div style={{fontSize:"12px",color:"#6B7280"}}>📞 {i.telefono}</div>}
+                  {i.email&&<div style={{fontSize:"12px",color:"#6B7280",lineHeight:"1.6"}}>✉ {i.email}</div>}
+                  {i.telefono&&<div style={{fontSize:"12px",color:"#6B7280",lineHeight:"1.6"}}>📞 {i.telefono}</div>}
                   {!i.email&&!i.telefono&&<div style={{fontSize:"12px",color:"#9CA3AF",fontStyle:"italic"}}>Sin datos</div>}
                 </div>
                 {/* Col 5: Acciones */}
                 <div style={{display:"flex",gap:"8px",alignItems:"center"}}>
                   <button onClick={()=>{setEditando(i.id);setFormEdit({...i});}}
-                    style={{padding:"6px 12px",background:"#E67700",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",fontFamily:"inherit"}}>
+                    style={{padding:"5px 12px",background:"#E67700",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",fontFamily:"inherit"}}>
                     ✏️ Editar
                   </button>
                   <button onClick={async()=>{await sb.from("interpretes").update({activo:!i.activo}).eq("id",i.id);onActualizar();}}
-                    style={{padding:"6px 12px",background:"#FFFFFF",color:"#6B7280",border:"1px solid #D1D5DB",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",fontFamily:"inherit"}}>
+                    style={{padding:"5px 12px",background:"#FFFFFF",color:"#6B7280",border:"1px solid #D1D5DB",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",fontFamily:"inherit"}}>
                     {i.activo?"Desactivar":"Activar"}
                   </button>
                 </div>
