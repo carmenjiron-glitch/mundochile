@@ -58,8 +58,8 @@ const BADGE = {
   "Presencial":            { bg:"#E8F5E9", c:"#2E7D32", b:"#2E7D32" },
   "Remoto":                { bg:"#E0F7FA", c:"#00838F", b:"#00838F" },
   "Híbrido":               { bg:"#FBE9E7", c:"#BF360C", b:"#BF360C" },
-  "Facturado":             { bg:"#E3F2FD", c:"#1565C0", b:"#1565C0" },
-  "Facturación Pendiente": { bg:"#FFEB3B", c:"#B71C1C", b:"#F9A825" },
+  "Facturado":             { bg:"#FFFFFF", c:"#1A1A1A", b:"#E3F2FD" },
+  "Facturación Pendiente": { bg:"#FFFFFF", c:"#1A1A1A", b:"#FFEB3B" },
 };
 
 const Chip = ({ label, emoji }) => {
