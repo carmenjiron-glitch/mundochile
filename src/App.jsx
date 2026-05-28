@@ -1754,11 +1754,15 @@ function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,
       ];
       let el=null;
       for(const id of posiblesIds){el=document.getElementById(id);if(el)break;}
-      if(el){el.scrollIntoView({block:"start",behavior:"instant"});}
+      if(el){
+        const alturaOffset=160;
+        const top=el.getBoundingClientRect().top+window.scrollY-alturaOffset;
+        window.scrollTo({top,behavior:"instant"});
+      }
     },100);
   },[vista]);
   return (
-    <div style={{padding:"16px 24px 80px",width:"100%",maxWidth:"100%"}}>
+    <div style={{padding:"160px 24px 80px",width:"100%",maxWidth:"100%"}}>
       {!fechas.length&&<div style={{textAlign:"center",padding:"80px 20px",color:"#fff"}}>
         <div style={{fontSize:"18px",marginBottom:"12px"}}>📅</div>
         <div style={{fontWeight:"500",fontSize:"14px",color:"#fff"}}>No hay eventos que mostrar</div>
@@ -2328,7 +2332,7 @@ export default function App() {
 
       {/* ── CONTENIDO ── */}
       {pantalla==="calendario"&&<>
-        <div style={{position:"sticky",top:"100px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",padding:"6px 24px",width:"100%"}}>
+        <div style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",padding:"6px 24px",width:"100%"}}>
           <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes}/>
         </div>
         {vista==="semana"&&renderSemana()}
