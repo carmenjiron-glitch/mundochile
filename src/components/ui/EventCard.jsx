@@ -146,6 +146,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
         boxSizing:      "border-box",
         transition:     "box-shadow 0.15s, transform 0.12s",
         userSelect:     "none",
+        position:       "relative",
       }}
       onMouseEnter={e => {
         e.currentTarget.style.boxShadow  = "0 4px 16px rgba(0,0,0,0.18)";
@@ -156,6 +157,25 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
         e.currentTarget.style.transform  = "translateY(0)";
       }}
     >
+      {/* Indicador hoy/mañana */}
+      {(() => {
+        const hoyD = new Date();
+        const manana = new Date();
+        manana.setDate(hoyD.getDate() + 1);
+        const fechaEvento = desdeISO(ev.fecha_inicio);
+        const esHoy = fechaEvento.toDateString() === hoyD.toDateString();
+        const esManana = fechaEvento.toDateString() === manana.toDateString();
+        if (!esHoy && !esManana) return null;
+        return (
+          <div style={{
+            position:"absolute", top:"8px", right:"8px",
+            width:"10px", height:"10px", borderRadius:"50%",
+            background: esHoy ? "#22C55E" : "#EAB308",
+            boxShadow: esHoy ? "0 0 6px #22C55E" : "0 0 6px #EAB308",
+            zIndex: 10,
+          }}/>
+        );
+      })()}
       {/* Nombre cliente + pill multidía */}
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:8, marginBottom:4 }}>
         <div style={{ fontSize:21, fontWeight:600, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", flex:1 }}>
