@@ -976,6 +976,25 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
               {evento.modalidad==="presencial"?"📍":evento.modalidad==="hibrido"?"🔀":"💻"} {LBL[evento.modalidad]||evento.modalidad}
             </span>
           </div>
+          {/* Programa multidía */}
+          {esMultidia&&dias.length>0&&<><HR/><div style={{marginBottom:"12px"}}>
+            <SL t="📅 Programa del evento"/>
+            <div style={{borderRadius:"10px",overflow:"hidden",border:"1px solid #E5E7EB"}}>
+              <table style={{width:"100%",borderCollapse:"collapse"}}>
+                <thead><tr style={{background:"#1E3A6E",color:"#fff"}}>
+                  {["Día","Fecha","Horario","Jornada"].map(h=><th key={h} style={{padding:"8px 14px",textAlign:"left",fontSize:"14px",fontWeight:"500"}}>{h}</th>)}
+                </tr></thead>
+                <tbody>{dias.map((dia,dIdx)=>(
+                  <tr key={dIdx} style={{background:dIdx%2===0?"#fff":"#F8FAFC",borderBottom:"1px solid #E5E7EB"}}>
+                    <td style={{padding:"8px 14px",fontSize:"15px",fontWeight:"500",color:"#1971C2"}}>Día {dIdx+1}</td>
+                    <td style={{padding:"8px 14px",fontSize:"15px",color:"#0F172A"}}>{formatLargo(dia.fecha)}</td>
+                    <td style={{padding:"8px 14px",fontSize:"15px",color:"#0F172A"}}>{dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs</td>
+                    <td style={{padding:"8px 14px",fontSize:"15px",color:"#475569"}}>{dia.jornada}</td>
+                  </tr>
+                ))}</tbody>
+              </table>
+            </div>
+          </div></>}
           <HR/>
           {/* Lugar / Plataforma */}
           {esPresencial&&evento.lugar&&<div style={{marginBottom:"4px"}}>
@@ -1116,25 +1135,6 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             <SL t="Estado de facturación"/>
             {(()=>{const be=B_EST_D(evento.estado);return<span style={{display:"inline-flex",alignItems:"center",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:be.c,background:be.bg,border:`2px solid ${be.b||be.c}`,whiteSpace:"nowrap"}}>{evento.estado==="Facturado"?"✓ Facturado":"🟠 Facturación Pendiente"}</span>;})()}
           </div>
-          {/* Programa multidía */}
-          {esMultidia&&dias.length>0&&<><HR/><div style={{marginBottom:"12px"}}>
-            <SL t="📅 Programa del evento"/>
-            <div style={{borderRadius:"10px",overflow:"hidden",border:"1px solid #E5E7EB"}}>
-              <table style={{width:"100%",borderCollapse:"collapse"}}>
-                <thead><tr style={{background:"#1E3A6E",color:"#fff"}}>
-                  {["Día","Fecha","Horario","Jornada"].map(h=><th key={h} style={{padding:"8px 14px",textAlign:"left",fontSize:"14px",fontWeight:"500"}}>{h}</th>)}
-                </tr></thead>
-                <tbody>{dias.map((dia,dIdx)=>(
-                  <tr key={dIdx} style={{background:dIdx%2===0?"#fff":"#F8FAFC",borderBottom:"1px solid #E5E7EB"}}>
-                    <td style={{padding:"8px 14px",fontSize:"15px",fontWeight:"500",color:"#1971C2"}}>Día {dIdx+1}</td>
-                    <td style={{padding:"8px 14px",fontSize:"15px",color:"#0F172A"}}>{formatLargo(dia.fecha)}</td>
-                    <td style={{padding:"8px 14px",fontSize:"15px",color:"#0F172A"}}>{dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs</td>
-                    <td style={{padding:"8px 14px",fontSize:"15px",color:"#475569"}}>{dia.jornada}</td>
-                  </tr>
-                ))}</tbody>
-              </table>
-            </div>
-          </div></>}
           {/* Comentarios */}
           {evento.comentarios&&<div style={{background:"#F8FAFC",borderRadius:"10px",padding:"12px 16px",marginTop:"12px"}}>
             <SL t="💬 Comentarios"/>
