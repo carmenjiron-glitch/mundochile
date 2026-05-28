@@ -1194,7 +1194,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
       return(<div key={key} style={{marginBottom:"12px"}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"6px"}}>
           <span style={{fontSize:"12px",fontWeight:"600",color:titleColor,textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
-          {hp&&<span style={{fontSize:"14px",color:"#6B7280",display:"flex",alignItems:"center",gap:"4px"}}>🕐 {hp.slice(0,5)} hrs</span>}
+          {hp&&<span style={{fontSize:"14px",color:"#6B7280",display:"flex",alignItems:"center",gap:"4px"}}>🕐 Horario de presentación: {hp.slice(0,5)} hrs</span>}
         </div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
           {grupo.items.map(({interp,isHost},i)=>(
