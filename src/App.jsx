@@ -1991,7 +1991,7 @@ export default function App() {
   // Búsqueda, filtros y toasts
   const [busqueda,setBusqueda]=useState("");
   const [buscando,setBuscando]=useState(false);
-  const [filtros,setFiltros]=useState({estado:"",modalidad:"",tipo:"",interprete_id:""});
+  const [filtros,setFiltros]=useState({estado:"",modalidad:"",tipo:"",interprete_id:"",cliente_id:"",par_id:"",proveedor_av:""});
   const [mostrarFiltros,setMostrarFiltros]=useState(false);
   const [toasts,setToasts]=useState([]);
   const addToast=useCallback((msg,type="info",retry=null)=>{
@@ -2051,6 +2051,10 @@ export default function App() {
   const diasSemana=useMemo(()=>semanaDesde(semanaOff),[semanaOff]);
   const esMobile=typeof window!=="undefined"&&window.innerWidth<768;
 
+  const clientesConEventos=useMemo(()=>{const ids=new Set(eventos.map(e=>e.cliente_id));return clientes.filter(c=>ids.has(c.id)).sort((a,b)=>(a.nombre_empresa||"").localeCompare(b.nombre_empresa||""));},[eventos,clientes]);
+  const paresConEventos=useMemo(()=>{const ids=new Set(eventos.flatMap(e=>(e.asignaciones||[]).map(a=>a.par_id).filter(Boolean)));return pares.filter(p=>ids.has(p.id)).sort((a,b)=>(a.descripcion||"").localeCompare(b.descripcion||""));},[eventos,pares]);
+  const proveedoresConEventos=useMemo(()=>{const ids=new Set(eventos.flatMap(e=>(e.evento_dias||[]).flatMap(d=>(d.equipos_dia||[]).map(eq=>eq.proveedor_id).filter(Boolean))));return proveedores.filter(p=>ids.has(p.id)).sort((a,b)=>(a.nombre||"").localeCompare(b.nombre||""));},[eventos,proveedores]);
+
   const eventosFiltrados=useMemo(()=>{
     let evs=eventos;
     if(busqueda.trim()){
@@ -2067,6 +2071,9 @@ export default function App() {
     if(filtros.modalidad) evs=evs.filter(e=>e.modalidad===filtros.modalidad);
     if(filtros.tipo) evs=evs.filter(e=>e.tipo===filtros.tipo);
     if(filtros.interprete_id) evs=evs.filter(e=>(e.asignaciones||[]).some(a=>String(a.interprete_id)===String(filtros.interprete_id)));
+    if(filtros.cliente_id) evs=evs.filter(e=>String(e.cliente_id)===String(filtros.cliente_id));
+    if(filtros.par_id) evs=evs.filter(e=>(e.asignaciones||[]).some(a=>String(a.par_id)===String(filtros.par_id)));
+    if(filtros.proveedor_av) evs=evs.filter(e=>{const eqs=(e.evento_dias||[]).flatMap(d=>d.equipos_dia||[]);if(filtros.proveedor_av==="sin_proveedor")return eqs.length>0&&eqs.every(eq=>!eq.proveedor_id);return eqs.some(eq=>String(eq.proveedor_id)===String(filtros.proveedor_av));});
     return evs;
   },[eventos,busqueda,filtros,clientes,interpretes]);
 
@@ -2492,7 +2499,7 @@ export default function App() {
       {/* ── CONTENIDO ── */}
       {pantalla==="calendario"&&<>
         {vista!=="grilla"&&<div style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",padding:"6px 24px",width:"100%"}}>
-          <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes}/>
+          <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes} clientes={clientesConEventos} pares={paresConEventos} proveedores={proveedoresConEventos}/>
         </div>}
         {vista==="semana"&&renderSemana()}
         {vista==="dia"&&renderDia()}

@@ -12,10 +12,9 @@ const BADGE_COLORS = {
   "Whispering":            { bg:"#F3E5F5", c:"#7B1FA2", b:"#7B1FA2" },
 };
 
-export default function FilterBar({ filters, onChange, interpreters = [] }) {
-  const hayFiltro = filters.estado || filters.modalidad || filters.tipo || filters.interprete_id;
+export default function FilterBar({ filters, onChange, interpreters = [], clientes = [], pares = [], proveedores = [] }) {
+  const hayFiltro = filters.estado || filters.modalidad || filters.tipo || filters.interprete_id || filters.cliente_id || filters.par_id || filters.proveedor_av;
 
-  // Estilos base reutilizables
   const chipBase = {
     padding: "4px 12px",
     borderRadius: 20,
@@ -54,7 +53,6 @@ export default function FilterBar({ filters, onChange, interpreters = [] }) {
     };
   };
 
-  // Label de grupo: pill blanco con texto rojo
   const labelStyle = {
     padding: "3px 10px",
     borderRadius: 20,
@@ -71,12 +69,27 @@ export default function FilterBar({ filters, onChange, interpreters = [] }) {
     lineHeight: 1.4,
   };
 
+  const selStyle = {
+    background: "rgba(255,255,255,0.12)",
+    color: "rgba(255,255,255,0.85)",
+    border: "1px solid rgba(255,255,255,0.22)",
+    borderRadius: 20,
+    padding: "4px 10px",
+    fontSize: 12,
+    maxWidth: 130,
+    cursor: "pointer",
+    outline: "none",
+    fontFamily: "inherit",
+  };
+
   const group = {
     display: "flex",
     alignItems: "center",
     gap: 4,
     flexShrink: 0,
   };
+
+  const limpiar = { estado:"", modalidad:"", tipo:"", interprete_id:"", cliente_id:"", par_id:"", proveedor_av:"" };
 
   return (
     <div style={{
@@ -124,24 +137,51 @@ export default function FilterBar({ filters, onChange, interpreters = [] }) {
         ))}
       </div>
 
+      {/* CLIENTE */}
+      {clientes.length > 0 && (
+        <div style={group}>
+          <span style={labelStyle}>Cliente</span>
+          <select
+            value={filters.cliente_id || ""}
+            onChange={e => onChange({ ...filters, cliente_id: e.target.value })}
+            style={selStyle}
+          >
+            <option value="" style={{ color: "#000" }}>Todos</option>
+            {clientes.map(c => (
+              <option key={c.id} value={c.id} style={{ color: "#000" }}>
+                {c.nombre_empresa}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {/* IDIOMAS */}
+      {pares.length > 0 && (
+        <div style={group}>
+          <span style={labelStyle}>Idiomas</span>
+          <select
+            value={filters.par_id || ""}
+            onChange={e => onChange({ ...filters, par_id: e.target.value })}
+            style={selStyle}
+          >
+            <option value="" style={{ color: "#000" }}>Todos</option>
+            {pares.map(p => (
+              <option key={p.id} value={p.id} style={{ color: "#000" }}>
+                {p.descripcion}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       {/* INTÉRPRETE */}
       <div style={group}>
         <span style={labelStyle}>Intérprete</span>
         <select
           value={filters.interprete_id || ""}
           onChange={e => onChange({ ...filters, interprete_id: e.target.value })}
-          style={{
-            background: "rgba(255,255,255,0.12)",
-            color: "rgba(255,255,255,0.85)",
-            border: "1px solid rgba(255,255,255,0.22)",
-            borderRadius: 20,
-            padding: "4px 10px",
-            fontSize: 12,
-            maxWidth: 130,
-            cursor: "pointer",
-            outline: "none",
-            fontFamily: "inherit",
-          }}
+          style={selStyle}
         >
           <option value="" style={{ color: "#000" }}>Todos</option>
           {interpreters.filter(i => i.activo !== false).map(i => (
@@ -152,10 +192,30 @@ export default function FilterBar({ filters, onChange, interpreters = [] }) {
         </select>
       </div>
 
+      {/* PROVEEDOR AV */}
+      {proveedores.length > 0 && (
+        <div style={group}>
+          <span style={labelStyle}>Proveedor AV</span>
+          <select
+            value={filters.proveedor_av || ""}
+            onChange={e => onChange({ ...filters, proveedor_av: e.target.value })}
+            style={selStyle}
+          >
+            <option value="" style={{ color: "#000" }}>Todos</option>
+            <option value="sin_proveedor" style={{ color: "#000" }}>Sin proveedor</option>
+            {proveedores.map(p => (
+              <option key={p.id} value={p.id} style={{ color: "#000" }}>
+                {p.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       {/* LIMPIAR */}
       {hayFiltro && (
         <button
-          onClick={() => onChange({ estado: "", modalidad: "", tipo: "", interprete_id: "" })}
+          onClick={() => onChange(limpiar)}
           title="Limpiar filtros"
           style={{
             background: "#EF4444",
