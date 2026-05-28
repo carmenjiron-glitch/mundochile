@@ -949,11 +949,11 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
         <div style={{overflowY:"auto",flex:1,padding:"24px 28px"}}>
           {/* Evento + Fecha + Horario */}
           {evento.nombre_evento&&<div style={{fontSize:"14px",fontWeight:"500",color:"#0F172A",marginBottom:"8px"}}>{evento.nombre_evento}</div>}
-          <div style={{fontSize:"17px",fontWeight:"500",color:"#1E293B",marginBottom:"4px"}}>
+          <div style={{fontSize:"16px",fontWeight:"500",color:"#1E293B",marginBottom:"4px"}}>
             📅 {esMultidia?`${formatMedioES(evento.fecha_inicio)} → ${formatMedioES(evento.fecha_termino)}`:formatLargo(evento.fecha_inicio)}
           </div>
           <div style={{fontSize:"16px",fontWeight:"500",color:"#0F172A",marginBottom:"6px"}}>
-            🕐 {evento.hora_inicio?.slice(0,5)} – {evento.hora_termino?.slice(0,5)} hrs{evento.jornada&&<span style={{fontWeight:"400",color:"#6B7280",fontSize:"17px"}}> · {evento.jornada}</span>}
+            🕐 {evento.hora_inicio?.slice(0,5)} – {evento.hora_termino?.slice(0,5)} hrs{evento.jornada&&<span style={{fontWeight:"400",color:"#6B7280",fontSize:"14px"}}> · {evento.jornada}</span>}
           </div>
           <HR/>
           {/* Badges tipo + modalidad */}
