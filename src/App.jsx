@@ -685,7 +685,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
             </>}
             {/* Estado + Comentarios */}
             <div style={{...S.fila,marginBottom:"20px"}}>
-              <div style={S.camp}><label style={S.lbl}>Estado</label>
+              <div style={S.camp}><label style={S.lbl}>Estado de facturación</label>
                 <select style={S.sel} value={form.estado} onChange={e=>setF("estado",e.target.value)}>{ESTADOS.map(e=><option key={e}>{e}</option>)}</select></div>
             </div>
             <div style={{marginBottom:"4px"}}><label style={S.lbl}>💬 Comentarios</label><textarea style={{...S.inp,minHeight:"80px",resize:"vertical"}} value={form.comentarios} onChange={e=>setF("comentarios",e.target.value)}/></div>
