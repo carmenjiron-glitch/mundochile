@@ -262,7 +262,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
           {/* COLUMNA DERECHA — intérpretes */}
           <div>
-            <div style={{ textAlign:"center", fontSize:18, fontWeight:"600", marginBottom:"8px", textTransform:"uppercase", color:"#0F172A", WebkitFontSmoothing:"antialiased" }}>
+            <div style={{ textAlign:"center", fontSize:18, fontWeight:"500", marginBottom:"8px", textTransform:"uppercase", color:"#0F172A", WebkitFontSmoothing:"antialiased", MozOsxFontSmoothing:"grayscale", letterSpacing:"0.05em" }}>
               INTÉRPRETES
             </div>
             {Object.keys(grupos).length === 0 ? (
@@ -288,7 +288,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                       {grupo.items.map((interp, i) => (
                         <span key={i}
                           title={`${interp.nombre}${interp.apellido ? " " + interp.apellido : ""}`}
-                          style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:5, padding:"4px 6px", borderRadius:20, fontSize:14, fontWeight:500, lineHeight:1.4, color:"#1A1A1A", background:"#FFFFFF", border:`2px solid ${pillClr}`, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"default", WebkitFontSmoothing:"antialiased" }}>
+                          style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:5, padding:"4px 5px", borderRadius:20, fontSize:13, fontWeight:500, lineHeight:1.4, color:"#1A1A1A", background:"#FFFFFF", border:`2px solid ${pillClr}`, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"default", WebkitFontSmoothing:"antialiased" }}>
                           {interp.isHost && <span style={{ fontSize:11 }}>🔑</span>}
                           <Flag idioma={grupo.idioma} size={14} />
                           <span style={{ overflow:"hidden", textOverflow:"ellipsis", color:"#1A1A1A" }}>
@@ -297,7 +297,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                         </span>
                       ))}
                       {soloUno && (
-                        <span style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:5, padding:"4px 6px", borderRadius:20, fontSize:14, fontWeight:500, lineHeight:1.4, color:"#9CA3AF", background:"#F9FAFB", border:"1px dashed #D1D5DB", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"default", fontStyle:"italic", WebkitFontSmoothing:"antialiased" }}>
+                        <span style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:5, padding:"4px 5px", borderRadius:20, fontSize:13, fontWeight:500, lineHeight:1.4, color:"#9CA3AF", background:"#F9FAFB", border:"1px dashed #D1D5DB", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"default", fontStyle:"italic", WebkitFontSmoothing:"antialiased" }}>
                           SIN PARTNER
                         </span>
                       )}
