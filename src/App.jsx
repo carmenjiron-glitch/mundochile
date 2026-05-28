@@ -1756,50 +1756,97 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
 
 // ─── VISTA GRILLA ────────────────────────────────────────────────────────────
 function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contactos=[],onAbrir,onVerMultidia}) {
-  const sorted=[...eventos].sort((a,b)=>a.fecha_inicio.localeCompare(b.fecha_inicio));
-  const byMonth={};
-  sorted.forEach(ev=>{
+  const [colFiltros,setColFiltros]=useState({});
+  const [openCol,setOpenCol]=useState(null);
+  const [mesFiltro,setMesFiltro]=useState("");
+  useEffect(()=>{if(!openCol)return;const h=()=>setOpenCol(null);document.addEventListener("click",h);return()=>document.removeEventListener("click",h);},[openCol]);
+  const allRows=useMemo(()=>[...eventos].sort((a,b)=>a.fecha_inicio.localeCompare(b.fecha_inicio)).map(ev=>{
+    const cli=clientes.find(c=>c.id===ev.cliente_id);
+    const contacto=contactos.find(c=>c.id===ev.contacto_id);
+    const asigs=ev.asignaciones||[];
+    const a1=asigs[0]||null;const a2=asigs[1]||null;
+    const i1=a1?interpretes.find(x=>x.id===a1.interprete_id):null;
+    const i2=a2?interpretes.find(x=>x.id===a2.interprete_id):null;
+    const i1N=i1?`${i1.nombre}${i1.apellido?" "+i1.apellido:""}` :"";
+    const i2N=i2?`${i2.nombre}${i2.apellido?" "+i2.apellido:""}` :"";
+    const par=a1?pares.find(p=>p.id===a1.par_id):null;
+    const equipos=(ev.evento_dias||[]).flatMap(d=>d.equipos_dia||[]);
+    const eq=equipos[0]||null;
+    const detalleEq=eq?[eq.tipo_equipo,eq.num_receptores?`${eq.num_receptores} receptores`:null,eq.num_cabinas?`${eq.num_cabinas} cabinas`:null].filter(Boolean).join(", "):"";
+    const provNom=eq?.proveedor_nombre||(eq?.proveedor_id?proveedores.find(p=>p.id===eq.proveedor_id)?.nombre:"")||"";
+    const detalleInst=eq?.instrucciones||eq?.contacto_in_situ||"";
     const d=desdeISO(ev.fecha_inicio);
-    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
-    if(!byMonth[key]){const m=MESES_L[d.getMonth()];byMonth[key]={label:`${m.charAt(0).toUpperCase()+m.slice(1)} ${d.getFullYear()}`,evs:[]};}
-    byMonth[key].evs.push(ev);
-  });
+    const mesKey=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
+    const mesStr=`${MESES_C[d.getMonth()]} ${d.getFullYear()}`;
+    const mesLargo=`${MESES_L[d.getMonth()].charAt(0).toUpperCase()+MESES_L[d.getMonth()].slice(1)} ${d.getFullYear()}`;
+    return {ev,cli,contactoNombre:contacto?.nombre||cli?.nombre_contacto||"",esMultidia:ev.fecha_inicio!==ev.fecha_termino,a1,a2,i1N,i2N,par,detalleEq,provNom,detalleInst,mesKey,mesStr,mesLargo};
+  }),[eventos,clientes,interpretes,pares,proveedores,contactos]);
+  const mesesDisponibles=useMemo(()=>[...new Set(allRows.map(r=>r.mesLargo))],[allRows]);
+  const FILTERABLE=["Mes","Cliente","Tipo","Par de Idiomas","Jornada","Intérprete 1","Intérprete 2"];
+  const uniqueVals=useMemo(()=>({
+    "Mes":[...new Set(allRows.map(r=>r.mesStr))].filter(Boolean),
+    "Cliente":[...new Set(allRows.map(r=>r.cli?.nombre_empresa||""))].filter(Boolean),
+    "Tipo":[...new Set(allRows.map(r=>r.ev.tipo||""))].filter(Boolean),
+    "Par de Idiomas":[...new Set(allRows.map(r=>r.par?.descripcion||""))].filter(Boolean),
+    "Jornada":[...new Set(allRows.map(r=>r.ev.jornada||""))].filter(Boolean),
+    "Intérprete 1":[...new Set(allRows.map(r=>r.i1N))].filter(Boolean),
+    "Intérprete 2":[...new Set(allRows.map(r=>r.i2N))].filter(Boolean),
+  }),[allRows]);
+  const filtered=useMemo(()=>allRows.filter(r=>{
+    if(mesFiltro&&r.mesLargo!==mesFiltro)return false;
+    if(colFiltros["Mes"]&&r.mesStr!==colFiltros["Mes"])return false;
+    if(colFiltros["Cliente"]&&(r.cli?.nombre_empresa||"")!==colFiltros["Cliente"])return false;
+    if(colFiltros["Tipo"]&&(r.ev.tipo||"")!==colFiltros["Tipo"])return false;
+    if(colFiltros["Par de Idiomas"]&&(r.par?.descripcion||"")!==colFiltros["Par de Idiomas"])return false;
+    if(colFiltros["Jornada"]&&(r.ev.jornada||"")!==colFiltros["Jornada"])return false;
+    if(colFiltros["Intérprete 1"]&&r.i1N!==colFiltros["Intérprete 1"])return false;
+    if(colFiltros["Intérprete 2"]&&r.i2N!==colFiltros["Intérprete 2"])return false;
+    return true;
+  }),[allRows,mesFiltro,colFiltros]);
   const COLS=["Mes","Orden de Compra","Cliente","Contacto Cliente","# Evento","Detalle Equipos AV","Proveedor","Detalles Instalación","Tipo","Nombre Evento","Lugar","Par de Idiomas","Jornada","Horario","Fecha Inicio","Fecha Término","Comentarios","Intérprete 1","Nro OT","Nro Boleta","Intérprete 2","Nro OT 2"];
-  const thS={background:"#1E3A5F",color:"#FFFFFF",fontSize:"11px",fontWeight:600,padding:"6px 8px",textAlign:"center",position:"sticky",top:"140px",zIndex:10,whiteSpace:"nowrap",borderRight:"1px solid rgba(255,255,255,0.15)",borderBottom:"2px solid rgba(255,255,255,0.2)"};
-  let rowIdx=0;
+  const thS={background:"#1E3A5F",color:"#FFFFFF",fontSize:"11px",fontWeight:500,padding:"6px 8px",textAlign:"center",position:"sticky",top:"96px",zIndex:10,whiteSpace:"nowrap",borderRight:"1px solid rgba(255,255,255,0.15)",borderBottom:"2px solid rgba(255,255,255,0.2)"};
+  const renderThFiltro=(col)=>{
+    const active=!!colFiltros[col];const isOpen=openCol===col;
+    return(<th key={col} style={{...thS,background:active?"#2D5F9E":"#1E3A5F",cursor:"pointer",userSelect:"none",zIndex:isOpen?20:10}}>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:"4px"}}
+        onClick={e=>{e.stopPropagation();setOpenCol(isOpen?null:col);}}>
+        <span>{col}</span><span style={{fontSize:"10px",opacity:0.8}}>{active?"▲":"▼"}</span>
+      </div>
+      {isOpen&&(<div onClick={e=>e.stopPropagation()}
+        style={{position:"absolute",top:"100%",left:0,background:"#FFFFFF",color:"#1A1A1A",borderRadius:"6px",boxShadow:"0 4px 16px rgba(0,0,0,0.2)",zIndex:200,minWidth:"180px",maxHeight:"240px",overflowY:"auto",fontSize:"12px",border:"1px solid #E5E7EB",textAlign:"left",fontWeight:"400"}}>
+        <div onClick={()=>{setColFiltros(f=>{const n={...f};delete n[col];return n;});setOpenCol(null);}}
+          style={{padding:"8px 12px",cursor:"pointer",background:!active?"#EFF6FF":"transparent",fontWeight:!active?"600":"400",borderBottom:"1px solid #E5E7EB"}}>Todos</div>
+        {(uniqueVals[col]||[]).map(v=>(<div key={v} onClick={()=>{setColFiltros(f=>({...f,[col]:v}));setOpenCol(null);}}
+          style={{padding:"8px 12px",cursor:"pointer",background:colFiltros[col]===v?"#DBEAFE":"transparent",fontWeight:colFiltros[col]===v?"600":"400"}}>{v}</div>))}
+      </div>)}
+    </th>);
+  };
+  const byMonth={};let rowIdx=0;
+  filtered.forEach(r=>{if(!byMonth[r.mesKey])byMonth[r.mesKey]={label:r.mesLargo,rows:[]};byMonth[r.mesKey].rows.push(r);});
+  const hayFiltros=mesFiltro||Object.values(colFiltros).some(Boolean);
+  const inpS={padding:"6px 10px",border:"1px solid #D1D5DB",borderRadius:"6px",fontSize:"13px",fontFamily:"inherit",background:"#FFFFFF",color:"#1A1A1A",width:"180px"};
   return (
-    <div style={{paddingTop:"160px",paddingBottom:"80px",overflowX:"auto",width:"100%"}}>
+    <div style={{paddingTop:"100px",paddingBottom:"80px",overflowX:"auto",width:"100%"}}>
+      <div style={{padding:"8px 16px",display:"flex",alignItems:"center",gap:"10px"}}>
+        <select value={mesFiltro} onChange={e=>setMesFiltro(e.target.value)} style={inpS}>
+          <option value="">Todos los meses</option>
+          {mesesDisponibles.map(m=><option key={m} value={m}>{m}</option>)}
+        </select>
+        {hayFiltros&&<button onClick={()=>{setMesFiltro("");setColFiltros({});}} style={{padding:"6px 12px",background:"#EF4444",color:"#FFFFFF",border:"none",borderRadius:"6px",cursor:"pointer",fontSize:"12px",fontFamily:"inherit"}}>✕ Limpiar filtros</button>}
+      </div>
       <table style={{borderCollapse:"collapse",minWidth:"2200px",width:"100%",fontSize:"12px",background:"#fff"}}>
         <thead>
-          <tr>{COLS.map(col=><th key={col} style={thS}>{col}</th>)}</tr>
+          <tr>{COLS.map(col=>FILTERABLE.includes(col)?renderThFiltro(col):<th key={col} style={thS}>{col}</th>)}</tr>
         </thead>
-        {sorted.length===0&&<tbody><tr><td colSpan={COLS.length} style={{textAlign:"center",padding:"60px 20px",color:"#9CA3AF",fontSize:"14px",background:"#fff"}}>No hay eventos que mostrar</td></tr></tbody>}
-        {Object.entries(byMonth).map(([mk,{label,evs}])=>(
+        {filtered.length===0&&<tbody><tr><td colSpan={COLS.length} style={{textAlign:"center",padding:"60px 20px",color:"#9CA3AF",fontSize:"14px",background:"#fff"}}>No hay eventos que mostrar</td></tr></tbody>}
+        {Object.entries(byMonth).map(([mk,{label,rows}])=>(
           <tbody key={mk}>
             <tr><td colSpan={COLS.length} style={{background:"#162654",color:"#FFFFFF",fontSize:"13px",fontWeight:"700",padding:"8px 16px",textTransform:"uppercase",letterSpacing:"0.08em"}}>📅 {label}</td></tr>
-            {evs.map(ev=>{
+            {rows.map(r=>{
               rowIdx++;
               const ri=rowIdx;
               const isEven=ri%2===0;
-              const cli=clientes.find(c=>c.id===ev.cliente_id);
-              const contacto=contactos.find(c=>c.id===ev.contacto_id);
-              const contactoNombre=contacto?.nombre||cli?.nombre_contacto||"";
-              const esMultidia=ev.fecha_inicio!==ev.fecha_termino;
-              const asigs=ev.asignaciones||[];
-              const a1=asigs[0]||null;
-              const a2=asigs[1]||null;
-              const i1=a1?interpretes.find(x=>x.id===a1.interprete_id):null;
-              const i2=a2?interpretes.find(x=>x.id===a2.interprete_id):null;
-              const i1N=i1?`${i1.nombre}${i1.apellido?" "+i1.apellido:""}`:"";
-              const i2N=i2?`${i2.nombre}${i2.apellido?" "+i2.apellido:""}`:"";
-              const par=a1?pares.find(p=>p.id===a1.par_id):null;
-              const equipos=(ev.evento_dias||[]).flatMap(d=>d.equipos_dia||[]);
-              const eq=equipos[0]||null;
-              const detalleEq=eq?[eq.tipo_equipo,eq.num_receptores?`${eq.num_receptores} receptores`:null,eq.num_cabinas?`${eq.num_cabinas} cabinas`:null].filter(Boolean).join(", "):"";
-              const provNom=eq?.proveedor_nombre||(eq?.proveedor_id?proveedores.find(p=>p.id===eq.proveedor_id)?.nombre:"")||"";
-              const detalleInst=eq?.instrucciones||eq?.contacto_in_situ||"";
-              const d=desdeISO(ev.fecha_inicio);
-              const mesStr=`${MESES_C[d.getMonth()]} ${d.getFullYear()}`;
+              const {ev,cli,contactoNombre,esMultidia,a1,a2,i1N,i2N,par,detalleEq,provNom,detalleInst,mesStr}=r;
               const rowBg=isEven?"#F9FAFB":"#FFFFFF";
               const td={padding:"6px 8px",borderBottom:"1px solid #E5E7EB",borderRight:"1px solid #F3F4F6",verticalAlign:"top",color:"#1A1A1A",lineHeight:1.4};
               return (
@@ -2444,9 +2491,9 @@ export default function App() {
 
       {/* ── CONTENIDO ── */}
       {pantalla==="calendario"&&<>
-        <div style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",padding:"6px 24px",width:"100%"}}>
+        {vista!=="grilla"&&<div style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",padding:"6px 24px",width:"100%"}}>
           <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes}/>
-        </div>
+        </div>}
         {vista==="semana"&&renderSemana()}
         {vista==="dia"&&renderDia()}
         {vista==="mes"&&renderMes()}
