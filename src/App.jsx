@@ -949,7 +949,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
         <div style={{overflowY:"auto",flex:1,padding:"24px 28px"}}>
           {/* Evento + Fecha + Horario */}
           {evento.nombre_evento&&<div style={{fontSize:"14px",fontWeight:"500",color:"#0F172A",marginBottom:"8px"}}>{evento.nombre_evento}</div>}
-          <div style={{fontSize:"14px",fontWeight:"500",color:"#1E293B",marginBottom:"4px"}}>
+          <div style={{fontSize:"17px",fontWeight:"500",color:"#1E293B",marginBottom:"4px"}}>
             📅 {esMultidia?`${formatMedioES(evento.fecha_inicio)} → ${formatMedioES(evento.fecha_termino)}`:formatLargo(evento.fecha_inicio)}
           </div>
           <div style={{fontSize:"16px",fontWeight:"500",color:"#0F172A",marginBottom:"6px"}}>
@@ -971,7 +971,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             {evento.lugar_detalle&&<div style={{fontSize:"15px",color:"#475569",marginTop:"4px"}}>{evento.lugar_detalle}</div>}
             <div style={{display:"flex",gap:"8px",marginTop:"8px",flexWrap:"wrap"}}>
               <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((evento.lugar||"")+" "+(evento.lugar_detalle||""))}`} target="_blank" rel="noreferrer"
-                style={{display:"inline-flex",alignItems:"center",gap:"5px",fontSize:"15px",fontWeight:"500",color:"#1971C2",textDecoration:"none",padding:"6px 12px",border:"1px solid #93C5FD",borderRadius:"8px",background:"#EFF6FF"}}>
+                style={{display:"inline-flex",alignItems:"center",gap:"5px",fontSize:"18px",fontWeight:"500",color:"#1971C2",textDecoration:"none",padding:"6px 12px",border:"1px solid #93C5FD",borderRadius:"8px",background:"#EFF6FF"}}>
                 📍 Ver en Maps
               </a>
               <CampoCopia valor={`${evento.lugar}${evento.lugar_detalle?", "+evento.lugar_detalle:""}`}/>
@@ -1037,7 +1037,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             if(!asigsDia.length&&!eqsDia.length) return null;
             return (
               <div key={dia.id||dIdx} style={{border:"1px solid #E5E7EB",borderRadius:"10px",marginBottom:"10px",overflow:"hidden"}}>
-                <div style={{background:"#F8FAFC",padding:"10px 16px",fontWeight:"500",color:"#0F172A",fontSize:"15px"}}>
+                <div style={{background:"#F8FAFC",padding:"10px 16px",fontWeight:"500",color:"#0F172A",fontSize:"18px"}}>
                   📅 Día {dIdx+1} — {formatLargo(dia.fecha)} · {dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs
                 </div>
                 <div style={{padding:"12px 16px"}}>
@@ -1286,7 +1286,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
             </Sec>}
 
             {campos.lugar&&esPresencial&&evento.lugar&&<Sec label="Lugar" accent="#2F9E44" fullWidth>
-              <div style={{fontSize:"14px",fontWeight:"500",color:"#0F172A"}}>📍 {evento.lugar}</div>
+              <div style={{fontSize:"17px",fontWeight:"500",color:"#0F172A"}}>📍 {evento.lugar}</div>
               {evento.lugar_detalle&&<div style={{fontSize:"17px",color:"#475569",marginTop:"4px"}}>{evento.lugar_detalle}</div>}
             </Sec>}
 
@@ -1706,7 +1706,7 @@ function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,
   return (
     <div style={{padding:"16px 24px 80px",width:"100%",maxWidth:"100%"}}>
       {!Object.keys(byWeek).length&&<div style={{textAlign:"center",padding:"80px 20px",color:"#fff"}}>
-        <div style={{fontSize:"15px",marginBottom:"12px"}}>📅</div>
+        <div style={{fontSize:"18px",marginBottom:"12px"}}>📅</div>
         <div style={{fontWeight:"500",fontSize:"14px",color:"#fff"}}>No hay eventos que mostrar</div>
       </div>}
       {Object.entries(byWeek).map(([lunISO,evs])=>{
@@ -2024,7 +2024,7 @@ export default function App() {
           {formatLargo(diaActual)}<span style={{fontWeight:"400",color:"rgba(255,255,255,0.75)",fontSize:"16px",marginLeft:"12px"}}>{evs.length} evento{evs.length!==1?"s":""}</span>
         </div>
         {evs.length===0
-          ?<div style={{textAlign:"center",padding:"60px 20px",color:"rgba(255,255,255,0.7)",border:"2px dashed rgba(255,255,255,0.3)",borderRadius:"16px"}}><div style={{fontSize:"15px",marginBottom:"12px"}}>📅</div><div style={{fontWeight:"500",fontSize:"14px",color:"#fff"}}>Sin eventos este día</div></div>
+          ?<div style={{textAlign:"center",padding:"60px 20px",color:"rgba(255,255,255,0.7)",border:"2px dashed rgba(255,255,255,0.3)",borderRadius:"16px"}}><div style={{fontSize:"18px",marginBottom:"12px"}}>📅</div><div style={{fontWeight:"500",fontSize:"14px",color:"#fff"}}>Sin eventos este día</div></div>
           :<div style={{display:"flex",flexDirection:"column",gap:"16px"}}>
             {evs.map(ev=>{
               const cli=clientes.find(c=>c.id===ev.cliente_id);
@@ -2053,13 +2053,13 @@ export default function App() {
                   {/* Nombre cliente + pill multidía */}
                   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,marginBottom:4}}>
                     <div style={{fontSize:"34px",fontWeight:"600",color:"#0F172A",lineHeight:1.2}}>{cli?.nombre_empresa||"—"}</div>
-                    {diaXdeY&&<div style={{display:"inline-flex",alignItems:"center",gap:4,padding:"3px 8px",borderRadius:20,background:"#E8F4FD",color:"#1971C2",fontSize:12,fontWeight:700,border:"1px solid #BAD7F0",whiteSpace:"nowrap",flexShrink:0}}>📅 Día {diaXdeY.x} de {diaXdeY.y}</div>}
+                    {diaXdeY&&<div style={{display:"inline-flex",alignItems:"center",gap:4,padding:"3px 8px",borderRadius:20,background:"#E8F4FD",color:"#1971C2",fontSize:14,fontWeight:700,border:"1px solid #BAD7F0",whiteSpace:"nowrap",flexShrink:0}}>📅 Día {diaXdeY.x} de {diaXdeY.y}</div>}
                   </div>
                   {cli?.nombre_contacto&&<div style={{fontSize:"16px",fontWeight:"500",color:"#6B7280",fontStyle:"italic",marginBottom:4}}>Contacto: {cli.nombre_contacto}</div>}
                   {ev.nombre_evento&&<div style={{fontSize:"14px",fontWeight:"500",color:"#374151",marginTop:2}}>{ev.nombre_evento}</div>}
                   <HRD/>
                   {/* Fecha + Horario */}
-                  <div style={{fontSize:"14px",fontWeight:"500",color:"#1E293B",marginBottom:"4px"}}>📅 {esMultidiaD?`${formatMedioES(ev.fecha_inicio)} → ${formatMedioES(ev.fecha_termino)}`:formatLargo(ev.fecha_inicio)}</div>
+                  <div style={{fontSize:"17px",fontWeight:"500",color:"#1E293B",marginBottom:"4px"}}>📅 {esMultidiaD?`${formatMedioES(ev.fecha_inicio)} → ${formatMedioES(ev.fecha_termino)}`:formatLargo(ev.fecha_inicio)}</div>
                   <div style={{fontSize:"16px",fontWeight:"500",color:"#0F172A",marginBottom:"6px"}}>🕐 {ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)} hrs{ev.jornada&&<span style={{fontWeight:"400",color:"#6B7280",fontSize:"14px"}}> · {ev.jornada}</span>}</div>
                   <HRD/>
                   {/* Pills tipo + modalidad */}

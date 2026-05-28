@@ -191,7 +191,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                 display:"inline-flex", alignItems:"center", gap:4,
                 padding:"3px 8px", borderRadius:20,
                 background:"#E8F4FD", color:"#1971C2",
-                fontSize:12, fontWeight:700, lineHeight:1.4,
+                fontSize:14, fontWeight:700, lineHeight:1.4,
                 cursor: esUltimo ? "default" : "pointer",
                 border:"1px solid #BAD7F0",
                 whiteSpace:"nowrap", flexShrink:0,
@@ -245,7 +245,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
         </div>
       )}
       {esPresencial && ev.lugar && (
-        <div style={{ fontSize:12, color:"#475569", marginTop:6 }}>📍 {ev.lugar}</div>
+        <div style={{ fontSize:14, color:"#475569", marginTop:6 }}>📍 {ev.lugar}</div>
       )}
 
       {/* Estado */}
