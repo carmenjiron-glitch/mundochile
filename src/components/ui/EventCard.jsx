@@ -378,7 +378,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                 <div style={{ fontSize:solidPill?12:14, fontWeight:600, color:darken(pillClr,0.80), textTransform:"uppercase", letterSpacing:"0.07em", marginBottom:5, opacity:0.85, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
                   {key}
                 </div>
-                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:5, ...(pillsHalf?{maxWidth:"50%"}:{}) }}>
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6, ...(pillsHalf?{maxWidth:"50%"}:{}) }}>
                   {grupo.items.map((interp, i) => (
                     <span key={i}
                       title={`${interp.nombre}${interp.apellido ? " " + interp.apellido : ""}`}
