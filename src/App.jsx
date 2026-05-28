@@ -1804,30 +1804,30 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
     return true;
   }),[allRows,mesFiltro,colFiltros]);
   const COLS=["Mes","Orden de Compra","Cliente","Contacto Cliente","# Evento","Detalle Equipos AV","Proveedor","Detalles Instalación","Tipo","Nombre Evento","Lugar","Par de Idiomas","Jornada","Horario","Fecha Inicio","Fecha Término","Comentarios","Intérprete 1","Nro OT","Nro Boleta","Intérprete 2","Nro OT 2"];
-  const thS={background:"#1E3A5F",color:"#FFFFFF",fontSize:"11px",fontWeight:500,padding:"6px 8px",textAlign:"center",position:"sticky",top:"96px",zIndex:10,whiteSpace:"nowrap",borderRight:"1px solid rgba(255,255,255,0.15)",borderBottom:"2px solid rgba(255,255,255,0.2)"};
+  const thS={background:"#1E3A5F",color:"#FFFFFF",fontSize:"11px",fontWeight:"500",padding:"8px 10px",textAlign:"center",position:"sticky",top:"96px",zIndex:10,whiteSpace:"nowrap",borderRight:"1px solid rgba(255,255,255,0.15)",borderBottom:"2px solid rgba(255,255,255,0.2)"};
   const renderThFiltro=(col)=>{
     const active=!!colFiltros[col];const isOpen=openCol===col;
     return(<th key={col} style={{...thS,background:active?"#2D5F9E":"#1E3A5F",cursor:"pointer",userSelect:"none",zIndex:isOpen?20:10}}>
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:"4px"}}
         onClick={e=>{e.stopPropagation();setOpenCol(isOpen?null:col);}}>
-        <span>{col}</span><span style={{fontSize:"10px",opacity:0.8}}>{active?"▲":"▼"}</span>
+        <span>{col}</span><span style={{fontSize:"9px",opacity:0.7}}>{active?"▲":"▼"}</span>
       </div>
       {isOpen&&(<div onClick={e=>e.stopPropagation()}
-        style={{position:"absolute",top:"100%",left:0,background:"#FFFFFF",color:"#1A1A1A",borderRadius:"6px",boxShadow:"0 4px 16px rgba(0,0,0,0.2)",zIndex:200,minWidth:"180px",maxHeight:"240px",overflowY:"auto",fontSize:"12px",border:"1px solid #E5E7EB",textAlign:"left",fontWeight:"400"}}>
+        style={{position:"absolute",top:"100%",left:0,background:"#FFFFFF",color:"#1A1A1A",borderRadius:"6px",boxShadow:"0 4px 12px rgba(0,0,0,0.15)",zIndex:100,minWidth:"180px",maxHeight:"240px",overflowY:"auto",fontSize:"12px",border:"1px solid #E5E7EB",textAlign:"left",fontWeight:"400"}}>
         <div onClick={()=>{setColFiltros(f=>{const n={...f};delete n[col];return n;});setOpenCol(null);}}
-          style={{padding:"8px 12px",cursor:"pointer",background:!active?"#EFF6FF":"transparent",fontWeight:!active?"600":"400",borderBottom:"1px solid #E5E7EB"}}>Todos</div>
+          style={{padding:"4px 8px",cursor:"pointer",background:!active?"#EFF6FF":"transparent",fontWeight:!active?"600":"400",borderBottom:"1px solid #E5E7EB"}}>Todos</div>
         {(uniqueVals[col]||[]).map(v=>(<div key={v} onClick={()=>{setColFiltros(f=>({...f,[col]:v}));setOpenCol(null);}}
-          style={{padding:"8px 12px",cursor:"pointer",background:colFiltros[col]===v?"#DBEAFE":"transparent",fontWeight:colFiltros[col]===v?"600":"400"}}>{v}</div>))}
+          style={{padding:"4px 8px",cursor:"pointer",background:colFiltros[col]===v?"#DBEAFE":"transparent",fontWeight:colFiltros[col]===v?"600":"400"}}>{v}</div>))}
       </div>)}
     </th>);
   };
   const byMonth={};let rowIdx=0;
   filtered.forEach(r=>{if(!byMonth[r.mesKey])byMonth[r.mesKey]={label:r.mesLargo,rows:[]};byMonth[r.mesKey].rows.push(r);});
   const hayFiltros=mesFiltro||Object.values(colFiltros).some(Boolean);
-  const inpS={padding:"6px 10px",border:"1px solid #D1D5DB",borderRadius:"6px",fontSize:"13px",fontFamily:"inherit",background:"#FFFFFF",color:"#1A1A1A",width:"180px"};
+  const inpS={padding:"6px 12px",border:"1px solid #D1D5DB",borderRadius:"8px",fontSize:"13px",fontFamily:"inherit",background:"#FFFFFF",color:"#1A1A1A",width:"180px"};
   return (
     <div style={{paddingTop:"100px",paddingBottom:"80px",overflowX:"auto",width:"100%"}}>
-      <div style={{padding:"8px 16px",display:"flex",alignItems:"center",gap:"10px"}}>
+      <div style={{padding:"8px 16px 0",display:"flex",alignItems:"center",gap:"10px",marginBottom:"12px"}}>
         <select value={mesFiltro} onChange={e=>setMesFiltro(e.target.value)} style={inpS}>
           <option value="">Todos los meses</option>
           {mesesDisponibles.map(m=><option key={m} value={m}>{m}</option>)}
@@ -1841,14 +1841,14 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
         {filtered.length===0&&<tbody><tr><td colSpan={COLS.length} style={{textAlign:"center",padding:"60px 20px",color:"#9CA3AF",fontSize:"14px",background:"#fff"}}>No hay eventos que mostrar</td></tr></tbody>}
         {Object.entries(byMonth).map(([mk,{label,rows}])=>(
           <tbody key={mk}>
-            <tr><td colSpan={COLS.length} style={{background:"#162654",color:"#FFFFFF",fontSize:"13px",fontWeight:"700",padding:"8px 16px",textTransform:"uppercase",letterSpacing:"0.08em"}}>📅 {label}</td></tr>
+            <tr><td colSpan={COLS.length} style={{background:"#1E3A5F",color:"#FFFFFF",fontSize:"13px",fontWeight:"600",padding:"8px 12px",textTransform:"uppercase",letterSpacing:"0.08em"}}>📅 {label}</td></tr>
             {rows.map(r=>{
               rowIdx++;
               const ri=rowIdx;
               const isEven=ri%2===0;
               const {ev,cli,contactoNombre,esMultidia,a1,a2,i1N,i2N,par,detalleEq,provNom,detalleInst,mesStr}=r;
               const rowBg=isEven?"#F9FAFB":"#FFFFFF";
-              const td={padding:"6px 8px",borderBottom:"1px solid #E5E7EB",borderRight:"1px solid #F3F4F6",verticalAlign:"top",color:"#1A1A1A",lineHeight:1.4};
+              const td={padding:"8px 10px",fontSize:"12px",borderBottom:"1px solid #E5E7EB",borderRight:"1px solid #F3F4F6",verticalAlign:"top",color:"#1A1A1A",lineHeight:1.4};
               return (
                 <tr key={ev.id} style={{background:rowBg,cursor:"pointer"}}
                   onClick={()=>esMultidia?onVerMultidia(ev.id):onAbrir(ev)}
