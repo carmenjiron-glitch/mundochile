@@ -2162,8 +2162,14 @@ export default function App() {
           {/* IZQUIERDA: logo + brand */}
           <div style={{display:"flex",alignItems:"center",gap:"10px",flexShrink:0}}>
             <div style={{flexShrink:0,display:"flex",alignItems:"center"}}>
-              <div style={{width:"82px",height:"82px",borderRadius:"50%",background:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",padding:"2px",flexShrink:0,boxShadow:"0 2px 8px rgba(0,0,0,0.15)",overflow:"hidden"}}>
-                <img src={LOGO_SRC} alt="MundoChile" style={{width:"78px",height:"78px",objectFit:"contain",display:"block"}}/>
+              <div style={{position:"relative",display:"inline-block"}}
+                onMouseEnter={e=>{const t=e.currentTarget.querySelector(".logo-tooltip");if(t){t.style.visibility="visible";t.style.opacity="1";}}}
+                onMouseLeave={e=>{const t=e.currentTarget.querySelector(".logo-tooltip");if(t){t.style.visibility="hidden";t.style.opacity="0";}}}>
+                <div onClick={()=>{setVista("semana");setPantalla("calendario");}} title="HOME"
+                  style={{width:"82px",height:"82px",borderRadius:"50%",background:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",padding:"2px",flexShrink:0,boxShadow:"0 2px 8px rgba(0,0,0,0.15)",overflow:"hidden",cursor:"pointer"}}>
+                  <img src={LOGO_SRC} alt="MundoChile" style={{width:"78px",height:"78px",objectFit:"contain",display:"block"}}/>
+                </div>
+                <span className="logo-tooltip" style={{visibility:"hidden",opacity:0,position:"absolute",bottom:"-28px",left:"50%",transform:"translateX(-50%)",background:"#1E293B",color:"#FFFFFF",fontSize:"11px",fontWeight:"500",padding:"3px 8px",borderRadius:"4px",whiteSpace:"nowrap",zIndex:100,transition:"opacity 0.2s",pointerEvents:"none"}}>HOME</span>
               </div>
             </div>
             <div>
