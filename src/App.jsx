@@ -1202,12 +1202,12 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
       const hp=grupo.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
       return(<div key={key} style={{marginBottom:"8px"}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"4px"}}>
-          <span style={{fontSize:"11px",fontWeight:"600",color:pillClr,textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
+          <span style={{fontSize:"10px",fontWeight:"600",color:pillClr,textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
           {hp&&<span style={{fontSize:"11px",color:"#6B7280"}}>🕐 {hp.slice(0,5)} hrs</span>}
         </div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"4px"}}>
           {grupo.items.map(({interp,isHost},i)=>(
-            <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"4px",padding:"3px 8px",borderRadius:"20px",fontSize:"11px",fontWeight:"500",lineHeight:"1.4",color:"#1A1A1A",background:"#FFFFFF",border:`2px solid ${pillClr}`,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+            <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"4px",padding:"3px 6px",borderRadius:"20px",fontSize:"11px",fontWeight:"500",lineHeight:"1.4",color:"#1A1A1A",background:"#FFFFFF",border:`2px solid ${pillClr}`,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
               {isHost&&<span style={{fontSize:"10px"}}>🔑</span>}
               <FlagImg idioma={grupo.idioma}/>
               <span style={{overflow:"hidden",textOverflow:"ellipsis",color:"#1A1A1A",fontSize:"11px",fontWeight:"600"}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
@@ -1261,7 +1261,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
             {/* COLUMNA IZQUIERDA */}
             <div style={{borderRight:"1px solid #E5E7EB"}}>
               {campos.cliente&&<Sec label="Cliente">
-                <div style={{fontSize:"18px",fontWeight:"600",color:"#000000",lineHeight:1.2}}>{cliente?.nombre_empresa||"—"}</div>
+                <div style={{fontSize:"18px",fontWeight:"700",color:"#000000",lineHeight:1.2}}>{cliente?.nombre_empresa||"—"}</div>
                 {cliente?.nombre_contacto&&<div style={{fontSize:"13px",color:"#6B7280",fontStyle:"italic",marginTop:"3px"}}>{cliente.nombre_contacto}</div>}
               </Sec>}
 
@@ -1317,7 +1317,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
               {campos.facturacion&&<Sec label="Estado de facturación">{(()=>{const be=B_EST(evento.estado);return<span style={{display:"inline-flex",alignItems:"center",padding:"3px 8px",borderRadius:"20px",fontSize:"11px",fontWeight:"500",lineHeight:"1.4",color:be.c,background:be.bg,border:`2px solid ${be.b||be.c}`,whiteSpace:"nowrap"}}>{evento.estado==="Facturado"?"✓ Facturado":"🟠 Facturación Pendiente"}</span>;})()}</Sec>}
 
               {campos.comentarios&&evento.comentarios&&<Sec label="Comentarios">
-                <div style={{fontSize:"13px",color:"#0F172A",lineHeight:1.5}}>{evento.comentarios}</div>
+                <div style={{fontSize:"12px",color:"#0F172A",lineHeight:1.5}}>{evento.comentarios}</div>
               </Sec>}
 
               {campos.evento&&evento.nombre_evento&&<Sec label="Nombre del Evento">
