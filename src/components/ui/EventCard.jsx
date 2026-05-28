@@ -214,13 +214,13 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             </div>
 
             {cliente?.nombre_contacto && (
-              <div style={{ fontSize:17, color:"#565D68", fontStyle:"italic", marginTop:2 }}>
+              <div style={{ fontSize:14, color:"#454A53", fontStyle:"italic", marginTop:2 }}>
                 Contacto: {cliente.nombre_contacto}
               </div>
             )}
 
             {ev.nombre_evento && (
-              <div style={{ fontSize:17, color:"#6B7280", marginTop:2 }}>
+              <div style={{ fontSize:14, color:"#565B66", marginTop:2 }}>
                 <span style={{ fontWeight:600 }}>Nombre del evento:</span>{" "}
                 <span style={{ fontWeight:400 }}>{ev.nombre_evento}</span>
               </div>
@@ -275,7 +275,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                 return (
                   <div key={key} style={{ marginTop:10 }}>
                     <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:5 }}>
-                      <div style={{ fontSize:14, fontWeight:600, color:darken(pillClr,0.80), textTransform:"uppercase", letterSpacing:"0.07em", opacity:0.85, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", WebkitFontSmoothing:"antialiased" }}>
+                      <div style={{ fontSize:14, fontWeight:600, color:darken(pillClr,0.80), textTransform:"uppercase", letterSpacing:"0.07em", opacity:0.85, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", WebkitFontSmoothing:"antialiased", textAlign:"center", width:"100%" }}>
                         {key}
                       </div>
                       {hp && (
@@ -288,7 +288,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                       {grupo.items.map((interp, i) => (
                         <span key={i}
                           title={`${interp.nombre}${interp.apellido ? " " + interp.apellido : ""}`}
-                          style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:5, padding:"4px 5px", borderRadius:20, fontSize:13, fontWeight:500, lineHeight:1.4, color:"#1A1A1A", background:"#FFFFFF", border:`2px solid ${pillClr}`, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"default", WebkitFontSmoothing:"antialiased" }}>
+                          style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:5, padding:"4px 5px", borderRadius:20, fontSize:14, fontWeight:500, lineHeight:1.4, color:"#1A1A1A", background:"#FFFFFF", border:`2px solid ${pillClr}`, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"default", WebkitFontSmoothing:"antialiased" }}>
                           {interp.isHost && <span style={{ fontSize:11 }}>🔑</span>}
                           <Flag idioma={grupo.idioma} size={14} />
                           <span style={{ overflow:"hidden", textOverflow:"ellipsis", color:"#1A1A1A" }}>
