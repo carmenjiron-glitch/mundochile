@@ -2158,9 +2158,9 @@ export default function App() {
             return <div key={i} onClick={()=>{setDiaActual(iso);setVista("dia");}}
               style={{minHeight:"90px",border:esHoy?"2px solid #4C6EF5":"none",borderRadius:"8px",padding:"8px",cursor:"pointer",background:"#FFFFFF",boxSizing:"border-box"}}
               onMouseEnter={e=>e.currentTarget.style.background="#F8FAFC"} onMouseLeave={e=>e.currentTarget.style.background="#FFFFFF"}>
-              <div style={{marginBottom:"4px",display:"flex",alignItems:"baseline",gap:"4px"}}>
+              <div style={{marginBottom:"4px",display:"flex",alignItems:"baseline",gap:"4px",flexWrap:"nowrap"}}>
                 <span style={{fontWeight:"700",fontSize:"15px",color:esHoy?"#4C6EF5":"#111827"}}>{dia}</span>
-                <span style={{fontSize:"10px",color:"#6B7280",fontWeight:"400"}}>{fecha.toLocaleDateString('es-CL',{weekday:'short'}).toUpperCase()} · {fecha.toLocaleDateString('es-CL',{month:'short'}).toUpperCase()}</span>
+                <span style={{fontSize:"10px",color:"#6B7280",fontWeight:"400",whiteSpace:"nowrap"}}>{fecha.toLocaleDateString('es-CL',{weekday:'long'})} · {fecha.toLocaleDateString('es-CL',{month:'long'})}</span>
               </div>
               {evs.slice(0,2).map((ev,j)=><div key={j} onClick={e=>{e.stopPropagation();abrirEvento(ev);}} style={{fontSize:"13px",fontWeight:"500",background:colorCliente(ev.cliente_id),color:"#fff",borderRadius:"4px",padding:"3px 8px",marginBottom:"2px",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{clientes.find(c=>c.id===ev.cliente_id)?.nombre_empresa||ev.nombre_evento||"Evento"}</div>)}
               {evs.length>2&&<div style={{fontSize:"13px",color:"#6B7280",fontWeight:"500",marginTop:"1px"}}>+{evs.length-2} más</div>}
