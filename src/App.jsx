@@ -1420,9 +1420,21 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
   const [editando,setEditando]=useState(null);
   const [formEdit,setFormEdit]=useState({});
   const [perfiles,setPerfiles]=useState([]);
+  const [interpPares,setInterpPares]=useState({});
   const tabs=[{id:"interpretes",l:"👤 Intérpretes"},{id:"clientes",l:"🏢 Clientes"},{id:"idiomas",l:"🌐 Idiomas"},{id:"proveedores",l:"🔧 Proveedores"},{id:"lugares",l:"📍 Lugares"},{id:"usuarios",l:"👥 Usuarios"}];
 
   useEffect(()=>{if(tab==="usuarios")sb.from("perfiles").select("*").order("nombre").then(({data})=>data&&setPerfiles(data));},[tab]);
+  useEffect(()=>{
+    if(tab==="interpretes"){
+      sb.from("asignaciones").select("interprete_id, par_id").then(({data})=>{
+        if(!data)return;
+        const m={};
+        data.forEach(a=>{if(!a.interprete_id||!a.par_id)return;if(!m[a.interprete_id])m[a.interprete_id]=new Set();m[a.interprete_id].add(a.par_id);});
+        const res={};Object.entries(m).forEach(([id,s])=>{res[id]=Array.from(s);});
+        setInterpPares(res);
+      });
+    }
+  },[tab]);
 
   const guardar=async(tabla,payload,id)=>{
     if(id==="nuevo") await sb.from(tabla).insert(payload);
@@ -1500,16 +1512,22 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
             <button onClick={()=>{setEditando(null);setFormEdit({});}} style={S.btnG}>Cancelar</button>
           </div>
         </div>}
+        <div style={{display:"grid",gridTemplateColumns:"1fr 2fr auto",gap:"12px",padding:"0 20px 6px",marginBottom:"2px"}}>
+          <div style={{fontSize:"12px",fontWeight:"600",color:"#94A3B8",textTransform:"uppercase",letterSpacing:"0.06em"}}>Intérprete</div>
+          <div style={{fontSize:"12px",fontWeight:"600",color:"#94A3B8",textTransform:"uppercase",letterSpacing:"0.06em"}}>Idiomas</div>
+          <div/>
+        </div>
         {interpretes.map(i=>{
           const nombreCompleto=`${i.nombre||""}${i.apellido?" "+i.apellido:""}`;
           const aColor=avatarColor(nombreCompleto);
+          const parsDelInterp=pares.filter(p=>(interpPares[i.id]||[]).includes(p.id));
           return(
-          <div key={i.id} style={{border:`1.5px solid ${C.grisBorde}`,borderRadius:"12px",padding:"14px 20px",marginBottom:"10px",background:"#fff",display:"flex",justifyContent:"space-between",alignItems:"center",gap:"12px",opacity:i.activo===false?0.6:1,transition:"background 0.1s"}}
+          <div key={i.id} style={{border:`1.5px solid ${C.grisBorde}`,borderRadius:"12px",padding:"14px 20px",marginBottom:"10px",background:"#fff",display:"grid",gridTemplateColumns:"1fr 2fr auto",gap:"12px",alignItems:"center",opacity:i.activo===false?0.6:1,transition:"background 0.1s"}}
             onMouseEnter={e=>e.currentTarget.style.background=C.gris}
             onMouseLeave={e=>e.currentTarget.style.background="#fff"}>
-            <div style={{display:"flex",gap:"12px",alignItems:"center",flex:1,minWidth:0}}>
+            <div style={{display:"flex",gap:"12px",alignItems:"center",minWidth:0}}>
               <div style={{width:"40px",height:"40px",borderRadius:"50%",background:aColor,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:"500",fontSize:"16px",flexShrink:0}}>{(i.nombre||"?").slice(0,1).toUpperCase()}</div>
-              <div style={{flex:1,minWidth:0}}>
+              <div style={{minWidth:0}}>
                 <div style={{fontWeight:"500",fontSize:"16px",color:C.texto}}>{nombreCompleto}{i.es_host_zoom&&<span style={{color:C.rojo,marginLeft:"8px",fontSize:"14px"}}>🔑 Host Zoom</span>}</div>
                 <div style={{display:"flex",gap:"12px",marginTop:"4px",flexWrap:"wrap"}}>
                   {i.email&&<CampoCopia valor={i.email}/>}
@@ -1518,6 +1536,13 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
                   {i.modalidad_trabajo&&<span style={{fontSize:"15px",color:C.textoMed}}>{i.modalidad_trabajo==="ambas"?"💻📍":i.modalidad_trabajo==="online"?"💻 Online":"📍 Presencial"}</span>}
                 </div>
               </div>
+            </div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:"4px",alignContent:"flex-start"}}>
+              {parsDelInterp.length>0?parsDelInterp.map(p=>(
+                <span key={p.id} style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"2px 8px",borderRadius:"12px",background:"#EFF6FF",color:"#1971C2",border:"1px solid #BFDBFE",fontSize:"12px",fontWeight:"500",marginBottom:"2px"}}>
+                  {p.idioma_origen} — {p.idioma_destino}
+                </span>
+              )):<span style={{fontSize:"13px",color:C.textoSuave}}>—</span>}
             </div>
             <div style={{display:"flex",gap:"6px",flexShrink:0}}>
               <button onClick={()=>{setEditando(i.id);setFormEdit({...i});}} style={S.btnEdit}><span style={{filter:"brightness(10)"}}>✏️</span> Editar</button>
