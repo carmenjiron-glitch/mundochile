@@ -355,6 +355,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
   const [nuevoLugar,setNuevoLugar]=useState("");
   const setF=useCallback((k,v)=>setForm(f=>({...f,[k]:v})),[]);
   const [zoomOtro,setZoomOtro]=useState(!ZOOM_ADMIN.includes(form.zoom_administrador)&&!!form.zoom_administrador);
+  const [adminZoomManual,setAdminZoomManual]=useState("");
 
   useEffect(()=>{
     if(!form.fecha_inicio||!form.fecha_termino) return;
@@ -399,7 +400,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
         jornada:form.jornada||"Media Jornada", jornada_personalizada:form.jornada_personalizada||"",
         lugar:form.lugar||"", lugar_detalle:form.lugar_detalle||"", modalidad:form.modalidad||"remoto",
         plataforma:form.plataforma||"", zoom_owner:form.zoom_owner||"mundochile",
-        zoom_administrador:form.zoom_administrador||"", zoom_link:form.zoom_link||"", contacto_id:form.contacto_id?Number(form.contacto_id):null, estado:form.estado||"Facturación Pendiente",
+        zoom_administrador:form.zoom_administrador==="__manual__"?adminZoomManual:(form.zoom_administrador||""), zoom_link:form.zoom_link||"", contacto_id:form.contacto_id?Number(form.contacto_id):null, estado:form.estado||"Facturación Pendiente",
         comentarios:form.comentarios||"", edited_by:perfil?.id||null, edited_by_nombre:perfil?.nombre||"",
       };
       let eventoId=form.id;
@@ -636,10 +637,14 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                 <div style={S.camp}><label style={S.lbl}>💻 Plataforma</label>
                   <select style={S.sel} value={form.plataforma} onChange={e=>setF("plataforma",e.target.value)}>{PLATAFORMAS.map(p=><option key={p}>{p}</option>)}</select></div>
                 {(form.plataforma==="Zoom MundoChile"||form.plataforma==="Zoom")&&<div style={S.camp}><label style={S.lbl}>🔑 Administrador Zoom</label>
-                  <select style={S.sel} value={zoomOtro?"__otro__":(ZOOM_ADMIN.includes(form.zoom_administrador)?form.zoom_administrador:"")} onChange={e=>{if(e.target.value==="__otro__"){setZoomOtro(true);setF("zoom_administrador","");}else{setZoomOtro(false);setF("zoom_administrador",e.target.value);}}}>
-                    <option value="">Sin asignar</option>{ZOOM_ADMIN.map(z=><option key={z}>{z}</option>)}<option value="__otro__">Otro…</option>
+                  <select style={S.sel}
+                    value={(()=>{if(!form.zoom_administrador)return"";if(form.zoom_administrador==="__manual__")return"__manual__";const m=interpretes.find(i=>`${i.nombre} ${i.apellido||""}`.trim()===form.zoom_administrador.trim());return m?String(m.id):"__manual__";})()}
+                    onChange={e=>{if(e.target.value==="__manual__"){setF("zoom_administrador","__manual__");setAdminZoomManual("");}else if(e.target.value===""){setF("zoom_administrador","");}else{const interp=interpretes.find(i=>String(i.id)===e.target.value);setF("zoom_administrador",interp?`${interp.nombre} ${interp.apellido||""}`.trim():"");}}}>
+                    <option value="">Sin asignar</option>
+                    {interpretes.map(i=><option key={i.id} value={String(i.id)}>{i.nombre} {i.apellido||""}</option>)}
+                    <option value="__manual__">+ Agregar manualmente…</option>
                   </select>
-                  {zoomOtro&&<input style={{...S.inp,marginTop:"6px"}} value={form.zoom_administrador||""} onChange={e=>setF("zoom_administrador",e.target.value)} placeholder="Nombre del administrador…"/>}
+                  {form.zoom_administrador==="__manual__"&&<input style={{...S.inp,marginTop:"6px"}} type="text" placeholder="Nombre del administrador" value={adminZoomManual} onChange={e=>setAdminZoomManual(e.target.value)}/>}
                 </div>}
                 {(form.plataforma==="Zoom MundoChile"||form.plataforma==="Zoom")&&<div style={S.camp}>
                   <label style={S.lbl}>🔗 Link de conexión Zoom</label>
