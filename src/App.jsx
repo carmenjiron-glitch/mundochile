@@ -1230,10 +1230,10 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
         </div>
 
         {/* Área exportable */}
-        <div id="ficha-exportable" ref={fichaRef} style={{flex:1,overflowY:"auto",background:"#F8FAFF",padding:"10px 12px 12px",border:"2px solid #1A6FD4",borderRadius:"8px",overflow:"hidden"}}>
+        <div id="ficha-exportable" ref={fichaRef} style={{flex:1,overflowY:"auto",background:"#F8FAFF",padding:"10px 12px 12px"}}>
 
           {/* Header */}
-          <div style={{display:"flex",alignItems:"center",padding:"10px 16px",borderRadius:"8px",background:"linear-gradient(135deg, #2E7BC4 0%, #1A5A9E 100%)",color:"#fff",marginBottom:"8px",flexShrink:0}}>
+          <div style={{display:"flex",alignItems:"center",padding:"10px 16px",borderRadius:"8px 8px 0 0",background:"linear-gradient(135deg, #2E7BC4 0%, #1A5A9E 100%)",color:"#fff",marginBottom:"0",flexShrink:0}}>
             <div style={{flexShrink:0,marginRight:"10px",display:"flex",alignItems:"center"}}>
               <div style={{width:"38px",height:"38px",borderRadius:"50%",background:"#FFFFFF",overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 0 0 3px rgba(255,255,255,0.3)"}}>
                 <img src={LOGO_SRC} alt="MundoChile" style={{width:"34px",height:"34px",objectFit:"contain"}}/>
@@ -1268,7 +1268,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
             const showL=(campos.lugar&&esPresencial&&!!evento.lugar)||(campos.plataforma&&!esPresencial);
             const showEq=campos.equipos&&(evento.evento_dias||[]).flatMap(d=>d.equipos_dia||[]).length>0;
             return(
-              <div style={{border:"1px solid #E5E7EB",borderRadius:"8px",overflow:"hidden",display:"grid",gridTemplateColumns:"1fr 1fr",alignItems:"start"}}>
+              <div style={{border:"2px solid #1A6FD4",borderRadius:"0 0 8px 8px",overflow:"hidden",display:"grid",gridTemplateColumns:"1fr 1fr",alignItems:"start"}}>
                 {showC?<div style={lH}>Cliente</div>:<div style={eS}/>}
                 {showI?<div style={rH}>Intérpretes</div>:<div style={eS}/>}
                 {showC?<div style={lB}><div style={{fontSize:"18px",fontWeight:"700",color:"#000000",lineHeight:1.2}}>{cliente?.nombre_empresa||"—"}</div>{cliente?.nombre_contacto&&<div style={{fontSize:"13px",color:"#505860",fontStyle:"italic",marginTop:"3px"}}>{cliente.nombre_contacto}</div>}</div>:<div style={eS}/>}
