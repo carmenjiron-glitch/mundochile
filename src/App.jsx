@@ -352,6 +352,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
   const [tab,setTab]=useState("general");
   const [guardando,setGuardando]=useState(false);
   const [error,setError]=useState("");
+  const [guardadoOk,setGuardadoOk]=useState(false);
   const [agregarLugar,setAgregarLugar]=useState(false);
   const [nuevoLugar,setNuevoLugar]=useState("");
   const setF=useCallback((k,v)=>setForm(f=>({...f,[k]:v})),[]);
@@ -390,7 +391,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
     });
   };
 
-  const guardar=async()=>{
+  const guardar=async({cerrar=true}={})=>{
     if(!form.cliente_id){setError("Selecciona un cliente");return;}
     setGuardando(true);setError("");
     try {
@@ -481,7 +482,8 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           }
         }
       }
-      onGuardar();
+      if(cerrar){onGuardar();}
+      else{setGuardadoOk(true);setTimeout(()=>setGuardadoOk(false),2000);}
     } catch(e){setError("Error al guardar: "+(e.message||JSON.stringify(e)));}
     finally{setGuardando(false);}
   };
@@ -888,9 +890,11 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           ))}
         </div>
         {/* Footer */}
-        <div style={{padding:"16px 24px",borderTop:`1px solid ${C.grisBorde}`,flexShrink:0,display:"flex",gap:"10px",justifyContent:"flex-end",background:C.gris,borderRadius:"0 0 20px 20px"}}>
+        <div style={{padding:"16px 24px",borderTop:`1px solid ${C.grisBorde}`,flexShrink:0,display:"flex",gap:"10px",justifyContent:"flex-end",alignItems:"center",background:C.gris,borderRadius:"0 0 20px 20px"}}>
+          {guardadoOk&&<span style={{color:"#059669",fontSize:"13px",fontWeight:"500"}}>✅ Guardado</span>}
           <button onClick={onCerrar} style={S.btnCancel}>Cancelar</button>
-          <button onClick={guardar} disabled={guardando} style={{...S.btnSave,opacity:guardando?0.7:1,minWidth:"140px",pointerEvents:guardando?"none":"auto"}}>{guardando?"Guardando…":"💾 Guardar"}</button>
+          <button onClick={()=>guardar({cerrar:false})} disabled={guardando} style={{...S.btnSave,background:"#059669",opacity:guardando?0.7:1,minWidth:"120px",pointerEvents:guardando?"none":"auto"}}>{guardando?"Guardando…":"💾 Guardar"}</button>
+          <button onClick={()=>guardar({cerrar:true})} disabled={guardando} style={{...S.btnSave,background:"#1D4ED8",opacity:guardando?0.7:1,minWidth:"160px",pointerEvents:guardando?"none":"auto"}}>{guardando?"Guardando…":"💾 Guardar y cerrar"}</button>
         </div>
       </div>
     </div>
