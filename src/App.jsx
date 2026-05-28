@@ -934,20 +934,18 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
         <div style={{background:"#FFFFFF",padding:"20px 24px",borderRadius:"20px 20px 0 0",flexShrink:0,borderBottom:`10px solid ${colorCliente(evento.cliente_id)}`,position:"sticky",top:0,zIndex:10,boxShadow:"0 2px 8px rgba(0,0,0,0.08)"}}>
           <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:"16px"}}>
             <div style={{flex:1,minWidth:0}}>
-              <div style={{display:"flex",alignItems:"center",gap:"12px"}}>
-                <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:"29px",fontWeight:"600",color:"#0F172A",lineHeight:1.2}}>{cliente?.nombre_empresa||"—"}</div>
-                  {cliente?.nombre_contacto&&<div style={{fontSize:"17px",fontWeight:"500",color:"#6B7280",fontStyle:"italic",marginTop:"4px"}}>Contacto: {cliente.nombre_contacto}</div>}
-                </div>
+              <div style={{display:"flex",alignItems:"center",gap:"16px",flexWrap:"nowrap"}}>
+                <div style={{fontSize:"29px",fontWeight:"600",color:"#0F172A",lineHeight:1.2}}>{cliente?.nombre_empresa||"—"}</div>
                 {(()=>{
                   const hoyD=new Date();const manana=new Date();manana.setDate(hoyD.getDate()+1);
                   const fechaEvento=desdeISO(evento.fecha_inicio);
                   const esHoy=fechaEvento.toDateString()===hoyD.toDateString();
                   const esManana=fechaEvento.toDateString()===manana.toDateString();
                   if(!esHoy&&!esManana)return null;
-                  return <div style={{width:"14px",height:"14px",borderRadius:"50%",background:esHoy?"#22C55E":"#EAB308",boxShadow:esHoy?"0 0 8px #22C55E":"0 0 8px #EAB308",flexShrink:0}}/>;
+                  return <div style={{width:"14px",height:"14px",borderRadius:"50%",background:esHoy?"#22C55E":"#EAB308",boxShadow:esHoy?"0 0 8px #22C55E":"0 0 8px #EAB308",flexShrink:0,marginLeft:"16px"}}/>;
                 })()}
               </div>
+              {cliente?.nombre_contacto&&<div style={{fontSize:"17px",fontWeight:"500",color:"#6B7280",fontStyle:"italic",marginTop:"4px"}}>Contacto: {cliente.nombre_contacto}</div>}
               {evento.nro_oc&&<div style={{fontSize:"14px",color:"#6B7280",marginTop:"4px"}}>N° OC: {evento.nro_oc}</div>}
             </div>
             <div style={{display:"flex",flexDirection:"column",gap:"6px",alignItems:"flex-end",flexShrink:0}}>
