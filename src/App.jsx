@@ -380,6 +380,15 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
     if(mins>0) setF("jornada",calcJornada(mins,form.modalidad));
   },[form.hora_inicio,form.hora_termino,form.modalidad]);
 
+  const [contactosLocal,setContactosLocal]=useState(()=>
+    contactos.filter(c=>Number(c.cliente_id)===Number(eventoInicial?.cliente_id)&&c.activo!==false)
+  );
+  useEffect(()=>{
+    if(!form.cliente_id){setContactosLocal([]);return;}
+    sb.from("contactos").select("*").eq("cliente_id",Number(form.cliente_id)).eq("activo",true).order("nombre")
+      .then(({data})=>setContactosLocal(data||[]));
+  },[form.cliente_id]);
+
   const esMultidia=form.dias.length>1;
 
   const conflicto=(interp_id)=>{
@@ -597,9 +606,9 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
               <div style={{display:"flex",gap:"8px"}}>
                 <select style={S.sel} value={form.contacto_id||""} onChange={e=>setF("contacto_id",e.target.value?Number(e.target.value):"")}>
                   <option value="">Seleccionar contacto…</option>
-                  {contactos.filter(c=>String(c.cliente_id)===String(form.cliente_id)&&c.activo!==false).map(c=><option key={c.id} value={c.id}>{c.nombre}{c.cargo?` — ${c.cargo}`:""}</option>)}
+                  {contactosLocal.map(c=><option key={c.id} value={c.id}>{c.nombre}{c.cargo?` — ${c.cargo}`:""}</option>)}
                 </select>
-                <button onClick={()=>onNuevoContacto({cliente_id:form.cliente_id})} style={{padding:"0",width:"42px",height:"42px",background:"#3B82F6",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"20px",fontWeight:"300",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,lineHeight:1}}>+</button>
+                <button onClick={()=>onNuevoContacto({cliente_id:form.cliente_id,cb:(nc)=>{setContactosLocal(p=>[...p,nc]);setF("contacto_id",nc.id);}})} style={{padding:"0",width:"42px",height:"42px",background:"#3B82F6",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"20px",fontWeight:"300",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,lineHeight:1}}>+</button>
               </div>
             </div>}
             {/* Nombre del evento */}
@@ -2748,7 +2757,7 @@ export default function App() {
       {modalFichasMultiples&&<ModalFichasMultiples eventosLista={modalFichasMultiples} clientes={clientes} interpretes={interpretes} pares={pares} onCerrar={()=>setModalFichasMultiples(null)}/>}
       {modalNuevoCli&&<ModalNuevoCliente onGuardar={async(d)=>{const{data}=await sb.from("clientes").insert(d).select().single();if(data)setClientes(prev=>[...prev,data]);const cb=modalNuevoCli?.cb;setModalNuevoCli(false);if(data){cb?.(data.id);addToast("Cliente creado","success");}cargarDatos();}} onCerrar={()=>setModalNuevoCli(false)}/>}
       {modalNuevoInt&&<ModalNuevoInterprete onGuardar={async(d)=>{await sb.from("interpretes").insert(d);await cargarDatos();setModalNuevoInt(null);addToast("Intérprete creado","success");}} onCerrar={()=>setModalNuevoInt(null)}/>}
-      {modalNuevoContacto&&<ModalNuevoContacto clienteId={modalNuevoContacto.cliente_id} onGuardar={async(d)=>{await sb.from("contactos").insert({...d,cliente_id:Number(modalNuevoContacto.cliente_id)});await cargarDatos();setModalNuevoContacto(null);addToast("Contacto creado","success");}} onCerrar={()=>setModalNuevoContacto(null)}/>}
+      {modalNuevoContacto&&<ModalNuevoContacto clienteId={modalNuevoContacto.cliente_id} onGuardar={async(d)=>{const{data:nc}=await sb.from("contactos").insert({...d,cliente_id:Number(modalNuevoContacto.cliente_id)}).select().single();if(nc&&modalNuevoContacto.cb)modalNuevoContacto.cb(nc);await cargarDatos();setModalNuevoContacto(null);addToast("Contacto creado","success");}} onCerrar={()=>setModalNuevoContacto(null)}/>}
       <ToastContainer toasts={toasts} onRemove={removeToast}/>
     </div>
   );
