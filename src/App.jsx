@@ -1207,9 +1207,8 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
   const [imgJPG,setImgJPG]=useState(null);
   const [verJPG,setVerJPG]=useState(false);
   const abrirVistaJPG=()=>{
-    const el=document.getElementById("ficha-exportable");
-    html2canvas(el,{scale:2,useCORS:true,allowTaint:true,backgroundColor:"#FFFFFF",logging:false,width:el.offsetWidth,height:el.offsetHeight,windowWidth:el.offsetWidth,onclone:(clonedDoc)=>{const c=clonedDoc.getElementById("ficha-exportable");c.style.transform="none";c.style.position="relative";clonedDoc.querySelectorAll("img").forEach(img=>{img.style.objectFit="contain";img.style.maxWidth="100%";});}})
-      .then(canvas=>{setImgJPG(canvas.toDataURL("image/jpeg",0.95));setVerJPG(true);});
+    const elemento=document.getElementById("ficha-exportable");
+    html2canvas(elemento,{scale:2,useCORS:true,allowTaint:true,backgroundColor:"#FFFFFF",logging:false,scrollX:0,scrollY:-window.scrollY,windowWidth:document.documentElement.scrollWidth,windowHeight:elemento.scrollHeight,width:elemento.scrollWidth,height:elemento.scrollHeight,onclone:(clonedDoc)=>{const el=clonedDoc.getElementById("ficha-exportable");el.style.transform="none";el.style.position="static";el.style.overflow="visible";el.style.maxHeight="none";el.style.height="auto";const headers=el.querySelectorAll('[style*="background"]');headers.forEach(h=>{if(h.style.color==='rgb(255, 255, 255)'||h.style.color==='#FFFFFF'){h.style.color='#FFFFFF';h.style.webkitTextFillColor='#FFFFFF';}});const todos=el.querySelectorAll('*');todos.forEach(e=>{if(e.style.overflow==='hidden')e.style.overflow='visible';if(e.style.maxHeight)e.style.maxHeight='none';});}}).then(canvas=>{setImgJPG(canvas.toDataURL("image/jpeg",0.95));setVerJPG(true);});
   };
 
   const Sec=({label,children})=>(
@@ -1254,10 +1253,10 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
 
   return (
     <>
-    {verJPG&&<div style={{position:"fixed",top:0,left:0,width:"100vw",height:"100vh",background:"rgba(0,0,0,0.90)",zIndex:9999,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",padding:"20px"}}>
-      <div style={{position:"relative"}}>
-        <button onClick={()=>setVerJPG(false)} style={{position:"sticky",top:"0",right:"0",float:"right",background:"#FFFFFF",border:"none",borderRadius:"50%",width:"32px",height:"32px",cursor:"pointer",fontSize:"16px",fontWeight:"700",zIndex:10000}}>✕</button>
-        <img src={imgJPG} style={{maxWidth:"800px",width:"100%",borderRadius:"8px",display:"block",marginTop:"8px"}} alt="Ficha"/>
+    {verJPG&&<div style={{position:"fixed",top:0,left:0,width:"100vw",height:"100vh",background:"rgba(0,0,0,0.92)",zIndex:9999,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",padding:"20px",boxSizing:"border-box"}}>
+      <div style={{position:"relative",maxWidth:"820px",width:"100%"}}>
+        <button onClick={()=>setVerJPG(false)} style={{position:"sticky",top:"0",float:"right",background:"#FFFFFF",border:"none",borderRadius:"50%",width:"32px",height:"32px",cursor:"pointer",fontSize:"16px",fontWeight:"700",zIndex:10000,marginBottom:"8px"}}>✕</button>
+        <img src={imgJPG} style={{width:"100%",height:"auto",borderRadius:"8px",display:"block",clear:"both"}} alt="Ficha"/>
       </div>
     </div>}
     <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.75)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(6px)",padding:"16px",overflowY:"auto"}}>
@@ -1276,7 +1275,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
         </div>
 
         {/* Área exportable */}
-        <div id="ficha-exportable" ref={fichaRef} style={{flex:1,overflowY:"auto",background:"#F0F4FA",padding:"12px"}}>
+        <div id="ficha-exportable" ref={fichaRef} style={{flex:1,overflow:"visible",maxHeight:"none",height:"auto",background:"#F0F4FA",padding:"12px"}}>
           <div style={{width:"800px",maxWidth:"100%",margin:"0 auto",background:"#FFFFFF",border:"2px solid #1A6FD4",borderRadius:"12px",overflow:"hidden",fontFamily:"'Inter','Segoe UI',system-ui,sans-serif"}}>
 
             {/* HEADER */}
