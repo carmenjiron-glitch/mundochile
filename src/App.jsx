@@ -1659,15 +1659,6 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
           </div>
         </div>}
 
-        {/* Headers de columnas */}
-        <div style={{display:"grid",gridTemplateColumns:"48px 2fr 2fr 1.5fr 180px",gap:"12px",paddingBottom:"8px",borderBottom:"2px solid #E5E7EB",marginBottom:"4px"}}>
-          <div/>
-          {["Intérprete","Idiomas","Contacto","Acciones"].map(h=>(
-            <div key={h} style={{fontSize:"11px",fontWeight:"600",textTransform:"uppercase",color:"#6B7280",letterSpacing:"0.05em"}}>{h}</div>
-          ))}
-        </div>
-
-        {/* Filas */}
         {interpretes
           .filter(i=>!busquedaInterp.trim()||(`${i.nombre||""} ${i.apellido||""}`).toLowerCase().includes(busquedaInterp.toLowerCase().trim()))
           .map(i=>{
@@ -1675,49 +1666,35 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
             const aColor=avatarColor(nombreCompleto);
             const parsDelInterp=pares.filter(p=>(interpPares[i.id]||[]).includes(p.id));
             return(
-              <div key={i.id} style={{display:"grid",gridTemplateColumns:"48px 2fr 2fr 1.5fr 180px",gap:"12px",alignItems:"center",padding:"12px 0",borderBottom:"1px solid #F3F4F6",opacity:i.activo===false?0.55:1}}>
-                {/* Col 1: Avatar */}
-                <div style={{width:"40px",height:"40px",borderRadius:"50%",background:aColor,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:"600",fontSize:"16px",flexShrink:0}}>
-                  {(i.nombre||"?").slice(0,1).toUpperCase()}
-                </div>
-                {/* Col 2: Nombre + íconos */}
-                <div>
-                  <div style={{display:"flex",alignItems:"center",gap:"6px",flexWrap:"nowrap"}}>
-                    <span style={{fontWeight:"600",fontSize:"14px",color:"#111827"}}>{nombreCompleto}</span>
-                    {i.es_host_zoom&&<span title="Host Zoom MundoChile" style={{fontSize:"13px",cursor:"help"}}>🔑</span>}
-                    {(i.modalidad_trabajo==="ambas"||i.modalidad_trabajo==="online")&&<span title="Maneja plataforma Zoom" style={{fontSize:"13px",cursor:"help"}}>💻</span>}
-                    {(i.modalidad_trabajo==="ambas"||i.modalidad_trabajo==="presencial")&&<span title="Disponible presencial" style={{fontSize:"13px",cursor:"help"}}>📍</span>}
+              <div key={i.id}
+                style={{border:`1.5px solid ${C.grisBorde}`,borderRadius:"12px",padding:"14px 20px",marginBottom:"10px",background:"#fff",display:"flex",justifyContent:"space-between",alignItems:"center",gap:"12px",transition:"background 0.1s",opacity:i.activo===false?0.55:1}}
+                onMouseEnter={e=>e.currentTarget.style.background=C.gris}
+                onMouseLeave={e=>e.currentTarget.style.background="#fff"}>
+                <div style={{display:"flex",gap:"12px",alignItems:"center",flex:1,minWidth:0}}>
+                  <div style={{width:"40px",height:"40px",borderRadius:"50%",background:aColor,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:"500",fontSize:"16px",flexShrink:0}}>
+                    {(i.nombre||"?").slice(0,1).toUpperCase()}
                   </div>
-                  {i.ciudad&&<div style={{fontSize:"12px",color:"#6B7280",marginTop:"2px"}}>{i.ciudad}</div>}
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontWeight:"500",fontSize:"16px",color:C.texto,display:"flex",alignItems:"center",gap:"6px",flexWrap:"nowrap"}}>
+                      {nombreCompleto}
+                      {i.es_host_zoom&&<span title="Host Zoom MundoChile" style={{fontSize:"13px",cursor:"help"}}>🔑</span>}
+                      {(i.modalidad_trabajo==="ambas"||i.modalidad_trabajo==="online")&&<span title="Maneja plataforma Zoom" style={{fontSize:"13px",cursor:"help"}}>💻</span>}
+                      {(i.modalidad_trabajo==="ambas"||i.modalidad_trabajo==="presencial")&&<span title="Disponible presencial" style={{fontSize:"13px",cursor:"help"}}>📍</span>}
+                    </div>
+                    <div style={{display:"flex",gap:"14px",marginTop:"4px",flexWrap:"wrap",alignItems:"center"}}>
+                      {i.ciudad&&<span style={{fontSize:"15px",color:C.textoMed}}>📍 {i.ciudad}</span>}
+                      {i.email&&<CampoCopia valor={i.email}/>}
+                      {i.telefono&&<CampoCopia valor={i.telefono}/>}
+                    </div>
+                    {parsDelInterp.length>0&&<div style={{display:"flex",flexWrap:"wrap",gap:"4px",marginTop:"6px"}}>
+                      {parsDelInterp.map(p=>{const clr=IDIOMA_PILL_CLR[p.idioma_origen]||"#4C6EF5";return(<span key={p.id} style={{display:"inline-flex",alignItems:"center",padding:"2px 8px",borderRadius:"12px",background:clr,color:"#FFFFFF",fontSize:"11px",fontWeight:"500",whiteSpace:"nowrap"}}>{p.idioma_origen} — {p.idioma_destino}</span>);})}
+                    </div>}
+                  </div>
                 </div>
-                {/* Col 3: Idiomas */}
-                <div style={{display:"flex",flexWrap:"wrap",gap:"4px",alignContent:"flex-start"}}>
-                  {parsDelInterp.length>0
-                    ? parsDelInterp.map(p=>{
-                        const clr=IDIOMA_PILL_CLR[p.idioma_origen]||"#4C6EF5";
-                        return(
-                          <span key={p.id} style={{display:"inline-flex",alignItems:"center",padding:"2px 8px",borderRadius:"12px",background:clr,color:"#FFFFFF",fontSize:"11px",fontWeight:"500",whiteSpace:"nowrap"}}>
-                            {p.idioma_origen} — {p.idioma_destino}
-                          </span>
-                        );
-                      })
-                    : <span style={{fontSize:"12px",color:"#9CA3AF"}}>Sin idiomas</span>
-                  }
-                </div>
-                {/* Col 4: Contacto */}
-                <div>
-                  {i.email&&<div style={{fontSize:"12px",color:"#6B7280",lineHeight:"1.6"}}>✉ {i.email}</div>}
-                  {i.telefono&&<div style={{fontSize:"12px",color:"#6B7280",lineHeight:"1.6"}}>📞 {i.telefono}</div>}
-                  {!i.email&&!i.telefono&&<div style={{fontSize:"12px",color:"#9CA3AF",fontStyle:"italic"}}>Sin datos</div>}
-                </div>
-                {/* Col 5: Acciones */}
-                <div style={{display:"flex",gap:"8px",alignItems:"center"}}>
-                  <button onClick={()=>{setEditando(i.id);setFormEdit({...i});}}
-                    style={{padding:"5px 12px",background:"#E67700",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",fontFamily:"inherit"}}>
-                    ✏️ Editar
-                  </button>
+                <div style={{display:"flex",gap:"8px",alignItems:"center",flexShrink:0}}>
+                  <button onClick={()=>{setEditando(i.id);setFormEdit({...i});}} style={S.btnEdit}><span style={{filter:"brightness(10)"}}>✏️</span> Editar</button>
                   <button onClick={async()=>{await sb.from("interpretes").update({activo:!i.activo}).eq("id",i.id);onActualizar();}}
-                    style={{padding:"5px 12px",background:"#FFFFFF",color:"#6B7280",border:"1px solid #D1D5DB",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",fontFamily:"inherit"}}>
+                    style={{padding:"4px 10px",background:"#FFFFFF",color:"#6B7280",border:"1px solid #D1D5DB",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",height:"28px",fontFamily:"inherit"}}>
                     {i.activo?"Desactivar":"Activar"}
                   </button>
                 </div>
