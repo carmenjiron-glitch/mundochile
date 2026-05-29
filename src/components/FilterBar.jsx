@@ -7,7 +7,7 @@ export default function FilterBar({ filters, onChange, interpreters = [], client
   const lbl = {
     fontSize: "11px",
     fontWeight: "700",
-    color: "#E53E3E",
+    color: "#FFFFFF",
     whiteSpace: "nowrap",
     textTransform: "uppercase",
     letterSpacing: "0.06em",
