@@ -1987,15 +1987,15 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
     const el=tablaRef.current.querySelector(`[data-celda="${celdaActiva.fila}-${celdaActiva.col}"]`);
     if(el) el.scrollIntoView({block:"nearest",inline:"nearest"});
   },[celdaActiva]);
-  const thS={background:"#1E3A5F",color:"#FFFFFF",fontSize:"12px",fontWeight:"500",padding:"8px 10px",textAlign:"center",position:"sticky",top:0,zIndex:50,whiteSpace:"nowrap",borderRight:"1px solid rgba(255,255,255,0.15)",borderBottom:"2px solid #94A3B8",marginTop:"0"};
+  const COL_MINW={"Mes":"60px","Orden de Compra":"90px","Cliente":"120px","Contacto Cliente":"110px","# Evento":"70px","Detalle Equipos AV":"90px","Proveedor":"90px","Detalles Instalación":"90px","Tipo":"90px","Nombre Evento":"150px","Lugar":"100px","Par de Idiomas":"100px","Jornada":"90px","Horario":"100px","Fecha Inicio":"100px","Fecha Término":"100px","Comentarios":"90px","Intérprete 1":"100px","Nro OT":"80px","Nro Boleta":"80px","Intérprete 2":"100px","Nro OT 2":"80px"};
+  const thS={background:"#1E3A5F",color:"#FFFFFF",position:"sticky",top:0,zIndex:50,borderRight:"1px solid rgba(255,255,255,0.15)",borderBottom:"2px solid #94A3B8",height:"auto",padding:0,textAlign:"center"};
   const renderThFiltro=(col)=>{
     const active=!!colFiltros[col];const isOpen=openCol===col;
-    return(<th key={col} style={{...thS,background:active?"#2D5F9E":"#1E3A5F",cursor:"pointer",userSelect:"none",zIndex:isOpen?1000:50}}>
-      <div style={{position:"relative"}}>
-        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:"4px"}}
-          onClick={e=>{e.stopPropagation();setOpenCol(isOpen?null:col);}}>
-          <span>{col}</span><span style={{fontSize:"9px",opacity:0.7}}>{active?"▲":"▼"}</span>
-        </div>
+    return(<th key={col} style={{...thS,background:active?"#2D5F9E":"#1E3A5F",cursor:"pointer",userSelect:"none",zIndex:isOpen?1000:50,minWidth:COL_MINW[col]||"80px"}}>
+      <div style={{position:"relative",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"space-between",gap:"4px",padding:"6px 8px",minHeight:"48px",height:"100%",boxSizing:"border-box"}}
+        onClick={e=>{e.stopPropagation();setOpenCol(isOpen?null:col);}}>
+        <span style={{fontSize:"11px",fontWeight:"600",color:"#FFFFFF",textAlign:"center",whiteSpace:"normal",wordBreak:"break-word",lineHeight:"1.3",width:"100%"}}>{col}</span>
+        <span style={{display:"block",fontSize:"9px",color:"rgba(255,255,255,0.8)",marginTop:"2px",flexShrink:0}}>{active?"▲":"▼"}</span>
         {isOpen&&(<div onClick={e=>e.stopPropagation()}
           style={{position:"absolute",top:"100%",left:"0",zIndex:1000,minWidth:"160px",background:"#FFFFFF",color:"#1A1A1A",borderRadius:"6px",boxShadow:"0 4px 12px rgba(0,0,0,0.15)",border:"1px solid #E5E7EB",maxHeight:"240px",overflowY:"auto",fontSize:"12px",textAlign:"left",fontWeight:"400"}}>
           <div onClick={()=>{setColFiltros(f=>{const n={...f};delete n[col];return n;});setOpenCol(null);}}
