@@ -2682,10 +2682,10 @@ export default function App() {
           <div style={{flex:1,minWidth:0}}>
             <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes} clientes={clientesConEventos} pares={paresConEventos} proveedores={proveedoresConEventos}/>
           </div>
-          {hayFiltros&&<div style={{display:"flex",gap:"8px",flexShrink:0}}>
-            <button onClick={generarFichaMultiple} style={{display:"flex",alignItems:"center",gap:"4px",padding:"4px 12px",borderRadius:"12px",background:"#1A6FD4",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📋 Fichas</button>
-            <button onClick={exportarExcelFiltrado} style={{display:"flex",alignItems:"center",gap:"4px",padding:"4px 12px",borderRadius:"12px",background:"#059669",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📊 Excel</button>
-          </div>}
+          <div style={{display:"flex",gap:"8px",flexShrink:0,transition:"opacity 0.2s, transform 0.2s",opacity:hayFiltros?1:0,transform:hayFiltros?"scale(1)":"scale(0.9)",visibility:hayFiltros?"visible":"hidden"}}>
+            <button onClick={generarFichaMultiple} style={{display:"flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"12px",background:"#1A6FD4",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",height:"26px",boxShadow:"0 2px 4px rgba(26,111,212,0.3)",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📋 Fichas</button>
+            <button onClick={exportarExcelFiltrado} style={{display:"flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"12px",background:"#059669",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",height:"26px",boxShadow:"0 2px 4px rgba(5,150,105,0.3)",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📊 Excel</button>
+          </div>
         </div>}
         {vista==="semana"&&renderSemana()}
         {vista==="dia"&&renderDia()}
