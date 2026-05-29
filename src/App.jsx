@@ -1061,16 +1061,16 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
         </div>
         {/* Cuerpo */}
         <div style={{overflowY:"auto",flex:1,padding:"24px 28px"}}>
-          {dias.length>0&&<div style={{display:"grid",gridTemplateColumns:"auto 1fr 1fr 1fr",gap:"0",fontSize:"12px",borderBottom:"1px solid #E5E7EB",marginBottom:"12px"}}>
-            <div style={{background:"#F8FAFF",padding:"4px 10px",fontWeight:"600",color:"#6B7280",fontSize:"11px"}}>Día</div>
-            <div style={{background:"#F8FAFF",padding:"4px 10px",fontWeight:"600",color:"#6B7280",fontSize:"11px"}}>Fecha</div>
-            <div style={{background:"#F8FAFF",padding:"4px 10px",fontWeight:"600",color:"#6B7280",fontSize:"11px"}}>Horario</div>
-            <div style={{background:"#F8FAFF",padding:"4px 10px",fontWeight:"600",color:"#6B7280",fontSize:"11px"}}>Jornada</div>
+          {dias.length>0&&<div style={{display:"grid",gridTemplateColumns:"auto 1fr 1fr 1fr",gap:"0",fontSize:"14px",borderBottom:"1px solid #E5E7EB",marginBottom:"12px"}}>
+            <div style={{background:"#F8FAFF",padding:"5px 12px",fontWeight:"600",color:"#6B7280",fontSize:"13px",WebkitFontSmoothing:"antialiased"}}>Día</div>
+            <div style={{background:"#F8FAFF",padding:"5px 12px",fontWeight:"600",color:"#6B7280",fontSize:"13px",WebkitFontSmoothing:"antialiased"}}>Fecha</div>
+            <div style={{background:"#F8FAFF",padding:"5px 12px",fontWeight:"600",color:"#6B7280",fontSize:"13px",WebkitFontSmoothing:"antialiased"}}>Horario</div>
+            <div style={{background:"#F8FAFF",padding:"5px 12px",fontWeight:"600",color:"#6B7280",fontSize:"13px",WebkitFontSmoothing:"antialiased"}}>Jornada</div>
             {dias.map((dia,i)=>(<Fragment key={i}>
-              <div style={{padding:"5px 10px",borderTop:"1px solid #F3F4F6",color:"#1A6FD4",fontWeight:"600"}}>Día {i+1}</div>
-              <div style={{padding:"5px 10px",borderTop:"1px solid #F3F4F6",color:"#374151"}}>{desdeISO(dia.fecha).toLocaleDateString("es-CL",{weekday:"short",day:"numeric",month:"short"})}</div>
-              <div style={{padding:"5px 10px",borderTop:"1px solid #F3F4F6",color:"#374151"}}>{dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs</div>
-              <div style={{padding:"5px 10px",borderTop:"1px solid #F3F4F6",color:"#6B7280"}}>{dia.jornada||"—"}</div>
+              <div style={{padding:"6px 12px",borderTop:"1px solid #F3F4F6",color:"#1A6FD4",fontWeight:"600",fontSize:"14px",WebkitFontSmoothing:"antialiased"}}>Día {i+1}</div>
+              <div style={{padding:"6px 12px",borderTop:"1px solid #F3F4F6",color:"#374151",fontWeight:"400",fontSize:"14px",WebkitFontSmoothing:"antialiased"}}>{desdeISO(dia.fecha).toLocaleDateString("es-CL",{weekday:"short",day:"numeric",month:"short"})}</div>
+              <div style={{padding:"6px 12px",borderTop:"1px solid #F3F4F6",color:"#374151",fontWeight:"400",fontSize:"14px",WebkitFontSmoothing:"antialiased"}}>{dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs</div>
+              <div style={{padding:"6px 12px",borderTop:"1px solid #F3F4F6",color:"#6B7280",fontWeight:"400",fontSize:"14px",WebkitFontSmoothing:"antialiased"}}>{dia.jornada||"—"}</div>
             </Fragment>))}
           </div>}
           {/* Evento + Fecha + Horario */}
@@ -1090,18 +1090,18 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           </div>
           {/* Programa multidía */}
           {dias.length>0&&<><HR/><div style={{marginBottom:"12px"}}>
-            <SL t="📅 Programa del evento"/>
+            <div style={{fontSize:"16px",fontWeight:"700",color:LBL_LARGA.c,textTransform:LBL_LARGA.tt,letterSpacing:"0.06em",marginBottom:"6px",WebkitFontSmoothing:"antialiased"}}>📅 Programa del evento</div>
             <div style={{borderRadius:"10px",overflow:"hidden",border:"1px solid #E5E7EB"}}>
               <table style={{width:"100%",borderCollapse:"collapse"}}>
                 <thead><tr style={{background:"#1E3A6E",color:"#fff"}}>
-                  {["Día","Fecha","Horario","Jornada"].map(h=><th key={h} style={{padding:"8px 14px",textAlign:"left",fontSize:"14px",fontWeight:"500"}}>{h}</th>)}
+                  {["Día","Fecha","Horario","Jornada"].map(h=><th key={h} style={{padding:"10px 17px",textAlign:"left",fontSize:"17px",fontWeight:"600",WebkitFontSmoothing:"antialiased"}}>{h}</th>)}
                 </tr></thead>
                 <tbody>{dias.map((dia,dIdx)=>(
                   <tr key={dIdx} style={{background:dIdx%2===0?"#fff":"#F8FAFC",borderBottom:"1px solid #E5E7EB"}}>
-                    <td style={{padding:"8px 14px",fontSize:"15px",fontWeight:"500",color:"#1971C2"}}>Día {dIdx+1}</td>
-                    <td style={{padding:"8px 14px",fontSize:"15px",color:"#0F172A"}}>{formatLargo(dia.fecha)}</td>
-                    <td style={{padding:"8px 14px",fontSize:"15px",color:"#0F172A"}}>{dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs</td>
-                    <td style={{padding:"8px 14px",fontSize:"15px",color:"#475569"}}>{dia.jornada}</td>
+                    <td style={{padding:"10px 17px",fontSize:"18px",fontWeight:"600",color:"#1A6FD4",WebkitFontSmoothing:"antialiased"}}>Día {dIdx+1}</td>
+                    <td style={{padding:"10px 17px",fontSize:"18px",fontWeight:"400",color:"#0F172A",WebkitFontSmoothing:"antialiased"}}>{formatLargo(dia.fecha)}</td>
+                    <td style={{padding:"10px 17px",fontSize:"18px",fontWeight:"400",color:"#0F172A",WebkitFontSmoothing:"antialiased"}}>{dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs</td>
+                    <td style={{padding:"10px 17px",fontSize:"18px",fontWeight:"400",color:"#475569",WebkitFontSmoothing:"antialiased"}}>{dia.jornada}</td>
                   </tr>
                 ))}</tbody>
               </table>
