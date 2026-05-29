@@ -63,8 +63,8 @@ const idiomaBorde=(idioma)=>IDIOMA_BORDE[idioma]||"#3451d1";
 const idiomaFlag=(idioma)=>IDIOMA_FLAG[idioma]||"🌐";
 const IDIOMA_CDN={"Inglés":"gb","Francés":"fr","Portugués":"br","Español":"es","Alemán":"de","Italiano":"it","Chino":"cn","Japonés":"jp"};
 function FlagImg({idioma}){const c=IDIOMA_CDN[idioma];if(!c)return<span style={{fontSize:"14px"}}>🌐</span>;return<img src={`https://flagcdn.com/28x21/${c}.png`} style={{width:"25px",height:"18px",objectFit:"cover",borderRadius:"2px",verticalAlign:"middle",display:"inline-block",flexShrink:0}} alt={idioma}/>;}
-const B_TIPO={"Simultánea":{bg:"#EEF2FF",c:"#3B5BDB"},"Consecutiva":{bg:"#FCE4EC",c:"#C2185B"},"Whispering":{bg:"#F3E5F5",c:"#7B1FA2"}};
-const B_MOD={"presencial":{bg:"#E8F5E9",c:"#2E7D32"},"remoto":{bg:"#E0F7FA",c:"#00838F"},"hibrido":{bg:"#FBE9E7",c:"#BF360C"}};
+const B_TIPO={"Simultánea":{bg:"#EEF2FF",c:"#3B5BDB",ct:"#294099"},"Consecutiva":{bg:"#FCE4EC",c:"#C2185B",ct:"#881140"},"Whispering":{bg:"#F3E5F5",c:"#7B1FA2",ct:"#561671"}};
+const B_MOD={"presencial":{bg:"#E8F5E9",c:"#2E7D32",ct:"#205823"},"remoto":{bg:"#E0F7FA",c:"#00838F",ct:"#005C64"},"hibrido":{bg:"#FBE9E7",c:"#BF360C",ct:"#862608"}};
 const B_EST=(e)=>e==="Facturado"?{bg:"#FFFFFF",c:"#1A1A1A",b:"#E57373"}:{bg:"#FFFFFF",c:"#1A1A1A",b:"#E57373"};
 const bS=(bg,c,b)=>({display:"inline-flex",alignItems:"center",gap:"4px",padding:"3px 8px",borderRadius:"20px",fontSize:"10px",fontWeight:"700",lineHeight:"1.4",color:c,background:bg,border:`2px solid ${b||c}`,whiteSpace:"nowrap"});
 const TIPO_ICON={"Simultánea":<IconoSimultanea/>,"Consecutiva":"🎤","Whispering":"🤫"};
@@ -1253,10 +1253,10 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
 
             {/* SECCIONES — una columna */}
             {(()=>{
-              const sH={background:"#1A6FD4",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",letterSpacing:"0.06em",padding:"4px 16px",textTransform:"uppercase"};
+              const sH={background:"#3D85D8",color:"#D9D9D9",fontSize:"13px",fontWeight:"600",letterSpacing:"0.06em",padding:"4px 16px",textTransform:"uppercase"};
               const sB={padding:"10px 16px",borderBottom:"1px solid #E5E7EB",background:"#FFFFFF"};
               const pillClrFor=(idioma)=>IDIOMA_PILL_CLR[idioma]||"#4C6EF5";
-              const pillSt=(idioma)=>({background:"#FFFFFF",border:`2px solid ${pillClrFor(idioma)}`,color:"#1A1A1A",borderRadius:"20px",padding:"6px 12px",textAlign:"center",width:"100%",fontSize:"12px",fontWeight:"600",display:"flex",alignItems:"center",justifyContent:"center",gap:"6px",boxSizing:"border-box"});
+              const pillSt=(idioma)=>({background:"#FFFFFF",border:`2px solid ${pillClrFor(idioma)}`,color:"#1A1A1A",borderRadius:"20px",padding:"6px 12px",textAlign:"center",width:"100%",fontSize:"16px",fontWeight:"400",display:"flex",alignItems:"center",justifyContent:"center",gap:"6px",boxSizing:"border-box"});
               const renderI=(asigs)=>{
                 if(!asigs||asigs.length===0) return null;
                 const gmap={};
@@ -1277,7 +1277,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
                     const clr=pillClrFor(g.idioma);
                     const hp=g.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
                     return(<div key={i} style={{marginBottom:i<pares2.length-1||solos.length>0?"12px":0}}>
-                      <div style={{textAlign:"center",fontSize:"11px",fontWeight:"600",color:clr,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em"}}>{g.desc}</div>
+                      <div style={{textAlign:"center",fontSize:"14px",fontWeight:"600",color:clr,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em"}}>{g.desc}</div>
                       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px"}}>
                         {g.items.map(({interp,asig},j)=>(<div key={j} style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"10px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>))}
                       </div>
@@ -1289,7 +1289,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
                       const clr=pillClrFor(g.idioma);
                       const {interp,asig}=g.items[0];
                       return(<div key={i}>
-                        <div style={{textAlign:"center",fontSize:"10px",fontWeight:"600",color:clr,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em"}}>{g.desc}</div>
+                        <div style={{textAlign:"center",fontSize:"13px",fontWeight:"600",color:clr,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em"}}>{g.desc}</div>
                         <div style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"10px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>
                         {asig.hora_presentacion&&<div style={{textAlign:"right",fontSize:"11px",color:"#505860",marginTop:"4px"}}>🕐 {asig.hora_presentacion.slice(0,5)} hrs</div>}
                       </div>);
@@ -1304,7 +1304,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
                 {campos.evento&&evento.nombre_evento&&<><div style={sH}>Evento</div><div style={sB}><div style={{fontSize:"14px",fontWeight:"500",color:"#151c28"}}>{evento.nombre_evento}</div>{evento.nro_oc&&<div style={{fontSize:"13px",color:"#484f56",marginTop:"3px"}}>N° OC: {evento.nro_oc}</div>}</div></>}
                 {(campos.fecha||campos.horario)&&<><div style={sH}>Fecha / Horario</div><div style={sB}><div style={{display:"flex",gap:"16px",flexWrap:"wrap",alignItems:"center"}}>{campos.fecha&&evento.fecha_inicio&&<div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>{esMultidia?`${formatCorto(evento.fecha_inicio)} → ${formatCorto(evento.fecha_termino)}`:formatLargo(evento.fecha_inicio)}</div>}{campos.horario&&evento.hora_inicio&&<div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>🕐 {evento.hora_inicio.slice(0,5)} – {evento.hora_termino?.slice(0,5)} hrs</div>}</div></div></>}
                 {campos.jornada&&evento.jornada&&<><div style={sH}>Jornada</div><div style={sB}><div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>⏱ {evento.jornada}{evento.jornada_personalizada?` — ${evento.jornada_personalizada}`:""}</div></div></>}
-                {(campos.tipo||campos.modalidad)&&<><div style={sH}>Tipo / Modalidad</div><div style={sB}><div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center"}}>{campos.tipo&&evento.tipo&&<span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",color:(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c,background:(B_TIPO[evento.tipo]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>{evento.tipo==="Simultánea"?<IconoSimultanea/>:evento.tipo==="Consecutiva"?"🎤":"🤫"} {evento.tipo}</span>}{campos.modalidad&&evento.modalidad&&<span style={{display:"inline-flex",alignItems:"center",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",color:(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c,background:(B_MOD[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?"📍":evento.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evento.modalidad]}</span>}</div></div></>}
+                {(campos.tipo||campos.modalidad)&&<><div style={sH}>Tipo / Modalidad</div><div style={sB}><div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center"}}>{campos.tipo&&evento.tipo&&<span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:(B_TIPO[evento.tipo]||{ct:"#294099"}).ct,WebkitFontSmoothing:"antialiased",background:(B_TIPO[evento.tipo]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>{evento.tipo==="Simultánea"?<IconoSimultanea/>:evento.tipo==="Consecutiva"?"🎤":"🤫"} {evento.tipo}</span>}{campos.modalidad&&evento.modalidad&&<span style={{display:"inline-flex",alignItems:"center",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:(B_MOD[evento.modalidad]||{ct:"#4B4B4B"}).ct,WebkitFontSmoothing:"antialiased",background:(B_MOD[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?"📍":evento.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evento.modalidad]}</span>}</div></div></>}
                 {campos.lugar&&esPresencial&&evento.lugar&&<><div style={sH}>Lugar</div><div style={sB}><div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>📍 {evento.lugar}</div>{evento.lugar_detalle&&<div style={{fontSize:"13px",color:"#303a47",marginTop:"3px"}}>{evento.lugar_detalle}</div>}</div></>}
                 {campos.plataforma&&!esPresencial&&evento.plataforma&&<><div style={sH}>Plataforma</div><div style={sB}><PlatformChip platform={evento.plataforma==="Zoom"?"Zoom MundoChile":evento.plataforma} isMundoChile={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")} extra={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")?evento.zoom_administrador:""}/></div></>}
                 {interpsEl&&<><div style={sH}>Intérpretes</div><div style={sB}>{interpsEl}</div></>}
@@ -1332,10 +1332,10 @@ function ModalFichasMultiples({eventosLista,clientes,interpretes,pares,onCerrar}
   const esMultidia=evento.fecha_inicio!==evento.fecha_termino;
   const esPresencial=evento.modalidad==="presencial"||evento.modalidad==="hibrido";
   const dias=((evento.evento_dias||evento.dias||[]).sort((a,b)=>(a.orden||0)-(b.orden||0)));
-  const sH={background:"#1A6FD4",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",letterSpacing:"0.06em",padding:"4px 16px",textTransform:"uppercase"};
+  const sH={background:"#3D85D8",color:"#D9D9D9",fontSize:"13px",fontWeight:"600",letterSpacing:"0.06em",padding:"4px 16px",textTransform:"uppercase"};
   const sB={padding:"10px 16px",borderBottom:"1px solid #E5E7EB",background:"#FFFFFF"};
   const pillClrFor=(idioma)=>IDIOMA_PILL_CLR[idioma]||"#4C6EF5";
-  const pillSt=(idioma)=>({background:"#FFFFFF",border:`2px solid ${pillClrFor(idioma)}`,color:"#1A1A1A",borderRadius:"20px",padding:"6px 12px",textAlign:"center",width:"100%",fontSize:"12px",fontWeight:"600",display:"flex",alignItems:"center",justifyContent:"center",gap:"6px",boxSizing:"border-box"});
+  const pillSt=(idioma)=>({background:"#FFFFFF",border:`2px solid ${pillClrFor(idioma)}`,color:"#1A1A1A",borderRadius:"20px",padding:"6px 12px",textAlign:"center",width:"100%",fontSize:"16px",fontWeight:"400",display:"flex",alignItems:"center",justifyContent:"center",gap:"6px",boxSizing:"border-box"});
   const renderI=(asigs)=>{
     if(!asigs||asigs.length===0) return null;
     const gmap={};
@@ -1356,7 +1356,7 @@ function ModalFichasMultiples({eventosLista,clientes,interpretes,pares,onCerrar}
         const clr=pillClrFor(g.idioma);
         const hp=g.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
         return(<div key={i} style={{marginBottom:i<pares2.length-1||solos.length>0?"12px":0}}>
-          <div style={{textAlign:"center",fontSize:"11px",fontWeight:"600",color:clr,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em"}}>{g.desc}</div>
+          <div style={{textAlign:"center",fontSize:"14px",fontWeight:"600",color:clr,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em"}}>{g.desc}</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px"}}>
             {g.items.map(({interp,asig},j)=>(<div key={j} style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"10px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>))}
           </div>
@@ -1368,7 +1368,7 @@ function ModalFichasMultiples({eventosLista,clientes,interpretes,pares,onCerrar}
           const clr=pillClrFor(g.idioma);
           const {interp,asig}=g.items[0];
           return(<div key={i}>
-            <div style={{textAlign:"center",fontSize:"10px",fontWeight:"600",color:clr,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em"}}>{g.desc}</div>
+            <div style={{textAlign:"center",fontSize:"13px",fontWeight:"600",color:clr,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em"}}>{g.desc}</div>
             <div style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"10px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>
             {asig.hora_presentacion&&<div style={{textAlign:"right",fontSize:"11px",color:"#505860",marginTop:"4px"}}>🕐 {asig.hora_presentacion.slice(0,5)} hrs</div>}
           </div>);
@@ -1409,7 +1409,7 @@ function ModalFichasMultiples({eventosLista,clientes,interpretes,pares,onCerrar}
             {evento.nombre_evento&&<><div style={sH}>Evento</div><div style={sB}><div style={{fontSize:"14px",fontWeight:"500",color:"#151c28"}}>{evento.nombre_evento}</div>{evento.nro_oc&&<div style={{fontSize:"13px",color:"#484f56",marginTop:"3px"}}>N° OC: {evento.nro_oc}</div>}</div></>}
             {(evento.fecha_inicio||evento.hora_inicio)&&<><div style={sH}>Fecha / Horario</div><div style={sB}><div style={{display:"flex",gap:"16px",flexWrap:"wrap",alignItems:"center"}}>{evento.fecha_inicio&&<div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>{esMultidia?`${formatCorto(evento.fecha_inicio)} → ${formatCorto(evento.fecha_termino)}`:formatLargo(evento.fecha_inicio)}</div>}{evento.hora_inicio&&<div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>🕐 {evento.hora_inicio.slice(0,5)} – {evento.hora_termino?.slice(0,5)} hrs</div>}</div></div></>}
             {evento.jornada&&<><div style={sH}>Jornada</div><div style={sB}><div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>⏱ {evento.jornada}{evento.jornada_personalizada?` — ${evento.jornada_personalizada}`:""}</div></div></>}
-            {(evento.tipo||evento.modalidad)&&<><div style={sH}>Tipo / Modalidad</div><div style={sB}><div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center"}}>{evento.tipo&&<span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",color:(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c,background:(B_TIPO[evento.tipo]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>{evento.tipo==="Simultánea"?<IconoSimultanea/>:evento.tipo==="Consecutiva"?"🎤":"🤫"} {evento.tipo}</span>}{evento.modalidad&&<span style={{display:"inline-flex",alignItems:"center",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",color:(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c,background:(B_MOD[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?"📍":evento.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evento.modalidad]}</span>}</div></div></>}
+            {(evento.tipo||evento.modalidad)&&<><div style={sH}>Tipo / Modalidad</div><div style={sB}><div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center"}}>{evento.tipo&&<span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:(B_TIPO[evento.tipo]||{ct:"#294099"}).ct,WebkitFontSmoothing:"antialiased",background:(B_TIPO[evento.tipo]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>{evento.tipo==="Simultánea"?<IconoSimultanea/>:evento.tipo==="Consecutiva"?"🎤":"🤫"} {evento.tipo}</span>}{evento.modalidad&&<span style={{display:"inline-flex",alignItems:"center",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:(B_MOD[evento.modalidad]||{ct:"#4B4B4B"}).ct,WebkitFontSmoothing:"antialiased",background:(B_MOD[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?"📍":evento.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evento.modalidad]}</span>}</div></div></>}
             {esPresencial&&evento.lugar&&<><div style={sH}>Lugar</div><div style={sB}><div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>📍 {evento.lugar}</div>{evento.lugar_detalle&&<div style={{fontSize:"13px",color:"#303a47",marginTop:"3px"}}>{evento.lugar_detalle}</div>}</div></>}
             {!esPresencial&&evento.plataforma&&<><div style={sH}>Plataforma</div><div style={sB}><PlatformChip platform={evento.plataforma==="Zoom"?"Zoom MundoChile":evento.plataforma} isMundoChile={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")} extra={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")?evento.zoom_administrador:""}/></div></>}
             {(()=>{const asigsSingle=esMultidia?[]:(evento.asignaciones||[]);const el=renderI(asigsSingle);return el?<><div style={sH}>Intérpretes</div><div style={sB}>{el}</div></>:null;})()}
