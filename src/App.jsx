@@ -1,5 +1,5 @@
 // MundoChile v2.1 — Gestión de Interpretaciones
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo, Fragment } from "react";
 import { createClient } from "@supabase/supabase-js";
 import * as XLSX from "xlsx";
 import html2canvas from "html2canvas";
@@ -918,20 +918,11 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
   const [asignaciones,setAsignaciones]=useState(evento?.asignaciones||[]);
   useEffect(()=>setAsignaciones(evento?.asignaciones||[]),[evento]);
   if(!evento) return null;
-  console.log("=== MODAL DETALLE DEBUG ===");
-  console.log("evento.id:", evento.id);
-  console.log("evento.evento_dias:", evento.evento_dias);
-  console.log("evento.dias:", evento.dias);
-  console.log("evento.fecha_inicio:", evento.fecha_inicio);
-  console.log("evento.fecha_fin:", evento.fecha_fin);
-  console.log("esMultidia:", evento.fecha_fin && evento.fecha_fin !== evento.fecha_inicio);
-  console.log("keys del evento:", Object.keys(evento));
-  console.log("=== FIN DEBUG ===");
   const cliente=clientes.find(c=>c.id===evento.cliente_id);
   const esZoomMC=(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom");
   const esPresencial=evento.modalidad==="presencial"||evento.modalidad==="hibrido";
-  const esMultidia=evento.fecha_inicio!==evento.fecha_termino;
-  const dias=((evento.evento_dias||evento.dias||[]).sort((a,b)=>(a.orden||0)-(b.orden||0)));
+  const esMultidia=evento.evento_dias?.length>1||(evento.es_multidia===true)||(evento.evento_dias?.length>0&&evento.fecha_inicio!==evento.evento_dias[evento.evento_dias.length-1]?.fecha);
+  const dias=evento.evento_dias||evento.dias||[];
   const LBL={remoto:"Remoto",presencial:"Presencial",hibrido:"Híbrido"};
   const LBL_LARGA={txt:"13px",fw:"600",c:"#0F172A",tt:"uppercase",ls:"0.04em"};
   const B_TIPO_D={"Simultánea":{bg:"#EEF2FF",c:"#2F49AF"},"Consecutiva":{bg:"#FCE4EC",c:"#9B1349"},"Whispering":{bg:"#F3E5F5",c:"#621982"}};
@@ -987,17 +978,17 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
         </div>
         {/* Cuerpo */}
         <div style={{overflowY:"auto",flex:1,padding:"24px 28px"}}>
-          {esMultidia&&dias.length>0&&<div style={{display:"grid",gridTemplateColumns:"auto 1fr 1fr 1fr",gap:"0",fontSize:"12px",borderBottom:"1px solid #E5E7EB",marginBottom:"12px"}}>
+          {dias.length>0&&<div style={{display:"grid",gridTemplateColumns:"auto 1fr 1fr 1fr",gap:"0",fontSize:"12px",borderBottom:"1px solid #E5E7EB",marginBottom:"12px"}}>
             <div style={{background:"#F8FAFF",padding:"4px 10px",fontWeight:"600",color:"#6B7280",fontSize:"11px"}}>Día</div>
             <div style={{background:"#F8FAFF",padding:"4px 10px",fontWeight:"600",color:"#6B7280",fontSize:"11px"}}>Fecha</div>
             <div style={{background:"#F8FAFF",padding:"4px 10px",fontWeight:"600",color:"#6B7280",fontSize:"11px"}}>Horario</div>
             <div style={{background:"#F8FAFF",padding:"4px 10px",fontWeight:"600",color:"#6B7280",fontSize:"11px"}}>Jornada</div>
-            {dias.map((dia,i)=>(<React.Fragment key={i}>
+            {dias.map((dia,i)=>(<Fragment key={i}>
               <div style={{padding:"5px 10px",borderTop:"1px solid #F3F4F6",color:"#1A6FD4",fontWeight:"600"}}>Día {i+1}</div>
               <div style={{padding:"5px 10px",borderTop:"1px solid #F3F4F6",color:"#374151"}}>{desdeISO(dia.fecha).toLocaleDateString("es-CL",{weekday:"short",day:"numeric",month:"short"})}</div>
               <div style={{padding:"5px 10px",borderTop:"1px solid #F3F4F6",color:"#374151"}}>{dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs</div>
               <div style={{padding:"5px 10px",borderTop:"1px solid #F3F4F6",color:"#6B7280"}}>{dia.jornada||"—"}</div>
-            </React.Fragment>))}
+            </Fragment>))}
           </div>}
           {/* Evento + Fecha + Horario */}
           <div style={{fontSize:"16px",fontWeight:"500",color:"#1E293B",marginBottom:"4px"}}>
@@ -1015,7 +1006,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             </span>
           </div>
           {/* Programa multidía */}
-          {esMultidia&&dias.length>0&&<><HR/><div style={{marginBottom:"12px"}}>
+          {dias.length>0&&<><HR/><div style={{marginBottom:"12px"}}>
             <SL t="📅 Programa del evento"/>
             <div style={{borderRadius:"10px",overflow:"hidden",border:"1px solid #E5E7EB"}}>
               <table style={{width:"100%",borderCollapse:"collapse"}}>
