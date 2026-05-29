@@ -1245,7 +1245,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
             </div>
             <div style={{textAlign:"right",flexShrink:0}}>
               <div style={{fontSize:"10px",color:"rgba(255,255,255,0.75)",textTransform:"uppercase",letterSpacing:"0.08em"}}>Generado el</div>
-              <div style={{fontSize:"10px",fontWeight:"600",color:"#fff"}}>{new Date().toLocaleDateString("es-CL",{day:"numeric",month:"long",year:"numeric"})}</div>
+              <div style={{fontSize:"10px",fontWeight:"400",color:"#fff"}}>{new Date().toLocaleDateString("es-CL",{day:"numeric",month:"long",year:"numeric"})}</div>
             </div>
           </div>
 
