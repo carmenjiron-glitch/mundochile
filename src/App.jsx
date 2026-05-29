@@ -2369,18 +2369,36 @@ export default function App() {
     const n=new Date();n.setMonth(n.getMonth()+mesOff);n.setDate(1);
     const pri=n.getDay()===0?6:n.getDay()-1;
     const total=new Date(n.getFullYear(),n.getMonth()+1,0).getDate();
+    const totalCeldas=Math.ceil((pri+total)/7)*7;
     const celdas=[];
-    for(let i=0;i<pri;i++) celdas.push(null);
-    for(let i=1;i<=total;i++) celdas.push(i);
+    for(let i=0;i<totalCeldas;i++){
+      const fecha=new Date(n.getFullYear(),n.getMonth(),1+(i-pri));
+      celdas.push({fecha,esMes:fecha.getMonth()===n.getMonth()});
+    }
     return (
       <div style={{padding:"16px 24px 80px",overflowX:"auto"}}>
         <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:"4px",minWidth:"800px"}}>
           {DIAS_SEM.map(d=><div key={d} style={{textAlign:"center",fontWeight:"500",fontSize:"15px",color:"#FFFFFF",padding:"8px 0",textTransform:"uppercase"}}>{d}</div>)}
-          {celdas.map((dia,i)=>{
-            if(!dia) return <div key={i} style={{background:"rgba(255,255,255,0.35)",borderRadius:"8px",minHeight:"90px"}}/>;
-            const iso=`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-${String(dia).padStart(2,"0")}`;
-            const evs=evsDia(iso), esHoy=iso===hoy();
-            const fecha=desdeISO(iso);
+          {celdas.map(({fecha,esMes},i)=>{
+            const dia=fecha.getDate();
+            const iso=`${fecha.getFullYear()}-${String(fecha.getMonth()+1).padStart(2,"0")}-${String(dia).padStart(2,"0")}`;
+            const evs=evsDia(iso),esHoy=iso===hoy();
+            if(!esMes) return (
+              <div key={i} onClick={()=>{setDiaActual(iso);setVista("dia");}}
+                style={{minHeight:"90px",background:"#F3F4F6",borderRadius:"8px",padding:"8px",opacity:0.6,boxSizing:"border-box",cursor:"pointer"}}>
+                <div style={{marginBottom:"4px",display:"flex",alignItems:"baseline",justifyContent:"space-between",width:"100%"}}>
+                  <div style={{display:"flex",alignItems:"baseline",gap:"4px"}}>
+                    <span style={{fontWeight:"400",fontSize:"15px",color:"#9CA3AF"}}>{dia}</span>
+                    <span style={{fontWeight:"400",fontSize:"15px",color:"#C4C9D4"}}>{fecha.toLocaleDateString('es-CL',{weekday:'long'})}</span>
+                  </div>
+                  <span style={{fontSize:"10px",fontWeight:"400",color:"#C4C9D4"}}>{fecha.toLocaleDateString('es-CL',{month:'long'})}</span>
+                </div>
+                {evs.length>0&&<div style={{opacity:0.5}}>
+                  {evs.slice(0,2).map((ev,j)=><div key={j} onClick={e=>{e.stopPropagation();abrirEvento(ev);}} style={{fontSize:"13px",fontWeight:"500",background:colorCliente(ev.cliente_id),color:"#fff",borderRadius:"4px",padding:"3px 8px",marginBottom:"2px",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{clientes.find(c=>c.id===ev.cliente_id)?.nombre_empresa||ev.nombre_evento||"Evento"}</div>)}
+                  {evs.length>2&&<div style={{fontSize:"13px",color:"#6B7280",fontWeight:"500",marginTop:"1px"}}>+{evs.length-2} más</div>}
+                </div>}
+              </div>
+            );
             return <div key={i} onClick={()=>{setDiaActual(iso);setVista("dia");}}
               style={{minHeight:"90px",border:esHoy?"2px solid #4C6EF5":"none",borderRadius:"8px",padding:"8px",cursor:"pointer",background:"#FFFFFF",boxSizing:"border-box"}}
               onMouseEnter={e=>e.currentTarget.style.background="#F8FAFC"} onMouseLeave={e=>e.currentTarget.style.background="#FFFFFF"}>
