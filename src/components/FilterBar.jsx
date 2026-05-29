@@ -5,7 +5,7 @@ export default function FilterBar({ filters, onChange, interpreters = [], client
   const limpiar = { estado:"", modalidad:"", tipo:"", interprete_id:"", cliente_id:"", par_id:"", proveedor_av:"" };
 
   const lbl = {
-    fontSize: "10px",
+    fontSize: "11px",
     fontWeight: "700",
     color: "#E53E3E",
     whiteSpace: "nowrap",
@@ -14,19 +14,19 @@ export default function FilterBar({ filters, onChange, interpreters = [], client
     flexShrink: 0,
     border: "1px solid #E53E3E",
     borderRadius: "12px",
-    padding: "2px 8px",
+    padding: "2px 9px",
     background: "transparent",
   };
 
   const sel = {
-    fontSize: "11px",
-    padding: "3px 6px",
+    fontSize: "12px",
+    padding: "3px 7px",
     borderRadius: "12px",
     border: "1px solid rgba(255,255,255,0.3)",
     background: "rgba(255,255,255,0.1)",
     color: "#FFFFFF",
     cursor: "pointer",
-    height: "24px",
+    height: "26px",
     outline: "none",
     fontFamily: "inherit",
     maxWidth: 130,
