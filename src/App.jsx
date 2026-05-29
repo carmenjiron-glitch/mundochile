@@ -1997,7 +1997,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
         <span style={{fontSize:"11px",fontWeight:"600",color:"#FFFFFF",textAlign:"center",whiteSpace:"normal",wordBreak:"break-word",lineHeight:"1.3",width:"100%"}}>{col}</span>
         <span style={{display:"block",fontSize:"9px",color:"rgba(255,255,255,0.8)",marginTop:"2px",flexShrink:0}}>{active?"▲":"▼"}</span>
         {isOpen&&(<div onClick={e=>e.stopPropagation()}
-          style={{position:"absolute",top:"100%",left:"0",zIndex:1000,minWidth:"160px",background:"#FFFFFF",color:"#1A1A1A",borderRadius:"6px",boxShadow:"0 4px 12px rgba(0,0,0,0.15)",border:"1px solid #E5E7EB",maxHeight:"240px",overflowY:"auto",fontSize:"12px",textAlign:"left",fontWeight:"400"}}>
+          style={{position:"absolute",top:"100%",left:"0",marginTop:"2px",zIndex:1000,minWidth:"160px",background:"#FFFFFF",color:"#1A1A1A",borderRadius:"6px",boxShadow:"0 4px 12px rgba(0,0,0,0.15)",border:"1px solid #E5E7EB",maxHeight:"240px",overflowY:"auto",fontSize:"12px",textAlign:"left",fontWeight:"400"}}>
           <div onClick={()=>{setColFiltros(f=>{const n={...f};delete n[col];return n;});setOpenCol(null);}}
             style={{padding:"4px 8px",cursor:"pointer",background:!active?"#EFF6FF":"transparent",fontWeight:!active?"600":"400",borderBottom:"1px solid #E5E7EB"}}>Todos</div>
           {(uniqueVals[col]||[]).map(v=>(<div key={v} onClick={()=>{setColFiltros(f=>({...f,[col]:v}));setOpenCol(null);}}
