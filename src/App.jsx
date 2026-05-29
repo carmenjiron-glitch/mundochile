@@ -977,13 +977,25 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
         </div>
         {/* Cuerpo */}
         <div style={{overflowY:"auto",flex:1,padding:"24px 28px"}}>
+          {esMultidia&&dias.length>0&&<div style={{display:"grid",gridTemplateColumns:"auto 1fr 1fr 1fr",gap:"0",fontSize:"12px",borderBottom:"1px solid #E5E7EB",marginBottom:"12px"}}>
+            <div style={{background:"#F8FAFF",padding:"4px 10px",fontWeight:"600",color:"#6B7280",fontSize:"11px"}}>Día</div>
+            <div style={{background:"#F8FAFF",padding:"4px 10px",fontWeight:"600",color:"#6B7280",fontSize:"11px"}}>Fecha</div>
+            <div style={{background:"#F8FAFF",padding:"4px 10px",fontWeight:"600",color:"#6B7280",fontSize:"11px"}}>Horario</div>
+            <div style={{background:"#F8FAFF",padding:"4px 10px",fontWeight:"600",color:"#6B7280",fontSize:"11px"}}>Jornada</div>
+            {dias.map((dia,i)=>(<React.Fragment key={i}>
+              <div style={{padding:"5px 10px",borderTop:"1px solid #F3F4F6",color:"#1A6FD4",fontWeight:"600"}}>Día {i+1}</div>
+              <div style={{padding:"5px 10px",borderTop:"1px solid #F3F4F6",color:"#374151"}}>{desdeISO(dia.fecha).toLocaleDateString("es-CL",{weekday:"short",day:"numeric",month:"short"})}</div>
+              <div style={{padding:"5px 10px",borderTop:"1px solid #F3F4F6",color:"#374151"}}>{dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs</div>
+              <div style={{padding:"5px 10px",borderTop:"1px solid #F3F4F6",color:"#6B7280"}}>{dia.jornada||"—"}</div>
+            </React.Fragment>))}
+          </div>}
           {/* Evento + Fecha + Horario */}
           <div style={{fontSize:"16px",fontWeight:"500",color:"#1E293B",marginBottom:"4px"}}>
             📅 {esMultidia?`${formatMedioES(evento.fecha_inicio)} → ${formatMedioES(evento.fecha_termino)}`:formatLargo(evento.fecha_inicio)}
           </div>
-          <div style={{fontSize:"16px",fontWeight:"500",color:"#0F172A",marginBottom:"6px"}}>
+          {!esMultidia&&<div style={{fontSize:"16px",fontWeight:"500",color:"#0F172A",marginBottom:"6px"}}>
             🕐 {evento.hora_inicio?.slice(0,5)} – {evento.hora_termino?.slice(0,5)} hrs{evento.jornada&&<span style={{fontWeight:"400",color:"#6B7280",fontSize:"14px"}}> · {evento.jornada}</span>}
-          </div>
+          </div>}
           <HR/>
           {/* Badges tipo + modalidad */}
           <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center",marginBottom:"4px"}}>
