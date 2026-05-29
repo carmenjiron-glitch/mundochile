@@ -2020,7 +2020,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
         </select>
         {hayFiltros&&<button onClick={()=>{setMesFiltro("");setColFiltros({});}} style={{padding:"6px 12px",background:"#EF4444",color:"#FFFFFF",border:"none",borderRadius:"6px",cursor:"pointer",fontSize:"12px",fontFamily:"inherit"}}>✕ Limpiar filtros</button>}
       </div>
-      <div ref={tablaRef} style={{overflowX:"auto",overflowY:"visible",width:"100%",outline:"none",background:"#F1F5F9"}} tabIndex={0}>
+      <div ref={tablaRef} style={{overflowX:"auto",overflowY:"auto",width:"100%",height:"calc(100vh - 200px)",outline:"none",background:"#F1F5F9"}} tabIndex={0}>
       <table style={{borderCollapse:"collapse",tableLayout:"fixed",minWidth:"2200px",width:"100%",fontSize:"12px",background:"#F1F5F9"}}>
         <thead style={{position:"sticky",top:"0",zIndex:"40",background:"#1E3A5F"}}>
           <tr>
