@@ -1083,7 +1083,6 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           {/* Intérpretes y equipos por día (multidía) */}
           {esMultidia&&dias.map((dia,dIdx)=>{
             const asigsDia=dia.asignaciones_dia||[],eqsDia=dia.equipos_dia||[];
-            if(!asigsDia.length&&!eqsDia.length) return null;
             return (
               <div key={dia.id||dIdx} style={{border:"1px solid #E5E7EB",borderRadius:"10px",marginBottom:"10px",overflow:"hidden"}}>
                 <div style={{background:"#F8FAFC",padding:"10px 16px",fontWeight:"500",color:"#0F172A",fontSize:"15px"}}>
@@ -1132,6 +1131,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                       {eq.proveedor_nombre&&` · ${eq.proveedor_nombre}`}{eq.num_receptores>0&&` · ${eq.num_receptores} receptores`}{eq.num_cabinas>0&&` · ${eq.num_cabinas} cabinas`}
                     </div>
                   ))}
+                  {!asigsDia.length&&!eqsDia.length&&<div style={{fontSize:"13px",color:"#9CA3AF",fontStyle:"italic",padding:"4px 0"}}>Sin intérpretes ni equipos asignados</div>}
                 </div>
               </div>
             );
