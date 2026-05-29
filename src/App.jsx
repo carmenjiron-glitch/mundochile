@@ -1885,7 +1885,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
   useEffect(()=>{onAbrirRef.current=onAbrir;},[onAbrir]);
   useEffect(()=>{onVerMultidiaRef.current=onVerMultidia;},[onVerMultidia]);
   useEffect(()=>{if(!openCol)return;const h=()=>setOpenCol(null);document.addEventListener("click",h);return()=>document.removeEventListener("click",h);},[openCol]);
-  useEffect(()=>{if(vista!=="grilla")return;setTimeout(()=>{const hoy=new Date();const todayStr=`${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,"0")}-${String(hoy.getDate()).padStart(2,"0")}`;const el=document.getElementById(`grilla-evento-${todayStr}`);if(el){const offset=160;const top=el.getBoundingClientRect().top+window.scrollY-offset;window.scrollTo({top,behavior:"instant"});}},200);},[vista]);
+  useEffect(()=>{if(vista!=="grilla")return;setTimeout(()=>{const hoy=new Date();const todayStr=`${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,"0")}-${String(hoy.getDate()).padStart(2,"0")}`;let el=document.getElementById(`grilla-evento-${todayStr}`);if(!el){const filas=Array.from(document.querySelectorAll("[id^='grilla-evento-']"));el=filas.find(f=>{const fecha=f.id.replace("grilla-evento-","");return fecha>=todayStr;})||filas[0];}if(el){const offset=160;const top=el.getBoundingClientRect().top+window.scrollY-offset;window.scrollTo({top,behavior:"instant"});}},300);},[vista]);
   const allRows=useMemo(()=>[...eventos].sort((a,b)=>a.fecha_inicio.localeCompare(b.fecha_inicio)).map(ev=>{
     const cli=clientes.find(c=>c.id===ev.cliente_id);
     const contacto=contactos.find(c=>c.id===ev.contacto_id);
@@ -2099,7 +2099,7 @@ function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,
     byDay[key].push(ev);
   });
   const fechas=Object.keys(byDay);
-  useEffect(()=>{if(vista!=="agenda")return;setTimeout(()=>{const hoy=new Date();const idHoy=`agenda-dia-${hoy.getFullYear()}-${hoy.getMonth()}-${hoy.getDate()}`;const el=document.getElementById(idHoy);if(el){const offset=160;const top=el.getBoundingClientRect().top+window.scrollY-offset;window.scrollTo({top,behavior:"instant"});}},200);},[vista]);
+  useEffect(()=>{if(vista!=="agenda")return;setTimeout(()=>{const hoy=new Date();const idHoy=`agenda-dia-${hoy.getFullYear()}-${hoy.getMonth()}-${hoy.getDate()}`;let el=document.getElementById(idHoy);if(!el){const todos=Array.from(document.querySelectorAll("[id^='agenda-dia-']"));const hoyMs=new Date(hoy.getFullYear(),hoy.getMonth(),hoy.getDate()).getTime();el=todos.find(e=>{const parts=e.id.replace("agenda-dia-","").split("-");const fechaEl=new Date(Number(parts[0]),Number(parts[1]),Number(parts[2])).getTime();return fechaEl>=hoyMs;})||todos[0];}if(el){const offset=160;const top=el.getBoundingClientRect().top+window.scrollY-offset;window.scrollTo({top,behavior:"instant"});}},300);},[vista]);
   return (
     <div style={{padding:"160px 24px 80px",width:"100%",maxWidth:"100%"}}>
       {!fechas.length&&<div style={{textAlign:"center",padding:"80px 20px",color:"#fff"}}>
