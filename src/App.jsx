@@ -1223,7 +1223,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
             <div style={{fontWeight:"500",color:"#0F172A",fontSize:"14px"}}>Campos visibles</div>
             <button onClick={onCerrar} style={{background:"none",border:"none",cursor:"pointer",fontSize:"14px",color:"#9CA3AF",lineHeight:1}}>✕</button>
           </div>
-          <div style={{display:"flex",flexWrap:"wrap",gap:"5px"}}>
+          <div style={{display:"flex",flexWrap:"wrap",justifyContent:"center",alignItems:"center",gap:"8px",padding:"12px 16px"}}>
             {CAMPOS_OPC.map(({k,l})=><button key={k} onClick={()=>toggleCampo(k)}
               style={{padding:"3px 10px",borderRadius:"20px",cursor:"pointer",fontSize:"12px",fontWeight:"500",fontFamily:"inherit",background:campos[k]?"#2E7BC4":"#E2E8F0",color:campos[k]?"#fff":"#6B7280",border:"none",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",letterSpacing:"0.02em"}}>{l}</button>)}
           </div>
