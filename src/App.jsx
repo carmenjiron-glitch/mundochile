@@ -1030,6 +1030,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           {(esPresencial&&evento.lugar)||(!esPresencial&&evento.plataforma)?<HR/>:null}
           {/* Intérpretes (un día) */}
           {(()=>{
+            if(esMultidia) return null;
             const grupos={};
             asignaciones.forEach(a=>{
               const par=pares.find(p=>p.id===a.par_id);
