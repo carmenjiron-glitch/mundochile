@@ -918,6 +918,15 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
   const [asignaciones,setAsignaciones]=useState(evento?.asignaciones||[]);
   useEffect(()=>setAsignaciones(evento?.asignaciones||[]),[evento]);
   if(!evento) return null;
+  console.log("=== MODAL DETALLE DEBUG ===");
+  console.log("evento.id:", evento.id);
+  console.log("evento.evento_dias:", evento.evento_dias);
+  console.log("evento.dias:", evento.dias);
+  console.log("evento.fecha_inicio:", evento.fecha_inicio);
+  console.log("evento.fecha_fin:", evento.fecha_fin);
+  console.log("esMultidia:", evento.fecha_fin && evento.fecha_fin !== evento.fecha_inicio);
+  console.log("keys del evento:", Object.keys(evento));
+  console.log("=== FIN DEBUG ===");
   const cliente=clientes.find(c=>c.id===evento.cliente_id);
   const esZoomMC=(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom");
   const esPresencial=evento.modalidad==="presencial"||evento.modalidad==="hibrido";
