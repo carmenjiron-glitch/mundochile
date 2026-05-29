@@ -6,16 +6,18 @@ export default function FilterBar({ filters, onChange, interpreters = [], client
 
   const lbl = {
     fontSize: "11px",
-    fontWeight: "700",
+    fontWeight: "500",
     color: "#FFFFFF",
     whiteSpace: "nowrap",
     textTransform: "uppercase",
-    letterSpacing: "0.06em",
+    letterSpacing: "0.03em",
     flexShrink: 0,
     border: "1px solid #E53E3E",
     borderRadius: "12px",
     padding: "2px 9px",
     background: "transparent",
+    WebkitFontSmoothing: "antialiased",
+    MozOsxFontSmoothing: "grayscale",
   };
 
   const sel = {
