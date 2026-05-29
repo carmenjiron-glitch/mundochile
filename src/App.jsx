@@ -203,12 +203,13 @@ function CampoCopia({valor, mostrarValor=true, wrapStyle={}, btnColor=null, btnF
 
 function SelHora({value,onChange,placeholder="Hora"}) {
   const [manual,setManual]=useState(false);
-  const esManual=manual||(!!value&&!HORAS.includes(value));
+  const v5=value?.slice(0,5)||"";
+  const esManual=manual||(!!v5&&!HORAS.includes(v5));
   if(esManual) return (
-    <input style={S.inp} value={value||""} onChange={e=>onChange(e.target.value)} placeholder="08:30"/>
+    <input type="time" step="60" style={S.inp} value={v5} onChange={e=>onChange(e.target.value)} placeholder="08:30"/>
   );
   return (
-    <select style={S.sel} value={value||""} onChange={e=>{if(e.target.value==="__otro__"){setManual(true);onChange("");}else onChange(e.target.value);}}>
+    <select style={S.sel} value={v5} onChange={e=>{if(e.target.value==="__otro__"){setManual(true);onChange("");}else onChange(e.target.value);}}>
       <option value="">{placeholder}</option>
       {HORAS.map(h=><option key={h} value={h}>{h} hrs</option>)}
       <option value="__otro__">Otro horario…</option>
@@ -463,7 +464,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
             evento_dia_id:dD.id, interprete_id:a.interprete_id, par_id:a.par_id,
             nro_ot:a.nro_ot||"", nro_boleta:a.nro_boleta||"",
             es_boleta_adicional:!!a.es_boleta_adicional, es_host_zoom:!!a.es_host_zoom,
-            rol:a.rol||"Principal", hora_presentacion:a.hora_presentacion||null, estado_pago:a.estado_pago||"Pendiente",
+            rol:a.rol||"Principal", hora_presentacion:a.hora_presentacion||null,
           }));
           if(asigsDia.length>0){const{error:eA}=await sb.from("asignaciones_dia").insert(asigsDia);if(eA)throw eA;}
           if(form.modalidad!=="remoto"&&(dia.equipos||[]).length>0){
