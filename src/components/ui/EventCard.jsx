@@ -297,7 +297,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                         </span>
                       ))}
                       {soloUno && (
-                        <span style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:5, padding:"4px 5px", borderRadius:20, fontSize:13, fontWeight:500, lineHeight:1.4, color:"#9CA3AF", background:"#F9FAFB", border:"1px dashed #D1D5DB", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"default", fontStyle:"italic", WebkitFontSmoothing:"antialiased" }}>
+                        <span style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:5, padding:"4px 5px", borderRadius:20, fontSize:13, fontWeight:500, lineHeight:1.4, color:"#858B95", background:"#D4D5D5", border:"1px dashed #B2B5BA", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"default", fontStyle:"italic", WebkitFontSmoothing:"antialiased" }}>
                           SIN PARTNER
                         </span>
                       )}
