@@ -43,6 +43,7 @@ export default function FilterBar({ filters, onChange, interpreters = [], client
           <option value="" style={{ color:"#000" }}>Todos</option>
           <option value="Facturación Pendiente" style={{ color:"#000" }}>Pendiente</option>
           <option value="Facturado" style={{ color:"#000" }}>Facturado</option>
+          <option value="no_incluir" style={{ color:"#000" }}>Sin estado</option>
         </select>
       </div>
 

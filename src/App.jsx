@@ -1323,6 +1323,104 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
   );
 }
 
+// ─── MODAL FICHAS MÚLTIPLES ──────────────────────────────────────────────────
+function ModalFichasMultiples({eventosLista,clientes,interpretes,pares,onCerrar}) {
+  const [idx,setIdx]=useState(0);
+  const evento=eventosLista[idx]||eventosLista[0];
+  const cliente=clientes.find(c=>c.id===evento.cliente_id);
+  const esMultidia=evento.fecha_inicio!==evento.fecha_termino;
+  const esPresencial=evento.modalidad==="presencial"||evento.modalidad==="hibrido";
+  const dias=((evento.evento_dias||evento.dias||[]).sort((a,b)=>(a.orden||0)-(b.orden||0)));
+  const sH={background:"#1A6FD4",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",letterSpacing:"0.06em",padding:"4px 16px",textTransform:"uppercase"};
+  const sB={padding:"10px 16px",borderBottom:"1px solid #E5E7EB",background:"#FFFFFF"};
+  const pillClrFor=(idioma)=>IDIOMA_PILL_CLR[idioma]||"#4C6EF5";
+  const pillSt=(idioma)=>({background:"#FFFFFF",border:`2px solid ${pillClrFor(idioma)}`,color:"#1A1A1A",borderRadius:"20px",padding:"6px 12px",textAlign:"center",width:"100%",fontSize:"12px",fontWeight:"600",display:"flex",alignItems:"center",justifyContent:"center",gap:"6px",boxSizing:"border-box"});
+  const renderI=(asigs)=>{
+    if(!asigs||asigs.length===0) return null;
+    const gmap={};
+    asigs.forEach(a=>{
+      const par=pares.find(p=>p.id===a.par_id);
+      const interp=interpretes.find(x=>x.id===a.interprete_id);
+      if(!interp) return;
+      const key=a.par_id||"sp";
+      if(!gmap[key]) gmap[key]={idioma:par?.idioma_origen||"",desc:par?.descripcion||"Sin par",items:[]};
+      gmap[key].items.push({interp,asig:a});
+    });
+    const entries=Object.values(gmap);
+    if(!entries.length) return null;
+    const pares2=entries.filter(g=>g.items.length>=2);
+    const solos=entries.filter(g=>g.items.length===1);
+    return(<div>
+      {pares2.map((g,i)=>{
+        const clr=pillClrFor(g.idioma);
+        const hp=g.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
+        return(<div key={i} style={{marginBottom:i<pares2.length-1||solos.length>0?"12px":0}}>
+          <div style={{textAlign:"center",fontSize:"11px",fontWeight:"600",color:clr,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em"}}>{g.desc}</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px"}}>
+            {g.items.map(({interp,asig},j)=>(<div key={j} style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"10px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>))}
+          </div>
+          {hp&&<div style={{textAlign:"right",fontSize:"11px",color:"#505860",marginTop:"4px"}}>🕐 {hp.slice(0,5)} hrs</div>}
+        </div>);
+      })}
+      {solos.length>0&&(<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px"}}>
+        {solos.map((g,i)=>{
+          const clr=pillClrFor(g.idioma);
+          const {interp,asig}=g.items[0];
+          return(<div key={i}>
+            <div style={{textAlign:"center",fontSize:"10px",fontWeight:"600",color:clr,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em"}}>{g.desc}</div>
+            <div style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"10px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>
+            {asig.hora_presentacion&&<div style={{textAlign:"right",fontSize:"11px",color:"#505860",marginTop:"4px"}}>🕐 {asig.hora_presentacion.slice(0,5)} hrs</div>}
+          </div>);
+        })}
+      </div>)}
+    </div>);
+  };
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.75)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(6px)",padding:"16px",overflowY:"auto"}}>
+      <div style={{background:"#F8FAFF",borderRadius:"20px",width:"100%",maxWidth:"820px",maxHeight:"92vh",boxShadow:"0 8px 32px rgba(45,140,255,0.15)",display:"flex",flexDirection:"column"}}>
+        <div style={{padding:"12px 20px",background:"#1A6FD4",borderRadius:"20px 20px 0 0",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <div style={{color:"#FFFFFF",fontWeight:"600",fontSize:"15px"}}>📋 Fichas generadas — {eventosLista.length} evento{eventosLista.length!==1?"s":""}</div>
+          <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
+            <button onClick={()=>setIdx(i=>Math.max(0,i-1))} disabled={idx===0} style={{padding:"4px 12px",background:"rgba(255,255,255,0.2)",color:"#FFFFFF",border:"1px solid rgba(255,255,255,0.4)",borderRadius:"8px",cursor:idx===0?"default":"pointer",fontSize:"13px",fontFamily:"inherit",opacity:idx===0?0.5:1}}>← Ant</button>
+            <span style={{color:"#FFFFFF",fontSize:"13px",fontWeight:"500",minWidth:"60px",textAlign:"center"}}>{idx+1} / {eventosLista.length}</span>
+            <button onClick={()=>setIdx(i=>Math.min(eventosLista.length-1,i+1))} disabled={idx===eventosLista.length-1} style={{padding:"4px 12px",background:"rgba(255,255,255,0.2)",color:"#FFFFFF",border:"1px solid rgba(255,255,255,0.4)",borderRadius:"8px",cursor:idx===eventosLista.length-1?"default":"pointer",fontSize:"13px",fontFamily:"inherit",opacity:idx===eventosLista.length-1?0.5:1}}>Sig →</button>
+            <button onClick={onCerrar} style={{padding:"4px 12px",background:"rgba(255,255,255,0.15)",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"13px",fontFamily:"inherit",marginLeft:"8px"}}>✕ Cerrar</button>
+          </div>
+        </div>
+        <div style={{flex:1,overflowY:"auto",background:"#F0F4FA",padding:"12px"}}>
+          <div style={{width:"800px",maxWidth:"100%",margin:"0 auto",background:"#FFFFFF",border:"2px solid #1A6FD4",borderRadius:"12px",overflow:"hidden",fontFamily:"'Inter','Segoe UI',system-ui,sans-serif"}}>
+            <div style={{background:"linear-gradient(135deg, #1A6FD4 0%, #0D4EA6 100%)",padding:"12px 20px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+              <div style={{display:"flex",alignItems:"center",gap:"12px"}}>
+                <div style={{width:"38px",height:"38px",borderRadius:"50%",background:"#FFFFFF",overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 0 0 3px rgba(255,255,255,0.3)"}}>
+                  <img src={LOGO_SRC} alt="MundoChile" style={{width:"34px",height:"34px",objectFit:"contain"}}/>
+                </div>
+                <div>
+                  <div style={{fontSize:"20px",fontWeight:"700",color:"#fff",letterSpacing:"0.02em",lineHeight:1}}>MundoChile</div>
+                  <div style={{fontSize:"11px",color:"rgba(255,255,255,0.85)",marginTop:"2px",letterSpacing:"0.15em"}}>TRANSLATIONS & INTERPRETERS</div>
+                </div>
+              </div>
+              <div style={{textAlign:"right"}}>
+                <div style={{fontSize:"10px",color:"rgba(255,255,255,0.75)",textTransform:"uppercase",letterSpacing:"0.08em"}}>Generado el</div>
+                <div style={{fontSize:"10px",fontWeight:"400",color:"#fff"}}>{new Date().toLocaleDateString("es-CL",{day:"numeric",month:"long",year:"numeric"})}</div>
+              </div>
+            </div>
+            {cliente&&<><div style={sH}>Cliente</div><div style={sB}><div style={{fontSize:"18px",fontWeight:"700",color:"#000000",lineHeight:1.2}}>{cliente.nombre_empresa}</div>{cliente.nombre_contacto&&<div style={{fontSize:"14px",color:"#484f56",fontStyle:"italic",marginTop:"3px"}}>{cliente.nombre_contacto}</div>}</div></>}
+            {evento.nombre_evento&&<><div style={sH}>Evento</div><div style={sB}><div style={{fontSize:"14px",fontWeight:"500",color:"#151c28"}}>{evento.nombre_evento}</div>{evento.nro_oc&&<div style={{fontSize:"13px",color:"#484f56",marginTop:"3px"}}>N° OC: {evento.nro_oc}</div>}</div></>}
+            {(evento.fecha_inicio||evento.hora_inicio)&&<><div style={sH}>Fecha / Horario</div><div style={sB}><div style={{display:"flex",gap:"16px",flexWrap:"wrap",alignItems:"center"}}>{evento.fecha_inicio&&<div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>{esMultidia?`${formatCorto(evento.fecha_inicio)} → ${formatCorto(evento.fecha_termino)}`:formatLargo(evento.fecha_inicio)}</div>}{evento.hora_inicio&&<div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>🕐 {evento.hora_inicio.slice(0,5)} – {evento.hora_termino?.slice(0,5)} hrs</div>}</div></div></>}
+            {evento.jornada&&<><div style={sH}>Jornada</div><div style={sB}><div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>⏱ {evento.jornada}{evento.jornada_personalizada?` — ${evento.jornada_personalizada}`:""}</div></div></>}
+            {(evento.tipo||evento.modalidad)&&<><div style={sH}>Tipo / Modalidad</div><div style={sB}><div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center"}}>{evento.tipo&&<span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",color:(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c,background:(B_TIPO[evento.tipo]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>{evento.tipo==="Simultánea"?<IconoSimultanea/>:evento.tipo==="Consecutiva"?"🎤":"🤫"} {evento.tipo}</span>}{evento.modalidad&&<span style={{display:"inline-flex",alignItems:"center",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",color:(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c,background:(B_MOD[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?"📍":evento.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evento.modalidad]}</span>}</div></div></>}
+            {esPresencial&&evento.lugar&&<><div style={sH}>Lugar</div><div style={sB}><div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>📍 {evento.lugar}</div>{evento.lugar_detalle&&<div style={{fontSize:"13px",color:"#303a47",marginTop:"3px"}}>{evento.lugar_detalle}</div>}</div></>}
+            {!esPresencial&&evento.plataforma&&<><div style={sH}>Plataforma</div><div style={sB}><PlatformChip platform={evento.plataforma==="Zoom"?"Zoom MundoChile":evento.plataforma} isMundoChile={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")} extra={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")?evento.zoom_administrador:""}/></div></>}
+            {(()=>{const asigsSingle=esMultidia?[]:(evento.asignaciones||[]);const el=renderI(asigsSingle);return el?<><div style={sH}>Intérpretes</div><div style={sB}>{el}</div></>:null;})()}
+            {esMultidia&&dias.length>0&&<><div style={sH}>Intérpretes por día</div><div style={{background:"#FFFFFF",borderBottom:"1px solid #E5E7EB"}}>{dias.map((dia,dIdx)=>(<div key={dIdx} style={{borderBottom:dIdx<dias.length-1?"1px solid #E5E7EB":"none"}}><div style={{background:"#EBF4FF",padding:"4px 16px",fontSize:"11px",fontWeight:"600",color:"#1A6FD4",textTransform:"uppercase",letterSpacing:"0.04em"}}>Día {dIdx+1}/{dias.length} · {formatCorto(dia.fecha)} · {dia.hora_inicio?.slice(0,5)}–{dia.hora_termino?.slice(0,5)}</div><div style={{padding:"10px 16px"}}>{renderI(dia.asignaciones_dia||dia.asignaciones||[])}</div></div>))}</div></>}
+            {evento.comentarios&&<><div style={sH}>Comentarios</div><div style={{...sB,borderBottom:"none"}}><div style={{fontSize:"13px",color:"#0a0f1d",lineHeight:1.5}}>{evento.comentarios}</div></div></>}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── MODAL NUEVO CLIENTE RÁPIDO ───────────────────────────────────────────────
 function ModalNuevoCliente({onGuardar,onCerrar}) {
   const [f,setF]=useState({nombre_empresa:"",nombre_contacto:"",email_contacto:"",telefono:"",celular:"",notas:""});
@@ -2045,6 +2143,7 @@ export default function App() {
   const [modalEvento,setModalEvento]=useState(null);
   const [modalDetalle,setModalDetalle]=useState(null);
   const [modalFicha,setModalFicha]=useState(null);
+  const [modalFichasMultiples,setModalFichasMultiples]=useState(null);
   const [modalNuevoCli,setModalNuevoCli]=useState(false);
   const [modalNuevoInt,setModalNuevoInt]=useState(null);
   const [modalNuevoContacto,setModalNuevoContacto]=useState(null);
@@ -2127,7 +2226,8 @@ export default function App() {
         return(cli?.nombre_empresa||"").toLowerCase().includes(b)||(ev.nombre_evento||"").toLowerCase().includes(b)||(ev.nro_oc||"").toLowerCase().includes(b)||iNombres.toLowerCase().includes(b)||ots.toLowerCase().includes(b)||bols.toLowerCase().includes(b);
       });
     }
-    if(filtros.estado) evs=evs.filter(e=>e.estado===filtros.estado);
+    if(filtros.estado==="no_incluir") evs=evs.filter(e=>!e.estado);
+    else if(filtros.estado) evs=evs.filter(e=>e.estado===filtros.estado);
     if(filtros.modalidad) evs=evs.filter(e=>e.modalidad===filtros.modalidad);
     if(filtros.tipo) evs=evs.filter(e=>e.tipo===filtros.tipo);
     if(filtros.interprete_id) evs=evs.filter(e=>(e.asignaciones||[]).some(a=>String(a.interprete_id)===String(filtros.interprete_id)));
@@ -2152,6 +2252,24 @@ export default function App() {
     XLSX.utils.book_append_sheet(wb,ws,"Eventos");
     XLSX.writeFile(wb,`MundoChile_${new Date().toISOString().slice(0,10)}.xlsx`);
     addToast("Excel exportado correctamente","success");
+  };
+
+  const exportarExcelFiltrado=()=>{
+    const rows=eventosFiltrados.map(ev=>{
+      const cli=clientes.find(c=>c.id===ev.cliente_id);
+      const asigs=(ev.asignaciones||[]).map(a=>{const i=interpretes.find(x=>x.id===a.interprete_id);const p=pares.find(x=>x.id===a.par_id);return i?`${i.nombre}${i.apellido?" "+i.apellido:""}${p?" ("+p.descripcion+")":""}`:""}).filter(Boolean).join("; ");
+      return{"Cliente":cli?.nombre_empresa||"","Evento":ev.nombre_evento||"","Tipo":ev.tipo||"","Modalidad":LBL_MODAL[ev.modalidad]||ev.modalidad,"Estado":ev.estado||"","Fecha inicio":ev.fecha_inicio,"Fecha término":ev.fecha_termino,"Hora inicio":ev.hora_inicio?.slice(0,5),"Hora término":ev.hora_termino?.slice(0,5),"Jornada":ev.jornada,"N° OC":ev.nro_oc||"","Lugar":ev.lugar||"","Plataforma":ev.plataforma||"","Intérpretes":asigs};
+    });
+    const ws=XLSX.utils.json_to_sheet(rows);
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,"Eventos");
+    XLSX.writeFile(wb,`MundoChile_${new Date().toISOString().slice(0,10)}_filtrado.xlsx`);
+    addToast("Excel filtrado exportado","success");
+  };
+
+  const generarFichaMultiple=()=>{
+    if(!eventosFiltrados.length){addToast("No hay eventos filtrados","error");return;}
+    setModalFichasMultiples(eventosFiltrados);
   };
 
   const navAnterior=()=>{if(vista==="semana")setSemanaOff(o=>o-1);else if(vista==="mes")setMesOff(o=>o-1);else if(vista==="dia"){const d=desdeISO(diaActual);d.setDate(d.getDate()-1);setDiaActual(toISO(d));}};
@@ -2560,8 +2678,14 @@ export default function App() {
 
       {/* ── CONTENIDO ── */}
       {pantalla==="calendario"&&<>
-        {vista!=="grilla"&&<div style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",padding:"6px 24px",width:"100%"}}>
-          <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes} clientes={clientesConEventos} pares={paresConEventos} proveedores={proveedoresConEventos}/>
+        {vista!=="grilla"&&<div style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",padding:"6px 24px",width:"100%",display:"flex",alignItems:"center",gap:"8px"}}>
+          <div style={{flex:1,minWidth:0}}>
+            <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes} clientes={clientesConEventos} pares={paresConEventos} proveedores={proveedoresConEventos}/>
+          </div>
+          {hayFiltros&&<div style={{display:"flex",gap:"8px",flexShrink:0}}>
+            <button onClick={generarFichaMultiple} style={{display:"flex",alignItems:"center",gap:"4px",padding:"4px 12px",borderRadius:"12px",background:"#1A6FD4",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📋 Fichas</button>
+            <button onClick={exportarExcelFiltrado} style={{display:"flex",alignItems:"center",gap:"4px",padding:"4px 12px",borderRadius:"12px",background:"#059669",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📊 Excel</button>
+          </div>}
         </div>}
         {vista==="semana"&&renderSemana()}
         {vista==="dia"&&renderDia()}
@@ -2575,6 +2699,7 @@ export default function App() {
       {modalEvento&&<ModalEvento eventoInicial={modalEvento.data} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} contactos={contactos} todos_eventos={eventos} perfil={perfil} onGuardar={()=>{setModalEvento(null);cargarDatos();addToast("Evento guardado correctamente","success");}} onCerrar={()=>setModalEvento(null)} onNuevoCliente={(cb)=>setModalNuevoCli({cb})} onNuevoContacto={setModalNuevoContacto} onNuevoInterprete={(ai,di)=>setModalNuevoInt({ai,di})} onLugarCreado={cargarDatos}/>}
       {modalDetalle&&<ModalDetalle evento={modalDetalle} clientes={clientes} interpretes={interpretes} pares={pares} perfil={perfil} onEditar={()=>editarEvento(modalDetalle)} onEliminar={()=>eliminarEvento(modalDetalle.id)} onCerrar={()=>setModalDetalle(null)} onVerFicha={()=>{setModalFicha(modalDetalle);setModalDetalle(null);}} addToast={addToast}/>}
       {modalFicha&&<ModalFicha evento={modalFicha} clientes={clientes} interpretes={interpretes} pares={pares} onCerrar={()=>setModalFicha(null)}/>}
+      {modalFichasMultiples&&<ModalFichasMultiples eventosLista={modalFichasMultiples} clientes={clientes} interpretes={interpretes} pares={pares} onCerrar={()=>setModalFichasMultiples(null)}/>}
       {modalNuevoCli&&<ModalNuevoCliente onGuardar={async(d)=>{const{data}=await sb.from("clientes").insert(d).select().single();if(data)setClientes(prev=>[...prev,data]);const cb=modalNuevoCli?.cb;setModalNuevoCli(false);if(data){cb?.(data.id);addToast("Cliente creado","success");}cargarDatos();}} onCerrar={()=>setModalNuevoCli(false)}/>}
       {modalNuevoInt&&<ModalNuevoInterprete onGuardar={async(d)=>{await sb.from("interpretes").insert(d);await cargarDatos();setModalNuevoInt(null);addToast("Intérprete creado","success");}} onCerrar={()=>setModalNuevoInt(null)}/>}
       {modalNuevoContacto&&<ModalNuevoContacto clienteId={modalNuevoContacto.cliente_id} onGuardar={async(d)=>{await sb.from("contactos").insert({...d,cliente_id:Number(modalNuevoContacto.cliente_id)});await cargarDatos();setModalNuevoContacto(null);addToast("Contacto creado","success");}} onCerrar={()=>setModalNuevoContacto(null)}/>}
