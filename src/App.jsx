@@ -605,15 +605,6 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
               <label style={S.lbl}>Nombre del evento</label>
               <input style={S.inp} value={form.nombre_evento} onChange={e=>setF("nombre_evento",e.target.value)} placeholder="Conferencia anual…"/>
             </div>
-            {/* Referencias del cliente */}
-            <div style={{marginBottom:"20px"}}>
-              <label style={{...S.lbl,marginBottom:"8px"}}>Referencias del cliente</label>
-              <div style={S.fila}>
-                <div style={S.camp}><label style={{...S.lbl,fontSize:"14px"}}>N° OC</label><input style={S.inp} value={form.nro_oc} onChange={e=>setF("nro_oc",e.target.value)} placeholder="OC-0000"/></div>
-                <div style={S.camp}><label style={{...S.lbl,fontSize:"14px"}} title="Hoja de Entrada de Servicios">N° HES <span style={{fontSize:"16px",color:C.textoSuave,fontWeight:"400",textTransform:"none"}}>(Hoja Entrada Servicios)</span></label><input style={S.inp} value={form.nro_hes||""} onChange={e=>setF("nro_hes",e.target.value)} placeholder="HES-000"/></div>
-                <div style={S.camp}><label style={{...S.lbl,fontSize:"14px"}}>Otros</label><input style={S.inp} value={form.nro_otros||""} onChange={e=>setF("nro_otros",e.target.value)} placeholder="Ref. adicional…"/></div>
-              </div>
-            </div>
             {/* Tipo + Modalidad */}
             <div style={{...S.fila,marginBottom:"20px"}}>
               <div style={S.camp}><label style={{...S.lbl,display:"flex",alignItems:"center",gap:"5px"}}><IconMic size={16}/> Tipo de interpretación</label>
@@ -691,11 +682,21 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
               </div>
               <div style={{marginBottom:"20px"}}><label style={S.lbl}>Detalles del lugar</label><input style={S.inp} value={form.lugar_detalle} onChange={e=>setF("lugar_detalle",e.target.value)} placeholder="Sala Andes, piso 3…"/></div>
             </>}
-            {/* Estado + Comentarios */}
+            {/* Estado */}
             <div style={{...S.fila,marginBottom:"20px"}}>
               <div style={S.camp}><label style={S.lbl}>Estado de facturación</label>
                 <select style={S.sel} value={form.estado} onChange={e=>setF("estado",e.target.value)}>{ESTADOS.map(e=><option key={e}>{e}</option>)}</select></div>
             </div>
+            {/* Referencias del cliente */}
+            <div style={{marginBottom:"20px"}}>
+              <label style={{...S.lbl,marginBottom:"8px"}}>Referencias del cliente</label>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"12px",alignItems:"start"}}>
+                <div><label style={{...S.lbl,fontSize:"11px",fontWeight:"600",textTransform:"uppercase",marginBottom:"4px",whiteSpace:"nowrap"}}>N° OC</label><input style={{...S.inp,fontSize:"13px",padding:"6px 10px",width:"100%",boxSizing:"border-box"}} value={form.nro_oc} onChange={e=>setF("nro_oc",e.target.value)} placeholder="OC-0000"/></div>
+                <div><label style={{...S.lbl,fontSize:"11px",fontWeight:"600",textTransform:"uppercase",marginBottom:"4px",whiteSpace:"nowrap"}} title="Hoja Entrada Servicios">N° HES</label><input style={{...S.inp,fontSize:"13px",padding:"6px 10px",width:"100%",boxSizing:"border-box"}} value={form.nro_hes||""} onChange={e=>setF("nro_hes",e.target.value)} placeholder="HES-000"/></div>
+                <div><label style={{...S.lbl,fontSize:"11px",fontWeight:"600",textTransform:"uppercase",marginBottom:"4px",whiteSpace:"nowrap"}}>Otros</label><input style={{...S.inp,fontSize:"13px",padding:"6px 10px",width:"100%",boxSizing:"border-box"}} value={form.nro_otros||""} onChange={e=>setF("nro_otros",e.target.value)} placeholder="Ref. adicional…"/></div>
+              </div>
+            </div>
+            {/* Comentarios */}
             <div style={{marginBottom:"4px"}}><label style={S.lbl}>💬 Comentarios</label><textarea style={{...S.inp,minHeight:"80px",resize:"vertical"}} value={form.comentarios} onChange={e=>setF("comentarios",e.target.value)}/></div>
           </>}
 
