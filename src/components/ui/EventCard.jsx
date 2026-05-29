@@ -275,7 +275,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                 return (
                   <div key={key} style={{ marginTop:10 }}>
                     <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:5 }}>
-                      <div style={{ fontSize:14, fontWeight:600, color:darken(pillClr,0.80), textTransform:"uppercase", letterSpacing:"0.07em", opacity:0.85, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", WebkitFontSmoothing:"antialiased", textAlign:"center", width:"100%" }}>
+                      <div style={{ fontSize:14, fontWeight:600, color:/inglés.*español/i.test(key)?"#2D8CFF":darken(pillClr,0.80), textTransform:"uppercase", letterSpacing:"0.07em", opacity:0.85, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", WebkitFontSmoothing:"antialiased", textAlign:"center", width:"100%", display:"block" }}>
                         {key}
                       </div>
                       {hp && (
@@ -375,7 +375,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             const flagSz  = solidPill ? 19 : 20;
             return (
               <div key={key} style={{ marginTop:10 }}>
-                <div style={{ fontSize:solidPill?12:14, fontWeight:600, color:darken(pillClr,0.80), textTransform:"uppercase", letterSpacing:"0.07em", marginBottom:5, opacity:0.85, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
+                <div style={{ fontSize:solidPill?12:14, fontWeight:600, color:/inglés.*español/i.test(key)?"#2D8CFF":darken(pillClr,0.80), textTransform:"uppercase", letterSpacing:"0.07em", marginBottom:5, opacity:0.85, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", textAlign:"center", width:"100%", display:"block" }}>
                   {key}
                 </div>
                 <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6, ...(pillsHalf?{maxWidth:"50%"}:{}) }}>

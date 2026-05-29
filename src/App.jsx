@@ -326,7 +326,7 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
           return(
             <div key={key} style={{marginTop:"8px"}}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"6px"}}>
-                <span style={{fontSize:"12px",fontWeight:"600",color:titleColor,textTransform:"uppercase",letterSpacing:"0.06em",filter:"brightness(0.65)"}}>{key}</span>
+                <span style={{fontSize:"12px",fontWeight:"600",color:/inglés.*español/i.test(key)?"#2D8CFF":titleColor,textTransform:"uppercase",letterSpacing:"0.06em",filter:"brightness(0.65)",textAlign:"center",width:"100%",display:"block"}}>{key}</span>
                 {hp&&<span style={{fontSize:"12px",color:"#6B7280",display:"flex",alignItems:"center",gap:"4px"}}>🕐 {hp.slice(0,5)} hrs</span>}
               </div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
@@ -1075,7 +1075,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                 const hp=grupo.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
                 return(<div key={key} style={{marginBottom:"12px"}}>
                   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"6px"}}>
-                    <span style={{fontSize:"12px",fontWeight:"600",color:titleColor,textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
+                    <span style={{fontSize:"12px",fontWeight:"600",color:/inglés.*español/i.test(key)?"#2D8CFF":titleColor,textTransform:"uppercase",letterSpacing:"0.06em",textAlign:"center",width:"100%",display:"block"}}>{key}</span>
                     {hp&&<span style={{fontSize:"14px",color:"#6B7280",display:"flex",alignItems:"center",gap:"4px"}}>🕐 {hp.slice(0,5)} hrs</span>}
                   </div>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
@@ -1128,7 +1128,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                       const hp=grupo.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
                       return(<div key={key} style={{marginBottom:"12px"}}>
                         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"6px"}}>
-                          <span style={{fontSize:"12px",fontWeight:"600",color:titleColor,textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
+                          <span style={{fontSize:"12px",fontWeight:"600",color:/inglés.*español/i.test(key)?"#2D8CFF":titleColor,textTransform:"uppercase",letterSpacing:"0.06em",textAlign:"center",width:"100%",display:"block"}}>{key}</span>
                           {hp&&<span style={{fontSize:"14px",color:"#6B7280",display:"flex",alignItems:"center",gap:"4px"}}>🕐 {hp.slice(0,5)} hrs</span>}
                         </div>
                         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"4px"}}>
@@ -1235,7 +1235,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
       const hp=grupo.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
       return(<div key={key} style={{marginBottom:"8px"}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"4px"}}>
-          <span style={{fontSize:"10px",fontWeight:"600",color:pillClr,textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
+          <span style={{fontSize:"10px",fontWeight:"600",color:/inglés.*español/i.test(key)?"#2D8CFF":pillClr,textTransform:"uppercase",letterSpacing:"0.06em",textAlign:"center",width:"100%",display:"block"}}>{key}</span>
           {hp&&<span style={{fontSize:"11px",color:"#505860"}}>🕐 {hp.slice(0,5)} hrs</span>}
         </div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"4px"}}>
@@ -1322,7 +1322,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
                     const clr=pillClrFor(g.idioma);
                     const hp=g.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
                     return(<div key={i} style={{marginBottom:i<pares2.length-1||solos.length>0?"12px":0}}>
-                      <div style={{textAlign:"center",fontSize:"14px",fontWeight:"600",color:clr,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em"}}>{g.desc}</div>
+                      <div style={{textAlign:"center",fontSize:"14px",fontWeight:"600",color:/inglés.*español/i.test(g.desc)?"#2D8CFF":clr,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em",width:"100%",display:"block"}}>{g.desc}</div>
                       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px"}}>
                         {g.items.map(({interp,asig},j)=>(<div key={j} style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"10px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>))}
                       </div>
@@ -1334,7 +1334,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
                       const clr=pillClrFor(g.idioma);
                       const {interp,asig}=g.items[0];
                       return(<div key={i}>
-                        <div style={{textAlign:"center",fontSize:"13px",fontWeight:"600",color:clr,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em"}}>{g.desc}</div>
+                        <div style={{textAlign:"center",fontSize:"13px",fontWeight:"600",color:/inglés.*español/i.test(g.desc)?"#2D8CFF":clr,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em",width:"100%",display:"block"}}>{g.desc}</div>
                         <div style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"10px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>
                         {asig.hora_presentacion&&<div style={{textAlign:"right",fontSize:"11px",color:"#505860",marginTop:"4px"}}>🕐 {asig.hora_presentacion.slice(0,5)} hrs</div>}
                       </div>);
@@ -1403,7 +1403,7 @@ function ModalFichasMultiples({eventosLista,clientes,interpretes,pares,onCerrar}
         const clr=pillClrFor(g.idioma);
         const hp=g.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
         return(<div key={i} style={{marginBottom:i<pares2.length-1||solos.length>0?"12px":0}}>
-          <div style={{textAlign:"center",fontSize:"14px",fontWeight:"600",color:clr,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em"}}>{g.desc}</div>
+          <div style={{textAlign:"center",fontSize:"14px",fontWeight:"600",color:/inglés.*español/i.test(g.desc)?"#2D8CFF":clr,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em",width:"100%",display:"block"}}>{g.desc}</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px"}}>
             {g.items.map(({interp,asig},j)=>(<div key={j} style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"10px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>))}
           </div>
@@ -1415,7 +1415,7 @@ function ModalFichasMultiples({eventosLista,clientes,interpretes,pares,onCerrar}
           const clr=pillClrFor(g.idioma);
           const {interp,asig}=g.items[0];
           return(<div key={i}>
-            <div style={{textAlign:"center",fontSize:"13px",fontWeight:"600",color:clr,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em"}}>{g.desc}</div>
+            <div style={{textAlign:"center",fontSize:"13px",fontWeight:"600",color:/inglés.*español/i.test(g.desc)?"#2D8CFF":clr,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em",width:"100%",display:"block"}}>{g.desc}</div>
             <div style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"10px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>
             {asig.hora_presentacion&&<div style={{textAlign:"right",fontSize:"11px",color:"#505860",marginTop:"4px"}}>🕐 {asig.hora_presentacion.slice(0,5)} hrs</div>}
           </div>);
