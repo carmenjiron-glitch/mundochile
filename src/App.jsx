@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { createClient } from "@supabase/supabase-js";
 import * as XLSX from "xlsx";
+import html2canvas from "html2canvas";
 import EventCard from "./components/ui/EventCard.jsx";
 import MultiDayPill from "./components/ui/MultiDayPill.jsx";
 import PlatformChip from "./components/ui/PlatformChip.jsx";
@@ -1173,6 +1174,12 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
   const DEFAULTS={cliente:true,evento:true,tipo:true,modalidad:true,fecha:true,horario:true,jornada:true,lugar:true,plataforma:true,facturacion:true,interpretes:true,equipos:false,comentarios:false};
   const [campos,setCampos]=useState(()=>({...DEFAULTS,...JSON.parse(localStorage.getItem("mc_ficha_campos")||"{}")}));
   const toggleCampo=(k)=>{const n={...campos,[k]:!campos[k]};setCampos(n);localStorage.setItem("mc_ficha_campos",JSON.stringify(n));};
+  const [imgJPG,setImgJPG]=useState(null);
+  const [verJPG,setVerJPG]=useState(false);
+  const abrirVistaJPG=()=>{
+    html2canvas(document.getElementById("ficha-exportable"),{scale:2})
+      .then(canvas=>{setImgJPG(canvas.toDataURL("image/jpeg",0.95));setVerJPG(true);});
+  };
 
   const Sec=({label,children})=>(
     <div style={{overflow:"hidden",borderBottom:"1px solid #E5E7EB"}}>
@@ -1215,6 +1222,11 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
   };
 
   return (
+    <>
+    {verJPG&&<div style={{position:"fixed",top:0,left:0,width:"100vw",height:"100vh",background:"rgba(0,0,0,0.85)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <button onClick={()=>setVerJPG(false)} style={{position:"absolute",top:"16px",right:"16px",background:"rgba(255,255,255,0.2)",color:"#FFFFFF",border:"none",borderRadius:"50%",width:"36px",height:"36px",fontSize:"18px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"inherit"}}>✕</button>
+      <img src={imgJPG} style={{maxWidth:"90vw",maxHeight:"90vh",borderRadius:"8px"}} alt="Ficha"/>
+    </div>}
     <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.75)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(6px)",padding:"16px",overflowY:"auto"}}>
       <div style={{background:"#F8FAFF",borderRadius:"20px",width:"100%",maxWidth:"820px",maxHeight:"92vh",boxShadow:"0 8px 32px rgba(45,140,255,0.15)",display:"flex",flexDirection:"column"}}>
 
@@ -1226,7 +1238,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
           </div>
           <div style={{display:"flex",flexWrap:"wrap",justifyContent:"center",alignItems:"center",gap:"8px",padding:"12px 16px"}}>
             {CAMPOS_OPC.map(({k,l})=><button key={k} onClick={()=>toggleCampo(k)}
-              style={{padding:"3px 10px",borderRadius:"20px",cursor:"pointer",fontSize:"12px",fontWeight:"500",fontFamily:"inherit",background:campos[k]?"#2E7BC4":"#E2E8F0",color:campos[k]?"#fff":"#6B7280",border:"none",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",letterSpacing:"0.02em"}}>{l}</button>)}
+              style={{padding:"3px 11px",borderRadius:"20px",cursor:"pointer",fontSize:"13px",fontWeight:"500",fontFamily:"inherit",background:campos[k]?"#2E7BC4":"#E2E8F0",color:campos[k]?"#fff":"#6B7280",border:"none",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",letterSpacing:"0.02em"}}>{l}</button>)}
           </div>
         </div>
 
@@ -1317,10 +1329,12 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
 
         {/* Footer — fuera del área exportable */}
         <div style={{padding:"10px 20px",borderTop:"1px solid #E2E8F0",display:"flex",gap:"8px",justifyContent:"center",flexWrap:"wrap",alignItems:"center",background:"#fff",borderRadius:"0 0 20px 20px",flexShrink:0}}>
+          <button onClick={abrirVistaJPG} style={{padding:"8px 16px",borderRadius:"8px",background:"#1A6FD4",color:"#FFFFFF",fontSize:"13px",fontWeight:"500",border:"none",cursor:"pointer",fontFamily:"inherit"}}>🖼️ Ver JPG</button>
           <button onClick={onCerrar} style={{padding:"10px 24px",background:"#2E7BC4",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"13px",fontFamily:"inherit"}}>× Cerrar</button>
         </div>
       </div>
     </div>
+    </>
   );
 }
 
