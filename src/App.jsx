@@ -967,6 +967,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             </div>
             <div style={{display:"flex",flexDirection:"column",gap:"6px",alignItems:"flex-end",flexShrink:0}}>
               <div style={{display:"flex",gap:"6px",flexWrap:"wrap"}}>
+                <button onClick={onCerrar} style={{display:"flex",alignItems:"center",gap:"6px",padding:"8px 14px",borderRadius:"8px",background:"transparent",color:"#6B7280",border:"1px solid #D1D5DB",cursor:"pointer",fontSize:"13px",fontWeight:"500",fontFamily:"inherit",height:"36px"}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>Volver</button>
                 <button onClick={onVerFicha} style={btnA("#1971C2")}>📄 Ficha</button>
                 <button onClick={onEditar} style={btnA("#E67700")}><span style={{filter:"brightness(10)"}}>✏️</span> Editar</button>
                 <button onClick={onEliminar} style={btnA("#E03131")}>🗑 Eliminar</button>
@@ -2176,6 +2177,7 @@ export default function App() {
   const [diaActual,setDiaActual]=useState(hoy());
   const [modoMultidia,setModoMultidia]=useState(false);
   const [eventoMultidiaId,setEventoMultidiaId]=useState(null);
+  const [vistaAnterior,setVistaAnterior]=useState("semana");
   const [pantalla,setPantalla]=useState("calendario");
   const [modalEvento,setModalEvento]=useState(null);
   const [modalDetalle,setModalDetalle]=useState(null);
@@ -2334,6 +2336,7 @@ export default function App() {
   };
 
   const verTodosLosDias=(eventoId)=>{
+    setVistaAnterior(vista);
     setEventoMultidiaId(eventoId);
     setModoMultidia(true);
     setVista("dia");
@@ -2515,9 +2518,12 @@ export default function App() {
       const dias=Array.from({length:totalDias},(_,i)=>{const d=new Date(ini.getTime()+i*86400000);return{iso:toISO(d),x:i+1};});
       return (
         <div style={{paddingTop:"16px",paddingBottom:"80px",paddingLeft:"24px",paddingRight:"24px",margin:"0 auto",maxWidth:"720px",width:"100%"}}>
-          <div style={{fontWeight:"600",fontSize:"15px",color:"#fff",marginBottom:"20px"}}>
-            📅 Evento Multidía — {cli?.nombre_empresa||"—"}
-            <span style={{fontWeight:"400",color:"rgba(255,255,255,0.75)",fontSize:"13px",marginLeft:"12px"}}>{totalDias} días</span>
+          <div style={{display:"flex",alignItems:"center",gap:"12px",marginBottom:"20px"}}>
+            <button onClick={()=>{setModoMultidia(false);setEventoMultidiaId(null);setVista(vistaAnterior);}} style={{display:"flex",alignItems:"center",gap:"6px",padding:"8px 14px",borderRadius:"8px",background:"transparent",color:"#6B7280",border:"1px solid #D1D5DB",cursor:"pointer",fontSize:"13px",fontWeight:"500",fontFamily:"inherit",flexShrink:0}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>Volver</button>
+            <div style={{fontWeight:"600",fontSize:"15px",color:"#fff"}}>
+              📅 Evento Multidía — {cli?.nombre_empresa||"—"}
+              <span style={{fontWeight:"400",color:"rgba(255,255,255,0.75)",fontSize:"13px",marginLeft:"12px"}}>{totalDias} días</span>
+            </div>
           </div>
           <div style={{display:"flex",flexDirection:"column",gap:"16px"}}>
             {dias.map(({iso,x})=>(
@@ -2573,8 +2579,11 @@ export default function App() {
     const evs=evsDia(diaActual);
     return (
       <div style={{paddingTop:"16px",paddingBottom:"80px",paddingLeft:"24px",paddingRight:"24px",margin:"0 auto",maxWidth:"720px",width:"100%"}}>
-        <div style={{fontWeight:"500",fontSize:"14px",color:"#fff",marginBottom:"16px"}}>
-          {formatLargo(diaActual)}<span style={{fontWeight:"400",color:"rgba(255,255,255,0.75)",fontSize:"16px",marginLeft:"12px"}}>{evs.length} evento{evs.length!==1?"s":""}</span>
+        <div style={{display:"flex",alignItems:"center",gap:"12px",marginBottom:"16px"}}>
+          <button onClick={()=>setVista(vistaAnterior)} style={{display:"flex",alignItems:"center",gap:"6px",padding:"8px 14px",borderRadius:"8px",background:"transparent",color:"#6B7280",border:"1px solid #D1D5DB",cursor:"pointer",fontSize:"13px",fontWeight:"500",fontFamily:"inherit",flexShrink:0}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>Volver</button>
+          <div style={{fontWeight:"500",fontSize:"14px",color:"#fff"}}>
+            {formatLargo(diaActual)}<span style={{fontWeight:"400",color:"rgba(255,255,255,0.75)",fontSize:"16px",marginLeft:"12px"}}>{evs.length} evento{evs.length!==1?"s":""}</span>
+          </div>
         </div>
         {evs.length===0
           ?<div style={{textAlign:"center",padding:"60px 20px",color:"rgba(255,255,255,0.7)",border:"2px dashed rgba(255,255,255,0.3)",borderRadius:"16px"}}><div style={{fontSize:"18px",marginBottom:"12px"}}>📅</div><div style={{fontWeight:"500",fontSize:"14px",color:"#fff"}}>Sin eventos este día</div></div>
