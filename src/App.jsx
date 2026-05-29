@@ -1195,7 +1195,8 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
   const [imgJPG,setImgJPG]=useState(null);
   const [verJPG,setVerJPG]=useState(false);
   const abrirVistaJPG=()=>{
-    html2canvas(document.getElementById("ficha-exportable"),{scale:2})
+    const el=document.getElementById("ficha-exportable");
+    html2canvas(el,{scale:2,useCORS:true,allowTaint:true,backgroundColor:"#FFFFFF",logging:false,width:el.offsetWidth,height:el.offsetHeight,windowWidth:el.offsetWidth,onclone:(clonedDoc)=>{const c=clonedDoc.getElementById("ficha-exportable");c.style.transform="none";c.style.position="relative";clonedDoc.querySelectorAll("img").forEach(img=>{img.style.objectFit="contain";img.style.maxWidth="100%";});}})
       .then(canvas=>{setImgJPG(canvas.toDataURL("image/jpeg",0.95));setVerJPG(true);});
   };
 
@@ -1241,9 +1242,11 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
 
   return (
     <>
-    {verJPG&&<div style={{position:"fixed",top:0,left:0,width:"100vw",height:"100vh",background:"rgba(0,0,0,0.85)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center"}}>
-      <button onClick={()=>setVerJPG(false)} style={{position:"absolute",top:"16px",right:"16px",background:"rgba(255,255,255,0.2)",color:"#FFFFFF",border:"none",borderRadius:"50%",width:"36px",height:"36px",fontSize:"18px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"inherit"}}>✕</button>
-      <img src={imgJPG} style={{maxWidth:"90vw",maxHeight:"90vh",borderRadius:"8px"}} alt="Ficha"/>
+    {verJPG&&<div style={{position:"fixed",top:0,left:0,width:"100vw",height:"100vh",background:"rgba(0,0,0,0.90)",zIndex:9999,display:"flex",alignItems:"flex-start",justifyContent:"center",overflowY:"auto",padding:"20px"}}>
+      <div style={{position:"relative"}}>
+        <button onClick={()=>setVerJPG(false)} style={{position:"sticky",top:"0",right:"0",float:"right",background:"#FFFFFF",border:"none",borderRadius:"50%",width:"32px",height:"32px",cursor:"pointer",fontSize:"16px",fontWeight:"700",zIndex:10000}}>✕</button>
+        <img src={imgJPG} style={{maxWidth:"800px",width:"100%",borderRadius:"8px",display:"block",marginTop:"8px"}} alt="Ficha"/>
+      </div>
     </div>}
     <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.75)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(6px)",padding:"16px",overflowY:"auto"}}>
       <div style={{background:"#F8FAFF",borderRadius:"20px",width:"100%",maxWidth:"820px",maxHeight:"92vh",boxShadow:"0 8px 32px rgba(45,140,255,0.15)",display:"flex",flexDirection:"column"}}>
@@ -1271,19 +1274,19 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
                   <img src={LOGO_SRC} alt="MundoChile" style={{width:"34px",height:"34px",objectFit:"contain"}}/>
                 </div>
                 <div>
-                  <div style={{fontSize:"20px",fontWeight:"700",color:"#fff",letterSpacing:"0.02em",lineHeight:1}}>MundoChile</div>
-                  <div style={{fontSize:"11px",color:"rgba(255,255,255,0.85)",marginTop:"2px",letterSpacing:"0.15em"}}>TRANSLATIONS & INTERPRETERS</div>
+                  <div style={{fontSize:"20px",fontWeight:"700",color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF",letterSpacing:"0.02em",lineHeight:1}}>MundoChile</div>
+                  <div style={{fontSize:"11px",color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF",marginTop:"2px",letterSpacing:"0.15em"}}>TRANSLATIONS & INTERPRETERS</div>
                 </div>
               </div>
               <div style={{textAlign:"right"}}>
-                <div style={{fontSize:"10px",color:"rgba(255,255,255,0.75)",textTransform:"uppercase",letterSpacing:"0.08em"}}>Generado el</div>
-                <div style={{fontSize:"10px",fontWeight:"400",color:"#fff"}}>{new Date().toLocaleDateString("es-CL",{day:"numeric",month:"long",year:"numeric"})}</div>
+                <div style={{fontSize:"10px",color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF",textTransform:"uppercase",letterSpacing:"0.08em"}}>Generado el</div>
+                <div style={{fontSize:"10px",fontWeight:"400",color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF"}}>{new Date().toLocaleDateString("es-CL",{day:"numeric",month:"long",year:"numeric"})}</div>
               </div>
             </div>
 
             {/* SECCIONES — una columna */}
             {(()=>{
-              const sH={background:"#3D85D8",color:"#D9D9D9",fontSize:"13px",fontWeight:"600",letterSpacing:"0.06em",padding:"4px 16px",textTransform:"uppercase"};
+              const sH={background:"#3D85D8",color:"#D9D9D9",WebkitTextFillColor:"#D9D9D9",fontSize:"13px",fontWeight:"600",letterSpacing:"0.06em",padding:"4px 16px",textTransform:"uppercase"};
               const sB={padding:"10px 16px",borderBottom:"1px solid #E5E7EB",background:"#FFFFFF"};
               const pillClrFor=(idioma)=>IDIOMA_PILL_CLR[idioma]||"#4C6EF5";
               const pillSt=(idioma)=>({background:"#FFFFFF",border:`2px solid ${pillClrFor(idioma)}`,color:"#1A1A1A",borderRadius:"20px",padding:"6px 12px",textAlign:"center",width:"100%",fontSize:"16px",fontWeight:"400",display:"flex",alignItems:"center",justifyContent:"center",gap:"6px",boxSizing:"border-box"});
@@ -1364,7 +1367,7 @@ function ModalFichasMultiples({eventosLista,clientes,interpretes,pares,onCerrar}
   const esMultidia=evento.fecha_inicio!==evento.fecha_termino;
   const esPresencial=evento.modalidad==="presencial"||evento.modalidad==="hibrido";
   const dias=((evento.evento_dias||evento.dias||[]).sort((a,b)=>(a.orden||0)-(b.orden||0)));
-  const sH={background:"#3D85D8",color:"#D9D9D9",fontSize:"13px",fontWeight:"600",letterSpacing:"0.06em",padding:"4px 16px",textTransform:"uppercase"};
+  const sH={background:"#3D85D8",color:"#D9D9D9",WebkitTextFillColor:"#D9D9D9",fontSize:"13px",fontWeight:"600",letterSpacing:"0.06em",padding:"4px 16px",textTransform:"uppercase"};
   const sB={padding:"10px 16px",borderBottom:"1px solid #E5E7EB",background:"#FFFFFF"};
   const pillClrFor=(idioma)=>IDIOMA_PILL_CLR[idioma]||"#4C6EF5";
   const pillSt=(idioma)=>({background:"#FFFFFF",border:`2px solid ${pillClrFor(idioma)}`,color:"#1A1A1A",borderRadius:"20px",padding:"6px 12px",textAlign:"center",width:"100%",fontSize:"16px",fontWeight:"400",display:"flex",alignItems:"center",justifyContent:"center",gap:"6px",boxSizing:"border-box"});
@@ -1428,13 +1431,13 @@ function ModalFichasMultiples({eventosLista,clientes,interpretes,pares,onCerrar}
                   <img src={LOGO_SRC} alt="MundoChile" style={{width:"34px",height:"34px",objectFit:"contain"}}/>
                 </div>
                 <div>
-                  <div style={{fontSize:"20px",fontWeight:"700",color:"#fff",letterSpacing:"0.02em",lineHeight:1}}>MundoChile</div>
-                  <div style={{fontSize:"11px",color:"rgba(255,255,255,0.85)",marginTop:"2px",letterSpacing:"0.15em"}}>TRANSLATIONS & INTERPRETERS</div>
+                  <div style={{fontSize:"20px",fontWeight:"700",color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF",letterSpacing:"0.02em",lineHeight:1}}>MundoChile</div>
+                  <div style={{fontSize:"11px",color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF",marginTop:"2px",letterSpacing:"0.15em"}}>TRANSLATIONS & INTERPRETERS</div>
                 </div>
               </div>
               <div style={{textAlign:"right"}}>
-                <div style={{fontSize:"10px",color:"rgba(255,255,255,0.75)",textTransform:"uppercase",letterSpacing:"0.08em"}}>Generado el</div>
-                <div style={{fontSize:"10px",fontWeight:"400",color:"#fff"}}>{new Date().toLocaleDateString("es-CL",{day:"numeric",month:"long",year:"numeric"})}</div>
+                <div style={{fontSize:"10px",color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF",textTransform:"uppercase",letterSpacing:"0.08em"}}>Generado el</div>
+                <div style={{fontSize:"10px",fontWeight:"400",color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF"}}>{new Date().toLocaleDateString("es-CL",{day:"numeric",month:"long",year:"numeric"})}</div>
               </div>
             </div>
             {cliente&&<><div style={sH}>Cliente</div><div style={sB}><div style={{fontSize:"18px",fontWeight:"700",color:"#000000",lineHeight:1.2}}>{cliente.nombre_empresa}</div>{cliente.nombre_contacto&&<div style={{fontSize:"14px",color:"#484f56",fontStyle:"italic",marginTop:"3px"}}>{cliente.nombre_contacto}</div>}</div></>}
