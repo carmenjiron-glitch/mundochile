@@ -1856,7 +1856,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
   const onAbrirRef=useRef(onAbrir);
   const onVerMultidiaRef=useRef(onVerMultidia);
   const COLS=["Mes","Orden de Compra","Cliente","Contacto Cliente","# Evento","Detalle Equipos AV","Proveedor","Detalles Instalación","Tipo","Nombre Evento","Lugar","Par de Idiomas","Jornada","Horario","Fecha Inicio","Fecha Término","Comentarios","Intérprete 1","Nro OT","Nro Boleta","Intérprete 2","Nro OT 2"];
-  const FILTERABLE=["Mes","Cliente","Tipo","Par de Idiomas","Jornada","Intérprete 1","Intérprete 2"];
+  const FILTERABLE=COLS;
   const TOTAL_COLS=COLS.length+1;
   useEffect(()=>{onAbrirRef.current=onAbrir;},[onAbrir]);
   useEffect(()=>{onVerMultidiaRef.current=onVerMultidia;},[onVerMultidia]);
@@ -1886,22 +1886,48 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
   const mesesDisponibles=useMemo(()=>[...new Set(allRows.map(r=>r.mesLargo))],[allRows]);
   const uniqueVals=useMemo(()=>({
     "Mes":[...new Set(allRows.map(r=>r.mesStr))].filter(Boolean),
+    "Orden de Compra":[...new Set(allRows.map(r=>r.ev.nro_oc||""))].filter(Boolean),
     "Cliente":[...new Set(allRows.map(r=>r.cli?.nombre_empresa||""))].filter(Boolean),
+    "Contacto Cliente":[...new Set(allRows.map(r=>r.contactoNombre||""))].filter(Boolean),
+    "Detalle Equipos AV":[...new Set(allRows.map(r=>r.detalleEq||""))].filter(Boolean),
+    "Proveedor":[...new Set(allRows.map(r=>r.provNom||""))].filter(Boolean),
+    "Detalles Instalación":[...new Set(allRows.map(r=>r.detalleInst||""))].filter(Boolean),
     "Tipo":[...new Set(allRows.map(r=>r.ev.tipo||""))].filter(Boolean),
+    "Nombre Evento":[...new Set(allRows.map(r=>r.ev.nombre_evento||""))].filter(Boolean),
+    "Lugar":[...new Set(allRows.map(r=>r.ev.lugar||""))].filter(Boolean),
     "Par de Idiomas":[...new Set(allRows.map(r=>r.par?.descripcion||""))].filter(Boolean),
     "Jornada":[...new Set(allRows.map(r=>r.ev.jornada||""))].filter(Boolean),
+    "Fecha Inicio":[...new Set(allRows.map(r=>formatCorto(r.ev.fecha_inicio)))].filter(Boolean),
+    "Fecha Término":[...new Set(allRows.map(r=>formatCorto(r.ev.fecha_termino)))].filter(Boolean),
+    "Comentarios":[...new Set(allRows.map(r=>r.ev.comentarios||""))].filter(Boolean),
     "Intérprete 1":[...new Set(allRows.map(r=>r.i1N))].filter(Boolean),
+    "Nro OT":[...new Set(allRows.map(r=>r.a1?.nro_ot||""))].filter(Boolean),
+    "Nro Boleta":[...new Set(allRows.map(r=>r.a1?.nro_boleta||""))].filter(Boolean),
     "Intérprete 2":[...new Set(allRows.map(r=>r.i2N))].filter(Boolean),
+    "Nro OT 2":[...new Set(allRows.map(r=>r.a2?.nro_ot||""))].filter(Boolean),
   }),[allRows]);
   const filtered=useMemo(()=>allRows.filter(r=>{
     if(mesFiltro&&r.mesLargo!==mesFiltro)return false;
     if(colFiltros["Mes"]&&r.mesStr!==colFiltros["Mes"])return false;
+    if(colFiltros["Orden de Compra"]&&(r.ev.nro_oc||"")!==colFiltros["Orden de Compra"])return false;
     if(colFiltros["Cliente"]&&(r.cli?.nombre_empresa||"")!==colFiltros["Cliente"])return false;
+    if(colFiltros["Contacto Cliente"]&&(r.contactoNombre||"")!==colFiltros["Contacto Cliente"])return false;
+    if(colFiltros["Detalle Equipos AV"]&&(r.detalleEq||"")!==colFiltros["Detalle Equipos AV"])return false;
+    if(colFiltros["Proveedor"]&&(r.provNom||"")!==colFiltros["Proveedor"])return false;
+    if(colFiltros["Detalles Instalación"]&&(r.detalleInst||"")!==colFiltros["Detalles Instalación"])return false;
     if(colFiltros["Tipo"]&&(r.ev.tipo||"")!==colFiltros["Tipo"])return false;
+    if(colFiltros["Nombre Evento"]&&(r.ev.nombre_evento||"")!==colFiltros["Nombre Evento"])return false;
+    if(colFiltros["Lugar"]&&(r.ev.lugar||"")!==colFiltros["Lugar"])return false;
     if(colFiltros["Par de Idiomas"]&&(r.par?.descripcion||"")!==colFiltros["Par de Idiomas"])return false;
     if(colFiltros["Jornada"]&&(r.ev.jornada||"")!==colFiltros["Jornada"])return false;
+    if(colFiltros["Fecha Inicio"]&&formatCorto(r.ev.fecha_inicio)!==colFiltros["Fecha Inicio"])return false;
+    if(colFiltros["Fecha Término"]&&formatCorto(r.ev.fecha_termino)!==colFiltros["Fecha Término"])return false;
+    if(colFiltros["Comentarios"]&&(r.ev.comentarios||"")!==colFiltros["Comentarios"])return false;
     if(colFiltros["Intérprete 1"]&&r.i1N!==colFiltros["Intérprete 1"])return false;
+    if(colFiltros["Nro OT"]&&(r.a1?.nro_ot||"")!==colFiltros["Nro OT"])return false;
+    if(colFiltros["Nro Boleta"]&&(r.a1?.nro_boleta||"")!==colFiltros["Nro Boleta"])return false;
     if(colFiltros["Intérprete 2"]&&r.i2N!==colFiltros["Intérprete 2"])return false;
+    if(colFiltros["Nro OT 2"]&&(r.a2?.nro_ot||"")!==colFiltros["Nro OT 2"])return false;
     return true;
   }),[allRows,mesFiltro,colFiltros]);
   useEffect(()=>{filteredRef.current=filtered;},[filtered]);
@@ -1934,7 +1960,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
     const el=tablaRef.current.querySelector(`[data-celda="${celdaActiva.fila}-${celdaActiva.col}"]`);
     if(el) el.scrollIntoView({block:"nearest",inline:"nearest"});
   },[celdaActiva]);
-  const thS={background:"#1E3A5F",color:"#FFFFFF",fontSize:"12px",fontWeight:"500",padding:"8px 10px",textAlign:"center",position:"sticky",top:"96px",zIndex:10,whiteSpace:"nowrap",borderRight:"1px solid rgba(255,255,255,0.15)",borderBottom:"2px solid #94A3B8",marginTop:"0"};
+  const thS={background:"#1E3A5F",color:"#FFFFFF",fontSize:"12px",fontWeight:"500",padding:"8px 10px",textAlign:"center",position:"sticky",top:0,zIndex:50,whiteSpace:"nowrap",borderRight:"1px solid rgba(255,255,255,0.15)",borderBottom:"2px solid #94A3B8",marginTop:"0"};
   const renderThFiltro=(col)=>{
     const active=!!colFiltros[col];const isOpen=openCol===col;
     return(<th key={col} style={{...thS,background:active?"#2D5F9E":"#1E3A5F",cursor:"pointer",userSelect:"none",zIndex:isOpen?1000:10}}>
@@ -1960,7 +1986,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
   const inpS={padding:"6px 12px",border:"1px solid #D1D5DB",borderRadius:"8px",fontSize:"13px",fontFamily:"inherit",background:"#FFFFFF",color:"#1A1A1A",width:"180px"};
   return (
     <div style={{paddingBottom:"80px",width:"100%"}}>
-      <div style={{padding:"8px 16px 4px",display:"flex",alignItems:"center",gap:"10px"}}>
+      <div style={{padding:"6px 16px",display:"flex",alignItems:"center",gap:"10px",background:"rgba(26,47,90,0.97)"}}>
         <select value={mesFiltro} onChange={e=>setMesFiltro(e.target.value)} style={inpS}>
           <option value="">Todos los meses</option>
           {mesesDisponibles.map(m=><option key={m} value={m}>{m}</option>)}
@@ -1978,7 +2004,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
         {filtered.length===0&&<tbody><tr><td colSpan={TOTAL_COLS} style={{textAlign:"center",padding:"60px 20px",color:"#9CA3AF",fontSize:"14px",background:"#fff"}}>No hay eventos que mostrar</td></tr></tbody>}
         {Object.entries(byMonth).map(([mk,{label,rows}])=>(
           <tbody key={mk}>
-            <tr><td colSpan={TOTAL_COLS} style={{background:"#1E3A5F",color:"#FFFFFF",fontSize:"13px",fontWeight:"600",padding:"8px 12px",textTransform:"uppercase",letterSpacing:"0.08em",margin:"0",marginBottom:"0"}}>📅 {label}</td></tr>
+            <tr><td colSpan={TOTAL_COLS} style={{background:"#1E3A5F",color:"#FFFFFF",fontSize:"17px",fontWeight:"600",padding:"8px 12px",textTransform:"uppercase",letterSpacing:"0.08em",margin:"0",marginBottom:"0"}}>📅 {label}</td></tr>
             {rows.map(r=>{
               rowIdx++;
               const ri=rowIdx;
