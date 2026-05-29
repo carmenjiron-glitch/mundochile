@@ -1585,11 +1585,11 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
   return (
     <div style={{padding:"20px 16px 80px",maxWidth:"900px",margin:"0 auto"}}>
       {/* Tabs */}
-      <div style={{display:"flex",flexWrap:"nowrap",gap:"8px",marginBottom:"20px",alignItems:"center",overflowX:"auto"}}>
+      <div style={{display:"flex",flexWrap:"nowrap",gap:"8px",marginBottom:"20px",alignItems:"center",overflowX:"auto",justifyContent:"center",width:"100%",padding:"12px 0"}}>
         {tabs.map(t=><button key={t.id} onClick={()=>{setTab(t.id);setEditando(null);setFormEdit({});}}
           style={{
-            padding:"8px 16px",borderRadius:"10px",cursor:"pointer",fontFamily:"inherit",fontSize:"13px",
-            height:"36px",whiteSpace:"nowrap",
+            padding:"8px 20px",borderRadius:"10px",cursor:"pointer",fontFamily:"inherit",fontSize:"13px",
+            height:"36px",whiteSpace:"nowrap",textAlign:"center",
             background:tab===t.id?"#FFFBEB":"#fff",
             color:tab===t.id?C.azul:C.textoMed,
             fontWeight:"500",
