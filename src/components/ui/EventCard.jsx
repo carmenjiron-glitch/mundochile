@@ -168,7 +168,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
         borderLeft:   `16px solid ${borderColor}`,
         borderTop:    `6px solid ${borderColor}`,
         borderRadius: "0 8px 8px 0",
-        padding:      "14px 16px",
+        padding:      "16px",
         marginBottom: "10px",
         boxShadow:    "0 1px 4px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)",
         cursor:       "pointer",
@@ -204,7 +204,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
         <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"16px", alignItems:"start" }}>
 
           {/* COLUMNA IZQUIERDA — info del evento */}
-          <div>
+          <div style={{ display:"flex", flexDirection:"column", gap:"10px" }}>
             <div style={{ display:"flex", alignItems:"center", flexWrap:"nowrap", gap:8, marginBottom:4 }}>
               <div style={{ fontSize:25, fontWeight:600, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em" }}>
                 {cliente?.nombre_empresa || "—"}
@@ -246,10 +246,33 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
               </div>
             )}
             {esPresencial && ev.lugar && (
-              <div style={{ fontSize:14, color:"#475569", marginTop:6 }}>📍 {ev.lugar}</div>
+              <div>
+                <div style={{ fontSize:14, color:"#475569" }}>📍 {ev.lugar}</div>
+                <div style={{ display:"flex", alignItems:"center", gap:"8px", marginTop:"6px", flexWrap:"wrap" }}>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.lugar)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={e=>e.stopPropagation()}
+                    style={{ display:"inline-flex", alignItems:"center", gap:"4px", fontSize:"12px", fontWeight:"500", color:"#1971C2", padding:"5px 10px", borderRadius:"8px", border:"1px solid #93C5FD", background:"#EFF6FF", textDecoration:"none", cursor:"pointer" }}
+                  >
+                    📍 Ver en Maps
+                  </a>
+                  <button
+                    onClick={e=>{e.stopPropagation();navigator.clipboard.writeText(ev.lugar);}}
+                    title="Copiar dirección"
+                    style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", padding:"5px 10px", borderRadius:"8px", border:"1px solid #93C5FD", background:"#EFF6FF", cursor:"pointer", color:"#1971C2", fontFamily:"inherit" }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
             )}
 
-            <div style={{ marginTop:6 }}>
+            <div>
               <Chip label={estadoLabel} emoji={estadoLabel==="Facturado"?"✓ ":"🟠 "} fontSize={14} padding="5px 12px" />
             </div>
 
