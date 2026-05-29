@@ -1889,6 +1889,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
     "Orden de Compra":[...new Set(allRows.map(r=>r.ev.nro_oc||""))].filter(Boolean),
     "Cliente":[...new Set(allRows.map(r=>r.cli?.nombre_empresa||""))].filter(Boolean),
     "Contacto Cliente":[...new Set(allRows.map(r=>r.contactoNombre||""))].filter(Boolean),
+    "# Evento":[],
     "Detalle Equipos AV":[...new Set(allRows.map(r=>r.detalleEq||""))].filter(Boolean),
     "Proveedor":[...new Set(allRows.map(r=>r.provNom||""))].filter(Boolean),
     "Detalles Instalación":[...new Set(allRows.map(r=>r.detalleInst||""))].filter(Boolean),
@@ -1897,6 +1898,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
     "Lugar":[...new Set(allRows.map(r=>r.ev.lugar||""))].filter(Boolean),
     "Par de Idiomas":[...new Set(allRows.map(r=>r.par?.descripcion||""))].filter(Boolean),
     "Jornada":[...new Set(allRows.map(r=>r.ev.jornada||""))].filter(Boolean),
+    "Horario":[...new Set(allRows.map(r=>`${r.ev.hora_inicio?.slice(0,5)||""} – ${r.ev.hora_termino?.slice(0,5)||""}`))].filter(v=>v.trim()!=="–"),
     "Fecha Inicio":[...new Set(allRows.map(r=>formatCorto(r.ev.fecha_inicio)))].filter(Boolean),
     "Fecha Término":[...new Set(allRows.map(r=>formatCorto(r.ev.fecha_termino)))].filter(Boolean),
     "Comentarios":[...new Set(allRows.map(r=>r.ev.comentarios||""))].filter(Boolean),
@@ -1920,6 +1922,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
     if(colFiltros["Lugar"]&&(r.ev.lugar||"")!==colFiltros["Lugar"])return false;
     if(colFiltros["Par de Idiomas"]&&(r.par?.descripcion||"")!==colFiltros["Par de Idiomas"])return false;
     if(colFiltros["Jornada"]&&(r.ev.jornada||"")!==colFiltros["Jornada"])return false;
+    if(colFiltros["Horario"]){const h=`${r.ev.hora_inicio?.slice(0,5)||""} – ${r.ev.hora_termino?.slice(0,5)||""}`;if(h!==colFiltros["Horario"])return false;}
     if(colFiltros["Fecha Inicio"]&&formatCorto(r.ev.fecha_inicio)!==colFiltros["Fecha Inicio"])return false;
     if(colFiltros["Fecha Término"]&&formatCorto(r.ev.fecha_termino)!==colFiltros["Fecha Término"])return false;
     if(colFiltros["Comentarios"]&&(r.ev.comentarios||"")!==colFiltros["Comentarios"])return false;
@@ -1963,7 +1966,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
   const thS={background:"#1E3A5F",color:"#FFFFFF",fontSize:"12px",fontWeight:"500",padding:"8px 10px",textAlign:"center",position:"sticky",top:0,zIndex:50,whiteSpace:"nowrap",borderRight:"1px solid rgba(255,255,255,0.15)",borderBottom:"2px solid #94A3B8",marginTop:"0"};
   const renderThFiltro=(col)=>{
     const active=!!colFiltros[col];const isOpen=openCol===col;
-    return(<th key={col} style={{...thS,background:active?"#2D5F9E":"#1E3A5F",cursor:"pointer",userSelect:"none",zIndex:isOpen?1000:10}}>
+    return(<th key={col} style={{...thS,background:active?"#2D5F9E":"#1E3A5F",cursor:"pointer",userSelect:"none",zIndex:isOpen?1000:50}}>
       <div style={{position:"relative"}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:"4px"}}
           onClick={e=>{e.stopPropagation();setOpenCol(isOpen?null:col);}}>
@@ -1993,11 +1996,11 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
         </select>
         {hayFiltros&&<button onClick={()=>{setMesFiltro("");setColFiltros({});}} style={{padding:"6px 12px",background:"#EF4444",color:"#FFFFFF",border:"none",borderRadius:"6px",cursor:"pointer",fontSize:"12px",fontFamily:"inherit"}}>✕ Limpiar filtros</button>}
       </div>
-      <div ref={tablaRef} style={{overflowX:"auto",width:"100%",outline:"none"}} tabIndex={0}>
-      <table style={{borderCollapse:"collapse",tableLayout:"fixed",minWidth:"2200px",width:"100%",fontSize:"12px",background:"#fff"}}>
+      <div ref={tablaRef} style={{overflowX:"auto",width:"100%",outline:"none",background:"#F1F5F9"}} tabIndex={0}>
+      <table style={{borderCollapse:"collapse",tableLayout:"fixed",minWidth:"2200px",width:"100%",fontSize:"12px",background:"#F1F5F9"}}>
         <thead>
           <tr>
-            <th style={{...thS,width:"40px",left:0,zIndex:30}}></th>
+            <th style={{...thS,width:"40px",left:0,zIndex:60}}></th>
             {COLS.map(col=>FILTERABLE.includes(col)?renderThFiltro(col):<th key={col} style={thS}>{col}</th>)}
           </tr>
         </thead>
