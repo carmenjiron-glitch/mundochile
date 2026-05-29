@@ -1903,7 +1903,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
     const detalleInst=eq?.instrucciones||eq?.contacto_in_situ||"";
     const d=desdeISO(ev.fecha_inicio);
     const mesKey=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
-    const mesStr=`${MESES_C[d.getMonth()]} ${d.getFullYear()}`;
+    const mesStr=d.toLocaleDateString('es-CL',{month:'short'}).replace('.','').slice(0,3).toLowerCase()+'-'+String(d.getFullYear()).slice(2);
     const mesLargo=`${MESES_L[d.getMonth()].charAt(0).toUpperCase()+MESES_L[d.getMonth()].slice(1)} ${d.getFullYear()}`;
     return {ev,cli,contactoNombre:contacto?.nombre||cli?.nombre_contacto||"",esMultidia:ev.fecha_inicio!==ev.fecha_termino,a1,a2,i1N,i2N,par,detalleEq,provNom,detalleInst,mesKey,mesStr,mesLargo};
   }),[eventos,clientes,interpretes,pares,proveedores,contactos]);
