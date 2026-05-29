@@ -1870,7 +1870,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
 }
 
 // ─── VISTA GRILLA ────────────────────────────────────────────────────────────
-function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contactos=[],onAbrir,onVerMultidia}) {
+function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contactos=[],onAbrir,onVerMultidia,vista}) {
   const [colFiltros,setColFiltros]=useState({});
   const [openCol,setOpenCol]=useState(null);
   const [mesFiltro,setMesFiltro]=useState("");
@@ -1885,7 +1885,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
   useEffect(()=>{onAbrirRef.current=onAbrir;},[onAbrir]);
   useEffect(()=>{onVerMultidiaRef.current=onVerMultidia;},[onVerMultidia]);
   useEffect(()=>{if(!openCol)return;const h=()=>setOpenCol(null);document.addEventListener("click",h);return()=>document.removeEventListener("click",h);},[openCol]);
-  useEffect(()=>{setTimeout(()=>{const elH=document.getElementById(`grilla-evento-${toISO(new Date())}`);if(elH)elH.scrollIntoView({block:"center",behavior:"instant"});},150);},[]);
+  useEffect(()=>{if(vista!=="grilla")return;setTimeout(()=>{const todayStr=new Date().toISOString().slice(0,10);const el=document.getElementById(`grilla-evento-${todayStr}`);if(el){const offset=160;const top=el.getBoundingClientRect().top+window.scrollY-offset;window.scrollTo({top,behavior:"instant"});}},200);},[vista]);
   const allRows=useMemo(()=>[...eventos].sort((a,b)=>a.fecha_inicio.localeCompare(b.fecha_inicio)).map(ev=>{
     const cli=clientes.find(c=>c.id===ev.cliente_id);
     const contacto=contactos.find(c=>c.id===ev.contacto_id);
@@ -2099,28 +2099,7 @@ function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,
     byDay[key].push(ev);
   });
   const fechas=Object.keys(byDay);
-  useEffect(()=>{
-    if(vista!=="agenda")return;
-    setTimeout(()=>{
-      const hoy=new Date();
-      const year=hoy.getFullYear();
-      const month=hoy.getMonth();
-      const day=hoy.getDate();
-      const posiblesIds=[
-        `agenda-dia-${year}-${month}-${day}`,
-        `agenda-${year}-${month}-${day}`,
-        `dia-${year}-${month}-${day}`,
-        `agenda-dia-${year}-${month+1}-${day}`
-      ];
-      let el=null;
-      for(const id of posiblesIds){el=document.getElementById(id);if(el)break;}
-      if(el){
-        const alturaOffset=160;
-        const top=el.getBoundingClientRect().top+window.scrollY-alturaOffset;
-        window.scrollTo({top,behavior:"instant"});
-      }
-    },100);
-  },[vista]);
+  useEffect(()=>{if(vista!=="agenda")return;setTimeout(()=>{const hoy=new Date();const todayStr=hoy.toISOString().slice(0,10);let el=null;const posibles=document.querySelectorAll("[id^='agenda-dia']");posibles.forEach(e=>{if(e.id.includes(todayStr)||e.id.includes(`${hoy.getFullYear()}-${hoy.getMonth()}-${hoy.getDate()}`)||e.id.includes(`${hoy.getFullYear()}-${hoy.getMonth()+1}-${hoy.getDate()}`)){el=e;}});if(el){const offset=160;const top=el.getBoundingClientRect().top+window.scrollY-offset;window.scrollTo({top,behavior:"instant"});}},200);},[vista]);
   return (
     <div style={{padding:"160px 24px 80px",width:"100%",maxWidth:"100%"}}>
       {!fechas.length&&<div style={{textAlign:"center",padding:"80px 20px",color:"#fff"}}>
@@ -2132,7 +2111,7 @@ function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,
         const d=desdeISO(fecha);
         const idDia=`agenda-dia-${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
         return (
-          <div key={fecha} id={idDia} style={{marginBottom:"32px"}}>
+          <div key={fecha} id={idDia} data-fecha={fecha} style={{marginBottom:"32px"}}>
             <div style={{background:esHoy?"rgba(34,197,94,0.18)":"rgba(255,255,255,0.12)",color:"#fff",fontSize:"14px",fontWeight:"500",padding:"10px 16px",borderRadius:"8px",margin:"16px 0 8px",letterSpacing:"0.03em",border:esHoy?"1px solid rgba(34,197,94,0.4)":"1px solid transparent"}}>
               {esHoy?"📅 Hoy — ":""}{formatLargo(fecha)} · {evs.length} evento{evs.length!==1?"s":""}
             </div>
@@ -2745,7 +2724,7 @@ export default function App() {
         {vista==="dia"&&renderDia()}
         {vista==="mes"&&renderMes()}
         {vista==="agenda"&&<VistaAgenda vista={vista} eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} filtros={filtros} setFiltros={setFiltros} onAbrir={abrirEvento}/>}
-        {vista==="grilla"&&<VistaGrilla eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} contactos={contactos} onAbrir={abrirEvento} onVerMultidia={verTodosLosDias}/>}
+        {vista==="grilla"&&<VistaGrilla eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} contactos={contactos} onAbrir={abrirEvento} onVerMultidia={verTodosLosDias} vista={vista}/>}
       </>}
       {pantalla==="config"&&esAdmin&&<PantallaConfig clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} onActualizar={cargarDatos} perfil={perfil}/>}
 
