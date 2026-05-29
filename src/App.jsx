@@ -967,7 +967,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             </div>
             <div style={{display:"flex",flexDirection:"column",gap:"6px",alignItems:"flex-end",flexShrink:0}}>
               <div style={{display:"flex",gap:"6px",flexWrap:"wrap"}}>
-                <button onClick={onCerrar} style={{display:"flex",alignItems:"center",gap:"6px",padding:"8px 14px",borderRadius:"8px",background:"transparent",color:"#6B7280",border:"1px solid #D1D5DB",cursor:"pointer",fontSize:"13px",fontWeight:"500",fontFamily:"inherit",height:"36px"}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>Volver</button>
+                <button onClick={onCerrar} style={{display:"flex",alignItems:"center",gap:"6px",padding:"8px 14px",borderRadius:"8px",background:"#F1F5F9",color:"#374151",border:"1px solid #94A3B8",cursor:"pointer",fontSize:"13px",fontWeight:"500",fontFamily:"inherit"}} onMouseEnter={e=>{e.currentTarget.style.background="#E2E8F0";e.currentTarget.style.border="1px solid #64748B";}} onMouseLeave={e=>{e.currentTarget.style.background="#F1F5F9";e.currentTarget.style.border="1px solid #94A3B8";}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>Volver</button>
                 <button onClick={onVerFicha} style={btnA("#1971C2")}>📄 Ficha</button>
                 <button onClick={onEditar} style={btnA("#E67700")}><span style={{filter:"brightness(10)"}}>✏️</span> Editar</button>
                 <button onClick={onEliminar} style={btnA("#E03131")}>🗑 Eliminar</button>
@@ -2519,7 +2519,7 @@ export default function App() {
       return (
         <div style={{paddingTop:"16px",paddingBottom:"80px",paddingLeft:"24px",paddingRight:"24px",margin:"0 auto",maxWidth:"720px",width:"100%"}}>
           <div style={{display:"flex",alignItems:"center",gap:"12px",marginBottom:"20px"}}>
-            <button onClick={()=>{setModoMultidia(false);setEventoMultidiaId(null);setVista(vistaAnterior);}} style={{display:"flex",alignItems:"center",gap:"6px",padding:"8px 14px",borderRadius:"8px",background:"transparent",color:"#6B7280",border:"1px solid #D1D5DB",cursor:"pointer",fontSize:"13px",fontWeight:"500",fontFamily:"inherit",flexShrink:0}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>Volver</button>
+            <button onClick={()=>{setModoMultidia(false);setEventoMultidiaId(null);setVista(vistaAnterior);}} style={{display:"flex",alignItems:"center",gap:"6px",padding:"8px 14px",borderRadius:"8px",background:"#F1F5F9",color:"#374151",border:"1px solid #94A3B8",cursor:"pointer",fontSize:"13px",fontWeight:"500",fontFamily:"inherit",flexShrink:0}} onMouseEnter={e=>{e.currentTarget.style.background="#E2E8F0";e.currentTarget.style.border="1px solid #64748B";}} onMouseLeave={e=>{e.currentTarget.style.background="#F1F5F9";e.currentTarget.style.border="1px solid #94A3B8";}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>Volver</button>
             <div style={{fontWeight:"600",fontSize:"15px",color:"#fff"}}>
               📅 Evento Multidía — {cli?.nombre_empresa||"—"}
               <span style={{fontWeight:"400",color:"rgba(255,255,255,0.75)",fontSize:"13px",marginLeft:"12px"}}>{totalDias} días</span>
@@ -2580,7 +2580,7 @@ export default function App() {
     return (
       <div style={{paddingTop:"16px",paddingBottom:"80px",paddingLeft:"24px",paddingRight:"24px",margin:"0 auto",maxWidth:"720px",width:"100%"}}>
         <div style={{display:"flex",alignItems:"center",gap:"12px",marginBottom:"16px"}}>
-          <button onClick={()=>setVista(vistaAnterior)} style={{display:"flex",alignItems:"center",gap:"6px",padding:"8px 14px",borderRadius:"8px",background:"transparent",color:"#6B7280",border:"1px solid #D1D5DB",cursor:"pointer",fontSize:"13px",fontWeight:"500",fontFamily:"inherit",flexShrink:0}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>Volver</button>
+          <button onClick={()=>setVista(vistaAnterior)} style={{display:"flex",alignItems:"center",gap:"6px",padding:"8px 14px",borderRadius:"8px",background:"#F1F5F9",color:"#374151",border:"1px solid #94A3B8",cursor:"pointer",fontSize:"13px",fontWeight:"500",fontFamily:"inherit",flexShrink:0}} onMouseEnter={e=>{e.currentTarget.style.background="#E2E8F0";e.currentTarget.style.border="1px solid #64748B";}} onMouseLeave={e=>{e.currentTarget.style.background="#F1F5F9";e.currentTarget.style.border="1px solid #94A3B8";}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>Volver</button>
           <div style={{fontWeight:"500",fontSize:"14px",color:"#fff"}}>
             {formatLargo(diaActual)}<span style={{fontWeight:"400",color:"rgba(255,255,255,0.75)",fontSize:"16px",marginLeft:"12px"}}>{evs.length} evento{evs.length!==1?"s":""}</span>
           </div>
