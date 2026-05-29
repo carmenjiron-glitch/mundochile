@@ -349,7 +349,7 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
 }
 
 // ─── MODAL EVENTO ─────────────────────────────────────────────────────────────
-function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugares=[],contactos=[],todos_eventos,perfil,onGuardar,onCerrar,onNuevoCliente,onNuevoContacto,onNuevoInterprete,onLugarCreado}) {
+function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugares=[],contactos=[],todos_eventos,perfil,onGuardar,onCerrar,onNuevoCliente,onNuevoContacto,onNuevoInterprete,onLugarCreado,onNuevoProveedor}) {
   const [form,setForm]=useState(()=>eventoInicial?JSON.parse(JSON.stringify(eventoInicial)):evVacio());
   const [tab,setTab]=useState("general");
   const [guardando,setGuardando]=useState(false);
@@ -360,6 +360,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
   const setF=useCallback((k,v)=>setForm(f=>({...f,[k]:v})),[]);
   const [zoomOtro,setZoomOtro]=useState(!ZOOM_ADMIN.includes(form.zoom_administrador)&&!!form.zoom_administrador);
   const [adminZoomManual,setAdminZoomManual]=useState("");
+  const [modalNuevoProveedor,setModalNuevoProveedor]=useState(null);
 
   useEffect(()=>{
     if(!form.fecha_inicio||!form.fecha_termino) return;
@@ -750,10 +751,13 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                       <option value="cabina_portatil">Cabina portátil</option>
                     </select></div>
                   <div style={S.camp}><label style={S.lbl}>Proveedor AV</label>
-                    <select style={S.sel} value={eq.proveedor_id||""} onChange={e=>setForm(f=>{const eqs=[...(f.equipos||[])];eqs[eIdx]={...eqs[eIdx],proveedor_id:e.target.value?Number(e.target.value):null};return{...f,equipos:eqs};})}>
-                      <option value="">Sin proveedor / otro</option>
-                      {proveedores.filter(p=>p.activo!==false).map(p=><option key={p.id} value={p.id}>{p.nombre}</option>)}
-                    </select></div>
+                    <div style={{display:"flex",gap:"8px"}}>
+                      <select style={{...S.sel,flex:1}} value={eq.proveedor_id||""} onChange={e=>setForm(f=>{const eqs=[...(f.equipos||[])];eqs[eIdx]={...eqs[eIdx],proveedor_id:e.target.value?Number(e.target.value):null};return{...f,equipos:eqs};})}>
+                        <option value="">Sin proveedor / otro</option>
+                        {proveedores.filter(p=>p.activo!==false).map(p=><option key={p.id} value={p.id}>{p.nombre}</option>)}
+                      </select>
+                      <button type="button" onClick={()=>setModalNuevoProveedor({eIdx})} style={{padding:"0 12px",borderRadius:"8px",background:"#1A6FD4",color:"#FFFFFF",border:"none",cursor:"pointer",fontWeight:"700",fontSize:"18px",flexShrink:0,height:"36px"}}>+</button>
+                    </div></div>
                 </div>
                 <div style={{...S.fila,marginTop:"10px"}}>
                   <div style={S.camp}><label style={S.lbl}>N° receptores</label>
@@ -907,6 +911,85 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           <button onClick={onCerrar} style={S.btnCancel}>Cancelar</button>
           <button onClick={()=>guardar({cerrar:false})} disabled={guardando} style={{...S.btnSave,background:"#059669",opacity:guardando?0.7:1,minWidth:"120px",pointerEvents:guardando?"none":"auto"}}>{guardando?"Guardando…":"💾 Guardar"}</button>
           <button onClick={()=>guardar({cerrar:true})} disabled={guardando} style={{...S.btnSave,background:"#1D4ED8",opacity:guardando?0.7:1,minWidth:"160px",pointerEvents:guardando?"none":"auto"}}>{guardando?"Guardando…":"💾 Guardar y cerrar"}</button>
+        </div>
+      </div>
+      {modalNuevoProveedor&&<ModalNuevoProveedor
+        onCerrar={()=>setModalNuevoProveedor(null)}
+        onGuardado={prov=>{
+          onNuevoProveedor&&onNuevoProveedor(prov);
+          setForm(f=>{const eqs=[...(f.equipos||[])];if(modalNuevoProveedor.eIdx!=null)eqs[modalNuevoProveedor.eIdx]={...eqs[modalNuevoProveedor.eIdx],proveedor_id:prov.id};return{...f,equipos:eqs};});
+          setModalNuevoProveedor(null);
+        }}
+      />}
+    </div>
+  );
+}
+
+// ─── MODAL NUEVO PROVEEDOR ───────────────────────────────────────────────────
+function ModalNuevoProveedor({onCerrar,onGuardado}) {
+  const CT={nombre:"",c1_nombre:"",c1_celular:"",c1_email:"",c2_nombre:"",c2_celular:"",c2_email:"",c3_nombre:"",c3_celular:"",c3_email:"",comentarios:""};
+  const [form,setForm]=useState(CT);
+  const [guardando,setGuardando]=useState(false);
+  const [error,setError]=useState("");
+  const setF=(k,v)=>setForm(f=>({...f,[k]:v}));
+
+  const guardar=async()=>{
+    if(!form.nombre.trim()){setError("El nombre es obligatorio.");return;}
+    setGuardando(true);setError("");
+    const payload={nombre:form.nombre.trim(),activo:true};
+    if(form.c1_nombre.trim())payload.contacto1_nombre=form.c1_nombre.trim();
+    if(form.c1_celular.trim())payload.contacto1_celular=form.c1_celular.trim();
+    if(form.c1_email.trim())payload.contacto1_email=form.c1_email.trim();
+    if(form.c2_nombre.trim())payload.contacto2_nombre=form.c2_nombre.trim();
+    if(form.c2_celular.trim())payload.contacto2_celular=form.c2_celular.trim();
+    if(form.c2_email.trim())payload.contacto2_email=form.c2_email.trim();
+    if(form.c3_nombre.trim())payload.contacto3_nombre=form.c3_nombre.trim();
+    if(form.c3_celular.trim())payload.contacto3_celular=form.c3_celular.trim();
+    if(form.c3_email.trim())payload.contacto3_email=form.c3_email.trim();
+    if(form.comentarios.trim())payload.comentarios=form.comentarios.trim();
+    const {data,error:err}=await sb.from("proveedores").insert(payload).select().single();
+    setGuardando(false);
+    if(err){setError("Error al guardar: "+err.message);return;}
+    onGuardado(data);
+  };
+
+  const INP={width:"100%",padding:"8px 10px",borderRadius:"8px",border:"1px solid #CBD5E1",fontSize:"13px",fontFamily:"inherit",outline:"none",boxSizing:"border-box"};
+  const LBL={fontSize:"11px",fontWeight:"600",color:"#475569",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:"4px",display:"block"};
+  const contactoRow=(num,pre)=>(
+    <div style={{display:"grid",gridTemplateColumns:"1fr 140px 1fr",gap:"8px",marginBottom:"10px"}}>
+      <div><label style={LBL}>Contacto {num} — Nombre</label><input style={INP} value={form[pre+"nombre"]} onChange={e=>setF(pre+"nombre",e.target.value)} placeholder="Nombre contacto"/></div>
+      <div><label style={LBL}>Celular</label><input style={INP} value={form[pre+"celular"]} onChange={e=>setF(pre+"celular",e.target.value)} placeholder="+56 9…"/></div>
+      <div><label style={LBL}>Email</label><input style={INP} type="email" value={form[pre+"email"]} onChange={e=>setF(pre+"email",e.target.value)} placeholder="correo@…"/></div>
+    </div>
+  );
+
+  return (
+    <div style={{position:"fixed",top:0,left:0,width:"100vw",height:"100vh",background:"rgba(0,0,0,0.6)",zIndex:2000,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px",boxSizing:"border-box"}}>
+      <div style={{background:"#FFFFFF",borderRadius:"16px",width:"100%",maxWidth:"640px",maxHeight:"90vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,0.3)"}}>
+        <div style={{padding:"20px 24px 16px",borderBottom:"1px solid #E2E8F0",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
+          <div style={{fontSize:"16px",fontWeight:"700",color:"#0F172A"}}>Nuevo Proveedor AV</div>
+          <button onClick={onCerrar} style={{background:"none",border:"none",cursor:"pointer",fontSize:"20px",color:"#64748B",padding:"4px",lineHeight:1}}>×</button>
+        </div>
+        <div style={{flex:1,overflowY:"auto",padding:"20px 24px"}}>
+          <div style={{marginBottom:"16px"}}>
+            <label style={LBL}>Nombre empresa *</label>
+            <input style={INP} value={form.nombre} onChange={e=>setF("nombre",e.target.value)} placeholder="Nombre del proveedor AV" autoFocus/>
+          </div>
+          <div style={{borderTop:"1px solid #E2E8F0",paddingTop:"14px",marginBottom:"12px"}}>
+            <div style={{fontSize:"12px",fontWeight:"600",color:"#64748B",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:"12px"}}>Contactos</div>
+            {contactoRow(1,"c1_")}
+            {contactoRow(2,"c2_")}
+            {contactoRow(3,"c3_")}
+          </div>
+          <div>
+            <label style={LBL}>Comentarios</label>
+            <textarea style={{...INP,minHeight:"70px",resize:"vertical"}} value={form.comentarios} onChange={e=>setF("comentarios",e.target.value)} placeholder="Notas adicionales…"/>
+          </div>
+          {error&&<div style={{marginTop:"10px",color:"#DC2626",fontSize:"13px"}}>{error}</div>}
+        </div>
+        <div style={{padding:"16px 24px",borderTop:"1px solid #E2E8F0",display:"flex",gap:"10px",justifyContent:"flex-end",flexShrink:0}}>
+          <button onClick={onCerrar} style={{padding:"9px 18px",borderRadius:"8px",border:"1px solid #CBD5E1",background:"#F8FAFC",color:"#374151",cursor:"pointer",fontSize:"13px",fontWeight:"500",fontFamily:"inherit"}}>Cancelar</button>
+          <button onClick={guardar} disabled={guardando} style={{padding:"9px 22px",borderRadius:"8px",border:"none",background:"#1A6FD4",color:"#FFFFFF",cursor:guardando?"not-allowed":"pointer",fontSize:"13px",fontWeight:"600",fontFamily:"inherit",opacity:guardando?0.7:1}}>{guardando?"Guardando…":"Guardar proveedor"}</button>
         </div>
       </div>
     </div>
@@ -2760,7 +2843,7 @@ export default function App() {
       {pantalla==="config"&&esAdmin&&<PantallaConfig clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} onActualizar={cargarDatos} perfil={perfil}/>}
 
       {/* ── MODALES ── */}
-      {modalEvento&&<ModalEvento eventoInicial={modalEvento.data} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} contactos={contactos} todos_eventos={eventos} perfil={perfil} onGuardar={()=>{setModalEvento(null);cargarDatos();addToast("Evento guardado correctamente","success");}} onCerrar={()=>setModalEvento(null)} onNuevoCliente={(cb)=>setModalNuevoCli({cb})} onNuevoContacto={setModalNuevoContacto} onNuevoInterprete={(ai,di)=>setModalNuevoInt({ai,di})} onLugarCreado={cargarDatos}/>}
+      {modalEvento&&<ModalEvento eventoInicial={modalEvento.data} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} contactos={contactos} todos_eventos={eventos} perfil={perfil} onGuardar={()=>{setModalEvento(null);cargarDatos();addToast("Evento guardado correctamente","success");}} onCerrar={()=>setModalEvento(null)} onNuevoCliente={(cb)=>setModalNuevoCli({cb})} onNuevoContacto={setModalNuevoContacto} onNuevoInterprete={(ai,di)=>setModalNuevoInt({ai,di})} onLugarCreado={cargarDatos} onNuevoProveedor={prov=>setProveedores(prev=>[...prev,prov])}/>}
       {modalDetalle&&<ModalDetalle evento={modalDetalle} clientes={clientes} interpretes={interpretes} pares={pares} perfil={perfil} onEditar={()=>editarEvento(modalDetalle)} onEliminar={()=>eliminarEvento(modalDetalle.id)} onCerrar={()=>setModalDetalle(null)} onVerFicha={()=>{setModalFicha(modalDetalle);setModalDetalle(null);}} addToast={addToast}/>}
       {modalFicha&&<ModalFicha evento={modalFicha} clientes={clientes} interpretes={interpretes} pares={pares} onCerrar={()=>setModalFicha(null)}/>}
       {modalFichasMultiples&&<ModalFichasMultiples eventosLista={modalFichasMultiples} clientes={clientes} interpretes={interpretes} pares={pares} onCerrar={()=>setModalFichasMultiples(null)}/>}
