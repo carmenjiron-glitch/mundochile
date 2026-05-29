@@ -12,6 +12,10 @@ export default function FilterBar({ filters, onChange, interpreters = [], client
     textTransform: "uppercase",
     letterSpacing: "0.06em",
     flexShrink: 0,
+    border: "1px solid #E53E3E",
+    borderRadius: "12px",
+    padding: "2px 8px",
+    background: "transparent",
   };
 
   const sel = {
