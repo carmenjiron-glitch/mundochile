@@ -2098,7 +2098,8 @@ function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,
     if(!byDay[key])byDay[key]=[];
     byDay[key].push(ev);
   });
-  const fechas=Object.keys(byDay);
+  if(!byDay[hoyISO])byDay[hoyISO]=[];
+  const fechas=Object.keys(byDay).sort();
   useEffect(()=>{if(vista!=="agenda")return;setTimeout(()=>{const hoy=new Date();const idHoy=`agenda-dia-${hoy.getFullYear()}-${hoy.getMonth()}-${hoy.getDate()}`;let el=document.getElementById(idHoy);if(!el){const todos=Array.from(document.querySelectorAll("[id^='agenda-dia-']"));const hoyMs=new Date(hoy.getFullYear(),hoy.getMonth(),hoy.getDate()).getTime();el=todos.find(e=>{const parts=e.id.replace("agenda-dia-","").split("-");const fechaEl=new Date(Number(parts[0]),Number(parts[1]),Number(parts[2])).getTime();return fechaEl>=hoyMs;})||todos[0];}if(el){const offset=160;const top=el.getBoundingClientRect().top+window.scrollY-offset;window.scrollTo({top,behavior:"instant"});}},300);},[vista]);
   return (
     <div style={{padding:"160px 24px 80px",width:"100%",maxWidth:"100%"}}>
@@ -2106,7 +2107,8 @@ function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,
         <div style={{fontSize:"18px",marginBottom:"12px"}}>📅</div>
         <div style={{fontWeight:"500",fontSize:"14px",color:"#fff"}}>No hay eventos que mostrar</div>
       </div>}
-      {Object.entries(byDay).map(([fecha,evs])=>{
+      {fechas.map(fecha=>{
+        const evs=byDay[fecha];
         const esHoy=fecha===hoyISO;
         const d=desdeISO(fecha);
         const idDia=`agenda-dia-${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
@@ -2115,11 +2117,14 @@ function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,
             <div style={{background:esHoy?"rgba(34,197,94,0.18)":"rgba(255,255,255,0.12)",color:"#fff",fontSize:"14px",fontWeight:"500",padding:"10px 16px",borderRadius:"8px",margin:"16px 0 8px",letterSpacing:"0.03em",border:esHoy?"1px solid rgba(34,197,94,0.4)":"1px solid transparent"}}>
               {esHoy?"📅 Hoy — ":""}{formatLargo(fecha)} · {evs.length} evento{evs.length!==1?"s":""}
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"16px",marginTop:"12px"}}>
-              {evs.map(ev=>(
-                <EventCard key={ev.id} ev={ev} diaDe={fecha} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} onClick={()=>onAbrir(ev)} pillsHalf={true} agendaSmall={true}/>
-              ))}
-            </div>
+            {evs.length===0
+              ?<div style={{padding:"16px 20px",color:"#9CA3AF",fontSize:"13px",fontStyle:"italic",display:"flex",alignItems:"center",gap:"8px",background:"#FAFAFA",borderRadius:"8px",border:"1px dashed #E5E7EB",marginBottom:"8px"}}>📭 No hay eventos este día</div>
+              :<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"16px",marginTop:"12px"}}>
+                {evs.map(ev=>(
+                  <EventCard key={ev.id} ev={ev} diaDe={fecha} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} onClick={()=>onAbrir(ev)} pillsHalf={true} agendaSmall={true}/>
+                ))}
+              </div>
+            }
           </div>
         );
       })}
