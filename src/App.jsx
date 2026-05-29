@@ -2711,8 +2711,8 @@ export default function App() {
 
       {/* ── CONTENIDO ── */}
       {pantalla==="calendario"&&<>
-        {vista!=="grilla"&&<div style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",padding:"6px 24px",width:"100%",display:"flex",alignItems:"center",gap:"8px"}}>
-          <div style={{flex:1,minWidth:0}}>
+        {vista!=="grilla"&&<div style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",padding:"6px 0",width:"100%",display:"flex",justifyContent:"center",alignItems:"center",gap:"8px",margin:"0 auto",boxSizing:"border-box"}}>
+          <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:"8px",margin:"0 auto",width:"fit-content",maxWidth:"100%"}}>
             <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes} clientes={clientesConEventos} pares={paresConEventos} proveedores={proveedoresConEventos}/>
           </div>
           <div style={{display:"flex",gap:"8px",flexShrink:0,transition:"opacity 0.2s, transform 0.2s",opacity:hayFiltros?1:0,transform:hayFiltros?"scale(1)":"scale(0.9)",visibility:hayFiltros?"visible":"hidden"}}>
