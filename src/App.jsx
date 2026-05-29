@@ -1751,6 +1751,16 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
   const [colFiltros,setColFiltros]=useState({});
   const [openCol,setOpenCol]=useState(null);
   const [mesFiltro,setMesFiltro]=useState("");
+  const [celdaActiva,setCeldaActiva]=useState(null);
+  const tablaRef=useRef(null);
+  const filteredRef=useRef([]);
+  const onAbrirRef=useRef(onAbrir);
+  const onVerMultidiaRef=useRef(onVerMultidia);
+  const COLS=["Mes","Orden de Compra","Cliente","Contacto Cliente","# Evento","Detalle Equipos AV","Proveedor","Detalles Instalación","Tipo","Nombre Evento","Lugar","Par de Idiomas","Jornada","Horario","Fecha Inicio","Fecha Término","Comentarios","Intérprete 1","Nro OT","Nro Boleta","Intérprete 2","Nro OT 2"];
+  const FILTERABLE=["Mes","Cliente","Tipo","Par de Idiomas","Jornada","Intérprete 1","Intérprete 2"];
+  const TOTAL_COLS=COLS.length+1;
+  useEffect(()=>{onAbrirRef.current=onAbrir;},[onAbrir]);
+  useEffect(()=>{onVerMultidiaRef.current=onVerMultidia;},[onVerMultidia]);
   useEffect(()=>{if(!openCol)return;const h=()=>setOpenCol(null);document.addEventListener("click",h);return()=>document.removeEventListener("click",h);},[openCol]);
   useEffect(()=>{setTimeout(()=>{const elH=document.getElementById(`grilla-evento-${toISO(new Date())}`);if(elH)elH.scrollIntoView({block:"center",behavior:"instant"});},150);},[]);
   const allRows=useMemo(()=>[...eventos].sort((a,b)=>a.fecha_inicio.localeCompare(b.fecha_inicio)).map(ev=>{
@@ -1775,7 +1785,6 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
     return {ev,cli,contactoNombre:contacto?.nombre||cli?.nombre_contacto||"",esMultidia:ev.fecha_inicio!==ev.fecha_termino,a1,a2,i1N,i2N,par,detalleEq,provNom,detalleInst,mesKey,mesStr,mesLargo};
   }),[eventos,clientes,interpretes,pares,proveedores,contactos]);
   const mesesDisponibles=useMemo(()=>[...new Set(allRows.map(r=>r.mesLargo))],[allRows]);
-  const FILTERABLE=["Mes","Cliente","Tipo","Par de Idiomas","Jornada","Intérprete 1","Intérprete 2"];
   const uniqueVals=useMemo(()=>({
     "Mes":[...new Set(allRows.map(r=>r.mesStr))].filter(Boolean),
     "Cliente":[...new Set(allRows.map(r=>r.cli?.nombre_empresa||""))].filter(Boolean),
@@ -1796,7 +1805,36 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
     if(colFiltros["Intérprete 2"]&&r.i2N!==colFiltros["Intérprete 2"])return false;
     return true;
   }),[allRows,mesFiltro,colFiltros]);
-  const COLS=["Mes","Orden de Compra","Cliente","Contacto Cliente","# Evento","Detalle Equipos AV","Proveedor","Detalles Instalación","Tipo","Nombre Evento","Lugar","Par de Idiomas","Jornada","Horario","Fecha Inicio","Fecha Término","Comentarios","Intérprete 1","Nro OT","Nro Boleta","Intérprete 2","Nro OT 2"];
+  useEffect(()=>{filteredRef.current=filtered;},[filtered]);
+  useEffect(()=>{
+    const el=tablaRef.current;
+    if(!el) return;
+    const handler=(e)=>{
+      const rows=filteredRef.current;
+      if(!rows.length) return;
+      if(e.key==="Escape"){setCeldaActiva(null);return;}
+      if(!["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Tab","Enter"].includes(e.key)) return;
+      e.preventDefault();
+      setCeldaActiva(prev=>{
+        const cur=prev||{fila:0,col:0};
+        let {fila,col}=cur;
+        if(e.key==="ArrowRight") col=Math.min(col+1,TOTAL_COLS-1);
+        else if(e.key==="ArrowLeft") col=Math.max(col-1,0);
+        else if(e.key==="ArrowDown") fila=Math.min(fila+1,rows.length-1);
+        else if(e.key==="ArrowUp") fila=Math.max(fila-1,0);
+        else if(e.key==="Tab"){col++;if(col>=TOTAL_COLS){col=0;fila=Math.min(fila+1,rows.length-1);}}
+        else if(e.key==="Enter"){const r=rows[fila];if(r){r.esMultidia?onVerMultidiaRef.current(r.ev.id):onAbrirRef.current(r.ev);}return prev;}
+        return {fila,col};
+      });
+    };
+    el.addEventListener("keydown",handler);
+    return()=>el.removeEventListener("keydown",handler);
+  },[]);
+  useEffect(()=>{
+    if(!celdaActiva||!tablaRef.current) return;
+    const el=tablaRef.current.querySelector(`[data-celda="${celdaActiva.fila}-${celdaActiva.col}"]`);
+    if(el) el.scrollIntoView({block:"nearest",inline:"nearest"});
+  },[celdaActiva]);
   const thS={background:"#1E3A5F",color:"#FFFFFF",fontSize:"12px",fontWeight:"500",padding:"8px 10px",textAlign:"center",position:"sticky",top:"96px",zIndex:10,whiteSpace:"nowrap",borderRight:"1px solid rgba(255,255,255,0.15)",borderBottom:"2px solid #94A3B8",marginTop:"0"};
   const renderThFiltro=(col)=>{
     const active=!!colFiltros[col];const isOpen=openCol===col;
@@ -1830,50 +1868,63 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
         </select>
         {hayFiltros&&<button onClick={()=>{setMesFiltro("");setColFiltros({});}} style={{padding:"6px 12px",background:"#EF4444",color:"#FFFFFF",border:"none",borderRadius:"6px",cursor:"pointer",fontSize:"12px",fontFamily:"inherit"}}>✕ Limpiar filtros</button>}
       </div>
-      <div style={{overflowX:"auto",width:"100%"}}>
+      <div ref={tablaRef} style={{overflowX:"auto",width:"100%",outline:"none"}} tabIndex={0}>
       <table style={{borderCollapse:"collapse",tableLayout:"fixed",minWidth:"2200px",width:"100%",fontSize:"12px",background:"#fff"}}>
         <thead>
-          <tr>{COLS.map(col=>FILTERABLE.includes(col)?renderThFiltro(col):<th key={col} style={thS}>{col}</th>)}</tr>
+          <tr>
+            <th style={{...thS,width:"40px",left:0,zIndex:30}}></th>
+            {COLS.map(col=>FILTERABLE.includes(col)?renderThFiltro(col):<th key={col} style={thS}>{col}</th>)}
+          </tr>
         </thead>
-        {filtered.length===0&&<tbody><tr><td colSpan={COLS.length} style={{textAlign:"center",padding:"60px 20px",color:"#9CA3AF",fontSize:"14px",background:"#fff"}}>No hay eventos que mostrar</td></tr></tbody>}
+        {filtered.length===0&&<tbody><tr><td colSpan={TOTAL_COLS} style={{textAlign:"center",padding:"60px 20px",color:"#9CA3AF",fontSize:"14px",background:"#fff"}}>No hay eventos que mostrar</td></tr></tbody>}
         {Object.entries(byMonth).map(([mk,{label,rows}])=>(
           <tbody key={mk}>
-            <tr><td colSpan={COLS.length} style={{background:"#1E3A5F",color:"#FFFFFF",fontSize:"13px",fontWeight:"600",padding:"8px 12px",textTransform:"uppercase",letterSpacing:"0.08em",margin:"0",marginBottom:"0"}}>📅 {label}</td></tr>
+            <tr><td colSpan={TOTAL_COLS} style={{background:"#1E3A5F",color:"#FFFFFF",fontSize:"13px",fontWeight:"600",padding:"8px 12px",textTransform:"uppercase",letterSpacing:"0.08em",margin:"0",marginBottom:"0"}}>📅 {label}</td></tr>
             {rows.map(r=>{
               rowIdx++;
               const ri=rowIdx;
+              const fi=ri-1;
               const isEven=ri%2===0;
               const {ev,cli,contactoNombre,esMultidia,a1,a2,i1N,i2N,par,detalleEq,provNom,detalleInst,mesStr}=r;
               const esHoy=ev.fecha_inicio?.slice(0,10)===hoyISO;
-              const rowBg=esHoy?"#EFF6FF":(isEven?"#F9FAFB":"#FFFFFF");
+              const esFilaActiva=celdaActiva?.fila===fi;
+              const rowBg=esFilaActiva?"#EFF6FF":(esHoy?"#EFF6FF":(isEven?"#F9FAFB":"#FFFFFF"));
               const td={padding:"8px 10px",fontSize:"12px",borderBottom:"1px solid #CBD5E1",borderRight:"1px solid #E2E8F0",verticalAlign:"top",color:"#1A1A1A",lineHeight:1.4,...(esHoy?{fontWeight:"500"}:{})};
+              const cs=(ci,base={})=>({...td,...base,...(celdaActiva?.fila===fi&&celdaActiva?.col===ci?{background:"#DBEAFE",outline:"2px solid #1A6FD4",outlineOffset:"-2px"}:{})});
               return (
-                <tr id={`grilla-evento-${ev.fecha_inicio?.slice(0,10)}`} key={ev.id} style={{background:rowBg,cursor:"pointer"}}
-                  onClick={()=>esMultidia?onVerMultidia(ev.id):onAbrir(ev)}
+                <tr id={`grilla-evento-${ev.fecha_inicio?.slice(0,10)}`} key={ev.id}
+                  style={{background:rowBg,cursor:"default"}}
                   onMouseEnter={e=>e.currentTarget.style.background="#EFF6FF"}
                   onMouseLeave={e=>e.currentTarget.style.background=rowBg}>
-                  <td style={esHoy?{...td,borderLeft:"4px solid #22C55E"}:td}>{mesStr}</td>
-                  <td style={td}>{ev.nro_oc||""}</td>
-                  <td style={{...td,fontWeight:600}}>{cli?.nombre_empresa||"—"}</td>
-                  <td style={td}>{contactoNombre}</td>
-                  <td style={{...td,textAlign:"center"}}>{ri}</td>
-                  <td style={td}>{detalleEq}</td>
-                  <td style={td}>{provNom}</td>
-                  <td style={td}>{detalleInst}</td>
-                  <td style={td}>{ev.tipo||""}</td>
-                  <td style={td}>{ev.nombre_evento||""}</td>
-                  <td style={td}>{ev.lugar||""}</td>
-                  <td style={td}>{par?.descripcion||""}</td>
-                  <td style={td}>{ev.jornada||""}</td>
-                  <td style={{...td,whiteSpace:"nowrap"}}>{ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)}</td>
-                  <td style={{...td,whiteSpace:"nowrap"}}>{formatCorto(ev.fecha_inicio)}</td>
-                  <td style={{...td,whiteSpace:"nowrap"}}>{formatCorto(ev.fecha_termino)}</td>
-                  <td style={td}>{ev.comentarios||""}</td>
-                  <td style={td}>{i1N}</td>
-                  <td style={td}>{a1?.nro_ot||""}</td>
-                  <td style={td}>{a1?.nro_boleta||""}</td>
-                  <td style={td}>{i2N}</td>
-                  <td style={td}>{a2?.nro_ot||""}</td>
+                  <td data-celda={`${fi}-0`} onClick={()=>setCeldaActiva({fila:fi,col:0})}
+                    style={{...td,padding:"4px",textAlign:"center",position:"sticky",left:0,zIndex:1,background:celdaActiva?.fila===fi&&celdaActiva?.col===0?"#DBEAFE":(esFilaActiva?"#EFF6FF":(esHoy?"#EFF6FF":(isEven?"#F9FAFB":"#FFFFFF"))),outline:celdaActiva?.fila===fi&&celdaActiva?.col===0?"2px solid #1A6FD4":"none",outlineOffset:"-2px"}}>
+                    <div onClick={e=>{e.stopPropagation();esMultidia?onVerMultidia(ev.id):onAbrir(ev);}} title="Abrir evento"
+                      style={{display:"flex",alignItems:"center",justifyContent:"center",width:"32px",height:"32px",borderRadius:"6px",background:"#EFF6FF",color:"#1A6FD4",cursor:"pointer",border:"1px solid #BFDBFE",fontSize:"16px",margin:"auto"}}>
+                      📋
+                    </div>
+                  </td>
+                  <td data-celda={`${fi}-1`} onClick={()=>setCeldaActiva({fila:fi,col:1})} style={esHoy?cs(1,{borderLeft:"4px solid #22C55E"}):cs(1)}>{mesStr}</td>
+                  <td data-celda={`${fi}-2`} onClick={()=>setCeldaActiva({fila:fi,col:2})} style={cs(2)}>{ev.nro_oc||""}</td>
+                  <td data-celda={`${fi}-3`} onClick={()=>setCeldaActiva({fila:fi,col:3})} style={cs(3,{fontWeight:600})}>{cli?.nombre_empresa||"—"}</td>
+                  <td data-celda={`${fi}-4`} onClick={()=>setCeldaActiva({fila:fi,col:4})} style={cs(4)}>{contactoNombre}</td>
+                  <td data-celda={`${fi}-5`} onClick={()=>setCeldaActiva({fila:fi,col:5})} style={cs(5,{textAlign:"center"})}>{ri}</td>
+                  <td data-celda={`${fi}-6`} onClick={()=>setCeldaActiva({fila:fi,col:6})} style={cs(6)}>{detalleEq}</td>
+                  <td data-celda={`${fi}-7`} onClick={()=>setCeldaActiva({fila:fi,col:7})} style={cs(7)}>{provNom}</td>
+                  <td data-celda={`${fi}-8`} onClick={()=>setCeldaActiva({fila:fi,col:8})} style={cs(8)}>{detalleInst}</td>
+                  <td data-celda={`${fi}-9`} onClick={()=>setCeldaActiva({fila:fi,col:9})} style={cs(9)}>{ev.tipo||""}</td>
+                  <td data-celda={`${fi}-10`} onClick={()=>setCeldaActiva({fila:fi,col:10})} style={cs(10)}>{ev.nombre_evento||""}</td>
+                  <td data-celda={`${fi}-11`} onClick={()=>setCeldaActiva({fila:fi,col:11})} style={cs(11)}>{ev.lugar||""}</td>
+                  <td data-celda={`${fi}-12`} onClick={()=>setCeldaActiva({fila:fi,col:12})} style={cs(12)}>{par?.descripcion||""}</td>
+                  <td data-celda={`${fi}-13`} onClick={()=>setCeldaActiva({fila:fi,col:13})} style={cs(13)}>{ev.jornada||""}</td>
+                  <td data-celda={`${fi}-14`} onClick={()=>setCeldaActiva({fila:fi,col:14})} style={cs(14,{whiteSpace:"nowrap"})}>{ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)}</td>
+                  <td data-celda={`${fi}-15`} onClick={()=>setCeldaActiva({fila:fi,col:15})} style={cs(15,{whiteSpace:"nowrap"})}>{formatCorto(ev.fecha_inicio)}</td>
+                  <td data-celda={`${fi}-16`} onClick={()=>setCeldaActiva({fila:fi,col:16})} style={cs(16,{whiteSpace:"nowrap"})}>{formatCorto(ev.fecha_termino)}</td>
+                  <td data-celda={`${fi}-17`} onClick={()=>setCeldaActiva({fila:fi,col:17})} style={cs(17)}>{ev.comentarios||""}</td>
+                  <td data-celda={`${fi}-18`} onClick={()=>setCeldaActiva({fila:fi,col:18})} style={cs(18)}>{i1N}</td>
+                  <td data-celda={`${fi}-19`} onClick={()=>setCeldaActiva({fila:fi,col:19})} style={cs(19)}>{a1?.nro_ot||""}</td>
+                  <td data-celda={`${fi}-20`} onClick={()=>setCeldaActiva({fila:fi,col:20})} style={cs(20)}>{a1?.nro_boleta||""}</td>
+                  <td data-celda={`${fi}-21`} onClick={()=>setCeldaActiva({fila:fi,col:21})} style={cs(21)}>{i2N}</td>
+                  <td data-celda={`${fi}-22`} onClick={()=>setCeldaActiva({fila:fi,col:22})} style={cs(22)}>{a2?.nro_ot||""}</td>
                 </tr>
               );
             })}
