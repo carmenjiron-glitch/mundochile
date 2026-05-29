@@ -1687,7 +1687,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
                       {i.telefono&&<CampoCopia valor={i.telefono}/>}
                     </div>
                     {parsDelInterp.length>0&&<div style={{display:"flex",flexWrap:"wrap",gap:"4px",marginTop:"6px"}}>
-                      {parsDelInterp.map(p=>{const clr=IDIOMA_PILL_CLR[p.idioma_origen]||"#4C6EF5";return(<span key={p.id} style={{display:"inline-flex",alignItems:"center",padding:"2px 8px",borderRadius:"12px",background:clr,color:"#FFFFFF",fontSize:"11px",fontWeight:"500",whiteSpace:"nowrap"}}>{p.idioma_origen} — {p.idioma_destino}</span>);})}
+                      {parsDelInterp.map(p=>{const clr=IDIOMA_PILL_CLR[p.idioma_origen]||"#4C6EF5";return(<span key={p.id} style={{display:"inline-flex",alignItems:"center",padding:"2px 9px",borderRadius:"20px",background:"#FFFFFF",border:`2px solid ${clr}`,color:"#1A1A1A",fontSize:"13px",fontWeight:"500",whiteSpace:"nowrap",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>{p.idioma_origen} — {p.idioma_destino}</span>);})}
                     </div>}
                   </div>
                 </div>
