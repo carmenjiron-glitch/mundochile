@@ -2227,6 +2227,29 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
             })}
           </tbody>
         ))}
+        {mesFiltro&&(()=>{
+          const totalBoleta1=filtered.reduce((sum,r)=>sum+(Number(r.a1?.nro_boleta)||0),0);
+          const totalBoleta2=filtered.reduce((sum,r)=>sum+(Number(r.a2?.nro_boleta)||0),0);
+          const totalBoletas=totalBoleta1+totalBoleta2;
+          return(
+            <tfoot>
+              <tr style={{background:"#EFF6FF",borderTop:"2px solid #1A6FD4"}}>
+                <td colSpan={20} style={{padding:"8px 12px",fontSize:"12px",fontWeight:"600",color:"#1A6FD4",textAlign:"right"}}>Total Boletas Intérprete 1:</td>
+                <td style={{padding:"8px 12px",fontSize:"13px",fontWeight:"700",color:"#1A6FD4"}}>{totalBoleta1>0?totalBoleta1.toLocaleString("es-CL"):"—"}</td>
+                <td colSpan={2}/>
+              </tr>
+              <tr style={{background:"#EFF6FF"}}>
+                <td colSpan={20} style={{padding:"8px 12px",fontSize:"12px",fontWeight:"600",color:"#1A6FD4",textAlign:"right"}}>Total Boletas Intérprete 2:</td>
+                <td style={{padding:"8px 12px",fontSize:"13px",fontWeight:"700",color:"#1A6FD4"}}>{totalBoleta2>0?totalBoleta2.toLocaleString("es-CL"):"—"}</td>
+                <td colSpan={2}/>
+              </tr>
+              <tr style={{background:"#DBEAFE",borderTop:"1px solid #93C5FD"}}>
+                <td colSpan={22} style={{padding:"10px 12px",fontSize:"13px",fontWeight:"700",color:"#1D4ED8",textAlign:"right"}}>TOTAL BOLETAS DEL MES:</td>
+                <td style={{padding:"10px 12px",fontSize:"14px",fontWeight:"800",color:"#1D4ED8"}}>{totalBoletas>0?totalBoletas.toLocaleString("es-CL"):"—"}</td>
+              </tr>
+            </tfoot>
+          );
+        })()}
       </table>
       </div>
     </div>
