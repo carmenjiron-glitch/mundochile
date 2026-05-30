@@ -39,7 +39,7 @@ const IconoSimultanea = () => (
 // ─── SUPABASE ────────────────────────────────────────────────────────────────
 const SB_URL = import.meta.env.VITE_SUPABASE_URL;
 const SB_KEY = import.meta.env.VITE_SUPABASE_KEY;
-const sb = createClient(SB_URL, SB_KEY);
+const sb = createClient(SB_URL, SB_KEY, {global:{headers:{"Cache-Control":"no-cache"}}});
 
 const LOGO_SRC = "/logo.png";
 
@@ -947,6 +947,7 @@ function ModalNuevoProveedor({onCerrar,onGuardado}) {
     if(form.c3_celular.trim())payload.contacto3_celular=form.c3_celular.trim();
     if(form.c3_email.trim())payload.contacto3_email=form.c3_email.trim();
     if(form.comentarios.trim())payload.comentarios=form.comentarios.trim();
+    await sb.rpc("reload_schema_cache").catch(()=>{});
     const {data,error:err}=await sb.from("proveedores").insert(payload).select().single();
     setGuardando(false);
     if(err){setError("Error al guardar: "+err.message);return;}
