@@ -408,7 +408,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
     setGuardando(true);setError("");
     try {
       const payload={
-        cliente_id:form.cliente_id||null, nro_oc:form.nro_oc||"", nombre_evento:form.nombre_evento||"",
+        cliente_id:form.cliente_id||null, nro_oc:form.nro_oc||"", nombre_evento:(form.nombre_evento||"").trim().replace(/\s+/g,' '),
         tipo:form.tipo||"Simultánea", fecha_inicio:form.fecha_inicio, fecha_termino:form.fecha_termino,
         hora_inicio:form.hora_inicio||"09:00", hora_termino:form.hora_termino||"13:00",
         jornada:form.jornada||"Media Jornada", jornada_personalizada:form.jornada_personalizada||"",
@@ -1052,7 +1052,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                 })()}
               </div>
               {cliente?.nombre_contacto&&<div style={{fontSize:"17px",fontWeight:"500",color:"#6B7280",fontStyle:"italic",marginTop:"4px"}}>Contacto: {cliente.nombre_contacto}</div>}
-              {(evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion)&&<div style={{fontSize:"17px",fontWeight:"500",fontStyle:"normal",color:"#111827",marginTop:"4px"}}><span style={{fontWeight:"600",color:"#6B7280"}}>Nombre del evento: </span>{evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion}</div>}
+              {(evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion)&&<div style={{fontSize:"17px",fontWeight:"500",fontStyle:"normal",color:"#111827",marginTop:"4px",whiteSpace:"normal",wordBreak:"break-word",width:"100%",display:"block",overflowWrap:"break-word"}}><span style={{fontWeight:"600",color:"#6B7280"}}>Nombre del evento: </span>{(evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion)?.trim().replace(/\s+/g,' ')}</div>}
               {evento.nro_oc&&<div style={{fontSize:"14px",color:"#6B7280",marginTop:"4px"}}>N° OC: {evento.nro_oc}</div>}
             </div>
             <div style={{display:"flex",flexDirection:"column",gap:"6px",alignItems:"flex-end",flexShrink:0}}>
