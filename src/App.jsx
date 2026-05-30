@@ -1105,7 +1105,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           </div>
           {/* Programa multidía */}
           {dias.length>0&&<><HR/><div style={{marginBottom:"12px"}}>
-            <div style={{fontSize:"16px",fontWeight:"700",color:LBL_LARGA.c,textTransform:LBL_LARGA.tt,letterSpacing:"0.06em",marginBottom:"6px",WebkitFontSmoothing:"antialiased"}}>📅 Agenda del evento</div>
+            <div style={{fontSize:"16px",fontWeight:"700",color:LBL_LARGA.c,textTransform:LBL_LARGA.tt,letterSpacing:"0.06em",marginBottom:"6px",WebkitFontSmoothing:"antialiased"}}>🗓️ Agenda del evento</div>
             <div style={{borderRadius:"10px",overflow:"hidden",border:"1px solid #E5E7EB"}}>
               <table style={{width:"100%",borderCollapse:"collapse"}}>
                 <thead><tr style={{background:"#1E3A6E",color:"#fff"}}>
