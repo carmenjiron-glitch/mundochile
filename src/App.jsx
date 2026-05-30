@@ -1642,6 +1642,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
   const [perfiles,setPerfiles]=useState([]);
   const [interpPares,setInterpPares]=useState({});
   const [busquedaInterp,setBusquedaInterp]=useState("");
+  const [confirmarEliminar,setConfirmarEliminar]=useState(null);
   const tabs=[{id:"interpretes",l:"👤 Intérpretes"},{id:"clientes",l:"🏢 Clientes"},{id:"idiomas",l:"🌐 Idiomas"},{id:"proveedores",l:"🔧 Proveedores"},{id:"lugares",l:"📍 Lugares"},{id:"usuarios",l:"👥 Usuarios"}];
 
   useEffect(()=>{if(tab==="usuarios")sb.from("perfiles").select("*").order("nombre").then(({data})=>data&&setPerfiles(data));},[tab]);
@@ -1661,6 +1662,12 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
     if(id==="nuevo") await sb.from(tabla).insert(payload);
     else await sb.from(tabla).update(payload).eq("id",id);
     setEditando(null);setFormEdit({});onActualizar();
+  };
+
+  const ejecutarEliminacion=async({tipo,id})=>{
+    const tabla=tipo==="cliente"?"clientes":tipo==="interprete"?"interpretes":"proveedores";
+    await sb.from(tabla).delete().eq("id",id);
+    onActualizar();
   };
 
   const EF=(k)=><input style={S.inp} value={formEdit[k]||""} onChange={e=>setFormEdit(f=>({...f,[k]:e.target.value}))}/>;
@@ -1781,6 +1788,10 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
                     style={{padding:"4px 10px",background:"#FFFFFF",color:"#6B7280",border:"1px solid #D1D5DB",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",height:"28px",fontFamily:"inherit"}}>
                     {i.activo?"Desactivar":"Activar"}
                   </button>
+                  <button onClick={()=>setConfirmarEliminar({tipo:"interprete",id:i.id,nombre:`${i.nombre||""}${i.apellido?" "+i.apellido:""}`.trim()})}
+                    style={{padding:"4px 10px",background:"#FEF2F2",color:"#DC2626",border:"1px solid #FECACA",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",height:"28px",fontFamily:"inherit"}}>
+                    Eliminar
+                  </button>
                 </div>
               </div>
             );
@@ -1830,7 +1841,13 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
                 </div>
               </div>
             </div>
-            <button onClick={()=>{setEditando(c.id);setFormEdit({...c});}} style={S.btnEdit}><span style={{filter:"brightness(10)"}}>✏️</span> Editar</button>
+            <div style={{display:"flex",gap:"8px",flexShrink:0}}>
+              <button onClick={()=>{setEditando(c.id);setFormEdit({...c});}} style={S.btnEdit}><span style={{filter:"brightness(10)"}}>✏️</span> Editar</button>
+              <button onClick={()=>setConfirmarEliminar({tipo:"cliente",id:c.id,nombre:c.nombre_empresa||"este cliente"})}
+                style={{padding:"4px 10px",background:"#FEF2F2",color:"#DC2626",border:"1px solid #FECACA",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",height:"28px",fontFamily:"inherit"}}>
+                Eliminar
+              </button>
+            </div>
           </div>);
         })}
       </>}
@@ -1886,7 +1903,13 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
                 {p.telefono&&<CampoCopia valor={p.telefono}/>}
               </div>
             </div>
-            <button onClick={()=>{setEditando(p.id);setFormEdit({...p});}} style={S.btnP}>✏️ Editar</button>
+            <div style={{display:"flex",gap:"8px",flexShrink:0}}>
+              <button onClick={()=>{setEditando(p.id);setFormEdit({...p});}} style={S.btnP}>✏️ Editar</button>
+              <button onClick={()=>setConfirmarEliminar({tipo:"proveedor",id:p.id,nombre:p.nombre||"este proveedor"})}
+                style={{padding:"4px 10px",background:"#FEF2F2",color:"#DC2626",border:"1px solid #FECACA",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",height:"28px",fontFamily:"inherit"}}>
+                Eliminar
+              </button>
+            </div>
           </div>
         ))}
       </>}
@@ -1949,6 +1972,27 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
         })}
         {perfiles.length===0&&<div style={{textAlign:"center",padding:"40px",color:C.textoSuave}}>Cargando usuarios…</div>}
       </>}
+
+      {confirmarEliminar&&(
+        <div style={{position:"fixed",top:0,left:0,width:"100vw",height:"100vh",background:"rgba(0,0,0,0.5)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center"}}>
+          <div style={{background:"#FFFFFF",borderRadius:"12px",padding:"32px",maxWidth:"400px",width:"90%",boxShadow:"0 8px 32px rgba(0,0,0,0.2)"}}>
+            <h3 style={{fontSize:"18px",fontWeight:"600",color:"#111827",margin:"0 0 8px 0"}}>¿Confirmar eliminación?</h3>
+            <p style={{fontSize:"14px",color:"#6B7280",margin:"0 0 24px 0"}}>
+              Estás a punto de eliminar <strong>{confirmarEliminar.nombre}</strong>. Esta acción no se puede deshacer.
+            </p>
+            <div style={{display:"flex",gap:"12px",justifyContent:"flex-end"}}>
+              <button onClick={()=>setConfirmarEliminar(null)}
+                style={{padding:"8px 20px",borderRadius:"8px",background:"#F3F4F6",color:"#374151",border:"1px solid #D1D5DB",cursor:"pointer",fontSize:"13px",fontWeight:"500",fontFamily:"inherit"}}>
+                Cancelar
+              </button>
+              <button onClick={async()=>{await ejecutarEliminacion(confirmarEliminar);setConfirmarEliminar(null);}}
+                style={{padding:"8px 20px",borderRadius:"8px",background:"#DC2626",color:"#FFFFFF",border:"none",cursor:"pointer",fontSize:"13px",fontWeight:"500",fontFamily:"inherit"}}>
+                Sí, eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
