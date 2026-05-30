@@ -147,7 +147,7 @@ const evVacio = () => ({
   jornada:"Media Jornada", jornada_personalizada:"", lugar:"", lugar_detalle:"",
   modalidad:"remoto", plataforma:"Zoom MundoChile", zoom_owner:"mundochile",
   zoom_administrador:"", zoom_link:"", estado:"Facturación Pendiente", numero_factura:"", comentarios:"",
-  nro_hes:"", nro_otros:"", comentarios_av:"", contacto_id:"",
+  nro_hes:"", nro_otros:"", nro_boleta_2:"", comentarios_av:"", contacto_id:"",
   asignaciones:[], dias:[], equipos:[],
 });
 const asigVacia = () => ({interprete_id:"",par_id:"",nro_ot:"",nro_boleta:"",es_boleta_adicional:false,es_host_zoom:false,rol:"Principal",hora_presentacion:"",estado_pago:"Pendiente"});
@@ -415,7 +415,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
         lugar:form.lugar||"", lugar_detalle:form.lugar_detalle||"", modalidad:form.modalidad||"remoto",
         plataforma:form.plataforma||"", zoom_owner:form.zoom_owner||"mundochile",
         zoom_administrador:form.zoom_administrador==="__manual__"?adminZoomManual:(form.zoom_administrador||""), zoom_link:form.zoom_link||"", contacto_id:form.contacto_id?Number(form.contacto_id):null, estado:form.estado||"Facturación Pendiente", numero_factura:form.numero_factura||"",
-        comentarios:form.comentarios||"", edited_by:perfil?.id||null, edited_by_nombre:perfil?.nombre||"",
+        nro_boleta_2:form.nro_boleta_2||"", comentarios:form.comentarios||"", edited_by:perfil?.id||null, edited_by_nombre:perfil?.nombre||"",
       };
       let eventoId=form.id;
       if(form.id){const{error:e}=await sb.from("eventos").update(payload).eq("id",form.id);if(e)throw e;}
@@ -714,13 +714,16 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                   <div><label style={{...S.lbl,fontSize:"11px",fontWeight:"600",textTransform:"uppercase",marginBottom:"4px",whiteSpace:"nowrap"}}>Otros</label><input style={{...S.inp,fontSize:"13px",padding:"6px 10px",width:"100%",boxSizing:"border-box"}} value={form.nro_otros||""} onChange={e=>setF("nro_otros",e.target.value)} placeholder="Ref. adicional…"/></div>
                 </div>
               </div>
-              {/* Estado de facturación + N° Factura */}
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",alignItems:"end"}}>
+              {/* Estado de facturación + N° Factura + N° Boleta Intérprete 2 */}
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"12px",alignItems:"end"}}>
                 <div style={S.camp}><label style={S.lbl}>Estado de facturación</label>
                   <select style={S.sel} value={form.estado} onChange={e=>setF("estado",e.target.value)}>{ESTADOS.map(e=><option key={e}>{e}</option>)}</select>
                 </div>
                 <div style={S.camp}><label style={S.lbl}>N° Factura</label>
                   <input style={S.inp} type="text" value={form.numero_factura||""} onChange={e=>setF("numero_factura",e.target.value)} placeholder="Ej: 12345"/>
+                </div>
+                <div style={S.camp}><label style={S.lbl}>N° Boleta Intérprete 2</label>
+                  <input style={S.inp} type="text" value={form.nro_boleta_2||""} onChange={e=>setF("nro_boleta_2",e.target.value)} placeholder="000"/>
                 </div>
               </div>
             </div>
@@ -2024,7 +2027,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
   const filteredRef=useRef([]);
   const onAbrirRef=useRef(onAbrir);
   const onVerMultidiaRef=useRef(onVerMultidia);
-  const COLS=["Mes","Orden de Compra","Cliente","Contacto Cliente","# Evento","Detalle Equipos AV","Proveedor","Detalles Instalación","Tipo","Nombre Evento","Lugar","Par de Idiomas","Jornada","Horario","Fecha Inicio","Fecha Término","Comentarios","Intérprete 1","Nro OT","Nro Boleta","Intérprete 2","Nro OT 2"];
+  const COLS=["Mes","Orden de Compra","Cliente","Contacto Cliente","# Evento","Detalle Equipos AV","Proveedor","Detalles Instalación","Tipo","Nombre Evento","Lugar","Par de Idiomas","Jornada","Horario","Fecha Inicio","Fecha Término","Comentarios","Intérprete 1","Nro OT","Nro Boleta Intérprete 1","Intérprete 2","Nro OT 2","Nro Boleta Intérprete 2"];
   const FILTERABLE=COLS;
   const TOTAL_COLS=COLS.length+1;
   useEffect(()=>{onAbrirRef.current=onAbrir;},[onAbrir]);
@@ -2073,9 +2076,10 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
     "Comentarios":[...new Set(allRows.map(r=>r.ev.comentarios||""))].filter(Boolean),
     "Intérprete 1":[...new Set(allRows.map(r=>r.i1N))].filter(Boolean),
     "Nro OT":[...new Set(allRows.map(r=>r.a1?.nro_ot||""))].filter(Boolean),
-    "Nro Boleta":[...new Set(allRows.map(r=>r.a1?.nro_boleta||""))].filter(Boolean),
+    "Nro Boleta Intérprete 1":[...new Set(allRows.map(r=>r.a1?.nro_boleta||""))].filter(Boolean),
     "Intérprete 2":[...new Set(allRows.map(r=>r.i2N))].filter(Boolean),
     "Nro OT 2":[...new Set(allRows.map(r=>r.a2?.nro_ot||""))].filter(Boolean),
+    "Nro Boleta Intérprete 2":[...new Set(allRows.map(r=>r.ev.nro_boleta_2||""))].filter(Boolean),
   }),[allRows]);
   const filtered=useMemo(()=>allRows.filter(r=>{
     if(mesFiltro&&r.mesLargo!==mesFiltro)return false;
@@ -2097,9 +2101,10 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
     if(colFiltros["Comentarios"]&&(r.ev.comentarios||"")!==colFiltros["Comentarios"])return false;
     if(colFiltros["Intérprete 1"]&&r.i1N!==colFiltros["Intérprete 1"])return false;
     if(colFiltros["Nro OT"]&&(r.a1?.nro_ot||"")!==colFiltros["Nro OT"])return false;
-    if(colFiltros["Nro Boleta"]&&(r.a1?.nro_boleta||"")!==colFiltros["Nro Boleta"])return false;
+    if(colFiltros["Nro Boleta Intérprete 1"]&&(r.a1?.nro_boleta||"")!==colFiltros["Nro Boleta Intérprete 1"])return false;
     if(colFiltros["Intérprete 2"]&&r.i2N!==colFiltros["Intérprete 2"])return false;
     if(colFiltros["Nro OT 2"]&&(r.a2?.nro_ot||"")!==colFiltros["Nro OT 2"])return false;
+    if(colFiltros["Nro Boleta Intérprete 2"]&&(r.ev.nro_boleta_2||"")!==colFiltros["Nro Boleta Intérprete 2"])return false;
     return true;
   }),[allRows,mesFiltro,colFiltros]);
   useEffect(()=>{filteredRef.current=filtered;},[filtered]);
@@ -2222,6 +2227,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
                   <td data-celda={`${fi}-20`} onClick={()=>setCeldaActiva({fila:fi,col:20})} style={cs(20)}>{a1?.nro_boleta||""}</td>
                   <td data-celda={`${fi}-21`} onClick={()=>setCeldaActiva({fila:fi,col:21})} style={cs(21)}>{i2N}</td>
                   <td data-celda={`${fi}-22`} onClick={()=>setCeldaActiva({fila:fi,col:22})} style={cs(22)}>{a2?.nro_ot||""}</td>
+                  <td data-celda={`${fi}-23`} onClick={()=>setCeldaActiva({fila:fi,col:23})} style={cs(23)}>{ev.nro_boleta_2||""}</td>
                 </tr>
               );
             })}
@@ -2229,22 +2235,21 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
         ))}
         {mesFiltro&&(()=>{
           const totalBoleta1=filtered.reduce((sum,r)=>sum+(Number(r.a1?.nro_boleta)||0),0);
-          const totalBoleta2=filtered.reduce((sum,r)=>sum+(Number(r.a2?.nro_boleta)||0),0);
+          const totalBoleta2=filtered.reduce((sum,r)=>sum+(Number(r.ev.nro_boleta_2)||0),0);
           const totalBoletas=totalBoleta1+totalBoleta2;
           return(
             <tfoot>
               <tr style={{background:"#EFF6FF",borderTop:"2px solid #1A6FD4"}}>
                 <td colSpan={20} style={{padding:"8px 12px",fontSize:"12px",fontWeight:"600",color:"#1A6FD4",textAlign:"right"}}>Total Boletas Intérprete 1:</td>
                 <td style={{padding:"8px 12px",fontSize:"13px",fontWeight:"700",color:"#1A6FD4"}}>{totalBoleta1>0?totalBoleta1.toLocaleString("es-CL"):"—"}</td>
-                <td colSpan={2}/>
+                <td colSpan={3}/>
               </tr>
               <tr style={{background:"#EFF6FF"}}>
-                <td colSpan={20} style={{padding:"8px 12px",fontSize:"12px",fontWeight:"600",color:"#1A6FD4",textAlign:"right"}}>Total Boletas Intérprete 2:</td>
+                <td colSpan={23} style={{padding:"8px 12px",fontSize:"12px",fontWeight:"600",color:"#1A6FD4",textAlign:"right"}}>Total Boletas Intérprete 2:</td>
                 <td style={{padding:"8px 12px",fontSize:"13px",fontWeight:"700",color:"#1A6FD4"}}>{totalBoleta2>0?totalBoleta2.toLocaleString("es-CL"):"—"}</td>
-                <td colSpan={2}/>
               </tr>
               <tr style={{background:"#DBEAFE",borderTop:"1px solid #93C5FD"}}>
-                <td colSpan={22} style={{padding:"10px 12px",fontSize:"13px",fontWeight:"700",color:"#1D4ED8",textAlign:"right"}}>TOTAL BOLETAS DEL MES:</td>
+                <td colSpan={23} style={{padding:"10px 12px",fontSize:"13px",fontWeight:"700",color:"#1D4ED8",textAlign:"right"}}>TOTAL BOLETAS DEL MES:</td>
                 <td style={{padding:"10px 12px",fontSize:"14px",fontWeight:"800",color:"#1D4ED8"}}>{totalBoletas>0?totalBoletas.toLocaleString("es-CL"):"—"}</td>
               </tr>
             </tfoot>
