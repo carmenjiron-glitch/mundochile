@@ -1292,7 +1292,8 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
   const [verJPG,setVerJPG]=useState(false);
   const abrirVistaJPG=()=>{
     const elemento=document.getElementById("ficha-exportable");
-    html2canvas(elemento,{scale:2,useCORS:true,allowTaint:true,backgroundColor:"#FFFFFF",logging:false,scrollX:0,scrollY:-window.scrollY,windowWidth:document.documentElement.scrollWidth,windowHeight:elemento.scrollHeight,width:elemento.scrollWidth,height:elemento.scrollHeight,onclone:(clonedDoc)=>{const el=clonedDoc.getElementById("ficha-exportable");el.style.transform="none";el.style.position="static";el.style.overflow="visible";el.style.maxHeight="none";el.style.height="auto";const headers=el.querySelectorAll('[style*="background"]');headers.forEach(h=>{if(h.style.color==='rgb(255, 255, 255)'||h.style.color==='#FFFFFF'){h.style.color='#FFFFFF';h.style.webkitTextFillColor='#FFFFFF';}});const todos=el.querySelectorAll('*');todos.forEach(e=>{if(e.style.overflow==='hidden')e.style.overflow='visible';if(e.style.maxHeight)e.style.maxHeight='none';});}}).then(canvas=>{setImgJPG(canvas.toDataURL("image/jpeg",0.95));setVerJPG(true);});
+    const inner=elemento.querySelector('div');
+    html2canvas(inner,{scale:2,useCORS:true,allowTaint:true,backgroundColor:"#FFFFFF",logging:false,scrollX:0,scrollY:0,width:inner.offsetWidth,height:inner.offsetHeight,onclone:(clonedDoc)=>{const el=clonedDoc.getElementById("ficha-exportable");el.style.transform="none";el.style.position="static";el.style.overflow="visible";el.style.maxHeight="none";el.style.height="auto";const todos=el.querySelectorAll('*');todos.forEach(e=>{if(e.style.overflow==='hidden')e.style.overflow='visible';if(e.style.maxHeight)e.style.maxHeight='none';const bg=e.style.backgroundColor||e.style.background||"";if(bg&&(bg.includes('3D85D8')||bg.includes('2E7BC4')||bg.includes('1A6FD4')||bg.includes('0D4EA6'))){e.style.color='#FFFFFF';e.style.webkitTextFillColor='#FFFFFF';e.style.cssText+='; color: #FFFFFF !important;';}});}}).then(canvas=>{setImgJPG(canvas.toDataURL("image/jpeg",0.95));setVerJPG(true);});
   };
 
   const Sec=({label,children})=>(
@@ -1365,8 +1366,8 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
             {/* HEADER */}
             <div style={{background:"linear-gradient(135deg, #1A6FD4 0%, #0D4EA6 100%)",padding:"12px 20px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               <div style={{display:"flex",alignItems:"center",gap:"12px"}}>
-                <div style={{width:"38px",height:"38px",borderRadius:"50%",background:"#FFFFFF",overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 0 0 3px rgba(255,255,255,0.3)"}}>
-                  <img src={LOGO_SRC} alt="MundoChile" style={{width:"34px",height:"34px",objectFit:"contain"}}/>
+                <div style={{width:"38px",height:"38px",borderRadius:"50%",background:"#FFFFFF",overflow:"visible",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 0 0 3px rgba(255,255,255,0.3)"}}>
+                  <img src={LOGO_SRC} alt="MundoChile" style={{width:"34px",height:"34px",objectFit:"contain",borderRadius:"50%"}}/>
                 </div>
                 <div>
                   <div style={{fontSize:"20px",fontWeight:"700",color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF",letterSpacing:"0.02em",lineHeight:1}}>MundoChile</div>
@@ -1381,7 +1382,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
 
             {/* SECCIONES — una columna */}
             {(()=>{
-              const sH={background:"#3D85D8",color:"#D9D9D9",WebkitTextFillColor:"#D9D9D9",fontSize:"13px",fontWeight:"600",letterSpacing:"0.06em",padding:"4px 16px",textTransform:"uppercase"};
+              const sH={background:"#3D85D8",color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF",fontSize:"13px",fontWeight:"600",letterSpacing:"0.06em",padding:"4px 16px",textTransform:"uppercase"};
               const sB={padding:"10px 16px",borderBottom:"1px solid #E5E7EB",background:"#FFFFFF"};
               const pillClrFor=(idioma)=>IDIOMA_PILL_CLR[idioma]||"#4C6EF5";
               const pillSt=(idioma)=>({background:"#FFFFFF",border:`2px solid ${pillClrFor(idioma)}`,color:"#1A1A1A",borderRadius:"20px",padding:"6px 12px",textAlign:"center",width:"100%",fontSize:"16px",fontWeight:"400",display:"flex",alignItems:"center",justifyContent:"center",gap:"6px",boxSizing:"border-box"});
@@ -1522,8 +1523,8 @@ function ModalFichasMultiples({eventosLista,clientes,interpretes,pares,onCerrar}
           <div style={{width:"800px",maxWidth:"100%",margin:"0 auto",background:"#FFFFFF",border:"2px solid #1A6FD4",borderRadius:"12px",overflow:"hidden",fontFamily:"'Inter','Segoe UI',system-ui,sans-serif"}}>
             <div style={{background:"linear-gradient(135deg, #1A6FD4 0%, #0D4EA6 100%)",padding:"12px 20px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               <div style={{display:"flex",alignItems:"center",gap:"12px"}}>
-                <div style={{width:"38px",height:"38px",borderRadius:"50%",background:"#FFFFFF",overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 0 0 3px rgba(255,255,255,0.3)"}}>
-                  <img src={LOGO_SRC} alt="MundoChile" style={{width:"34px",height:"34px",objectFit:"contain"}}/>
+                <div style={{width:"38px",height:"38px",borderRadius:"50%",background:"#FFFFFF",overflow:"visible",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 0 0 3px rgba(255,255,255,0.3)"}}>
+                  <img src={LOGO_SRC} alt="MundoChile" style={{width:"34px",height:"34px",objectFit:"contain",borderRadius:"50%"}}/>
                 </div>
                 <div>
                   <div style={{fontSize:"20px",fontWeight:"700",color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF",letterSpacing:"0.02em",lineHeight:1}}>MundoChile</div>
