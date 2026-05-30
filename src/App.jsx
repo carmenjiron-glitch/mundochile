@@ -1182,6 +1182,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                         <span style={{overflow:"hidden",textOverflow:"ellipsis",color:bubbleColor,fontSize:"13px",fontWeight:"600"}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
                       </span>
                     ))}
+                    {grupo.items.length===1&&<div style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"6px 12px",borderRadius:"20px",background:"#F3F4F6",color:"#6B7280",border:"1px dashed #9CA3AF",fontSize:"12px",fontWeight:"500",fontStyle:"italic",opacity:0.85}}>Sin partner</div>}
                   </div>
                   {grupo.items.map(({asig},i)=>metaRow(asig)?<div key={i}>{metaRow(asig)}</div>:null)}
                 </div>);
@@ -1235,6 +1236,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                               <span style={{overflow:"hidden",textOverflow:"ellipsis",color:bubbleColor,fontSize:"13px",fontWeight:"600"}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
                             </span>
                           ))}
+                          {grupo.items.length===1&&<div style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"6px 12px",borderRadius:"20px",background:"#F3F4F6",color:"#6B7280",border:"1px dashed #9CA3AF",fontSize:"12px",fontWeight:"500",fontStyle:"italic",opacity:0.85}}>Sin partner</div>}
                         </div>
                         {grupo.items.map(({asig},i)=>metaRow(asig)?<div key={i}>{metaRow(asig)}</div>:null)}
                       </div>);
