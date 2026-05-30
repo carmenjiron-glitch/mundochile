@@ -146,7 +146,7 @@ const evVacio = () => ({
   fecha_inicio:toISO(new Date(new Date().getTime()+86400000)), fecha_termino:toISO(new Date(new Date().getTime()+86400000)), hora_inicio:"09:00", hora_termino:"13:00",
   jornada:"Media Jornada", jornada_personalizada:"", lugar:"", lugar_detalle:"",
   modalidad:"remoto", plataforma:"Zoom MundoChile", zoom_owner:"mundochile",
-  zoom_administrador:"", zoom_link:"", estado:"Facturación Pendiente", comentarios:"",
+  zoom_administrador:"", zoom_link:"", estado:"Facturación Pendiente", numero_factura:"", comentarios:"",
   nro_hes:"", nro_otros:"", comentarios_av:"", contacto_id:"",
   asignaciones:[], dias:[], equipos:[],
 });
@@ -414,7 +414,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
         jornada:form.jornada||"Media Jornada", jornada_personalizada:form.jornada_personalizada||"",
         lugar:form.lugar||"", lugar_detalle:form.lugar_detalle||"", modalidad:form.modalidad||"remoto",
         plataforma:form.plataforma||"", zoom_owner:form.zoom_owner||"mundochile",
-        zoom_administrador:form.zoom_administrador==="__manual__"?adminZoomManual:(form.zoom_administrador||""), zoom_link:form.zoom_link||"", contacto_id:form.contacto_id?Number(form.contacto_id):null, estado:form.estado||"Facturación Pendiente",
+        zoom_administrador:form.zoom_administrador==="__manual__"?adminZoomManual:(form.zoom_administrador||""), zoom_link:form.zoom_link||"", contacto_id:form.contacto_id?Number(form.contacto_id):null, estado:form.estado||"Facturación Pendiente", numero_factura:form.numero_factura||"",
         comentarios:form.comentarios||"", edited_by:perfil?.id||null, edited_by_nombre:perfil?.nombre||"",
       };
       let eventoId=form.id;
@@ -695,9 +695,15 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
               <div style={{marginBottom:"20px"}}><label style={S.lbl}>Detalles del lugar</label><input style={S.inp} value={form.lugar_detalle} onChange={e=>setF("lugar_detalle",e.target.value)} placeholder="Sala Andes, piso 3…"/></div>
             </>}
             {/* Estado */}
-            <div style={{...S.fila,marginBottom:"20px"}}>
-              <div style={S.camp}><label style={S.lbl}>Estado de facturación</label>
-                <select style={S.sel} value={form.estado} onChange={e=>setF("estado",e.target.value)}>{ESTADOS.map(e=><option key={e}>{e}</option>)}</select></div>
+            <div style={{marginBottom:"20px"}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",alignItems:"end"}}>
+                <div style={S.camp}><label style={S.lbl}>Estado de facturación</label>
+                  <select style={S.sel} value={form.estado} onChange={e=>setF("estado",e.target.value)}>{ESTADOS.map(e=><option key={e}>{e}</option>)}</select>
+                </div>
+                <div style={S.camp}><label style={S.lbl}>N° Factura</label>
+                  <input style={S.inp} type="text" value={form.numero_factura||""} onChange={e=>setF("numero_factura",e.target.value)} placeholder="Ej: 12345"/>
+                </div>
+              </div>
             </div>
             {/* Referencias del cliente */}
             <div style={{marginBottom:"20px"}}>
@@ -1254,7 +1260,10 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           {/* Estado */}
           <div style={{marginBottom:"8px"}}>
             <SL t="Estado de facturación"/>
-            {(()=>{const be=B_EST_D(evento.estado);return<span style={{display:"inline-flex",alignItems:"center",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:be.c,background:be.bg,border:`2px solid ${be.b||be.c}`,whiteSpace:"nowrap"}}>{evento.estado==="Facturado"?"✓ Facturado":"🟠 Facturación Pendiente"}</span>;})()}
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:"16px"}}>
+              {(()=>{const be=B_EST_D(evento.estado);return<span style={{display:"inline-flex",alignItems:"center",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:be.c,background:be.bg,border:`2px solid ${be.b||be.c}`,whiteSpace:"nowrap"}}>{evento.estado==="Facturado"?"✓ Facturado":"🟠 Facturación Pendiente"}</span>;})()}
+              {evento.numero_factura&&<div style={{display:"flex",alignItems:"center",gap:"6px",color:"#374151",fontSize:"13px"}}><span style={{color:"#6B7280",fontWeight:"500"}}>N° Factura:</span><span style={{fontWeight:"600"}}>{evento.numero_factura}</span></div>}
+            </div>
           </div>
           {/* Comentarios */}
           {evento.comentarios&&<div style={{background:"#F8FAFC",borderRadius:"10px",padding:"12px 16px",marginTop:"12px"}}>
