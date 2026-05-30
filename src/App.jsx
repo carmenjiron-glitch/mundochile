@@ -2172,7 +2172,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
 }
 
 // ─── VISTA AGENDA (F8) ───────────────────────────────────────────────────────
-function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,setFiltros,onAbrir,vista}) {
+function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,setFiltros,onAbrir,onVerMultidia,vista}) {
   const hoyISO=hoy();
   const sorted=[...eventos].sort((a,b)=>a.fecha_inicio.localeCompare(b.fecha_inicio));
   const byDay={};
@@ -2204,7 +2204,7 @@ function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,
               ?<div style={{padding:"16px 20px",color:"#646870",fontSize:"14px",fontStyle:"normal",display:"flex",alignItems:"center",gap:"8px",background:"#FAFAFA",borderRadius:"8px",border:"1px dashed #E5E7EB",marginBottom:"8px"}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1B9E4B" strokeWidth="2.9"><circle cx="12" cy="12" r="10"/></svg>Sin eventos este día</div>
               :<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"16px",marginTop:"12px"}}>
                 {evs.map(ev=>(
-                  <EventCard key={ev.id} ev={ev} diaDe={fecha} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} onClick={()=>onAbrir(ev)} pillsHalf={true} agendaSmall={true}/>
+                  <EventCard key={ev.id} ev={ev} diaDe={fecha} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} onClick={()=>onAbrir(ev)} onVerMultidia={onVerMultidia} pillsHalf={true} agendaSmall={true}/>
                 ))}
               </div>
             }
@@ -2837,7 +2837,7 @@ export default function App() {
         {vista==="semana"&&renderSemana()}
         {vista==="dia"&&renderDia()}
         {vista==="mes"&&renderMes()}
-        {vista==="agenda"&&<VistaAgenda vista={vista} eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} filtros={filtros} setFiltros={setFiltros} onAbrir={abrirEvento}/>}
+        {vista==="agenda"&&<VistaAgenda vista={vista} eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} filtros={filtros} setFiltros={setFiltros} onAbrir={abrirEvento} onVerMultidia={verTodosLosDias}/>}
         {vista==="grilla"&&<VistaGrilla eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} contactos={contactos} onAbrir={abrirEvento} onVerMultidia={verTodosLosDias} vista={vista}/>}
       </>}
       {pantalla==="config"&&esAdmin&&<PantallaConfig clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} onActualizar={cargarDatos} perfil={perfil}/>}
