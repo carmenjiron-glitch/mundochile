@@ -694,8 +694,27 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
               </div>
               <div style={{marginBottom:"20px"}}><label style={S.lbl}>Detalles del lugar</label><input style={S.inp} value={form.lugar_detalle} onChange={e=>setF("lugar_detalle",e.target.value)} placeholder="Sala Andes, piso 3…"/></div>
             </>}
-            {/* Estado */}
-            <div style={{marginBottom:"20px"}}>
+            {/* Panel contable */}
+            <div style={{border:"2px solid #E5E7EB",borderRadius:"12px",padding:"16px",background:"#F8FAFF",marginTop:"16px",marginBottom:"16px"}}>
+              <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"16px",paddingBottom:"10px",borderBottom:"1px solid #E5E7EB"}}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A6FD4" strokeWidth="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                <span style={{fontSize:"13px",fontWeight:"700",color:"#1A6FD4",textTransform:"uppercase",letterSpacing:"0.06em"}}>Información Contable</span>
+              </div>
+              {/* Información para facturación */}
+              <div style={{marginBottom:"16px"}}>
+                <label style={{...S.lbl,marginBottom:"8px"}}>Información para facturación</label>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"12px",alignItems:"start"}}>
+                  <div><label style={{...S.lbl,fontSize:"11px",fontWeight:"600",textTransform:"uppercase",marginBottom:"4px",whiteSpace:"nowrap"}}>N° OC</label><input style={{...S.inp,fontSize:"13px",padding:"6px 10px",width:"100%",boxSizing:"border-box"}} value={form.nro_oc} onChange={e=>setF("nro_oc",e.target.value)} placeholder="OC-0000"/></div>
+                  <div><label style={{...S.lbl,fontSize:"11px",fontWeight:"600",textTransform:"uppercase",marginBottom:"4px",whiteSpace:"nowrap"}} title="Hoja Entrada Servicios">N° HES</label><input style={{...S.inp,fontSize:"13px",padding:"6px 10px",width:"100%",boxSizing:"border-box"}} value={form.nro_hes||""} onChange={e=>setF("nro_hes",e.target.value)} placeholder="HES-000"/></div>
+                  <div><label style={{...S.lbl,fontSize:"11px",fontWeight:"600",textTransform:"uppercase",marginBottom:"4px",whiteSpace:"nowrap"}}>Otros</label><input style={{...S.inp,fontSize:"13px",padding:"6px 10px",width:"100%",boxSizing:"border-box"}} value={form.nro_otros||""} onChange={e=>setF("nro_otros",e.target.value)} placeholder="Ref. adicional…"/></div>
+                </div>
+              </div>
+              {/* Estado de facturación + N° Factura */}
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",alignItems:"end"}}>
                 <div style={S.camp}><label style={S.lbl}>Estado de facturación</label>
                   <select style={S.sel} value={form.estado} onChange={e=>setF("estado",e.target.value)}>{ESTADOS.map(e=><option key={e}>{e}</option>)}</select>
@@ -703,15 +722,6 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                 <div style={S.camp}><label style={S.lbl}>N° Factura</label>
                   <input style={S.inp} type="text" value={form.numero_factura||""} onChange={e=>setF("numero_factura",e.target.value)} placeholder="Ej: 12345"/>
                 </div>
-              </div>
-            </div>
-            {/* Referencias del cliente */}
-            <div style={{marginBottom:"20px"}}>
-              <label style={{...S.lbl,marginBottom:"8px"}}>Referencias del cliente</label>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"12px",alignItems:"start"}}>
-                <div><label style={{...S.lbl,fontSize:"11px",fontWeight:"600",textTransform:"uppercase",marginBottom:"4px",whiteSpace:"nowrap"}}>N° OC</label><input style={{...S.inp,fontSize:"13px",padding:"6px 10px",width:"100%",boxSizing:"border-box"}} value={form.nro_oc} onChange={e=>setF("nro_oc",e.target.value)} placeholder="OC-0000"/></div>
-                <div><label style={{...S.lbl,fontSize:"11px",fontWeight:"600",textTransform:"uppercase",marginBottom:"4px",whiteSpace:"nowrap"}} title="Hoja Entrada Servicios">N° HES</label><input style={{...S.inp,fontSize:"13px",padding:"6px 10px",width:"100%",boxSizing:"border-box"}} value={form.nro_hes||""} onChange={e=>setF("nro_hes",e.target.value)} placeholder="HES-000"/></div>
-                <div><label style={{...S.lbl,fontSize:"11px",fontWeight:"600",textTransform:"uppercase",marginBottom:"4px",whiteSpace:"nowrap"}}>Otros</label><input style={{...S.inp,fontSize:"13px",padding:"6px 10px",width:"100%",boxSizing:"border-box"}} value={form.nro_otros||""} onChange={e=>setF("nro_otros",e.target.value)} placeholder="Ref. adicional…"/></div>
               </div>
             </div>
             {/* Comentarios */}
