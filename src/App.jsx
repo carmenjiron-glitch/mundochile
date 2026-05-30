@@ -626,8 +626,8 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
             </div>
             {/* Fechas */}
             <div style={{...S.fila,marginBottom:"20px"}}>
-              <div style={S.camp}><label style={S.lbl}>📅 Fecha inicio</label><input style={S.inp} type="date" value={form.fecha_inicio} onChange={e=>setF("fecha_inicio",e.target.value)}/></div>
-              <div style={S.camp}><label style={S.lbl}>📅 Fecha término</label><input style={S.inp} type="date" value={form.fecha_termino} onChange={e=>setF("fecha_termino",e.target.value)}/></div>
+              <div style={S.camp}><label style={S.lbl}>📅 Fecha inicio</label><input style={S.inp} type="date" value={form.fecha_inicio} onChange={e=>{const v=e.target.value;setF("fecha_inicio",v);if(!form.fecha_termino||form.fecha_termino<v)setF("fecha_termino",v);}}/></div>
+              <div style={S.camp}><label style={S.lbl}>📅 Fecha término</label><input style={S.inp} type="date" value={form.fecha_termino} min={form.fecha_inicio} onChange={e=>{const v=e.target.value;setF("fecha_termino",v<form.fecha_inicio?form.fecha_inicio:v);}}/></div>
             </div>
             {/* Horas + Jornada */}
             {!esMultidia&&<div style={{...S.fila,marginBottom:"20px"}}>
