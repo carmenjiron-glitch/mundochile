@@ -845,7 +845,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                     </select></div>
                 </div>
                 {/* Intérpretes del día */}
-                <div style={{marginTop:"12px"}}>
+                <div style={{marginTop:"12px",border:"2px solid #93252D",borderRadius:"16px",padding:"16px",background:"rgba(147,37,45,0.06)",marginBottom:"16px"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
                     <div style={{fontWeight:"500",color:"#93252D",fontSize:"21px",display:"flex",alignItems:"center",gap:"5px"}}><IconMic size={16}/> Intérpretes de este día</div>
                     <button onClick={()=>addAsig(dIdx)} style={S.btnP}>+ Agregar</button>
@@ -854,7 +854,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                   {(dia.asignaciones||[]).map((a,aIdx)=><FilaAsig key={aIdx} a={a} idx={aIdx} dIdx={dIdx}/>)}
                 </div>
                 {/* Equipos AV */}
-                {form.modalidad!=="remoto"&&<div style={{marginTop:"14px"}}>
+                {form.modalidad!=="remoto"&&<div style={{marginTop:"14px",border:"2px solid #12823B",borderRadius:"16px",padding:"16px",background:"rgba(18,130,59,0.06)",marginBottom:"16px"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
                     <div style={{fontWeight:"500",color:"#12823B",fontSize:"21px",display:"flex",alignItems:"center",gap:"5px"}}><IconAV size={16}/> Equipos AV de este día</div>
                     <button onClick={()=>addEq(dIdx)} style={S.btnP}>+ Agregar equipos</button>
