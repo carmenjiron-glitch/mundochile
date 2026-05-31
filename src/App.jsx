@@ -2531,11 +2531,20 @@ export default function App() {
   const verTodosLosDias=(eventoId)=>{
     setVistaAnterior(vista);
     setEventoMultidiaId(eventoId);
+    setDiaMultidiaSeleccionado(0);
     setModoMultidia(true);
     setVista("dia");
   };
 
   useEffect(()=>{if(vista!=="dia"){setModoMultidia(false);setEventoMultidiaId(null);}},[vista]);
+
+  useEffect(()=>{
+    if(!modoMultidia||diaMultidiaSeleccionado<1) return;
+    const t=setTimeout(()=>{
+      document.getElementById(`multidia-card-${diaMultidiaSeleccionado}`)?.scrollIntoView({behavior:"smooth",block:"start"});
+    },200);
+    return()=>clearTimeout(t);
+  },[modoMultidia,diaMultidiaSeleccionado]);
 
   const editarEvento=async(ev)=>{
     const{data}=await sb.from("eventos")
@@ -2730,7 +2739,7 @@ export default function App() {
                   const ht=(ed?.hora_termino||evM.hora_termino)?.slice(0,5);
                   const jornada=pluralizarJornada(ed?.jornada||evM.jornada)||"";
                   return(<tr key={x} style={{background:x%2===0?"#F8FAFC":"#FFFFFF",borderBottom:"1px solid #E5E7EB"}}>
-                    <td style={{padding:"5px 10px",fontSize:"12px",fontWeight:"600",color:"#1A6FD4",whiteSpace:"nowrap"}}>Día {x}</td>
+                    <td onClick={()=>document.getElementById(`multidia-card-${x}`)?.scrollIntoView({behavior:"smooth",block:"start"})} style={{padding:"5px 10px",fontSize:"12px",fontWeight:"600",color:"#1A6FD4",whiteSpace:"nowrap",cursor:"pointer",textDecoration:"underline",textDecorationColor:"#93C5FD"}} onMouseEnter={e=>e.currentTarget.style.color="#1D4ED8"} onMouseLeave={e=>e.currentTarget.style.color="#1A6FD4"}>Día {x}</td>
                     <td style={{padding:"5px 10px",fontSize:"12px",color:"#0F172A",whiteSpace:"nowrap"}}>{formatLargo(iso)}</td>
                     <td style={{padding:"5px 10px",fontSize:"12px",color:"#374151",whiteSpace:"nowrap"}}>{hi} – {ht} hrs</td>
                     <td style={{padding:"5px 10px",fontSize:"12px",color:"#374151"}}>{jornada}</td>
@@ -2741,7 +2750,7 @@ export default function App() {
           </div>
           <div style={{display:"flex",flexDirection:"column",gap:"16px",padding:"0 24px 0"}}>
             {dias.map(({iso,x})=>{const diaEspecifico={...evM,fecha_inicio:iso,_diaNum:x};return(
-              <div key={iso} onClick={()=>abrirEvento(diaEspecifico)} style={{background:"#FFFFFF",borderLeft:`16px solid ${borderC}`,borderTop:`6px solid ${borderC}`,borderRadius:"0 12px 12px 0",padding:"20px 24px",boxShadow:"0 2px 12px rgba(0,0,0,0.10)",cursor:"pointer"}}>
+              <div key={iso} id={`multidia-card-${x}`} onClick={()=>abrirEvento(diaEspecifico)} style={{background:"#FFFFFF",borderLeft:`16px solid ${borderC}`,borderTop:`6px solid ${borderC}`,borderRadius:"0 12px 12px 0",padding:"20px 24px",boxShadow:"0 2px 12px rgba(0,0,0,0.10)",cursor:"pointer"}}>
                 <div style={{fontSize:"15px",fontWeight:"700",color:"#C62828",marginBottom:"12px"}}>📅 Día {x} de {totalDias} — {formatLargo(iso)}</div>
                 <div style={{fontSize:"34px",fontWeight:"600",color:"#0F172A",lineHeight:1.2,marginBottom:4}}>{cli?.nombre_empresa||"—"}</div>
                 {cli?.nombre_contacto&&<div style={{fontSize:"16px",fontWeight:"500",color:"#6B7280",fontStyle:"italic",marginBottom:4}}>Contacto: {cli.nombre_contacto}</div>}
@@ -2975,7 +2984,7 @@ export default function App() {
 
       {/* ── MODALES ── */}
       {modalEvento&&<ModalEvento eventoInicial={modalEvento.data} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} contactos={contactos} todos_eventos={eventos} perfil={perfil} onGuardar={()=>{setModalEvento(null);cargarDatos();addToast("Evento guardado correctamente","success");}} onCerrar={()=>setModalEvento(null)} onNuevoCliente={(cb)=>setModalNuevoCli({cb})} onNuevoContacto={setModalNuevoContacto} onNuevoInterprete={(ai,di)=>setModalNuevoInt({ai,di})} onLugarCreado={cargarDatos} onNuevoProveedor={prov=>setProveedores(prev=>[...prev,prov])}/>}
-      {modalDetalle&&<ModalDetalle evento={modalDetalle} clientes={clientes} interpretes={interpretes} pares={pares} perfil={perfil} onEditar={()=>editarEvento(modalDetalle)} onEliminar={()=>eliminarEvento(modalDetalle.id)} onCerrar={()=>setModalDetalle(null)} onVerFicha={()=>{setModalFicha(modalDetalle);setModalDetalle(null);}} onNavDia={(dIdx)=>{setVistaAnterior("detalle");setEventoMultidiaId(modalDetalle.id);setDiaMultidiaSeleccionado(dIdx);setModoMultidia(true);setVista("dia");setModalDetalle(null);}} addToast={addToast}/>}
+      {modalDetalle&&<ModalDetalle evento={modalDetalle} clientes={clientes} interpretes={interpretes} pares={pares} perfil={perfil} onEditar={()=>editarEvento(modalDetalle)} onEliminar={()=>eliminarEvento(modalDetalle.id)} onCerrar={()=>setModalDetalle(null)} onVerFicha={()=>{setModalFicha(modalDetalle);setModalDetalle(null);}} onNavDia={(dIdx)=>{setVistaAnterior("detalle");setEventoMultidiaId(modalDetalle.id);setDiaMultidiaSeleccionado(dIdx+1);setModoMultidia(true);setVista("dia");setModalDetalle(null);}} addToast={addToast}/>}
       {modalFicha&&<ModalFicha evento={modalFicha} clientes={clientes} interpretes={interpretes} pares={pares} onCerrar={()=>setModalFicha(null)}/>}
       {modalFichasMultiples&&<ModalFichasMultiples eventosLista={modalFichasMultiples} clientes={clientes} interpretes={interpretes} pares={pares} onCerrar={()=>setModalFichasMultiples(null)}/>}
       {modalNuevoCli&&<ModalNuevoCliente onGuardar={async(d)=>{const{data}=await sb.from("clientes").insert(d).select().single();if(data)setClientes(prev=>[...prev,data]);const cb=modalNuevoCli?.cb;setModalNuevoCli(false);if(data){cb?.(data.id);addToast("Cliente creado","success");}cargarDatos();}} onCerrar={()=>setModalNuevoCli(false)}/>}
