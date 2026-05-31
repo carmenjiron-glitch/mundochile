@@ -426,7 +426,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
         lugar:form.lugar||"", lugar_detalle:form.lugar_detalle||"", modalidad:form.modalidad||"remoto",
         plataforma:form.plataforma||"", zoom_owner:form.zoom_owner||"mundochile",
         zoom_administrador:form.zoom_administrador==="__manual__"?adminZoomManual:(form.zoom_administrador||""), zoom_link:form.zoom_link||"", contacto_id:form.contacto_id?Number(form.contacto_id):null, estado:form.estado||"Facturación Pendiente", numero_factura:form.numero_factura||"",
-        nro_boleta_2:form.nro_boleta_2||"", comentarios:form.comentarios||"", edited_by:perfil?.id||null, edited_by_nombre:perfil?.nombre||"",
+        comentarios:form.comentarios||"", edited_by:perfil?.id||null, edited_by_nombre:perfil?.nombre||"",
       };
       let eventoId=form.id;
       if(form.id){const{error:e}=await sb.from("eventos").update(payload).eq("id",form.id);if(e)throw e;}
