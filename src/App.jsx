@@ -1482,8 +1482,8 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
                 </div>
                 {/* Columna derecha — intérpretes */}
                 {hasInterps&&<div style={{width:"40%",flexShrink:0,minWidth:0}}>
-                  {interpsEl&&<><div style={sH}>Intérpretes</div><div style={sB}>{interpsEl}</div></>}
-                  {campos.interpretes&&esMultidia&&dias.length>0&&<><div style={sH}>Intérpretes por día</div><div style={{background:"#FFFFFF",borderBottom:"1px solid #E5E7EB"}}>{dias.map((dia,dIdx)=>(<div key={dIdx} style={{borderBottom:dIdx<dias.length-1?"1px solid #E5E7EB":"none"}}><div style={{background:"#EBF4FF",padding:"4px 16px",fontSize:"11px",fontWeight:"600",color:"#1A6FD4",textTransform:"uppercase",letterSpacing:"0.04em"}}>Día {dIdx+1}/{dias.length} · {formatCorto(dia.fecha)} · {dia.hora_inicio?.slice(0,5)}–{dia.hora_termino?.slice(0,5)}</div><div style={{padding:"10px 16px"}}>{renderI(dia.asignaciones_dia||dia.asignaciones||[])}</div></div>))}</div></>}
+                  {interpsEl&&<><div style={{...sH,textAlign:"center"}}>Intérpretes</div><div style={sB}>{interpsEl}</div></>}
+                  {campos.interpretes&&esMultidia&&dias.length>0&&<><div style={{...sH,textAlign:"center"}}>Intérpretes por día</div><div style={{background:"#FFFFFF",borderBottom:"1px solid #E5E7EB"}}>{dias.map((dia,dIdx)=>(<div key={dIdx} style={{borderBottom:dIdx<dias.length-1?"1px solid #E5E7EB":"none"}}><div style={{background:"#EBF4FF",padding:"4px 16px",fontSize:"11px",fontWeight:"600",color:"#1A6FD4",textTransform:"uppercase",letterSpacing:"0.04em"}}>Día {dIdx+1}/{dias.length} · {formatCorto(dia.fecha)} · {dia.hora_inicio?.slice(0,5)}–{dia.hora_termino?.slice(0,5)}</div><div style={{padding:"10px 16px"}}>{renderI(dia.asignaciones_dia||dia.asignaciones||[])}</div></div>))}</div></>}
                 </div>}
               </div>);
             })()}
