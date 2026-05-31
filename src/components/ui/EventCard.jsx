@@ -52,7 +52,7 @@ const darken = (hex, f) => { const n = hex.replace("#",""); const r=Math.round(p
 
 // ── Badge rectangular estilo Trello ──────────────────────────────────────────
 const BADGE = {
-  "Simultánea":            { bg:"#EEF2FF", c:"#3B5BDB", b:"#3B5BDB" },
+  "Simultánea":            { bg:"#FFFFFF", c:"#0B5CFF", b:"#0B5CFF" },
   "Consecutiva":           { bg:"#FCE4EC", c:"#C2185B", b:"#C2185B" },
   "Whispering":            { bg:"#F3E5F5", c:"#7B1FA2", b:"#7B1FA2" },
   "Presencial":            { bg:"#E8F5E9", c:"#2E7D32", b:"#2E7D32" },

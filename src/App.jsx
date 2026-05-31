@@ -64,7 +64,7 @@ const idiomaBorde=(idioma)=>IDIOMA_BORDE[idioma]||"#3451d1";
 const idiomaFlag=(idioma)=>IDIOMA_FLAG[idioma]||"🌐";
 const IDIOMA_CDN={"Inglés":"gb","Francés":"fr","Portugués":"br","Español":"es","Alemán":"de","Italiano":"it","Chino":"cn","Japonés":"jp"};
 function FlagImg({idioma}){const c=IDIOMA_CDN[idioma];if(!c)return<span style={{fontSize:"14px"}}>🌐</span>;return<img src={`https://flagcdn.com/28x21/${c}.png`} style={{width:"25px",height:"18px",objectFit:"cover",borderRadius:"2px",verticalAlign:"middle",display:"inline-block",flexShrink:0}} alt={idioma}/>;}
-const B_TIPO={"Simultánea":{bg:"#EEF2FF",c:"#3B5BDB",ct:"#294099"},"Consecutiva":{bg:"#FCE4EC",c:"#C2185B",ct:"#881140"},"Whispering":{bg:"#F3E5F5",c:"#7B1FA2",ct:"#561671"}};
+const B_TIPO={"Simultánea":{bg:"#FFFFFF",c:"#0B5CFF",ct:"#0B5CFF"},"Consecutiva":{bg:"#FCE4EC",c:"#C2185B",ct:"#881140"},"Whispering":{bg:"#F3E5F5",c:"#7B1FA2",ct:"#561671"}};
 const B_MOD={"presencial":{bg:"#E8F5E9",c:"#2E7D32",ct:"#205823"},"remoto":{bg:"#E0F7FA",c:"#00838F",ct:"#005C64"},"hibrido":{bg:"#FBE9E7",c:"#BF360C",ct:"#862608"}};
 const B_EST=(e)=>e==="Facturado"?{bg:"#FFFFFF",c:"#1A1A1A",b:"#E57373"}:{bg:"#FFFFFF",c:"#1A1A1A",b:"#E57373"};
 const bS=(bg,c,b)=>({display:"inline-flex",alignItems:"center",gap:"4px",padding:"3px 8px",borderRadius:"20px",fontSize:"10px",fontWeight:"700",lineHeight:"1.4",color:c,background:bg,border:`2px solid ${b||c}`,whiteSpace:"nowrap"});
@@ -1047,7 +1047,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
   })();
   const LBL={remoto:"Remoto",presencial:"Presencial",hibrido:"Híbrido"};
   const LBL_LARGA={txt:"13px",fw:"600",c:"#0F172A",tt:"uppercase",ls:"0.04em"};
-  const B_TIPO_D={"Simultánea":{bg:"#EEF2FF",c:"#2F49AF"},"Consecutiva":{bg:"#FCE4EC",c:"#9B1349"},"Whispering":{bg:"#F3E5F5",c:"#621982"}};
+  const B_TIPO_D={"Simultánea":{bg:"#FFFFFF",c:"#0B5CFF"},"Consecutiva":{bg:"#FCE4EC",c:"#9B1349"},"Whispering":{bg:"#F3E5F5",c:"#621982"}};
   const B_MOD_D={"presencial":{bg:"#E8F5E9",c:"#256428"},"remoto":{bg:"#E0F7FA",c:"#006972"},"hibrido":{bg:"#FBE9E7",c:"#992B0A"}};
   const B_EST_D=(e)=>e==="Facturado"?{bg:"#FFFFFF",c:"#1A1A1A",b:"#E57373"}:{bg:"#FFFFFF",c:"#1A1A1A",b:"#E57373"};
   const SL=({t})=><div style={{fontSize:LBL_LARGA.txt,fontWeight:LBL_LARGA.fw,color:LBL_LARGA.c,textTransform:LBL_LARGA.tt,letterSpacing:LBL_LARGA.ls,marginBottom:"6px"}}>{t}</div>;
@@ -1211,9 +1211,9 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                 const titleColor=pillClr;
                 const hp=grupo.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
                 return(<div key={key} style={{marginBottom:"12px"}}>
-                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"6px"}}>
-                    <span style={{fontSize:"12px",fontWeight:"600",color:/inglés.*español/i.test(key)?"#2D8CFF":titleColor,textTransform:"uppercase",letterSpacing:"0.06em",textAlign:"center",width:"100%",display:"block"}}>{key}</span>
-                    {hp&&<span style={{fontSize:"14px",color:"#6B7280",display:"flex",alignItems:"center",gap:"4px"}}>🕐 {hp.slice(0,5)} hrs</span>}
+                  <div style={{position:"relative",textAlign:"center",marginBottom:"6px"}}>
+                    <span style={{fontSize:"12px",fontWeight:"600",color:/inglés.*español/i.test(key)?"#2D8CFF":titleColor,textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
+                    {hp&&<span style={{position:"absolute",right:0,top:"50%",transform:"translateY(-50%)",fontSize:"13px",color:"#6B7280",whiteSpace:"nowrap"}}>🕐 {hp.slice(0,5)} hrs</span>}
                   </div>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
                     {grupo.items.map(({interp,isHost},i)=>(
@@ -1265,9 +1265,9 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                       const titleColor=pillClr;
                       const hp=grupo.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
                       return(<div key={key} style={{marginBottom:"12px"}}>
-                        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"6px"}}>
-                          <span style={{fontSize:"12px",fontWeight:"600",color:/inglés.*español/i.test(key)?"#2D8CFF":titleColor,textTransform:"uppercase",letterSpacing:"0.06em",textAlign:"center",width:"100%",display:"block"}}>{key}</span>
-                          {hp&&<span style={{fontSize:"14px",color:"#6B7280",display:"flex",alignItems:"center",gap:"4px"}}>🕐 {hp.slice(0,5)} hrs</span>}
+                        <div style={{position:"relative",textAlign:"center",marginBottom:"6px"}}>
+                          <span style={{fontSize:"12px",fontWeight:"600",color:/inglés.*español/i.test(key)?"#2D8CFF":titleColor,textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
+                          {hp&&<span style={{position:"absolute",right:0,top:"50%",transform:"translateY(-50%)",fontSize:"13px",color:"#6B7280",whiteSpace:"nowrap"}}>🕐 {hp.slice(0,5)} hrs</span>}
                         </div>
                         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"4px"}}>
                           {grupo.items.map(({interp,isHost},i)=>(
