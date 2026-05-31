@@ -1105,18 +1105,18 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           </div>
           {/* Programa multidía */}
           {dias.length>0&&<><HR/><div style={{marginBottom:"12px"}}>
-            <div style={{fontSize:"16px",fontWeight:"700",color:LBL_LARGA.c,textTransform:LBL_LARGA.tt,letterSpacing:"0.06em",marginBottom:"6px",WebkitFontSmoothing:"antialiased"}}>🗓️ Agenda del evento</div>
+            <div style={{fontSize:"13px",fontWeight:"700",color:LBL_LARGA.c,textTransform:LBL_LARGA.tt,letterSpacing:"0.05em",marginBottom:"6px",WebkitFontSmoothing:"antialiased"}}>🗓️ Agenda del evento</div>
             <div style={{borderRadius:"10px",overflow:"hidden",border:"1px solid #E5E7EB"}}>
               <table style={{width:"100%",borderCollapse:"collapse"}}>
                 <thead><tr style={{background:"#1E3A6E",color:"#fff"}}>
-                  {["Día","Fecha","Horario","Jornada"].map(h=><th key={h} style={{padding:"12px 20px",textAlign:"left",fontSize:"20px",fontWeight:"600",WebkitFontSmoothing:"antialiased"}}>{h}</th>)}
+                  {["Día","Fecha","Horario","Jornada"].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:"12px",fontWeight:"600",WebkitFontSmoothing:"antialiased"}}>{h}</th>)}
                 </tr></thead>
                 <tbody>{dias.map((dia,dIdx)=>(
                   <tr key={dIdx} style={{background:dIdx%2===0?"#fff":"#F8FAFC",borderBottom:"1px solid #E5E7EB"}}>
-                    <td style={{padding:"12px 20px",fontSize:"22px",fontWeight:"600",color:"#1A6FD4",WebkitFontSmoothing:"antialiased"}}>Día {dIdx+1}</td>
-                    <td style={{padding:"12px 20px",fontSize:"22px",fontWeight:"400",color:"#0F172A",WebkitFontSmoothing:"antialiased"}}>{formatLargo(dia.fecha)}</td>
-                    <td style={{padding:"12px 20px",fontSize:"22px",fontWeight:"400",color:"#0F172A",WebkitFontSmoothing:"antialiased"}}>{dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs</td>
-                    <td style={{padding:"12px 20px",fontSize:"22px",fontWeight:"400",color:"#475569",WebkitFontSmoothing:"antialiased"}}>{dia.jornada}</td>
+                    <td style={{padding:"7px 12px",fontSize:"13px",fontWeight:"600",color:"#1A6FD4",WebkitFontSmoothing:"antialiased"}}>Día {dIdx+1}</td>
+                    <td style={{padding:"7px 12px",fontSize:"13px",fontWeight:"400",color:"#0F172A",WebkitFontSmoothing:"antialiased"}}>{formatLargo(dia.fecha)}</td>
+                    <td style={{padding:"7px 12px",fontSize:"13px",fontWeight:"400",color:"#0F172A",WebkitFontSmoothing:"antialiased"}}>{dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs</td>
+                    <td style={{padding:"7px 12px",fontSize:"13px",fontWeight:"400",color:"#475569",WebkitFontSmoothing:"antialiased"}}>{dia.jornada}</td>
                   </tr>
                 ))}</tbody>
               </table>
