@@ -1241,7 +1241,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                             <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"3px 8px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:bubbleColor,background:bubbleBg,border:bubbleBorder,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
                               {isHost&&<span style={{fontSize:"12px"}}>🔑</span>}
                               <FlagImg idioma={grupo.idioma}/>
-                              <span style={{overflow:"hidden",textOverflow:"ellipsis",color:bubbleColor,fontSize:"13px",fontWeight:"600"}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
+                              <span style={{overflow:"hidden",textOverflow:"ellipsis",color:"#171717",fontSize:"15px",fontWeight:"500",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",letterSpacing:"0.01em"}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
                             </span>
                           ))}
                           {grupo.items.length===1&&<div style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"6px 12px",borderRadius:"20px",background:"#F3F4F6",color:"#6B7280",border:"1px dashed #9CA3AF",fontSize:"12px",fontWeight:"500",fontStyle:"italic",opacity:0.85}}>Sin partner</div>}
