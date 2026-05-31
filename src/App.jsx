@@ -1031,6 +1031,8 @@ function ModalNuevoProveedor({onCerrar,onGuardado}) {
 function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onEliminar,onCerrar,onVerFicha,onNavDia,addToast}) {
   const [asignaciones,setAsignaciones]=useState(evento?.asignaciones||[]);
   useEffect(()=>setAsignaciones(evento?.asignaciones||[]),[evento]);
+  const [geoOk,setGeoOk]=useState(false);
+  const [geoLoading,setGeoLoading]=useState(false);
   if(!evento) return null;
   const cliente=clientes.find(c=>c.id===evento.cliente_id);
   const esZoomMC=(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom");
@@ -1150,7 +1152,24 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                 style={{display:"inline-flex",alignItems:"center",gap:"5px",fontSize:"13px",fontWeight:"500",color:"#114D84",textDecoration:"none",padding:"6px 12px",border:"1px solid #93C5FD",borderRadius:"8px",background:"#EFF6FF"}}>
                 📍 Ver en Maps
               </a>
-              <CampoCopia valor={`${evento.lugar}${evento.lugar_detalle?", "+evento.lugar_detalle:""}`} mostrarValor={false} wrapStyle={{padding:"6px 12px",borderRadius:"8px",border:"1px solid #93C5FD",background:"#EFF6FF",display:"inline-flex",alignItems:"center",cursor:"pointer"}} btnColor="#1971C2" btnFontSize="16px" btnTitle="Copiar dirección"/>
+              <button
+                title="Copiar coordenadas"
+                onClick={async()=>{
+                  if(geoLoading)return;
+                  setGeoLoading(true);setGeoOk(false);
+                  const q=`${evento.lugar||""}${evento.lugar_detalle?", "+evento.lugar_detalle:""}`.trim();
+                  try{
+                    const res=await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(q)}`);
+                    const data=await res.json();
+                    if(data&&data[0]){
+                      const coords=`${parseFloat(data[0].lat).toFixed(6)},${parseFloat(data[0].lon).toFixed(6)}`;
+                      await navigator.clipboard.writeText(coords);
+                      setGeoOk(true);setTimeout(()=>setGeoOk(false),2500);
+                    }
+                  }catch(e){console.error("geocoding",e);}finally{setGeoLoading(false);}
+                }}
+                style={{padding:"6px 12px",borderRadius:"8px",border:`1px solid ${geoOk?"#86EFAC":"#93C5FD"}`,background:geoOk?"#F0FDF4":"#EFF6FF",display:"inline-flex",alignItems:"center",gap:"5px",cursor:geoLoading?"wait":"pointer",fontSize:"13px",fontWeight:"500",color:geoOk?"#166534":"#114D84",fontFamily:"inherit"}}
+              >{geoLoading?"⏳ Buscando…":geoOk?"✓ Coords copiadas":"⊕ Copiar coords"}</button>
             </div>
           </div>}
           {!esPresencial&&evento.plataforma&&<div style={{marginBottom:"4px"}}>
