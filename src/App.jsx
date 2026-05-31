@@ -2541,7 +2541,8 @@ export default function App() {
   useEffect(()=>{
     if(!modoMultidia||diaMultidiaSeleccionado<1) return;
     const t=setTimeout(()=>{
-      document.getElementById(`multidia-card-${diaMultidiaSeleccionado}`)?.scrollIntoView({behavior:"smooth",block:"start"});
+      const el=document.getElementById(`multidia-card-${diaMultidiaSeleccionado}`);
+      if(el){const y=el.getBoundingClientRect().top+window.scrollY-204;window.scrollTo({top:Math.max(0,y),behavior:"smooth"});}
     },200);
     return()=>clearTimeout(t);
   },[modoMultidia,diaMultidiaSeleccionado]);
@@ -2739,7 +2740,7 @@ export default function App() {
                   const ht=(ed?.hora_termino||evM.hora_termino)?.slice(0,5);
                   const jornada=pluralizarJornada(ed?.jornada||evM.jornada)||"";
                   return(<tr key={x} style={{background:x%2===0?"#F8FAFC":"#FFFFFF",borderBottom:"1px solid #E5E7EB"}}>
-                    <td onClick={()=>document.getElementById(`multidia-card-${x}`)?.scrollIntoView({behavior:"smooth",block:"start"})} style={{padding:"5px 10px",fontSize:"12px",fontWeight:"600",color:"#1A6FD4",whiteSpace:"nowrap",cursor:"pointer",textDecoration:"underline",textDecorationColor:"#93C5FD"}} onMouseEnter={e=>e.currentTarget.style.color="#1D4ED8"} onMouseLeave={e=>e.currentTarget.style.color="#1A6FD4"}>Día {x}</td>
+                    <td onClick={()=>{const el=document.getElementById(`multidia-card-${x}`);if(el){const y=el.getBoundingClientRect().top+window.scrollY-204;window.scrollTo({top:Math.max(0,y),behavior:"smooth"});}}} style={{padding:"5px 10px",fontSize:"12px",fontWeight:"600",color:"#1A6FD4",whiteSpace:"nowrap",cursor:"pointer",textDecoration:"underline",textDecorationColor:"#93C5FD"}} onMouseEnter={e=>e.currentTarget.style.color="#1D4ED8"} onMouseLeave={e=>e.currentTarget.style.color="#1A6FD4"}>Día {x}</td>
                     <td style={{padding:"5px 10px",fontSize:"12px",color:"#0F172A",whiteSpace:"nowrap"}}>{formatLargo(iso)}</td>
                     <td style={{padding:"5px 10px",fontSize:"12px",color:"#374151",whiteSpace:"nowrap"}}>{hi} – {ht} hrs</td>
                     <td style={{padding:"5px 10px",fontSize:"12px",color:"#374151"}}>{jornada}</td>
