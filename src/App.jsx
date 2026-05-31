@@ -1339,7 +1339,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
   const abrirVistaJPG=()=>{
     const elemento=document.getElementById("ficha-exportable");
     const inner=elemento.querySelector('div');
-    html2canvas(inner,{scale:2,useCORS:true,allowTaint:true,backgroundColor:"#FFFFFF",logging:false,scrollX:0,scrollY:0,width:inner.offsetWidth,height:inner.offsetHeight,onclone:(clonedDoc)=>{const el=clonedDoc.getElementById("ficha-exportable");el.style.transform="none";el.style.position="static";el.style.overflow="visible";el.style.maxHeight="none";el.style.height="auto";const todos=el.querySelectorAll('*');todos.forEach(e=>{if(e.style.overflow==='hidden')e.style.overflow='visible';if(e.style.maxHeight)e.style.maxHeight='none';const bg=e.style.backgroundColor||e.style.background||"";if(bg&&(bg.includes('3D85D8')||bg.includes('2E7BC4')||bg.includes('1A6FD4')||bg.includes('0D4EA6'))){e.style.color='#FFFFFF';e.style.webkitTextFillColor='#FFFFFF';e.style.cssText+='; color: #FFFFFF !important;';}});}}).then(canvas=>{setImgJPG(canvas.toDataURL("image/jpeg",0.95));setVerJPG(true);});
+    html2canvas(inner,{scale:2,useCORS:true,allowTaint:true,backgroundColor:"#FFFFFF",logging:false,scrollX:0,scrollY:0,width:inner.offsetWidth,height:inner.offsetHeight,onclone:(clonedDoc)=>{const el=clonedDoc.getElementById("ficha-exportable");el.style.transform="none";el.style.position="static";el.style.overflow="visible";el.style.maxHeight="none";el.style.height="auto";const todos=el.querySelectorAll('*');todos.forEach(e=>{if(e.style.overflow==='hidden')e.style.overflow='visible';if(e.style.maxHeight)e.style.maxHeight='none';const bg=e.style.backgroundColor||e.style.background||"";if(bg&&(bg.includes('3D85D8')||bg.includes('2E7BC4')||bg.includes('1A6FD4')||bg.includes('0D4EA6')||bg.includes('1E3A6E'))){e.style.color='#FFFFFF';e.style.webkitTextFillColor='#FFFFFF';e.style.cssText+='; color: #FFFFFF !important;';}});const logos=clonedDoc.querySelectorAll('img[alt="MundoChile"]');logos.forEach(img=>{img.style.objectFit="contain";img.style.height="52px";img.style.width="auto";img.style.display="block";});const headerTexts=clonedDoc.querySelectorAll('[data-header-text]');headerTexts.forEach(ht=>{ht.style.color="#FFFFFF";ht.style.webkitTextFillColor="#FFFFFF";});}}).then(canvas=>{setImgJPG(canvas.toDataURL("image/jpeg",0.95));setVerJPG(true);});
   };
 
   const Sec=({label,children})=>(
@@ -1410,19 +1410,11 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
           <div style={{width:"800px",maxWidth:"100%",margin:"0 auto",background:"#FFFFFF",border:"2px solid #1A6FD4",borderRadius:"12px",overflow:"hidden",fontFamily:"'Inter','Segoe UI',system-ui,sans-serif"}}>
 
             {/* HEADER */}
-            <div style={{background:"linear-gradient(135deg, #1A6FD4 0%, #0D4EA6 100%)",padding:"12px 20px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-              <div style={{display:"flex",alignItems:"center",gap:"12px"}}>
-                <div style={{width:"38px",height:"38px",borderRadius:"50%",background:"#FFFFFF",overflow:"visible",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 0 0 3px rgba(255,255,255,0.3)"}}>
-                  <img src={LOGO_SRC} alt="MundoChile" style={{width:"34px",height:"34px",objectFit:"contain",borderRadius:"50%"}}/>
-                </div>
-                <div>
-                  <div style={{fontSize:"20px",fontWeight:"700",color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF",letterSpacing:"0.02em",lineHeight:1}}>MundoChile</div>
-                  <div style={{fontSize:"11px",color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF",marginTop:"2px",letterSpacing:"0.15em"}}>TRANSLATIONS & INTERPRETERS</div>
-                </div>
-              </div>
-              <div style={{textAlign:"right"}}>
-                <div style={{fontSize:"10px",color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF",textTransform:"uppercase",letterSpacing:"0.08em"}}>Generado el</div>
-                <div style={{fontSize:"10px",fontWeight:"400",color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF"}}>{new Date().toLocaleDateString("es-CL",{day:"numeric",month:"long",year:"numeric"})}</div>
+            <div style={{display:"flex",alignItems:"center",gap:"14px",padding:"18px 24px",background:"#1E3A6E"}}>
+              <img src="/logo.png" alt="MundoChile" style={{height:"52px",width:"auto",objectFit:"contain",display:"block",flexShrink:0}} crossOrigin="anonymous"/>
+              <div>
+                <div data-header-text="" style={{color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF",fontSize:"22px",fontWeight:"700",lineHeight:1.2}}>MundoChile</div>
+                <div data-header-text="" style={{color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF",fontSize:"11px",fontWeight:"400",letterSpacing:"1.5px",opacity:0.85}}>TRANSLATIONS & INTERPRETERS</div>
               </div>
             </div>
 
@@ -1567,19 +1559,11 @@ function ModalFichasMultiples({eventosLista,clientes,interpretes,pares,onCerrar}
         </div>
         <div style={{flex:1,overflowY:"auto",background:"#F0F4FA",padding:"12px"}}>
           <div style={{width:"800px",maxWidth:"100%",margin:"0 auto",background:"#FFFFFF",border:"2px solid #1A6FD4",borderRadius:"12px",overflow:"hidden",fontFamily:"'Inter','Segoe UI',system-ui,sans-serif"}}>
-            <div style={{background:"linear-gradient(135deg, #1A6FD4 0%, #0D4EA6 100%)",padding:"12px 20px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-              <div style={{display:"flex",alignItems:"center",gap:"12px"}}>
-                <div style={{width:"38px",height:"38px",borderRadius:"50%",background:"#FFFFFF",overflow:"visible",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 0 0 3px rgba(255,255,255,0.3)"}}>
-                  <img src={LOGO_SRC} alt="MundoChile" style={{width:"34px",height:"34px",objectFit:"contain",borderRadius:"50%"}}/>
-                </div>
-                <div>
-                  <div style={{fontSize:"20px",fontWeight:"700",color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF",letterSpacing:"0.02em",lineHeight:1}}>MundoChile</div>
-                  <div style={{fontSize:"11px",color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF",marginTop:"2px",letterSpacing:"0.15em"}}>TRANSLATIONS & INTERPRETERS</div>
-                </div>
-              </div>
-              <div style={{textAlign:"right"}}>
-                <div style={{fontSize:"10px",color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF",textTransform:"uppercase",letterSpacing:"0.08em"}}>Generado el</div>
-                <div style={{fontSize:"10px",fontWeight:"400",color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF"}}>{new Date().toLocaleDateString("es-CL",{day:"numeric",month:"long",year:"numeric"})}</div>
+            <div style={{display:"flex",alignItems:"center",gap:"14px",padding:"18px 24px",background:"#1E3A6E"}}>
+              <img src="/logo.png" alt="MundoChile" style={{height:"52px",width:"auto",objectFit:"contain",display:"block",flexShrink:0}} crossOrigin="anonymous"/>
+              <div>
+                <div data-header-text="" style={{color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF",fontSize:"22px",fontWeight:"700",lineHeight:1.2}}>MundoChile</div>
+                <div data-header-text="" style={{color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF",fontSize:"11px",fontWeight:"400",letterSpacing:"1.5px",opacity:0.85}}>TRANSLATIONS & INTERPRETERS</div>
               </div>
             </div>
             {cliente&&<><div style={sH}>Cliente</div><div style={sB}><div style={{fontSize:"18px",fontWeight:"700",color:"#000000",lineHeight:1.2}}>{cliente.nombre_empresa}</div>{cliente.nombre_contacto&&<div style={{fontSize:"14px",color:"#484f56",fontStyle:"italic",marginTop:"3px"}}>{cliente.nombre_contacto}</div>}</div></>}
