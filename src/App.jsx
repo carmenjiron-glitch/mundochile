@@ -1035,15 +1035,14 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
   const cliente=clientes.find(c=>c.id===evento.cliente_id);
   const esZoomMC=(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom");
   const esPresencial=evento.modalidad==="presencial"||evento.modalidad==="hibrido";
-  const esMultidia=evento.evento_dias?.length>1||(evento.es_multidia===true)||(evento.evento_dias?.length>0&&evento.fecha_inicio!==evento.evento_dias[evento.evento_dias.length-1]?.fecha);
-  const dias=evento.evento_dias?.length>0
-    ?evento.evento_dias
-    :(()=>{
-        if(!evento.fecha_inicio||!evento.fecha_termino||evento.fecha_inicio===evento.fecha_termino)return[];
-        const result=[];const ini=desdeISO(evento.fecha_inicio);const fin=desdeISO(evento.fecha_termino);let cur=new Date(ini);
-        while(cur<=fin){result.push({fecha:toISO(cur),hora_inicio:evento.hora_inicio,hora_termino:evento.hora_termino,jornada:evento.jornada});cur.setDate(cur.getDate()+1);}
-        return result;
-      })();
+  const esMultidia=evento.evento_dias?.length>1||(evento.es_multidia===true)||(evento.fecha_inicio!==evento.fecha_termino)||(evento.evento_dias?.length>0&&evento.fecha_inicio!==evento.evento_dias[evento.evento_dias.length-1]?.fecha);
+  const dias=(()=>{
+    if(evento.evento_dias?.length>0) return [...evento.evento_dias].sort((a,b)=>(a.orden||0)-(b.orden||0));
+    if(!evento.fecha_inicio||!evento.fecha_termino||evento.fecha_inicio===evento.fecha_termino)return[];
+    const result=[];const ini=desdeISO(evento.fecha_inicio);const fin=desdeISO(evento.fecha_termino);let cur=new Date(ini);
+    while(cur<=fin){result.push({fecha:toISO(cur),hora_inicio:evento.hora_inicio,hora_termino:evento.hora_termino,jornada:evento.jornada});cur.setDate(cur.getDate()+1);}
+    return result;
+  })();
   const LBL={remoto:"Remoto",presencial:"Presencial",hibrido:"Híbrido"};
   const LBL_LARGA={txt:"13px",fw:"600",c:"#0F172A",tt:"uppercase",ls:"0.04em"};
   const B_TIPO_D={"Simultánea":{bg:"#EEF2FF",c:"#2F49AF"},"Consecutiva":{bg:"#FCE4EC",c:"#9B1349"},"Whispering":{bg:"#F3E5F5",c:"#621982"}};
@@ -2719,7 +2718,28 @@ export default function App() {
               <span style={{fontWeight:"400",color:"rgba(255,255,255,0.75)",fontSize:"13px",marginLeft:"12px"}}>{totalDias} días</span>
             </div>
           </div>
-          <div style={{display:"flex",flexDirection:"column",gap:"16px",padding:"16px 24px 0"}}>
+          <div style={{padding:"16px 24px 8px"}}>
+            <div style={{borderRadius:"10px",overflow:"hidden",border:"1px solid #BFDBFE"}}>
+              <table style={{width:"100%",borderCollapse:"collapse"}}>
+                <thead><tr style={{background:"#1E3A6E",color:"#fff"}}>
+                  {["Día","Fecha","Horario","Jornada"].map(h=><th key={h} style={{padding:"6px 10px",textAlign:"left",fontSize:"11px",fontWeight:"600",letterSpacing:"0.03em"}}>{h}</th>)}
+                </tr></thead>
+                <tbody>{dias.map(({iso,x})=>{
+                  const ed=(evM.evento_dias||[]).find(d=>d.fecha===iso);
+                  const hi=(ed?.hora_inicio||evM.hora_inicio)?.slice(0,5);
+                  const ht=(ed?.hora_termino||evM.hora_termino)?.slice(0,5);
+                  const jornada=pluralizarJornada(ed?.jornada||evM.jornada)||"";
+                  return(<tr key={x} style={{background:x%2===0?"#F8FAFC":"#FFFFFF",borderBottom:"1px solid #E5E7EB"}}>
+                    <td style={{padding:"5px 10px",fontSize:"12px",fontWeight:"600",color:"#1A6FD4",whiteSpace:"nowrap"}}>Día {x}</td>
+                    <td style={{padding:"5px 10px",fontSize:"12px",color:"#0F172A",whiteSpace:"nowrap"}}>{formatLargo(iso)}</td>
+                    <td style={{padding:"5px 10px",fontSize:"12px",color:"#374151",whiteSpace:"nowrap"}}>{hi} – {ht} hrs</td>
+                    <td style={{padding:"5px 10px",fontSize:"12px",color:"#374151"}}>{jornada}</td>
+                  </tr>);
+                })}</tbody>
+              </table>
+            </div>
+          </div>
+          <div style={{display:"flex",flexDirection:"column",gap:"16px",padding:"0 24px 0"}}>
             {dias.map(({iso,x})=>{const diaEspecifico={...evM,fecha_inicio:iso,_diaNum:x};return(
               <div key={iso} onClick={()=>abrirEvento(diaEspecifico)} style={{background:"#FFFFFF",borderLeft:`16px solid ${borderC}`,borderTop:`6px solid ${borderC}`,borderRadius:"0 12px 12px 0",padding:"20px 24px",boxShadow:"0 2px 12px rgba(0,0,0,0.10)",cursor:"pointer"}}>
                 <div style={{fontSize:"15px",fontWeight:"700",color:"#C62828",marginBottom:"12px"}}>📅 Día {x} de {totalDias} — {formatLargo(iso)}</div>
