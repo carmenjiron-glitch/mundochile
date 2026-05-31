@@ -1069,8 +1069,8 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
       <div style={{background:"#FFFFFF",borderRadius:"20px",width:"100%",maxWidth:"760px",maxHeight:"90vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,0.25)",position:"relative",zIndex:1001}}>
         {/* Header */}
         <div style={{background:"#FFFFFF",padding:"20px 24px",borderRadius:"20px 20px 0 0",flexShrink:0,borderBottom:`10px solid ${colorCliente(evento.cliente_id)}`,position:"sticky",top:0,zIndex:10,boxShadow:"0 2px 8px rgba(0,0,0,0.08)"}}>
-          <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:"16px"}}>
-            <div style={{flex:1,minWidth:0}}>
+          <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:"16px",width:"100%",boxSizing:"border-box",overflow:"visible"}}>
+            <div style={{flex:1,minWidth:0,width:"100%",boxSizing:"border-box",overflow:"visible"}}>
               <div style={{display:"flex",alignItems:"center",gap:"16px",flexWrap:"nowrap"}}>
                 <div style={{fontSize:"29px",fontWeight:"600",color:"#0F172A",lineHeight:1.2}}>{cliente?.nombre_empresa||"—"}</div>
                 {(()=>{
@@ -1083,7 +1083,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                 })()}
               </div>
               {cliente?.nombre_contacto&&<div style={{fontSize:"17px",fontWeight:"500",color:"#6B7280",fontStyle:"italic",marginTop:"4px"}}>Contacto: {cliente.nombre_contacto}</div>}
-              {(evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion)&&<div style={{fontSize:"17px",fontWeight:"500",fontStyle:"normal",color:"#111827",marginTop:"4px",whiteSpace:"normal",wordBreak:"break-word",width:"100%",display:"block",overflowWrap:"break-word"}}><span style={{fontWeight:"600",color:"#6B7280"}}>Nombre del evento: </span>{(evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion)?.replace(/[\t\s]+/g,' ').trim()}</div>}
+              {(evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion)&&<div style={{fontSize:"17px",fontWeight:"500",fontStyle:"normal",color:"#111827",marginTop:"4px",width:"100%",minWidth:"0",boxSizing:"border-box",display:"block",whiteSpace:"normal",wordBreak:"break-word",overflowWrap:"break-word",overflow:"visible",textOverflow:"unset"}}><span style={{fontWeight:"600",color:"#6B7280"}}>Nombre del evento: </span><span style={{display:"block",width:"100%",whiteSpace:"normal",wordBreak:"break-word",overflowWrap:"break-word",textOverflow:"unset",overflow:"visible"}}>{(evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion)?.replace(/[\t\r\n]+/g,' ').replace(/\s{2,}/g,' ').trim()}</span></div>}
               {evento.nro_oc&&<div style={{fontSize:"14px",color:"#6B7280",marginTop:"4px"}}>N° OC: {evento.nro_oc}</div>}
             </div>
             <div style={{display:"flex",flexDirection:"column",gap:"6px",alignItems:"flex-end",flexShrink:0}}>
