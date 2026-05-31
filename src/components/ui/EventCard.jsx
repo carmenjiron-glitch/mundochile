@@ -247,7 +247,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             )}
             {esPresencial && ev.lugar && (
               <div>
-                <div style={{ fontSize:14, color:"#475569" }}>📍 {ev.lugar}</div>
+                <div style={{ display:"inline-flex", alignItems:"center", gap:"5px", padding:"4px 14px", borderRadius:"20px", border:"2px solid #7C3AED", background:"#F5F3FF", color:"#4C1D95", fontSize:14, fontWeight:"500", marginBottom:"4px" }}>📍 {ev.lugar}</div>
                 <div style={{ display:"flex", alignItems:"center", gap:"8px", marginTop:"6px", flexWrap:"wrap" }}>
                   <a
                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.lugar)}`}
@@ -380,7 +380,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             </div>
           )}
           {esPresencial && ev.lugar && (
-            <div style={{ fontSize:14, color:"#475569", marginTop:6 }}>📍 {ev.lugar}</div>
+            <div style={{ display:"inline-flex", alignItems:"center", gap:"5px", padding:"4px 14px", borderRadius:"20px", border:"2px solid #7C3AED", background:"#F5F3FF", color:"#4C1D95", fontSize:14, fontWeight:"500", marginTop:6 }}>📍 {ev.lugar}</div>
           )}
 
           {/* Estado */}

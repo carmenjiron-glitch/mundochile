@@ -1145,8 +1145,10 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           {/* Lugar / Plataforma */}
           {esPresencial&&evento.lugar&&<div style={{marginBottom:"4px"}}>
             <SL t="📍 Lugar"/>
-            <div style={{fontSize:"16px",fontWeight:"500",color:"#0F172A"}}>{evento.lugar}</div>
-            {evento.lugar_detalle&&<div style={{fontSize:"15px",color:"#475569",marginTop:"4px"}}>{evento.lugar_detalle}</div>}
+            <div style={{display:"inline-flex",flexDirection:"column",gap:"3px",padding:"8px 18px",borderRadius:"20px",border:"2px solid #7C3AED",background:"#F5F3FF",marginBottom:"4px"}}>
+              <span style={{fontSize:"16px",fontWeight:"600",color:"#4C1D95"}}>📍 {evento.lugar}</span>
+              {evento.lugar_detalle&&<span style={{fontSize:"14px",fontWeight:"400",color:"#6D28D9"}}>{evento.lugar_detalle}</span>}
+            </div>
             <div style={{display:"flex",alignItems:"center",gap:"8px",marginTop:"8px",flexWrap:"wrap"}}>
               <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((evento.lugar||"")+" "+(evento.lugar_detalle||""))}`} target="_blank" rel="noreferrer"
                 style={{display:"inline-flex",alignItems:"center",gap:"5px",fontSize:"13px",fontWeight:"500",color:"#114D84",textDecoration:"none",padding:"6px 12px",border:"1px solid #93C5FD",borderRadius:"8px",background:"#EFF6FF"}}>
