@@ -1028,7 +1028,7 @@ function ModalNuevoProveedor({onCerrar,onGuardado}) {
 }
 
 // ─── MODAL DETALLE ────────────────────────────────────────────────────────────
-function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onEliminar,onCerrar,onVerFicha,addToast}) {
+function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onEliminar,onCerrar,onVerFicha,onNavDia,addToast}) {
   const [asignaciones,setAsignaciones]=useState(evento?.asignaciones||[]);
   useEffect(()=>setAsignaciones(evento?.asignaciones||[]),[evento]);
   if(!evento) return null;
@@ -1124,7 +1124,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                 </tr></thead>
                 <tbody>{dias.map((dia,dIdx)=>(
                   <tr key={dIdx} style={{background:dIdx%2===0?"#fff":"#F8FAFC",borderBottom:"1px solid #E5E7EB"}}>
-                    <td style={{padding:"7px 12px",fontSize:"13px",fontWeight:"600",color:"#1A6FD4",WebkitFontSmoothing:"antialiased"}}>Día {dIdx+1}</td>
+                    <td onClick={()=>{onNavDia&&onNavDia(dIdx);}} style={{padding:"7px 12px",fontSize:"13px",fontWeight:"600",color:"#1A6FD4",cursor:"pointer",textDecoration:"underline",textDecorationColor:"#93C5FD",WebkitFontSmoothing:"antialiased"}} onMouseEnter={e=>e.currentTarget.style.color="#1D4ED8"} onMouseLeave={e=>e.currentTarget.style.color="#1A6FD4"}>Día {dIdx+1}</td>
                     <td style={{padding:"7px 12px",fontSize:"13px",fontWeight:"400",color:"#0F172A",WebkitFontSmoothing:"antialiased"}}>{formatLargo(dia.fecha)}</td>
                     <td style={{padding:"7px 12px",fontSize:"13px",fontWeight:"400",color:"#0F172A",WebkitFontSmoothing:"antialiased"}}>{dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs</td>
                     <td style={{padding:"7px 12px",fontSize:"13px",fontWeight:"400",color:"#475569",WebkitFontSmoothing:"antialiased"}}>{pluralizarJornada(dia.jornada)}</td>
@@ -1219,6 +1219,21 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                   📅 Día {dIdx+1} — {formatLargo(dia.fecha)} · {dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs
                 </div>
                 <div style={{padding:"12px 16px"}}>
+                  <div style={{borderRadius:"8px",overflow:"hidden",border:"1px solid #BFDBFE",marginBottom:"10px"}}>
+                    <table style={{width:"100%",borderCollapse:"collapse"}}>
+                      <thead><tr style={{background:"#1E3A6E",color:"#fff"}}>
+                        {["Día","Fecha","Horario","Jornada"].map(h=><th key={h} style={{padding:"5px 10px",textAlign:"left",fontSize:"11px",fontWeight:"600",WebkitFontSmoothing:"antialiased"}}>{h}</th>)}
+                      </tr></thead>
+                      <tbody>{dias.map((d,i)=>(
+                        <tr key={i} style={{background:i===dIdx?"#DBEAFE":i%2===0?"#fff":"#F8FAFC",borderBottom:"1px solid #E5E7EB"}}>
+                          <td style={{padding:"5px 10px",fontSize:"12px",fontWeight:i===dIdx?"600":"400",color:"#1A6FD4",WebkitFontSmoothing:"antialiased"}}>Día {i+1}</td>
+                          <td style={{padding:"5px 10px",fontSize:"12px",fontWeight:i===dIdx?"600":"400",color:"#0F172A",WebkitFontSmoothing:"antialiased"}}>{formatLargo(d.fecha)}</td>
+                          <td style={{padding:"5px 10px",fontSize:"12px",fontWeight:i===dIdx?"600":"400",color:"#0F172A",WebkitFontSmoothing:"antialiased"}}>{d.hora_inicio?.slice(0,5)} – {d.hora_termino?.slice(0,5)} hrs</td>
+                          <td style={{padding:"5px 10px",fontSize:"12px",fontWeight:i===dIdx?"600":"400",color:"#475569",WebkitFontSmoothing:"antialiased"}}>{pluralizarJornada(d.jornada)}</td>
+                        </tr>
+                      ))}</tbody>
+                    </table>
+                  </div>
                   {(()=>{
                     const gDia={};
                     asigsDia.forEach(a=>{
@@ -2361,6 +2376,7 @@ export default function App() {
   const [diaActual,setDiaActual]=useState(hoy());
   const [modoMultidia,setModoMultidia]=useState(false);
   const [eventoMultidiaId,setEventoMultidiaId]=useState(null);
+  const [diaMultidiaSeleccionado,setDiaMultidiaSeleccionado]=useState(0);
   const [vistaAnterior,setVistaAnterior]=useState("semana");
   const [pantalla,setPantalla]=useState("calendario");
   const [modalEvento,setModalEvento]=useState(null);
@@ -2945,7 +2961,7 @@ export default function App() {
 
       {/* ── MODALES ── */}
       {modalEvento&&<ModalEvento eventoInicial={modalEvento.data} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} contactos={contactos} todos_eventos={eventos} perfil={perfil} onGuardar={()=>{setModalEvento(null);cargarDatos();addToast("Evento guardado correctamente","success");}} onCerrar={()=>setModalEvento(null)} onNuevoCliente={(cb)=>setModalNuevoCli({cb})} onNuevoContacto={setModalNuevoContacto} onNuevoInterprete={(ai,di)=>setModalNuevoInt({ai,di})} onLugarCreado={cargarDatos} onNuevoProveedor={prov=>setProveedores(prev=>[...prev,prov])}/>}
-      {modalDetalle&&<ModalDetalle evento={modalDetalle} clientes={clientes} interpretes={interpretes} pares={pares} perfil={perfil} onEditar={()=>editarEvento(modalDetalle)} onEliminar={()=>eliminarEvento(modalDetalle.id)} onCerrar={()=>setModalDetalle(null)} onVerFicha={()=>{setModalFicha(modalDetalle);setModalDetalle(null);}} addToast={addToast}/>}
+      {modalDetalle&&<ModalDetalle evento={modalDetalle} clientes={clientes} interpretes={interpretes} pares={pares} perfil={perfil} onEditar={()=>editarEvento(modalDetalle)} onEliminar={()=>eliminarEvento(modalDetalle.id)} onCerrar={()=>setModalDetalle(null)} onVerFicha={()=>{setModalFicha(modalDetalle);setModalDetalle(null);}} onNavDia={(dIdx)=>{setVistaAnterior("detalle");setEventoMultidiaId(modalDetalle.id);setDiaMultidiaSeleccionado(dIdx);setModoMultidia(true);setVista("dia");setModalDetalle(null);}} addToast={addToast}/>}
       {modalFicha&&<ModalFicha evento={modalFicha} clientes={clientes} interpretes={interpretes} pares={pares} onCerrar={()=>setModalFicha(null)}/>}
       {modalFichasMultiples&&<ModalFichasMultiples eventosLista={modalFichasMultiples} clientes={clientes} interpretes={interpretes} pares={pares} onCerrar={()=>setModalFichasMultiples(null)}/>}
       {modalNuevoCli&&<ModalNuevoCliente onGuardar={async(d)=>{const{data}=await sb.from("clientes").insert(d).select().single();if(data)setClientes(prev=>[...prev,data]);const cb=modalNuevoCli?.cb;setModalNuevoCli(false);if(data){cb?.(data.id);addToast("Cliente creado","success");}cargarDatos();}} onCerrar={()=>setModalNuevoCli(false)}/>}
