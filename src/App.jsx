@@ -1130,7 +1130,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             {evento.lugar_detalle&&<div style={{fontSize:"15px",color:"#475569",marginTop:"4px"}}>{evento.lugar_detalle}</div>}
             <div style={{display:"flex",alignItems:"center",gap:"8px",marginTop:"8px",flexWrap:"wrap"}}>
               <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((evento.lugar||"")+" "+(evento.lugar_detalle||""))}`} target="_blank" rel="noreferrer"
-                style={{display:"inline-flex",alignItems:"center",gap:"5px",fontSize:"13px",fontWeight:"500",color:"#1560A5",textDecoration:"none",padding:"6px 12px",border:"1px solid #93C5FD",borderRadius:"8px",background:"#EFF6FF"}}>
+                style={{display:"inline-flex",alignItems:"center",gap:"5px",fontSize:"13px",fontWeight:"500",color:"#114D84",textDecoration:"none",padding:"6px 12px",border:"1px solid #93C5FD",borderRadius:"8px",background:"#EFF6FF"}}>
                 📍 Ver en Maps
               </a>
               <CampoCopia valor={`${evento.lugar}${evento.lugar_detalle?", "+evento.lugar_detalle:""}`} mostrarValor={false} wrapStyle={{padding:"6px 12px",borderRadius:"8px",border:"1px solid #93C5FD",background:"#EFF6FF",display:"inline-flex",alignItems:"center",cursor:"pointer"}} btnColor="#1971C2" btnFontSize="16px" btnTitle="Copiar dirección"/>
