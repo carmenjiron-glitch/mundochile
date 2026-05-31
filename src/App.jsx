@@ -1145,33 +1145,35 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           {/* Lugar / Plataforma */}
           {esPresencial&&evento.lugar&&<div style={{marginBottom:"4px"}}>
             <SL t="📍 Lugar"/>
-            <div style={{display:"inline-flex",flexDirection:"column",gap:"3px",padding:"8px 18px",borderRadius:"20px",border:"2px solid #7C3AED",background:"#F5F3FF",marginBottom:"4px"}}>
-              <span style={{fontSize:"16px",fontWeight:"500",color:"#4C1D95"}}>📍 {evento.lugar}</span>
-              {evento.lugar_detalle&&<span style={{fontSize:"15px",fontWeight:"400",color:"#6D28D9"}}>{evento.lugar_detalle}</span>}
-            </div>
-            <div style={{display:"flex",alignItems:"center",gap:"8px",marginTop:"8px",flexWrap:"wrap"}}>
-              <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((evento.lugar||"")+" "+(evento.lugar_detalle||""))}`} target="_blank" rel="noreferrer"
-                style={{display:"inline-flex",alignItems:"center",gap:"5px",fontSize:"13px",fontWeight:"500",color:"#114D84",textDecoration:"none",padding:"6px 12px",border:"1px solid #93C5FD",borderRadius:"8px",background:"#EFF6FF"}}>
-                📍 Ver en Maps
-              </a>
-              <button
-                title="Copiar coordenadas"
-                onClick={async()=>{
-                  if(geoLoading)return;
-                  setGeoLoading(true);setGeoOk(false);
-                  const q=`${evento.lugar||""}${evento.lugar_detalle?", "+evento.lugar_detalle:""}`.trim();
-                  try{
-                    const res=await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(q)}`);
-                    const data=await res.json();
-                    if(data&&data[0]){
-                      const coords=`${parseFloat(data[0].lat).toFixed(6)},${parseFloat(data[0].lon).toFixed(6)}`;
-                      await navigator.clipboard.writeText(coords);
-                      setGeoOk(true);setTimeout(()=>setGeoOk(false),2500);
-                    }
-                  }catch(e){console.error("geocoding",e);}finally{setGeoLoading(false);}
-                }}
-                style={{padding:"6px 12px",borderRadius:"8px",border:`1px solid ${geoOk?"#86EFAC":"#93C5FD"}`,background:geoOk?"#F0FDF4":"#EFF6FF",display:"inline-flex",alignItems:"center",gap:"5px",cursor:geoLoading?"wait":"pointer",fontSize:"13px",fontWeight:"500",color:geoOk?"#166534":"#114D84",fontFamily:"inherit"}}
-              >{geoLoading?"⏳ Buscando…":geoOk?"✓ Coords copiadas":"⊕ Copiar coords"}</button>
+            <div style={{display:"inline-flex",flexDirection:"column",gap:"8px",padding:"12px 18px",borderRadius:"16px",border:"2px solid #7C3AED",background:"#F5F3FF"}}>
+              <div>
+                <span style={{fontSize:"16px",fontWeight:"500",color:"#4C1D95"}}>📍 {evento.lugar}</span>
+                {evento.lugar_detalle&&<div style={{fontSize:"15px",fontWeight:"400",color:"#6D28D9",marginTop:"2px"}}>{evento.lugar_detalle}</div>}
+              </div>
+              <div style={{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap"}}>
+                <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((evento.lugar||"")+" "+(evento.lugar_detalle||""))}`} target="_blank" rel="noreferrer"
+                  style={{display:"inline-flex",alignItems:"center",gap:"5px",fontSize:"13px",fontWeight:"500",color:"#114D84",textDecoration:"none",padding:"6px 12px",border:"1px solid #93C5FD",borderRadius:"8px",background:"#EFF6FF"}}>
+                  📍 Ver en Maps
+                </a>
+                <button
+                  title="Copiar coordenadas"
+                  onClick={async()=>{
+                    if(geoLoading)return;
+                    setGeoLoading(true);setGeoOk(false);
+                    const q=`${evento.lugar||""}${evento.lugar_detalle?", "+evento.lugar_detalle:""}`.trim();
+                    try{
+                      const res=await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(q)}`);
+                      const data=await res.json();
+                      if(data&&data[0]){
+                        const coords=`${parseFloat(data[0].lat).toFixed(6)},${parseFloat(data[0].lon).toFixed(6)}`;
+                        await navigator.clipboard.writeText(coords);
+                        setGeoOk(true);setTimeout(()=>setGeoOk(false),2500);
+                      }
+                    }catch(e){console.error("geocoding",e);}finally{setGeoLoading(false);}
+                  }}
+                  style={{padding:"6px 12px",borderRadius:"8px",border:`1px solid ${geoOk?"#86EFAC":"#93C5FD"}`,background:geoOk?"#F0FDF4":"#EFF6FF",display:"inline-flex",alignItems:"center",gap:"5px",cursor:geoLoading?"wait":"pointer",fontSize:"13px",fontWeight:"500",color:geoOk?"#166534":"#114D84",fontFamily:"inherit"}}
+                >{geoLoading?"⏳ Buscando…":geoOk?"✓ Coords copiadas":"⊕ Copiar coords"}</button>
+              </div>
             </div>
           </div>}
           {!esPresencial&&evento.plataforma&&<div style={{marginBottom:"4px"}}>

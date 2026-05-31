@@ -247,7 +247,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             )}
             {esPresencial && ev.lugar && (
               <div>
-                <div style={{ display:"inline-flex", alignItems:"center", gap:"5px", padding:"4px 14px", borderRadius:"20px", border:"2px solid #7C3AED", background:"#F5F3FF", color:"#4C1D95", fontSize:14, fontWeight:"500", marginBottom:"4px" }}>📍 {ev.lugar}</div>
+                <div style={{ fontSize:14, color:"#475569" }}>📍 {ev.lugar}</div>
                 <div style={{ display:"flex", alignItems:"center", gap:"8px", marginTop:"6px", flexWrap:"wrap" }}>
                   <a
                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.lugar)}`}
@@ -370,7 +370,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
           {/* Plataforma / Lugar */}
           {!esPresencial && ev.plataforma && (
-            <div style={{ marginTop:6 }}>
+            <div style={{ marginTop:10 }}>
               <PlatformChip
                 platform={ev.plataforma === "Zoom" ? "Zoom MundoChile" : ev.plataforma}
                 isMundoChile={esZoomMC}
@@ -380,11 +380,11 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             </div>
           )}
           {esPresencial && ev.lugar && (
-            <div style={{ display:"inline-flex", alignItems:"center", gap:"5px", padding:"4px 14px", borderRadius:"20px", border:"2px solid #7C3AED", background:"#F5F3FF", color:"#4C1D95", fontSize:14, fontWeight:"500", marginTop:6 }}>📍 {ev.lugar}</div>
+            <div style={{ fontSize:14, color:"#475569", marginTop:10 }}>📍 {ev.lugar}</div>
           )}
 
           {/* Estado */}
-          <div style={{ marginTop:6 }}>
+          <div style={{ marginTop:10 }}>
             <Chip label={estadoLabel} emoji={estadoLabel==="Facturado"?"✓ ":"🟠 "} fontSize={12} padding="4px 10px" />
           </div>
 
@@ -397,7 +397,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             const pillFs  = solidPill ? 12 : 26;
             const flagSz  = solidPill ? 19 : 20;
             return (
-              <div key={key} style={{ marginTop:10 }}>
+              <div key={key} style={{ marginTop:14 }}>
                 <div style={{ fontSize:solidPill?12:14, fontWeight:600, color:/inglés.*español/i.test(key)?"#2D8CFF":darken(pillClr,0.80), textTransform:"uppercase", letterSpacing:"0.07em", marginBottom:5, opacity:0.85, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", textAlign:"center", width:"100%", display:"block" }}>
                   {key}
                 </div>
