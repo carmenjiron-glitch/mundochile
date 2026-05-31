@@ -2725,18 +2725,18 @@ export default function App() {
         <div style={{paddingBottom:"80px",margin:"0 auto",maxWidth:"720px",width:"100%"}}>
           <div data-multidia-header="" style={{position:"sticky",top:"136px",zIndex:50,background:"rgba(18,32,78,0.98)",backdropFilter:"blur(10px)",WebkitBackdropFilter:"blur(10px)",borderBottom:"1px solid rgba(255,255,255,0.15)"}}>
             {/* Volver — círculo absoluto, no ocupa espacio vertical */}
-            <button onClick={()=>{setModoMultidia(false);setEventoMultidiaId(null);setVista(vistaAnterior);}} title="Volver" style={{position:"absolute",top:"8px",right:"8px",display:"flex",alignItems:"center",justifyContent:"center",width:"26px",height:"26px",borderRadius:"50%",background:"rgba(255,255,255,0.15)",color:"#FFFFFF",border:"1px solid rgba(255,255,255,0.3)",cursor:"pointer",zIndex:1,padding:0,flexShrink:0,fontFamily:"inherit"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.28)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg></button>
+            <button onClick={()=>{setModoMultidia(false);setEventoMultidiaId(null);setVista(vistaAnterior);}} title="Volver" style={{position:"absolute",top:"10px",right:"10px",display:"flex",alignItems:"center",justifyContent:"center",width:"31px",height:"31px",borderRadius:"50%",background:"rgba(255,255,255,0.15)",color:"#FFFFFF",border:"1px solid rgba(255,255,255,0.3)",cursor:"pointer",zIndex:1,padding:0,flexShrink:0,fontFamily:"inherit"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.28)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg></button>
             {/* Título */}
-            <div style={{padding:"8px 40px 6px 14px",display:"flex",alignItems:"center",gap:"6px",flexWrap:"wrap"}}>
-              <span style={{fontSize:"13px",fontWeight:"700",color:"#FFFFFF",whiteSpace:"nowrap"}}>🗓️ Evento Multidía</span>
-              <span style={{fontSize:"13px",fontWeight:"600",color:"rgba(255,255,255,0.9)",whiteSpace:"nowrap"}}>— {cli?.nombre_empresa||"—"}</span>
-              <span style={{fontSize:"12px",color:"rgba(255,255,255,0.55)",whiteSpace:"nowrap"}}>· {totalDias} días</span>
+            <div style={{padding:"10px 48px 7px 17px",display:"flex",alignItems:"center",gap:"7px",flexWrap:"wrap"}}>
+              <span style={{fontSize:"16px",fontWeight:"700",color:"#FFFFFF",whiteSpace:"nowrap"}}>🗓️ Evento Multidía</span>
+              <span style={{fontSize:"16px",fontWeight:"600",color:"rgba(255,255,255,0.9)",whiteSpace:"nowrap"}}>— {cli?.nombre_empresa||"—"}</span>
+              <span style={{fontSize:"14px",color:"rgba(255,255,255,0.55)",whiteSpace:"nowrap"}}>· {totalDias} días</span>
             </div>
             {/* Tabla agenda */}
-            <div style={{margin:"0 10px 8px",borderRadius:"8px",overflow:"hidden",border:"1px solid rgba(255,255,255,0.18)"}}>
+            <div style={{margin:"0 12px 10px",borderRadius:"10px",overflow:"hidden",border:"1px solid rgba(255,255,255,0.18)"}}>
               <table style={{width:"100%",borderCollapse:"collapse"}}>
                 <thead><tr style={{background:"rgba(255,255,255,0.12)"}}>
-                  {["Día","Fecha","Horario","Jornada"].map(h=><th key={h} style={{padding:"4px 8px",textAlign:"left",fontSize:"10px",fontWeight:"600",color:"rgba(255,255,255,0.7)",letterSpacing:"0.05em",textTransform:"uppercase"}}>{h}</th>)}
+                  {["Día","Fecha","Horario","Jornada"].map(h=><th key={h} style={{padding:"5px 10px",textAlign:"left",fontSize:"12px",fontWeight:"600",color:"rgba(255,255,255,0.7)",letterSpacing:"0.05em",textTransform:"uppercase"}}>{h}</th>)}
                 </tr></thead>
                 <tbody>{dias.map(({iso,x})=>{
                   const ed=(evM.evento_dias||[]).find(d=>d.fecha===iso);
@@ -2744,10 +2744,10 @@ export default function App() {
                   const ht=(ed?.hora_termino||evM.hora_termino)?.slice(0,5);
                   const jornada=pluralizarJornada(ed?.jornada||evM.jornada)||"";
                   return(<tr key={x} style={{borderTop:"1px solid rgba(255,255,255,0.08)"}}>
-                    <td onClick={()=>{const hdr=document.querySelector('[data-multidia-header]');const off=136+(hdr?.offsetHeight||160)+8;const el=document.getElementById(`multidia-card-${x}`);if(el){const y=el.getBoundingClientRect().top+window.scrollY-off;window.scrollTo({top:Math.max(0,y),behavior:"smooth"});}}} style={{padding:"4px 8px",fontSize:"11px",fontWeight:"700",color:"#93C5FD",whiteSpace:"nowrap",cursor:"pointer",textDecoration:"underline",textDecorationColor:"rgba(147,197,253,0.5)"}} onMouseEnter={e=>e.currentTarget.style.color="#BFDBFE"} onMouseLeave={e=>e.currentTarget.style.color="#93C5FD"}>Día {x}</td>
-                    <td style={{padding:"4px 8px",fontSize:"11px",color:"rgba(255,255,255,0.85)",whiteSpace:"nowrap"}}>{formatLargo(iso)}</td>
-                    <td style={{padding:"4px 8px",fontSize:"11px",color:"rgba(255,255,255,0.7)",whiteSpace:"nowrap"}}>{hi} – {ht} hrs</td>
-                    <td style={{padding:"4px 8px",fontSize:"11px",color:"rgba(255,255,255,0.65)"}}>{jornada}</td>
+                    <td onClick={()=>{const hdr=document.querySelector('[data-multidia-header]');const off=136+(hdr?.offsetHeight||160)+8;const el=document.getElementById(`multidia-card-${x}`);if(el){const y=el.getBoundingClientRect().top+window.scrollY-off;window.scrollTo({top:Math.max(0,y),behavior:"smooth"});}}} style={{padding:"5px 10px",fontSize:"13px",fontWeight:"700",color:"#93C5FD",whiteSpace:"nowrap",cursor:"pointer",textDecoration:"underline",textDecorationColor:"rgba(147,197,253,0.5)"}} onMouseEnter={e=>e.currentTarget.style.color="#BFDBFE"} onMouseLeave={e=>e.currentTarget.style.color="#93C5FD"}>Día {x}</td>
+                    <td style={{padding:"5px 10px",fontSize:"13px",color:"rgba(255,255,255,0.85)",whiteSpace:"nowrap"}}>{formatLargo(iso)}</td>
+                    <td style={{padding:"5px 10px",fontSize:"13px",color:"rgba(255,255,255,0.7)",whiteSpace:"nowrap"}}>{hi} – {ht} hrs</td>
+                    <td style={{padding:"5px 10px",fontSize:"13px",color:"rgba(255,255,255,0.65)"}}>{jornada}</td>
                   </tr>);
                 })}</tbody>
               </table>
