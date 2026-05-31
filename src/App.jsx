@@ -84,20 +84,25 @@ const JORNADAS_REM=["1 hora","1 hora + 1 bloque de 15 minutos","2 horas","2 hora
 const JORNADAS=[...new Set([...JORNADAS_PRES,...JORNADAS_REM])];
 const getJornadas=(mod)=>mod==="remoto"?JORNADAS_REM:JORNADAS_PRES;
 const calcJornada=(mins,mod)=>{
+  let r;
   if(mod==="remoto"){
-    if(mins===60)return"1 hora";if(mins===75)return"1 hora + 1 bloque de 15 minutos";
-    if(mins===120)return"2 horas";if(mins===150)return"2 horas + 1 bloque de 30 minutos";
-    if(mins===240)return"Media Jornada 4 horas";
-    if(mins>240&&mins<=300)return"Media Jornada + 1 hora adicional";
-    if(mins>300&&mins<=540)return"1 Jornada Completa";
-    if(mins>540&&mins<=600)return"Jornada Completa + 1 hora adicional";
-    return"Otro horario personalizado";
+    if(mins===60)r="1 hora";else if(mins===75)r="1 hora + 1 bloque de 15 minutos";
+    else if(mins===120)r="2 horas";else if(mins===150)r="2 horas + 1 bloque de 30 minutos";
+    else if(mins===240)r="Media Jornada 4 horas";
+    else if(mins>240&&mins<=300)r="Media Jornada + 1 hora adicional";
+    else if(mins>300&&mins<=540)r="1 Jornada Completa";
+    else if(mins>540&&mins<=600)r="Jornada Completa + 1 hora adicional";
+    else r="Otro horario personalizado";
+  } else {
+    if(mins===60)r="1 hora";else if(mins>60&&mins<=240)r="Media Jornada";
+    else if(mins>240&&mins<=300)r="Media Jornada + 1 hora adicional";
+    else if(mins>300&&mins<=540)r="Jornada Completa";
+    else if(mins>540&&mins<=600)r="Jornada Completa + 1 hora adicional";
+    else r="Otro horario personalizado";
   }
-  if(mins===60)return"1 hora";if(mins>60&&mins<=240)return"Media Jornada";
-  if(mins>240&&mins<=300)return"Media Jornada + 1 hora adicional";
-  if(mins>300&&mins<=540)return"Jornada Completa";
-  if(mins>540&&mins<=600)return"Jornada Completa + 1 hora adicional";
-  return"Otro horario personalizado";
+  r=r.replace(/(\d+) Jornadas? Completas?/g,(_,n)=>Number(n)>1?`${n} Jornadas Completas`:`${n} Jornada Completa`);
+  r=r.replace(/(\d+) Medias? Jornadas?/g,(_,n)=>Number(n)>1?`${n} Medias Jornadas`:`${n} Media Jornada`);
+  return r;
 };
 const ESTADOS    = ["Facturación Pendiente","Facturado"];
 const DIAS_SEM   = ["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"];
