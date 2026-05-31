@@ -1084,7 +1084,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                   return <div style={{width:"14px",height:"14px",borderRadius:"50%",background:esHoy?"#22C55E":"#EAB308",boxShadow:esHoy?"0 0 8px #22C55E":"0 0 8px #EAB308",flexShrink:0}}/>;
                 })()}
               </div>
-              {cliente?.nombre_contacto&&<div style={{fontSize:"17px",fontWeight:"500",color:"#6B7280",fontStyle:"italic",marginTop:"4px"}}>Contacto: {cliente.nombre_contacto}</div>}
+              {cliente?.nombre_contacto&&<div style={{fontSize:"19px",fontWeight:"500",color:"#5B616D",fontStyle:"italic",marginTop:"4px"}}>Contacto: {cliente.nombre_contacto}</div>}
             </div>
             <div style={{display:"flex",flexDirection:"column",gap:"6px",alignItems:"flex-end",flexShrink:0}}>
               <div style={{display:"flex",gap:"6px",flexWrap:"wrap"}}>
