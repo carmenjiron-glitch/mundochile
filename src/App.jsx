@@ -1445,7 +1445,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
                     const clr=pillClrFor(g.idioma);
                     const hp=g.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
                     return(<div key={i} style={{marginBottom:i<pares2.length-1||solos.length>0?"12px":0}}>
-                      <div style={{textAlign:"center",fontSize:"12px",fontWeight:"600",color:/inglés.*español/i.test(g.desc)?dimClr("#2D8CFF"):dimClr(clr),marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em",width:"100%",display:"block"}}>{g.desc}</div>
+                      <div style={{display:"flex",justifyContent:"center",fontSize:"12px",fontWeight:"600",color:/inglés.*español/i.test(g.desc)?dimClr("#2D8CFF"):dimClr(clr),marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em"}}>{g.desc}</div>
                       <div style={{display:"grid",gridTemplateColumns:"1fr",gap:"5px"}}>
                         {g.items.map(({interp,asig},j)=>(<div key={j} style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"9px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>))}
                       </div>
@@ -1457,7 +1457,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
                       const clr=pillClrFor(g.idioma);
                       const {interp,asig}=g.items[0];
                       return(<div key={i}>
-                        <div style={{textAlign:"center",fontSize:"12px",fontWeight:"600",color:/inglés.*español/i.test(g.desc)?dimClr("#2D8CFF"):dimClr(clr),marginBottom:"3px",textTransform:"uppercase",letterSpacing:"0.06em",width:"100%",display:"block"}}>{g.desc}</div>
+                        <div style={{display:"flex",justifyContent:"center",fontSize:"12px",fontWeight:"600",color:/inglés.*español/i.test(g.desc)?dimClr("#2D8CFF"):dimClr(clr),marginBottom:"3px",textTransform:"uppercase",letterSpacing:"0.06em"}}>{g.desc}</div>
                         <div style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"9px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>
                         {asig.hora_presentacion&&<div style={{textAlign:"right",fontSize:"11px",color:"#505860",marginTop:"4px"}}>🕐 {asig.hora_presentacion.slice(0,5)} hrs</div>}
                       </div>);
