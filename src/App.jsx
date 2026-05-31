@@ -1449,7 +1449,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
                       <div style={{display:"grid",gridTemplateColumns:"1fr",gap:"5px"}}>
                         {g.items.map(({interp,asig},j)=>(<div key={j} style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"9px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>))}
                       </div>
-                      {hp&&<div style={{textAlign:"right",fontSize:"11px",color:"#505860",marginTop:"4px"}}>🕐 {hp.slice(0,5)} hrs</div>}
+                      {hp&&<div style={{textAlign:"center",fontSize:"11px",color:"#505860",marginTop:"6px"}}>🕐 Hora de presentación intérpretes: {hp.slice(0,5)} hrs</div>}
                     </div>);
                   })}
                   {solos.length>0&&(<div style={{display:"grid",gridTemplateColumns:"1fr",gap:"6px"}}>
@@ -1459,7 +1459,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
                       return(<div key={i}>
                         <div style={{textAlign:"center",fontSize:"12px",fontWeight:"600",color:/inglés.*español/i.test(g.desc)?dimClr("#2D8CFF"):dimClr(clr),marginBottom:"3px",textTransform:"uppercase",letterSpacing:"0.06em"}}>{g.desc}</div>
                         <div style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"9px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>
-                        {asig.hora_presentacion&&<div style={{textAlign:"right",fontSize:"11px",color:"#505860",marginTop:"4px"}}>🕐 {asig.hora_presentacion.slice(0,5)} hrs</div>}
+                        {asig.hora_presentacion&&<div style={{textAlign:"center",fontSize:"11px",color:"#505860",marginTop:"6px"}}>🕐 Hora de presentación intérpretes: {asig.hora_presentacion.slice(0,5)} hrs</div>}
                       </div>);
                     })}
                   </div>)}
@@ -1537,7 +1537,7 @@ function ModalFichasMultiples({eventosLista,clientes,interpretes,pares,onCerrar}
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px"}}>
             {g.items.map(({interp,asig},j)=>(<div key={j} style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"10px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>))}
           </div>
-          {hp&&<div style={{textAlign:"right",fontSize:"11px",color:"#505860",marginTop:"4px"}}>🕐 {hp.slice(0,5)} hrs</div>}
+          {hp&&<div style={{textAlign:"center",fontSize:"11px",color:"#505860",marginTop:"6px"}}>🕐 Hora de presentación intérpretes: {hp.slice(0,5)} hrs</div>}
         </div>);
       })}
       {solos.length>0&&(<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px"}}>
@@ -1547,7 +1547,7 @@ function ModalFichasMultiples({eventosLista,clientes,interpretes,pares,onCerrar}
           return(<div key={i}>
             <div style={{textAlign:"center",fontSize:"13px",fontWeight:"600",color:/inglés.*español/i.test(g.desc)?"#2D8CFF":clr,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em",width:"100%",display:"block"}}>{g.desc}</div>
             <div style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"10px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>
-            {asig.hora_presentacion&&<div style={{textAlign:"right",fontSize:"11px",color:"#505860",marginTop:"4px"}}>🕐 {asig.hora_presentacion.slice(0,5)} hrs</div>}
+            {asig.hora_presentacion&&<div style={{textAlign:"center",fontSize:"11px",color:"#505860",marginTop:"6px"}}>🕐 Hora de presentación intérpretes: {asig.hora_presentacion.slice(0,5)} hrs</div>}
           </div>);
         })}
       </div>)}
