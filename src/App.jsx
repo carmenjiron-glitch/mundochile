@@ -1244,20 +1244,6 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                   📅 Día {dIdx+1} — {formatLargo(dia.fecha)} · {dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs{dia.jornada&&<span style={{fontWeight:"400",color:"#6B7280",fontSize:"13px"}}> · {pluralizarJornada(dia.jornada)}</span>}
                 </div>
                 <div style={{padding:"12px 16px"}}>
-                  <div style={{borderRadius:"8px",overflowX:"auto",border:"1px solid #BFDBFE",marginBottom:"10px"}}>
-                    <table style={{width:"100%",borderCollapse:"collapse",tableLayout:"auto"}}>
-                      <thead><tr style={{background:"#1E3A6E",color:"#fff"}}>
-                        {["Día","Fecha","Horario"].map(h=><th key={h} style={{padding:"5px 10px",textAlign:"left",fontSize:"11px",fontWeight:"600",WebkitFontSmoothing:"antialiased",whiteSpace:"nowrap"}}>{h}</th>)}
-                      </tr></thead>
-                      <tbody>{dias.map((d,i)=>(
-                        <tr key={i} style={{background:i===dIdx?"#DBEAFE":i%2===0?"#fff":"#F8FAFC",borderBottom:"1px solid #E5E7EB"}}>
-                          <td style={{padding:"5px 10px",fontSize:"12px",fontWeight:i===dIdx?"600":"400",color:"#1A6FD4",WebkitFontSmoothing:"antialiased",whiteSpace:"nowrap"}}>Día {i+1}</td>
-                          <td style={{padding:"5px 10px",fontSize:"12px",fontWeight:i===dIdx?"600":"400",color:"#0F172A",WebkitFontSmoothing:"antialiased",whiteSpace:"nowrap"}}>{formatLargo(d.fecha)}</td>
-                          <td style={{padding:"5px 10px",fontSize:"12px",fontWeight:i===dIdx?"600":"400",color:"#0F172A",WebkitFontSmoothing:"antialiased",whiteSpace:"nowrap"}}>{d.hora_inicio?.slice(0,5)} – {d.hora_termino?.slice(0,5)} hrs</td>
-                        </tr>
-                      ))}</tbody>
-                    </table>
-                  </div>
                   {(()=>{
                     const gDia={};
                     asigsDia.forEach(a=>{
