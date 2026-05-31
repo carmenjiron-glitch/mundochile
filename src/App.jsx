@@ -1423,7 +1423,8 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
               const sH={background:"#3D85D8",color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF",fontSize:"13px",fontWeight:"600",letterSpacing:"0.06em",padding:"4px 16px",textTransform:"uppercase"};
               const sB={padding:"10px 16px",borderBottom:"1px solid #E5E7EB",background:"#FFFFFF"};
               const pillClrFor=(idioma)=>IDIOMA_PILL_CLR[idioma]||"#4C6EF5";
-              const pillSt=(idioma)=>({background:"#FFFFFF",border:`2px solid ${pillClrFor(idioma)}`,color:"#1A1A1A",borderRadius:"20px",padding:"6px 12px",textAlign:"center",width:"100%",fontSize:"16px",fontWeight:"400",display:"flex",alignItems:"center",justifyContent:"center",gap:"6px",boxSizing:"border-box"});
+              const dimClr=(hex)=>{try{const v=hex.replace('#','');const r=parseInt(v.slice(0,2),16),g=parseInt(v.slice(2,4),16),b=parseInt(v.slice(4,6),16);const m=(x)=>Math.round(Math.min(255,x*0.9+25.5));return`#${m(r).toString(16).padStart(2,'0')}${m(g).toString(16).padStart(2,'0')}${m(b).toString(16).padStart(2,'0')}`;}catch{return hex;}};
+              const pillSt=(idioma)=>({background:"#FFFFFF",border:`1.5px solid ${dimClr(pillClrFor(idioma))}`,color:"#313131",borderRadius:"17px",padding:"5px 10px",textAlign:"center",width:"100%",fontSize:"14px",fontWeight:"400",display:"flex",alignItems:"center",justifyContent:"center",gap:"5px",boxSizing:"border-box"});
               const renderI=(asigs)=>{
                 if(!asigs||asigs.length===0) return null;
                 const gmap={};
@@ -1444,20 +1445,20 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
                     const clr=pillClrFor(g.idioma);
                     const hp=g.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
                     return(<div key={i} style={{marginBottom:i<pares2.length-1||solos.length>0?"12px":0}}>
-                      <div style={{textAlign:"center",fontSize:"14px",fontWeight:"600",color:/inglés.*español/i.test(g.desc)?"#2D8CFF":clr,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em",width:"100%",display:"block"}}>{g.desc}</div>
-                      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px"}}>
-                        {g.items.map(({interp,asig},j)=>(<div key={j} style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"10px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>))}
+                      <div style={{textAlign:"center",fontSize:"12px",fontWeight:"600",color:/inglés.*español/i.test(g.desc)?dimClr("#2D8CFF"):dimClr(clr),marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em",width:"100%",display:"block"}}>{g.desc}</div>
+                      <div style={{display:"grid",gridTemplateColumns:"1fr",gap:"5px"}}>
+                        {g.items.map(({interp,asig},j)=>(<div key={j} style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"9px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>))}
                       </div>
                       {hp&&<div style={{textAlign:"right",fontSize:"11px",color:"#505860",marginTop:"4px"}}>🕐 {hp.slice(0,5)} hrs</div>}
                     </div>);
                   })}
-                  {solos.length>0&&(<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px"}}>
+                  {solos.length>0&&(<div style={{display:"grid",gridTemplateColumns:"1fr",gap:"6px"}}>
                     {solos.map((g,i)=>{
                       const clr=pillClrFor(g.idioma);
                       const {interp,asig}=g.items[0];
                       return(<div key={i}>
-                        <div style={{textAlign:"center",fontSize:"13px",fontWeight:"600",color:/inglés.*español/i.test(g.desc)?"#2D8CFF":clr,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em",width:"100%",display:"block"}}>{g.desc}</div>
-                        <div style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"10px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>
+                        <div style={{textAlign:"center",fontSize:"12px",fontWeight:"600",color:/inglés.*español/i.test(g.desc)?dimClr("#2D8CFF"):dimClr(clr),marginBottom:"3px",textTransform:"uppercase",letterSpacing:"0.06em",width:"100%",display:"block"}}>{g.desc}</div>
+                        <div style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"9px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>
                         {asig.hora_presentacion&&<div style={{textAlign:"right",fontSize:"11px",color:"#505860",marginTop:"4px"}}>🕐 {asig.hora_presentacion.slice(0,5)} hrs</div>}
                       </div>);
                     })}
