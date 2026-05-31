@@ -425,7 +425,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
         jornada:form.jornada||"Media Jornada", jornada_personalizada:form.jornada_personalizada||"",
         lugar:form.lugar||"", lugar_detalle:form.lugar_detalle||"", modalidad:form.modalidad||"remoto",
         plataforma:form.plataforma||"", zoom_owner:form.zoom_owner||"mundochile",
-        zoom_administrador:form.zoom_administrador==="__manual__"?adminZoomManual:(form.zoom_administrador||""), zoom_link:form.zoom_link||"", contacto_id:form.contacto_id?Number(form.contacto_id):null, estado:form.estado||"Facturación Pendiente", numero_factura:form.numero_factura||"",
+        zoom_administrador:form.zoom_administrador==="__manual__"?adminZoomManual:(form.zoom_administrador||""), zoom_link:form.zoom_link||"", contacto_id:form.contacto_id?Number(form.contacto_id):null, estado:form.estado||"Facturación Pendiente",
         comentarios:form.comentarios||"", edited_by:perfil?.id||null, edited_by_nombre:perfil?.nombre||"",
       };
       let eventoId=form.id;
@@ -1469,24 +1469,60 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
               const hasInterpsDia=campos.interpretes&&esMultidia&&dias.length>0;
               const hasInterps=interpsEl||hasInterpsDia;
               const hasDerecha=(campos.tipo||campos.modalidad)||hasInterps;
-              return(<div style={{display:"flex",alignItems:"stretch"}}>
-                {/* Columna izquierda — datos del evento */}
-                <div style={{flex:1,minWidth:0,borderRight:hasDerecha?"2px solid #D1D5DB":"none"}}>
-                  {campos.cliente&&cliente&&<><div style={sH}>Cliente</div><div style={sB}><div style={{fontSize:"18px",fontWeight:"700",color:"#000000",lineHeight:1.2}}>{cliente.nombre_empresa}</div>{cliente.nombre_contacto&&<div style={{fontSize:"14px",color:"#484f56",fontStyle:"italic",marginTop:"3px"}}>{cliente.nombre_contacto}</div>}</div></>}
-                  {campos.evento&&evento.nombre_evento&&<><div style={sH}>Evento</div><div style={sB}><div style={{fontSize:"14px",fontWeight:"500",color:"#151c28"}}>{evento.nombre_evento}</div>{evento.nro_oc&&<div style={{fontSize:"13px",color:"#484f56",marginTop:"3px"}}>N° OC: {evento.nro_oc}</div>}</div></>}
-                  {(campos.fecha||campos.horario)&&<><div style={sH}>Fecha / Horario</div><div style={sB}><div>{campos.fecha&&evento.fecha_inicio&&<div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>{esMultidia?`${formatCorto(evento.fecha_inicio)} → ${formatCorto(evento.fecha_termino)}`:formatLargo(evento.fecha_inicio)}</div>}{campos.horario&&evento.hora_inicio&&<div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d",marginTop:"4px"}}>🕐 {evento.hora_inicio.slice(0,5)} – {evento.hora_termino?.slice(0,5)} hrs</div>}</div></div></>}
-                  {campos.jornada&&evento.jornada&&<><div style={sH}>Jornada</div><div style={sB}><div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>⏱ {pluralizarJornada(evento.jornada)}{evento.jornada_personalizada?` — ${evento.jornada_personalizada}`:""}</div></div></>}
-                  {campos.lugar&&esPresencial&&evento.lugar&&<><div style={sH}>Lugar</div><div style={sB}><div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>📍 {evento.lugar}</div>{evento.lugar_detalle&&<div style={{fontSize:"13px",color:"#303a47",marginTop:"3px"}}>{evento.lugar_detalle}</div>}</div></>}
-                  {campos.plataforma&&!esPresencial&&evento.plataforma&&<><div style={sH}>Plataforma</div><div style={sB}><PlatformChip platform={evento.plataforma==="Zoom"?"Zoom MundoChile":evento.plataforma} isMundoChile={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")} extra={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")?evento.zoom_administrador:""}/></div></>}
-                  {campos.comentarios&&evento.comentarios&&<><div style={sH}>Comentarios</div><div style={{...sB,borderBottom:"none"}}><div style={{fontSize:"13px",color:"#0a0f1d",lineHeight:1.5}}>{evento.comentarios}</div></div></>}
-                </div>
-                {/* Columna derecha — tipo/modalidad + intérpretes (sólo si hay contenido) */}
-                {hasDerecha&&<div style={{width:"40%",flexShrink:0,minWidth:0}}>
-                  {(campos.tipo||campos.modalidad)&&<><div style={{...sH,textAlign:"center"}}>Tipo / Modalidad</div><div style={{...sB,borderBottom:hasInterps?"1px solid #E5E7EB":"none"}}><div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center",justifyContent:"center"}}>{campos.tipo&&evento.tipo&&<span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:(B_TIPO[evento.tipo]||{ct:"#294099"}).ct,WebkitFontSmoothing:"antialiased",background:(B_TIPO[evento.tipo]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>{evento.tipo==="Simultánea"?<IconoSimultanea/>:evento.tipo==="Consecutiva"?"🎤":"🤫"} {evento.tipo}</span>}{campos.modalidad&&evento.modalidad&&<span style={{display:"inline-flex",alignItems:"center",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:(B_MOD[evento.modalidad]||{ct:"#4B4B4B"}).ct,WebkitFontSmoothing:"antialiased",background:(B_MOD[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?"📍":evento.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evento.modalidad]}</span>}</div></div></>}
-                  {interpsEl&&<><div style={{...sH,textAlign:"center"}}>Intérpretes</div><div style={{...sB,borderBottom:hasInterpsDia?"1px solid #E5E7EB":"none"}}>{interpsEl}</div></>}
-                  {hasInterpsDia&&<><div style={{...sH,textAlign:"center"}}>Intérpretes por día</div><div style={{background:"#FFFFFF"}}>{dias.map((dia,dIdx)=>(<div key={dIdx} style={{borderBottom:dIdx<dias.length-1?"1px solid #E5E7EB":"none"}}><div style={{background:"#EBF4FF",padding:"4px 16px",fontSize:"11px",fontWeight:"600",color:"#1A6FD4",textTransform:"uppercase",letterSpacing:"0.04em"}}>Día {dIdx+1}/{dias.length} · {formatCorto(dia.fecha)} · {dia.hora_inicio?.slice(0,5)}–{dia.hora_termino?.slice(0,5)}</div><div style={{padding:"10px 16px"}}>{renderI(dia.asignaciones_dia||dia.asignaciones||[])}</div></div>))}</div></>}
-                </div>}
-              </div>);
+              return(<table style={{width:"100%",borderCollapse:"collapse"}}>
+                {hasDerecha&&<colgroup><col style={{width:"60%"}}/><col style={{width:"40%"}}/></colgroup>}
+                <tbody>
+                  {/* Fila 1: Cliente | Tipo/Modalidad */}
+                  <tr>
+                    <td style={{padding:0,verticalAlign:"top",borderRight:hasDerecha?"2px solid #D1D5DB":"none"}}>
+                      {campos.cliente&&cliente&&<><div style={sH}>Cliente</div><div style={sB}><div style={{fontSize:"18px",fontWeight:"700",color:"#000000",lineHeight:1.2}}>{cliente.nombre_empresa}</div>{cliente.nombre_contacto&&<div style={{fontSize:"14px",color:"#484f56",fontStyle:"italic",marginTop:"3px"}}>{cliente.nombre_contacto}</div>}</div></>}
+                    </td>
+                    {hasDerecha&&<td style={{padding:0,verticalAlign:"top"}}>
+                      {(campos.tipo||campos.modalidad)&&<><div style={{...sH,textAlign:"center"}}>Tipo / Modalidad</div><div style={{...sB}}><div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center",justifyContent:"center"}}>{campos.tipo&&evento.tipo&&<span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:(B_TIPO[evento.tipo]||{ct:"#294099"}).ct,WebkitFontSmoothing:"antialiased",background:(B_TIPO[evento.tipo]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>{evento.tipo==="Simultánea"?<IconoSimultanea/>:evento.tipo==="Consecutiva"?"🎤":"🤫"} {evento.tipo}</span>}{campos.modalidad&&evento.modalidad&&<span style={{display:"inline-flex",alignItems:"center",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:(B_MOD[evento.modalidad]||{ct:"#4B4B4B"}).ct,WebkitFontSmoothing:"antialiased",background:(B_MOD[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?"📍":evento.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evento.modalidad]}</span>}</div></div></>}
+                    </td>}
+                  </tr>
+                  {/* Fila 2: Evento | (vacío) */}
+                  {campos.evento&&evento.nombre_evento&&<tr>
+                    <td style={{padding:0,verticalAlign:"top",borderRight:hasDerecha?"2px solid #D1D5DB":"none"}}>
+                      <div style={sH}>Evento</div><div style={sB}><div style={{fontSize:"14px",fontWeight:"500",color:"#151c28"}}>{evento.nombre_evento}</div>{evento.nro_oc&&<div style={{fontSize:"13px",color:"#484f56",marginTop:"3px"}}>N° OC: {evento.nro_oc}</div>}</div>
+                    </td>
+                    {hasDerecha&&<td style={{padding:0}}></td>}
+                  </tr>}
+                  {/* Fila 3: Fecha/Horario | Intérpretes — ALINEADOS */}
+                  {((campos.fecha||campos.horario)||interpsEl)&&<tr>
+                    <td style={{padding:0,verticalAlign:"top",borderRight:hasDerecha?"2px solid #D1D5DB":"none"}}>
+                      {(campos.fecha||campos.horario)&&<><div style={sH}>Fecha / Horario</div><div style={sB}><div>{campos.fecha&&evento.fecha_inicio&&<div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>{esMultidia?`${formatCorto(evento.fecha_inicio)} → ${formatCorto(evento.fecha_termino)}`:formatLargo(evento.fecha_inicio)}</div>}{campos.horario&&evento.hora_inicio&&<div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d",marginTop:"4px"}}>🕐 {evento.hora_inicio.slice(0,5)} – {evento.hora_termino?.slice(0,5)} hrs</div>}</div></div></>}
+                    </td>
+                    {hasDerecha&&<td style={{padding:0,verticalAlign:"top"}}>
+                      {interpsEl&&<><div style={{...sH,textAlign:"center"}}>Intérpretes</div><div style={{...sB,borderBottom:"none"}}>{interpsEl}</div></>}
+                    </td>}
+                  </tr>}
+                  {/* Fila 4: Jornada | Intérpretes por día */}
+                  {(campos.jornada&&evento.jornada||hasInterpsDia)&&<tr>
+                    <td style={{padding:0,verticalAlign:"top",borderRight:hasDerecha?"2px solid #D1D5DB":"none"}}>
+                      {campos.jornada&&evento.jornada&&<><div style={sH}>Jornada</div><div style={sB}><div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>⏱ {pluralizarJornada(evento.jornada)}{evento.jornada_personalizada?` — ${evento.jornada_personalizada}`:""}</div></div></>}
+                    </td>
+                    {hasDerecha&&<td style={{padding:0,verticalAlign:"top"}}>
+                      {hasInterpsDia&&<><div style={{...sH,textAlign:"center"}}>Intérpretes por día</div><div style={{background:"#FFFFFF"}}>{dias.map((dia,dIdx)=>(<div key={dIdx} style={{borderBottom:dIdx<dias.length-1?"1px solid #E5E7EB":"none"}}><div style={{background:"#EBF4FF",padding:"4px 16px",fontSize:"11px",fontWeight:"600",color:"#1A6FD4",textTransform:"uppercase",letterSpacing:"0.04em"}}>Día {dIdx+1}/{dias.length} · {formatCorto(dia.fecha)} · {dia.hora_inicio?.slice(0,5)}–{dia.hora_termino?.slice(0,5)}</div><div style={{padding:"10px 16px"}}>{renderI(dia.asignaciones_dia||dia.asignaciones||[])}</div></div>))}</div></>}
+                    </td>}
+                  </tr>}
+                  {/* Fila 5: Lugar / Plataforma | (vacío) */}
+                  {(campos.lugar&&esPresencial&&evento.lugar||campos.plataforma&&!esPresencial&&evento.plataforma)&&<tr>
+                    <td style={{padding:0,verticalAlign:"top",borderRight:hasDerecha?"2px solid #D1D5DB":"none"}}>
+                      {campos.lugar&&esPresencial&&evento.lugar&&<><div style={sH}>Lugar</div><div style={sB}><div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>📍 {evento.lugar}</div>{evento.lugar_detalle&&<div style={{fontSize:"13px",color:"#303a47",marginTop:"3px"}}>{evento.lugar_detalle}</div>}</div></>}
+                      {campos.plataforma&&!esPresencial&&evento.plataforma&&<><div style={sH}>Plataforma</div><div style={sB}><PlatformChip platform={evento.plataforma==="Zoom"?"Zoom MundoChile":evento.plataforma} isMundoChile={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")} extra={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")?evento.zoom_administrador:""}/></div></>}
+                    </td>
+                    {hasDerecha&&<td style={{padding:0}}></td>}
+                  </tr>}
+                  {/* Fila 6: Comentarios | (vacío) */}
+                  {campos.comentarios&&evento.comentarios&&<tr>
+                    <td style={{padding:0,verticalAlign:"top",borderRight:hasDerecha?"2px solid #D1D5DB":"none"}}>
+                      <div style={sH}>Comentarios</div><div style={{...sB,borderBottom:"none"}}><div style={{fontSize:"13px",color:"#0a0f1d",lineHeight:1.5}}>{evento.comentarios}</div></div>
+                    </td>
+                    {hasDerecha&&<td style={{padding:0}}></td>}
+                  </tr>}
+                </tbody>
+              </table>);
             })()}
           </div>
         </div>
@@ -2724,19 +2760,18 @@ export default function App() {
       return (
         <div style={{paddingBottom:"80px",margin:"0 auto",maxWidth:"720px",width:"100%"}}>
           <div data-multidia-header="" style={{position:"sticky",top:"136px",zIndex:50,background:"rgba(18,32,78,0.98)",backdropFilter:"blur(10px)",WebkitBackdropFilter:"blur(10px)",borderBottom:"1px solid rgba(255,255,255,0.15)"}}>
-            {/* Volver — círculo absoluto, no ocupa espacio vertical */}
-            <button onClick={()=>{setModoMultidia(false);setEventoMultidiaId(null);setVista(vistaAnterior);}} title="Volver" style={{position:"absolute",top:"10px",right:"10px",display:"flex",alignItems:"center",justifyContent:"center",width:"31px",height:"31px",borderRadius:"50%",background:"rgba(255,255,255,0.15)",color:"#FFFFFF",border:"1px solid rgba(255,255,255,0.3)",cursor:"pointer",zIndex:1,padding:0,flexShrink:0,fontFamily:"inherit"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.28)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg></button>
-            {/* Título */}
-            <div style={{padding:"10px 48px 7px 17px",display:"flex",alignItems:"center",gap:"7px",flexWrap:"wrap"}}>
+            {/* Título + Volver inline */}
+            <div style={{padding:"10px 12px 7px 17px",display:"flex",alignItems:"center",gap:"7px",flexWrap:"nowrap"}}>
               <span style={{fontSize:"16px",fontWeight:"700",color:"#FFFFFF",whiteSpace:"nowrap"}}>🗓️ Evento Multidía</span>
               <span style={{fontSize:"16px",fontWeight:"600",color:"rgba(255,255,255,0.9)",whiteSpace:"nowrap"}}>— {cli?.nombre_empresa||"—"}</span>
-              <span style={{fontSize:"14px",color:"rgba(255,255,255,0.55)",whiteSpace:"nowrap"}}>· {totalDias} días</span>
+              <span style={{fontSize:"14px",color:"rgba(255,255,255,0.70)",whiteSpace:"nowrap"}}>· {totalDias} días</span>
+              <button onClick={()=>{setModoMultidia(false);setEventoMultidiaId(null);setVista(vistaAnterior);}} title="Volver" style={{marginLeft:"auto",display:"flex",alignItems:"center",justifyContent:"center",width:"31px",height:"31px",borderRadius:"50%",background:"rgba(255,255,255,0.15)",color:"#FFFFFF",border:"1px solid rgba(255,255,255,0.3)",cursor:"pointer",padding:0,flexShrink:0,fontFamily:"inherit"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.28)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg></button>
             </div>
             {/* Tabla agenda */}
             <div style={{margin:"0 12px 10px",borderRadius:"10px",overflow:"hidden",border:"1px solid rgba(255,255,255,0.18)"}}>
               <table style={{width:"100%",borderCollapse:"collapse"}}>
                 <thead><tr style={{background:"rgba(255,255,255,0.12)"}}>
-                  {["Día","Fecha","Horario","Jornada"].map(h=><th key={h} style={{padding:"5px 10px",textAlign:"left",fontSize:"12px",fontWeight:"600",color:"rgba(255,255,255,0.7)",letterSpacing:"0.05em",textTransform:"uppercase"}}>{h}</th>)}
+                  {["Día","Fecha","Horario","Jornada"].map(h=><th key={h} style={{padding:"5px 10px",textAlign:"left",fontSize:"12px",fontWeight:"600",color:"rgba(255,255,255,0.85)",letterSpacing:"0.05em",textTransform:"uppercase"}}>{h}</th>)}
                 </tr></thead>
                 <tbody>{dias.map(({iso,x})=>{
                   const ed=(evM.evento_dias||[]).find(d=>d.fecha===iso);
@@ -2744,10 +2779,10 @@ export default function App() {
                   const ht=(ed?.hora_termino||evM.hora_termino)?.slice(0,5);
                   const jornada=pluralizarJornada(ed?.jornada||evM.jornada)||"";
                   return(<tr key={x} style={{borderTop:"1px solid rgba(255,255,255,0.08)"}}>
-                    <td onClick={()=>{const hdr=document.querySelector('[data-multidia-header]');const off=136+(hdr?.offsetHeight||160)+8;const el=document.getElementById(`multidia-card-${x}`);if(el){const y=el.getBoundingClientRect().top+window.scrollY-off;window.scrollTo({top:Math.max(0,y),behavior:"smooth"});}}} style={{padding:"5px 10px",fontSize:"13px",fontWeight:"700",color:"#93C5FD",whiteSpace:"nowrap",cursor:"pointer",textDecoration:"underline",textDecorationColor:"rgba(147,197,253,0.5)"}} onMouseEnter={e=>e.currentTarget.style.color="#BFDBFE"} onMouseLeave={e=>e.currentTarget.style.color="#93C5FD"}>Día {x}</td>
-                    <td style={{padding:"5px 10px",fontSize:"13px",color:"rgba(255,255,255,0.85)",whiteSpace:"nowrap"}}>{formatLargo(iso)}</td>
-                    <td style={{padding:"5px 10px",fontSize:"13px",color:"rgba(255,255,255,0.7)",whiteSpace:"nowrap"}}>{hi} – {ht} hrs</td>
-                    <td style={{padding:"5px 10px",fontSize:"13px",color:"rgba(255,255,255,0.65)"}}>{jornada}</td>
+                    <td onClick={()=>{const hdr=document.querySelector('[data-multidia-header]');const off=136+(hdr?.offsetHeight||160)+8;const el=document.getElementById(`multidia-card-${x}`);if(el){const y=el.getBoundingClientRect().top+window.scrollY-off;window.scrollTo({top:Math.max(0,y),behavior:"smooth"});}}} style={{padding:"5px 10px",fontSize:"13px",fontWeight:"700",color:"#A3CEFD",whiteSpace:"nowrap",cursor:"pointer",textDecoration:"underline",textDecorationColor:"rgba(163,206,253,0.5)"}} onMouseEnter={e=>e.currentTarget.style.color="#BFDBFE"} onMouseLeave={e=>e.currentTarget.style.color="#A3CEFD"}>Día {x}</td>
+                    <td style={{padding:"5px 10px",fontSize:"13px",color:"#FFFFFF",whiteSpace:"nowrap"}}>{formatLargo(iso)}</td>
+                    <td style={{padding:"5px 10px",fontSize:"13px",color:"rgba(255,255,255,0.85)",whiteSpace:"nowrap"}}>{hi} – {ht} hrs</td>
+                    <td style={{padding:"5px 10px",fontSize:"13px",color:"rgba(255,255,255,0.80)"}}>{jornada}</td>
                   </tr>);
                 })}</tbody>
               </table>
