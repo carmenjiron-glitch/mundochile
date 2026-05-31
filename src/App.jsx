@@ -839,7 +839,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           {tab==="dias"&&esMultidia&&form.dias.map((dia,dIdx)=>(
             <div key={dia.fecha} style={{border:`2px solid ${C.grisBorde}`,borderRadius:"14px",marginBottom:"16px",overflow:"hidden"}}>
               <div style={{background:C.grisMed,padding:"12px 16px",fontWeight:"500",color:"#234A80",fontSize:"17px"}}>
-                📅 Día {dIdx+1} de {form.dias.length} — {formatLargo(dia.fecha)}
+                📅 {formatMedioES(dia.fecha)} · {dia.hora_inicio?.slice(0,5)||"–"} – {dia.hora_termino?.slice(0,5)||"–"} hrs · {pluralizarJornada(dia.jornada)||""}
               </div>
               <div style={{padding:"16px"}}>
                 <div style={{...S.fila,marginBottom:"12px"}}>
