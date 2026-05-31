@@ -1535,13 +1535,13 @@ function ModalFichasMultiples({eventosLista,clientes,interpretes,pares,onCerrar}
         const hp=g.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
         return(<div key={i} style={{marginBottom:i<pares2.length-1||solos.length>0?"12px":0}}>
           <div style={{textAlign:"center",fontSize:"14px",fontWeight:"600",color:/inglés.*español/i.test(g.desc)?"#2D8CFF":clr,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em",width:"100%",display:"block"}}>{g.desc}</div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px"}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr",gap:"8px"}}>
             {g.items.map(({interp,asig},j)=>(<div key={j} style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"10px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>))}
           </div>
           {hp&&<div style={{textAlign:"center",fontSize:"11px",color:"#505860",marginTop:"6px"}}>🕐 Hora de presentación intérpretes: {hp.slice(0,5)} hrs</div>}
         </div>);
       })}
-      {solos.length>0&&(<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px"}}>
+      {solos.length>0&&(<div style={{display:"grid",gridTemplateColumns:"1fr",gap:"12px"}}>
         {solos.map((g,i)=>{
           const clr=pillClrFor(g.idioma);
           const {interp,asig}=g.items[0];
@@ -2710,15 +2710,15 @@ export default function App() {
       const totalDias=Math.round((fin-ini)/86400000)+1;
       const dias=Array.from({length:totalDias},(_,i)=>{const d=new Date(ini.getTime()+i*86400000);return{iso:toISO(d),x:i+1};});
       return (
-        <div style={{paddingTop:"16px",paddingBottom:"80px",paddingLeft:"24px",paddingRight:"24px",margin:"0 auto",maxWidth:"720px",width:"100%"}}>
-          <div style={{display:"flex",alignItems:"center",gap:"12px",marginBottom:"20px"}}>
+        <div style={{paddingBottom:"80px",margin:"0 auto",maxWidth:"720px",width:"100%"}}>
+          <div style={{position:"sticky",top:"136px",zIndex:50,background:"rgba(22,38,84,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.12)",display:"flex",alignItems:"center",gap:"12px",padding:"12px 24px"}}>
             <button onClick={()=>{setModoMultidia(false);setEventoMultidiaId(null);setVista(vistaAnterior);}} style={{display:"flex",alignItems:"center",gap:"6px",padding:"8px 14px",borderRadius:"8px",background:"#F1F5F9",color:"#374151",border:"1px solid #94A3B8",cursor:"pointer",fontSize:"13px",fontWeight:"500",fontFamily:"inherit",flexShrink:0}} onMouseEnter={e=>{e.currentTarget.style.background="#E2E8F0";e.currentTarget.style.border="1px solid #64748B";}} onMouseLeave={e=>{e.currentTarget.style.background="#F1F5F9";e.currentTarget.style.border="1px solid #94A3B8";}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>Volver</button>
             <div style={{fontWeight:"600",fontSize:"15px",color:"#fff"}}>
               📅 Evento Multidía — {cli?.nombre_empresa||"—"}
               <span style={{fontWeight:"400",color:"rgba(255,255,255,0.75)",fontSize:"13px",marginLeft:"12px"}}>{totalDias} días</span>
             </div>
           </div>
-          <div style={{display:"flex",flexDirection:"column",gap:"16px"}}>
+          <div style={{display:"flex",flexDirection:"column",gap:"16px",padding:"16px 24px 0"}}>
             {dias.map(({iso,x})=>{const diaEspecifico={...evM,fecha_inicio:iso,_diaNum:x};return(
               <div key={iso} onClick={()=>abrirEvento(diaEspecifico)} style={{background:"#FFFFFF",borderLeft:`16px solid ${borderC}`,borderTop:`6px solid ${borderC}`,borderRadius:"0 12px 12px 0",padding:"20px 24px",boxShadow:"0 2px 12px rgba(0,0,0,0.10)",cursor:"pointer"}}>
                 <div style={{fontSize:"15px",fontWeight:"700",color:"#C62828",marginBottom:"12px"}}>📅 Día {x} de {totalDias} — {formatLargo(iso)}</div>
