@@ -832,7 +832,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           {/* ── TAB POR DÍA ── */}
           {tab==="dias"&&esMultidia&&form.dias.map((dia,dIdx)=>(
             <div key={dia.fecha} style={{border:`2px solid ${C.grisBorde}`,borderRadius:"14px",marginBottom:"16px",overflow:"hidden"}}>
-              <div style={{background:C.grisMed,padding:"12px 16px",fontWeight:"500",color:C.azul,fontSize:"13px"}}>
+              <div style={{background:C.grisMed,padding:"12px 16px",fontWeight:"500",color:"#234A80",fontSize:"17px"}}>
                 📅 Día {dIdx+1} de {form.dias.length} — {formatLargo(dia.fecha)}
               </div>
               <div style={{padding:"16px"}}>
@@ -847,7 +847,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                 {/* Intérpretes del día */}
                 <div style={{marginTop:"12px"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
-                    <div style={{fontWeight:"500",color:"#B82E38",display:"flex",alignItems:"center",gap:"5px"}}><IconMic size={16}/> Intérpretes de este día</div>
+                    <div style={{fontWeight:"500",color:"#93252D",fontSize:"21px",display:"flex",alignItems:"center",gap:"5px"}}><IconMic size={16}/> Intérpretes de este día</div>
                     <button onClick={()=>addAsig(dIdx)} style={S.btnP}>+ Agregar</button>
                   </div>
                   {(dia.asignaciones||[]).length===0&&<div style={{color:C.textoSuave,fontSize:"15px",textAlign:"center",padding:"12px",border:`1.5px dashed ${C.grisBorde}`,borderRadius:"8px"}}>Sin intérpretes para este día</div>}
@@ -856,7 +856,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                 {/* Equipos AV */}
                 {form.modalidad!=="remoto"&&<div style={{marginTop:"14px"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
-                    <div style={{fontWeight:"500",color:C.verde,display:"flex",alignItems:"center",gap:"5px"}}><IconAV size={16}/> Equipos AV de este día</div>
+                    <div style={{fontWeight:"500",color:"#12823B",fontSize:"21px",display:"flex",alignItems:"center",gap:"5px"}}><IconAV size={16}/> Equipos AV de este día</div>
                     <button onClick={()=>addEq(dIdx)} style={S.btnP}>+ Agregar equipos</button>
                   </div>
                   {(dia.equipos||[]).map((eq,eIdx)=>(
