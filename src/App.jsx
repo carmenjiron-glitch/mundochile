@@ -3110,7 +3110,7 @@ export default function App() {
       <div style={{padding:"16px 24px 80px"}}>
         {!hayFS&&<div style={{display:"flex",gap:"8px",padding:"0 8px 4px"}}>
           <div style={{flex:1}}/><div style={{flex:1}}/><div style={{flex:1}}/><div style={{flex:1}}/>
-          <div style={{flex:1,textAlign:"center",color:"#FFFFFF",fontSize:"16.5px",fontStyle:"italic",opacity:0.7}}>📅 Sin eventos este fin de semana</div>
+          <div style={{flex:1,textAlign:"center",color:"#FFFFFF",fontSize:"14px",fontStyle:"italic",opacity:0.7}}>📅 Sin eventos este fin de semana</div>
         </div>}
         <div style={{display:"grid",gridTemplateColumns:hayFS?"repeat(5,1fr) 2px repeat(2,1fr)":"repeat(5,1fr)",gap:"8px",padding:"8px",alignItems:"stretch"}}>
           {diasLF.map((d,i)=>renderCol(d,i,false))}
