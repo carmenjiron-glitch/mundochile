@@ -2652,8 +2652,9 @@ function ModalNuevoLugar({onGuardado,onCerrar}) {
   );
 }
 
-function VistaDisponibilidad({ eventos, interpretes, pares }) {
+function VistaDisponibilidad({ eventos, interpretes, pares, clientes=[], onAbrir }) {
   const [mesOff, setMesOff] = useState(0);
+  const [popover, setPopover] = useState(null);
   const hoyFecha = new Date();
   const base = new Date(hoyFecha.getFullYear(), hoyFecha.getMonth() + mesOff, 1);
   const año = base.getFullYear();
@@ -2662,32 +2663,38 @@ function VistaDisponibilidad({ eventos, interpretes, pares }) {
   const MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 
   const { ocupacion, colorMap } = useMemo(() => {
-    const ocu = {};
+    const ocu = {};  // [interpId][dNum] = { am:[{ev_id,nombre,cliNombre,hora,ev}], pm:[...] }
     const clrMap = {};
+
+    // Build color map
     for (const ev of eventos) {
-      if (ev.asignaciones) {
-        for (const a of ev.asignaciones) {
+      for (const a of (ev.asignaciones||[])) {
+        if (a.interprete_id && a.par_id && !clrMap[a.interprete_id]) {
+          const par = pares.find(p => p.id === a.par_id);
+          if (par) clrMap[a.interprete_id] = IDIOMA_PILL_CLR[par.idioma_origen] || "#1A6FD4";
+        }
+      }
+      for (const dia of (ev.evento_dias||[])) {
+        for (const a of (dia.asignaciones_dia||[])) {
           if (a.interprete_id && a.par_id && !clrMap[a.interprete_id]) {
             const par = pares.find(p => p.id === a.par_id);
             if (par) clrMap[a.interprete_id] = IDIOMA_PILL_CLR[par.idioma_origen] || "#1A6FD4";
           }
         }
       }
-      if (ev.evento_dias) {
-        for (const dia of ev.evento_dias) {
-          if (dia.asignaciones_dia) {
-            for (const a of dia.asignaciones_dia) {
-              if (a.interprete_id && a.par_id && !clrMap[a.interprete_id]) {
-                const par = pares.find(p => p.id === a.par_id);
-                if (par) clrMap[a.interprete_id] = IDIOMA_PILL_CLR[par.idioma_origen] || "#1A6FD4";
-              }
-            }
-          }
-        }
-      }
     }
+
+    const addItem = (interpId, dNum, item, hora) => {
+      if (!ocu[interpId]) ocu[interpId] = {};
+      if (!ocu[interpId][dNum]) ocu[interpId][dNum] = { am:[], pm:[] };
+      const slot = (!hora || hora.slice(0,5) < "13:00") ? "am" : "pm";
+      const list = ocu[interpId][dNum][slot];
+      if (!list.find(x => x.ev_id === item.ev_id)) list.push({ ...item, hora });
+    };
+
     for (const ev of eventos) {
-      const nombre = ev.nombre_evento || "(sin nombre)";
+      const cli = clientes.find(c => c.id === ev.cliente_id);
+      const item = { ev_id: ev.id, nombre: ev.nombre_evento || "(sin nombre)", cliNombre: cli?.nombre_empresa || "", ev };
       if (ev.asignaciones?.length) {
         const fi = new Date(ev.fecha_inicio + 'T12:00:00');
         const ft = new Date((ev.fecha_termino || ev.fecha_inicio) + 'T12:00:00');
@@ -2696,40 +2703,56 @@ function VistaDisponibilidad({ eventos, interpretes, pares }) {
           if (cur.getFullYear() === año && cur.getMonth() === mes) {
             const dNum = cur.getDate();
             for (const a of ev.asignaciones) {
-              if (!a.interprete_id) continue;
-              if (!ocu[a.interprete_id]) ocu[a.interprete_id] = {};
-              if (!ocu[a.interprete_id][dNum]) ocu[a.interprete_id][dNum] = [];
-              if (!ocu[a.interprete_id][dNum].includes(nombre)) ocu[a.interprete_id][dNum].push(nombre);
+              if (a.interprete_id) addItem(a.interprete_id, dNum, item, ev.hora_inicio);
             }
           }
           cur.setDate(cur.getDate() + 1);
         }
       }
-      if (ev.evento_dias) {
-        for (const dia of ev.evento_dias) {
-          if (!dia.fecha || !dia.asignaciones_dia?.length) continue;
-          const dDate = new Date(dia.fecha + 'T12:00:00');
-          if (dDate.getFullYear() === año && dDate.getMonth() === mes) {
-            const dNum = dDate.getDate();
-            for (const a of dia.asignaciones_dia) {
-              if (!a.interprete_id) continue;
-              if (!ocu[a.interprete_id]) ocu[a.interprete_id] = {};
-              if (!ocu[a.interprete_id][dNum]) ocu[a.interprete_id][dNum] = [];
-              if (!ocu[a.interprete_id][dNum].includes(nombre)) ocu[a.interprete_id][dNum].push(nombre);
-            }
+      for (const dia of (ev.evento_dias||[])) {
+        if (!dia.fecha || !dia.asignaciones_dia?.length) continue;
+        const dDate = new Date(dia.fecha + 'T12:00:00');
+        if (dDate.getFullYear() === año && dDate.getMonth() === mes) {
+          const dNum = dDate.getDate();
+          const horaD = dia.hora_inicio || ev.hora_inicio;
+          for (const a of dia.asignaciones_dia) {
+            if (a.interprete_id) addItem(a.interprete_id, dNum, item, horaD);
           }
         }
       }
     }
     return { ocupacion: ocu, colorMap: clrMap };
-  }, [eventos, pares, año, mes]);
+  }, [eventos, pares, clientes, año, mes]);
 
   const interpsActivos = interpretes.filter(i => i.activo !== false);
   const dias = Array.from({ length: diasEnMes }, (_, i) => i + 1);
   const btnNav = { background:"rgba(255,255,255,0.15)", color:"#FFFFFF", border:"none", borderRadius:"8px", padding:"7px 14px", fontSize:"15px", cursor:"pointer", fontFamily:"inherit" };
 
+  const openPopover = (e, interpId, d) => {
+    e.stopPropagation();
+    const slot = ocupacion[interpId]?.[d] || { am:[], pm:[] };
+    const items = [...slot.am, ...slot.pm];
+    if (!items.length) return;
+    const rect = e.currentTarget.closest("td").getBoundingClientRect();
+    setPopover({ items, d, x: Math.min(rect.left, window.innerWidth - 290), y: Math.min(rect.bottom + 6, window.innerHeight - 220) });
+  };
+
+  const SlotCell = ({ items }) => {
+    const ocupado = items.length > 0;
+    const item = items[0];
+    const txt = ocupado ? (item.cliNombre ? `${item.cliNombre} · ${item.nombre}` : item.nombre) : "";
+    return (
+      <div style={{ height:"14px", background: ocupado ? "#F97316" : "rgba(134,239,172,0.18)", display:"flex", alignItems:"center", padding: ocupado ? "0 3px" : "0", overflow:"hidden", cursor: ocupado ? "pointer" : "default" }}>
+        {ocupado && <>
+          <span style={{ fontSize:"8px", color:"#fff", fontWeight:"800", flexShrink:0, marginRight:"2px" }}>×</span>
+          <span style={{ fontSize:"8px", color:"#fff", overflow:"hidden", whiteSpace:"nowrap", textOverflow:"ellipsis", flex:1, lineHeight:1 }}>{txt}</span>
+        </>}
+      </div>
+    );
+  };
+
   return (
-    <div style={{ padding:"28px 24px" }}>
+    <div style={{ padding:"28px 24px" }} onClick={() => setPopover(null)}>
       <div style={{ display:"flex", alignItems:"center", gap:"10px", marginBottom:"20px" }}>
         <button onClick={()=>setMesOff(o=>o-1)} style={btnNav} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>← Ant</button>
         <button onClick={()=>setMesOff(0)} style={btnNav} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>Hoy</button>
@@ -2740,34 +2763,53 @@ function VistaDisponibilidad({ eventos, interpretes, pares }) {
         <table style={{ borderCollapse:"collapse", fontSize:"12px", minWidth:"max-content" }}>
           <thead>
             <tr>
-              <th style={{ padding:"6px 14px", textAlign:"left", color:"rgba(255,255,255,0.65)", fontWeight:"600", borderBottom:"1px solid rgba(255,255,255,0.15)", position:"sticky", left:0, background:"#162654", zIndex:2, whiteSpace:"nowrap" }}>Intérprete</th>
+              <th style={{ padding:"6px 14px", textAlign:"left", color:"#FFFFFF", fontWeight:"700", fontSize:"14.4px", textTransform:"uppercase", letterSpacing:"0.05em", borderBottom:"1px solid rgba(255,255,255,0.15)", position:"sticky", left:0, background:"#162654", zIndex:2, whiteSpace:"nowrap" }}>Intérprete</th>
               {dias.map(d=>(
-                <th key={d} style={{ padding:"6px 6px", textAlign:"center", color:"rgba(255,255,255,0.65)", fontWeight:"500", borderBottom:"1px solid rgba(255,255,255,0.15)", minWidth:"30px", fontSize:"11px" }}>{d}</th>
+                <th key={d} style={{ padding:"4px 2px", textAlign:"center", color:"rgba(255,255,255,0.65)", fontWeight:"500", borderBottom:"1px solid rgba(255,255,255,0.15)", minWidth:"54px", fontSize:"11px" }}>{d}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {interpsActivos.map((interp, idx)=>{
-              const color = colorMap[interp.id] || "#1A6FD4";
-              return (
-                <tr key={interp.id} style={{ background: idx%2===0 ? "rgba(255,255,255,0.03)" : "transparent" }}>
-                  <td style={{ padding:"5px 14px", color:"#FFFFFF", fontWeight:"500", borderBottom:"1px solid rgba(255,255,255,0.06)", position:"sticky", left:0, background: idx%2===0 ? "rgba(22,40,76,0.98)" : "rgba(18,32,60,0.98)", zIndex:1, whiteSpace:"nowrap", fontSize:"13px" }}>
-                    {interp.nombre}{interp.apellido?" "+interp.apellido:""}
-                  </td>
-                  {dias.map(d=>{
-                    const nombres = ocupacion[interp.id]?.[d] || [];
-                    return (
-                      <td key={d} title={nombres.length ? nombres.join(" / ") : undefined}
-                        style={{ width:"30px", height:"26px", padding:0, textAlign:"center", borderBottom:"1px solid rgba(255,255,255,0.06)", borderLeft:"1px solid rgba(255,255,255,0.04)", background: nombres.length ? color : "transparent" }}/>
-                    );
-                  })}
-                </tr>
-              );
-            })}
+            {interpsActivos.map((interp, idx)=>(
+              <tr key={interp.id} style={{ background: idx%2===0 ? "rgba(255,255,255,0.03)" : "transparent" }}>
+                <td style={{ padding:"5px 14px", color:"#FFFFFF", fontWeight:"500", borderBottom:"1px solid rgba(255,255,255,0.06)", position:"sticky", left:0, background: idx%2===0 ? "rgba(22,40,76,0.98)" : "rgba(18,32,60,0.98)", zIndex:1, whiteSpace:"nowrap", fontSize:"13px", verticalAlign:"middle" }}>
+                  {interp.nombre}{interp.apellido?" "+interp.apellido:""}
+                </td>
+                {dias.map(d=>{
+                  const slot = ocupacion[interp.id]?.[d] || { am:[], pm:[] };
+                  const anyOcupado = slot.am.length > 0 || slot.pm.length > 0;
+                  return (
+                    <td key={d} onClick={anyOcupado ? e=>openPopover(e, interp.id, d) : undefined}
+                      style={{ padding:"1px 1px", borderBottom:"1px solid rgba(255,255,255,0.06)", borderLeft:"1px solid rgba(255,255,255,0.04)", verticalAlign:"middle", cursor: anyOcupado ? "pointer" : "default" }}>
+                      <SlotCell items={slot.am}/>
+                      <div style={{ height:"1px", background:"rgba(255,255,255,0.08)" }}/>
+                      <SlotCell items={slot.pm}/>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
-      {interpsActivos.length===0&&<div style={{ color:"rgba(255,255,255,0.5)", textAlign:"center", marginTop:"40px", fontSize:"15px" }}>No hay intérpretes activos.</div>}
+      {interpsActivos.length===0 && <div style={{ color:"rgba(255,255,255,0.5)", textAlign:"center", marginTop:"40px", fontSize:"15px" }}>No hay intérpretes activos.</div>}
+
+      {popover && (
+        <div onClick={e=>e.stopPropagation()} style={{ position:"fixed", top:popover.y, left:popover.x, zIndex:9999, background:"#FFFFFF", borderRadius:"10px", boxShadow:"0 4px 24px rgba(0,0,0,0.25)", border:"1px solid #E5E7EB", minWidth:"240px", maxWidth:"300px", padding:"12px 14px" }}>
+          <div style={{ fontSize:"11px", fontWeight:"700", color:"#64748B", textTransform:"uppercase", letterSpacing:"0.04em", marginBottom:"8px" }}>Día {popover.d}</div>
+          {popover.items.map((item, i) => (
+            <div key={i} onClick={()=>{ if(onAbrir&&item.ev){onAbrir(item.ev);setPopover(null);} }}
+              style={{ padding:"7px 10px", marginBottom:"4px", background:"#F8FAFC", borderRadius:"7px", cursor:onAbrir?"pointer":"default", border:"1px solid #E2E8F0" }}
+              onMouseEnter={e=>{ e.currentTarget.style.background="#EFF6FF"; }}
+              onMouseLeave={e=>{ e.currentTarget.style.background="#F8FAFC"; }}>
+              {item.cliNombre && <div style={{ fontSize:"12px", fontWeight:"600", color:"#1E293B" }}>{item.cliNombre}</div>}
+              <div style={{ fontSize:"11px", color:"#475569" }}>{item.nombre}</div>
+              {item.hora && <div style={{ fontSize:"10px", color:"#94A3B8", marginTop:"2px" }}>🕐 {item.hora.slice(0,5)}</div>}
+            </div>
+          ))}
+          <div onClick={()=>setPopover(null)} style={{ textAlign:"center", fontSize:"11px", color:"#9CA3AF", marginTop:"4px", cursor:"pointer", paddingTop:"4px", borderTop:"1px solid #F1F5F9" }}>Cerrar</div>
+        </div>
+      )}
     </div>
   );
 }
@@ -3440,7 +3482,7 @@ export default function App() {
         {vista==="agenda"&&<VistaAgenda vista={vista} eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} filtros={filtros} setFiltros={setFiltros} onAbrir={abrirEvento} onVerMultidia={verTodosLosDias}/>}
         {vista==="grilla"&&<VistaGrilla eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} contactos={contactos} onAbrir={abrirEvento} onVerMultidia={verTodosLosDias} vista={vista}/>}
       </>}
-      {pantalla==="disponibilidad"&&<VistaDisponibilidad eventos={eventos} interpretes={interpretes} pares={pares}/>}
+      {pantalla==="disponibilidad"&&<VistaDisponibilidad eventos={eventos} interpretes={interpretes} pares={pares} clientes={clientes} onAbrir={abrirEvento}/>}
       {pantalla==="config"&&esAdmin&&<PantallaConfig clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} onActualizar={cargarDatos} perfil={perfil}/>}
 
       {/* ── MODALES ── */}
