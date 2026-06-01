@@ -438,13 +438,14 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
         zoom_administrador:form.zoom_administrador==="__manual__"?adminZoomManual:(form.zoom_administrador||""), zoom_link:form.zoom_link||"", contacto_id:form.contacto_id?Number(form.contacto_id):null, estado:form.estado||"Facturación Pendiente",
         comentarios:form.comentarios||"", edited_by:perfil?.id||null, edited_by_nombre:perfil?.nombre||"",
       };
-      console.log('tipo enviado:', payload.tipo, '| tipo raw form.tipo:', form.tipo, '| tiposPg result:', tiposPg(form.tipo));
       let eventoId=form.id;
       if(form.id){const{error:e}=await sb.from("eventos").update(payload).eq("id",form.id);if(e)throw e;}
       else {
         payload.created_by=perfil?.id||null; payload.created_by_nombre=perfil?.nombre||"";
         const{data,error:e}=await sb.from("eventos").insert(payload).select().single();
         if(e)throw e; eventoId=data.id;
+        // Actualizar form.id para que saves posteriores hagan UPDATE, no INSERT
+        setForm(f=>({...f,id:eventoId}));
       }
       // Limpiar
       await sb.from("asignaciones").delete().eq("evento_id",eventoId);
