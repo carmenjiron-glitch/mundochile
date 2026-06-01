@@ -162,7 +162,7 @@ const evVacio = () => ({
   asignaciones:[], dias:[], equipos:[],
 });
 const asigVacia = () => ({interprete_id:"",par_id:"",nro_ot:"",nro_boleta:"",es_boleta_adicional:false,es_host_zoom:false,rol:"Principal",hora_presentacion:"",estado_pago:"Pendiente"});
-const diaVacio  = (fecha) => ({fecha,hora_inicio:"09:00",hora_termino:"13:00",jornada:"Media Jornada",jornada_personalizada:"",asignaciones:[],equipos:[]});
+const diaVacio  = (fecha) => ({fecha,hora_inicio:"09:00",hora_termino:"13:00",jornada:"Media Jornada",jornada_personalizada:"",tipo:null,modalidad:null,lugar:null,lugar_detalle:null,asignaciones:[],equipos:[]});
 const eqVacio   = () => ({tipo_equipo:"fijo",proveedor_id:"",proveedor_nombre:"",proveedor_contacto:"",proveedor_telefono:"",num_receptores:0,num_cabinas:0,num_asistentes:0,asistentes_origen:"mismo_proveedor",asistentes_otro_proveedor:"",asistentes_mundochile_nombres:"",portatiles_origen:"mundochile",proveedor_portatiles:"",dia_montaje:"",hora_montaje:"",contacto_in_situ:"",instrucciones:""});
 
 // ─── TOAST ───────────────────────────────────────────────────────────────────
@@ -473,11 +473,16 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
       if(esMultidia){
         for(let i=0;i<form.dias.length;i++){
           const dia=form.dias[i];
-          const{data:dD,error:eD}=await sb.from("evento_dias").insert({
+          const diaPayload={
             evento_id:eventoId, fecha:dia.fecha, orden:i+1,
             hora_inicio:dia.hora_inicio||"09:00", hora_termino:dia.hora_termino||"13:00",
             jornada:dia.jornada||"Media Jornada", jornada_personalizada:dia.jornada_personalizada||"",
-          }).select().single();
+          };
+          if(dia.tipo!==null&&dia.tipo!==undefined)diaPayload.tipo=dia.tipo;
+          if(dia.modalidad!==null&&dia.modalidad!==undefined)diaPayload.modalidad=dia.modalidad;
+          if(dia.lugar!==null&&dia.lugar!==undefined)diaPayload.lugar=dia.lugar;
+          if(dia.lugar_detalle!==null&&dia.lugar_detalle!==undefined)diaPayload.lugar_detalle=dia.lugar_detalle;
+          const{data:dD,error:eD}=await sb.from("evento_dias").insert(diaPayload).select().single();
           if(eD)throw eD;
           const asigsDia=(dia.asignaciones||[]).filter(a=>a.interprete_id&&a.par_id).map(a=>({
             evento_dia_id:dD.id, interprete_id:a.interprete_id, par_id:a.par_id,
@@ -577,6 +582,8 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
 
   const addEq=(dIdx)=>setForm(f=>{const dias=[...f.dias];dias[dIdx]={...dias[dIdx],equipos:[...(dias[dIdx].equipos||[]),eqVacio()]};return{...f,dias};});
   const editEq=(dIdx,eIdx,k,v)=>setForm(f=>{const dias=[...f.dias],eqs=[...(dias[dIdx].equipos||[])];eqs[eIdx]={...eqs[eIdx],[k]:v};dias[dIdx]={...dias[dIdx],equipos:eqs};return{...f,dias};});
+  const setDiaField=(dIdx,k,v)=>setForm(f=>{const ds=[...f.dias];ds[dIdx]={...ds[dIdx],[k]:v};return{...f,dias:ds};});
+  const copyFromPrev=(dIdx)=>setForm(f=>{const ds=[...f.dias],prev=ds[dIdx-1];ds[dIdx]={...ds[dIdx],hora_inicio:prev.hora_inicio,hora_termino:prev.hora_termino,jornada:prev.jornada,tipo:prev.tipo,modalidad:prev.modalidad,lugar:prev.lugar,lugar_detalle:prev.lugar_detalle};return{...f,dias:ds};});
 
   const TABS=esMultidia
     ?[{id:"general",lbl:<><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Detalles</>},{id:"dias",lbl:"📅 Por Día"}]
@@ -843,19 +850,97 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           </>}
 
           {/* ── TAB POR DÍA ── */}
-          {tab==="dias"&&esMultidia&&form.dias.map((dia,dIdx)=>(
-            <div key={dia.fecha} style={{border:`2px solid ${C.grisBorde}`,borderRadius:"14px",marginBottom:"16px",overflow:"hidden"}}>
-              <div style={{background:C.grisMed,padding:"12px 16px",fontWeight:"500",color:"#234A80",fontSize:"17px"}}>
-                📅 {formatMedioES(dia.fecha)} · {dia.hora_inicio?.slice(0,5)||"–"} – {dia.hora_termino?.slice(0,5)||"–"} hrs · {pluralizarJornada(dia.jornada)||""}
+          {tab==="dias"&&esMultidia&&<>
+            {/* Panel global */}
+            <div style={{background:"#EEF2FF",borderRadius:"10px",padding:"12px 16px",marginBottom:"16px",border:"1.5px solid #C7D2FE"}}>
+              <div style={{fontSize:"11px",fontWeight:"700",color:"#4338CA",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:"8px"}}>🌐 Valores globales — aplican a todos los días salvo excepción</div>
+              <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center"}}>
+                {form.tipo&&<span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"3px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"600",color:(B_TIPO[form.tipo]||{ct:"#294099"}).ct,background:(B_TIPO[form.tipo]||{bg:"#EEF2FF"}).bg,border:`1.5px solid ${(B_TIPO[form.tipo]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>{form.tipo}</span>}
+                {form.modalidad&&<span style={{display:"inline-flex",alignItems:"center",padding:"3px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"600",color:(B_MOD[form.modalidad]||{ct:"#4B4B4B"}).ct,background:(B_MOD[form.modalidad]||{bg:"#F7F7F5"}).bg,border:`1.5px solid ${(B_MOD[form.modalidad]||{c:"#6B6B6B"}).c}`,whiteSpace:"nowrap"}}>{form.modalidad==="presencial"?"🏛":form.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[form.modalidad]}</span>}
+                {(form.modalidad==="presencial"||form.modalidad==="hibrido")&&form.lugar&&<span style={{display:"inline-flex",alignItems:"center",padding:"3px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"600",color:"#5B21B6",background:"#EDE9FE",border:"1.5px solid #7C3AED",whiteSpace:"nowrap"}}>📍 {form.lugar}</span>}
+                <span style={{fontSize:"11px",color:"#6366F1",marginLeft:"4px"}}>· Horario global: {form.hora_inicio?.slice(0,5)||"–"} – {form.hora_termino?.slice(0,5)||"–"}</span>
+              </div>
+            </div>
+            {form.dias.map((dia,dIdx)=>{
+              const modEfectiva=dia.modalidad||form.modalidad;
+              const esPresD=modEfectiva==="presencial"||modEfectiva==="hibrido";
+              const tieneOverride=dia.tipo!==null||dia.modalidad!==null||dia.lugar!==null;
+              return(
+            <div key={dia.fecha} style={{border:`2px solid ${tieneOverride?"#F59E0B":C.grisBorde}`,borderRadius:"14px",marginBottom:"16px",overflow:"hidden"}}>
+              {/* Header del día */}
+              <div style={{background:tieneOverride?"#FFFBEB":C.grisMed,padding:"12px 16px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <div>
+                  <div style={{fontWeight:"600",color:tieneOverride?"#92400E":"#234A80",fontSize:"16px"}}>📅 {formatMedioES(dia.fecha)}</div>
+                  <div style={{fontSize:"13px",color:"#64748B",marginTop:"2px"}}>{dia.hora_inicio?.slice(0,5)||"–"} – {dia.hora_termino?.slice(0,5)||"–"} · {pluralizarJornada(dia.jornada)||""}</div>
+                </div>
+                <div style={{display:"flex",gap:"6px",alignItems:"center",flexWrap:"wrap",justifyContent:"flex-end"}}>
+                  {dia.tipo&&<span style={{display:"inline-flex",padding:"2px 8px",borderRadius:"20px",fontSize:"11px",fontWeight:"700",color:(B_TIPO[dia.tipo]||{ct:"#294099"}).ct,background:(B_TIPO[dia.tipo]||{bg:"#EEF2FF"}).bg,border:`1.5px solid ${(B_TIPO[dia.tipo]||{c:"#3B5BDB"}).c}`}}>⚡ {dia.tipo}</span>}
+                  {dia.modalidad&&<span style={{display:"inline-flex",padding:"2px 8px",borderRadius:"20px",fontSize:"11px",fontWeight:"700",color:(B_MOD[dia.modalidad]||{ct:"#4B4B4B"}).ct,background:(B_MOD[dia.modalidad]||{bg:"#F7F7F5"}).bg,border:`1.5px solid ${(B_MOD[dia.modalidad]||{c:"#6B6B6B"}).c}`}}>⚡ {LBL_MODAL[dia.modalidad]}</span>}
+                  {dia.lugar&&<span style={{display:"inline-flex",padding:"2px 8px",borderRadius:"20px",fontSize:"11px",fontWeight:"700",color:"#5B21B6",background:"#EDE9FE",border:"1.5px solid #7C3AED"}}>⚡ 📍 {dia.lugar}</span>}
+                  {dIdx>0&&<button onClick={()=>copyFromPrev(dIdx)} style={{padding:"4px 10px",fontSize:"12px",background:"none",border:`1px solid ${C.grisBorde}`,borderRadius:"6px",cursor:"pointer",color:C.textoMed,fontFamily:"inherit"}}>↑ Copiar día anterior</button>}
+                </div>
               </div>
               <div style={{padding:"16px"}}>
+                {/* Override box */}
+                <div style={{background:"#F8FAFC",borderRadius:"8px",padding:"12px 14px",marginBottom:"14px",border:"1px solid #E2E8F0"}}>
+                  <div style={{fontSize:"11px",fontWeight:"700",color:"#64748B",textTransform:"uppercase",letterSpacing:"0.04em",marginBottom:"8px"}}>Personalizar este día</div>
+                  <div style={{display:"flex",gap:"16px",flexWrap:"wrap",marginBottom:tieneOverride?"10px":"0"}}>
+                    {["tipo","modalidad","lugar"].map(campo=>(
+                      <label key={campo} style={{display:"flex",alignItems:"center",gap:"5px",cursor:"pointer",fontSize:"13px",color:"#334155"}}>
+                        <input type="checkbox" checked={dia[campo]!==null} onChange={e=>{
+                          const val=e.target.checked?(campo==="tipo"?form.tipo:campo==="modalidad"?form.modalidad:form.lugar):null;
+                          setDiaField(dIdx,campo,val);
+                          if(campo==="modalidad"&&!e.target.checked)setDiaField(dIdx,"lugar",null);
+                        }} style={{width:"15px",height:"15px",cursor:"pointer"}}/>
+                        {campo==="tipo"?"Tipo diferente":campo==="modalidad"?"Modalidad diferente":"Lugar diferente"}
+                      </label>
+                    ))}
+                  </div>
+                  {tieneOverride&&<div style={{...S.fila,marginTop:"6px"}}>
+                    {dia.tipo!==null&&<div style={S.camp}>
+                      <label style={S.lbl}>Tipo</label>
+                      <select style={S.sel} value={dia.tipo} onChange={e=>setDiaField(dIdx,"tipo",e.target.value)}>
+                        {TIPOS.map(t=><option key={t}>{t}</option>)}
+                      </select>
+                    </div>}
+                    {dia.modalidad!==null&&<div style={S.camp}>
+                      <label style={S.lbl}>Modalidad</label>
+                      <select style={S.sel} value={dia.modalidad} onChange={e=>setDiaField(dIdx,"modalidad",e.target.value)}>
+                        <option value="presencial">Presencial</option>
+                        <option value="remoto">Remoto</option>
+                        <option value="hibrido">Híbrido</option>
+                      </select>
+                    </div>}
+                    {dia.lugar!==null&&<div style={S.camp}>
+                      <label style={S.lbl}>Lugar</label>
+                      <div style={{display:"flex",gap:"6px"}}>
+                        <select style={S.sel} value={dia.lugar||""} onChange={e=>setDiaField(dIdx,"lugar",e.target.value)}>
+                          <option value="">Seleccionar…</option>
+                          {lugares.filter(l=>l.activo!==false).map(l=><option key={l.id} value={l.nombre}>{l.nombre}</option>)}
+                          {dia.lugar&&!lugares.find(l=>l.nombre===dia.lugar)&&<option value={dia.lugar}>{dia.lugar}</option>}
+                        </select>
+                        <button onClick={()=>onNuevoLugar&&onNuevoLugar(l=>{setDiaField(dIdx,"lugar",l.nombre);if(onLugarCreado)onLugarCreado();})} style={{padding:"0",width:"42px",height:"42px",background:"#3B82F6",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"20px",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>+</button>
+                      </div>
+                    </div>}
+                  </div>}
+                  {dia.lugar!==null&&esPresD&&<div style={{marginTop:"8px"}}>
+                    <label style={S.lbl}>Detalles del lugar este día</label>
+                    <input style={S.inp} value={dia.lugar_detalle||""} onChange={e=>setDiaField(dIdx,"lugar_detalle",e.target.value)} placeholder="Sala específica, piso…"/>
+                  </div>}
+                </div>
+                {/* Horario del día */}
                 <div style={{...S.fila,marginBottom:"12px"}}>
-                  <div style={S.camp}><label style={S.lbl}>🕐 Hora inicio</label><SelHora value={dia.hora_inicio} onChange={v=>setForm(f=>{const ds=[...f.dias];ds[dIdx]={...ds[dIdx],hora_inicio:v};return{...f,dias:ds};})}/></div>
-                  <div style={S.camp}><label style={S.lbl}>🕐 Hora término</label><SelHora value={dia.hora_termino} onChange={v=>setForm(f=>{const ds=[...f.dias];ds[dIdx]={...ds[dIdx],hora_termino:v};return{...f,dias:ds};})}/></div>
+                  <div style={S.camp}><label style={S.lbl}>🕐 Hora inicio</label><SelHora value={dia.hora_inicio} onChange={v=>{
+                    setForm(f=>{const ds=[...f.dias];const ht=ds[dIdx].hora_termino;let jor=ds[dIdx].jornada;if(ht){const[hi,hm]=v.split(":").map(Number);const[ti,tm]=ht.split(":").map(Number);const m=(ti*60+tm)-(hi*60+hm);if(m>0)jor=calcJornada(m,ds[dIdx].modalidad||f.modalidad);}ds[dIdx]={...ds[dIdx],hora_inicio:v,jornada:jor};return{...f,dias:ds};});
+                  }}/></div>
+                  <div style={S.camp}><label style={S.lbl}>🕐 Hora término</label><SelHora value={dia.hora_termino} onChange={v=>{
+                    setForm(f=>{const ds=[...f.dias];const hi2=ds[dIdx].hora_inicio;let jor=ds[dIdx].jornada;if(hi2){const[hi,hm]=hi2.split(":").map(Number);const[ti,tm]=v.split(":").map(Number);const m=(ti*60+tm)-(hi*60+hm);if(m>0)jor=calcJornada(m,ds[dIdx].modalidad||f.modalidad);}ds[dIdx]={...ds[dIdx],hora_termino:v,jornada:jor};return{...f,dias:ds};});
+                  }}/></div>
                   <div style={S.camp}><label style={S.lbl}>⏱ Jornada</label>
-                    <select style={S.sel} value={dia.jornada||"Media Jornada"} onChange={e=>setForm(f=>{const ds=[...f.dias];ds[dIdx]={...ds[dIdx],jornada:e.target.value};return{...f,dias:ds};})}>
-                      {getJornadas(form.modalidad).map(j=><option key={j}>{j}</option>)}
-                    </select></div>
+                    <select style={S.sel} value={dia.jornada||"Media Jornada"} onChange={e=>setDiaField(dIdx,"jornada",e.target.value)}>
+                      {getJornadas(modEfectiva).map(j=><option key={j}>{j}</option>)}
+                    </select>
+                  </div>
                 </div>
                 {/* Intérpretes del día */}
                 <div style={{marginTop:"12px",border:"2px solid #E03131",borderRadius:"16px",padding:"16px",background:"rgba(224,49,49,0.06)",marginBottom:"16px"}}>
@@ -867,7 +952,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                   {(dia.asignaciones||[]).map((a,aIdx)=><FilaAsig key={aIdx} a={a} idx={aIdx} dIdx={dIdx}/>)}
                 </div>
                 {/* Equipos AV */}
-                {form.modalidad!=="remoto"&&<div style={{marginTop:"14px",border:"2px solid #155724",borderRadius:"16px",padding:"16px",background:"rgba(21,87,36,0.06)",marginBottom:"16px"}}>
+                {modEfectiva!=="remoto"&&<div style={{marginTop:"14px",border:"2px solid #155724",borderRadius:"16px",padding:"16px",background:"rgba(21,87,36,0.06)",marginBottom:"16px"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
                     <div style={{fontWeight:"500",color:"#155724",fontSize:"16px",display:"flex",alignItems:"center",gap:"5px"}}><IconAV size={16}/> Equipos AV de este día</div>
                     <button onClick={()=>addEq(dIdx)} style={{...S.btnP,fontSize:"13px",color:"#2C5CA0",border:"1px solid #869CB8"}}>+ Agregar equipos</button>
@@ -940,7 +1025,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                 </div>}
               </div>
             </div>
-          ))}
+          );})}</>}
         </div>
         {/* Footer */}
         <div style={{padding:"16px 24px",borderTop:`1px solid ${C.grisBorde}`,flexShrink:0,display:"flex",gap:"10px",justifyContent:"flex-end",alignItems:"center",background:C.gris,borderRadius:"0 0 20px 20px"}}>
