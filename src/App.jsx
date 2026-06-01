@@ -170,7 +170,7 @@ const evVacio = () => ({
   nro_hes:"", nro_otros:"", comentarios_av:"", contacto_id:"", fecha_emision:"",
   asignaciones:[], dias:[], equipos:[],
 });
-const asigVacia = () => ({interprete_id:"",par_id:"",nro_ot:"",nro_boleta:"",es_boleta_adicional:false,es_host_zoom:false,rol:"Principal",hora_presentacion:"",estado_pago:"Pendiente"});
+const asigVacia = () => ({interprete_id:"",par_id:"",nro_ot:"",nro_boleta:"",es_boleta_adicional:false,es_host_zoom:false,rol:"Principal",hora_presentacion:"",estado_pago:"Pendiente",conflicto_ok:false});
 const diaVacio  = (fecha) => ({fecha,hora_inicio:"09:00",hora_termino:"13:00",jornada:"Media Jornada",jornada_personalizada:"",tipo:null,modalidad:null,lugar:null,lugar_detalle:null,asignaciones:[],equipos:[]});
 const eqVacio   = () => ({tipo_equipo:"fijo",proveedor_id:"",proveedor_nombre:"",proveedor_contacto:"",proveedor_telefono:"",num_receptores:0,num_cabinas:0,num_asistentes:0,asistentes_origen:"mismo_proveedor",asistentes_otro_proveedor:"",asistentes_mundochile_nombres:"",portatiles_origen:"mundochile",proveedor_portatiles:"",dia_montaje:"",hora_montaje:"",contacto_in_situ:"",instrucciones:""});
 
@@ -425,6 +425,9 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
     if(guardandoRef.current)return;
     guardandoRef.current=true;
     if(!form.cliente_id){guardandoRef.current=false;setError("Selecciona un cliente");return;}
+    const _asigsTodas=esMultidia?form.dias.flatMap(d=>d.asignaciones||[]):form.asignaciones;
+    const _confPend=_asigsTodas.find(a=>a.interprete_id&&!a.conflicto_ok&&conflicto(a.interprete_id));
+    if(_confPend){const _ci=interpretes.find(x=>x.id===_confPend.interprete_id);setError(`⚠️ ${_ci?.nombre||"Un intérprete"} tiene un conflicto de agenda sin resolver. Resuélvelo en el tab Intérpretes antes de guardar.`);guardandoRef.current=false;return;}
     setGuardando(true);setError("");
     try {
       const payload={
@@ -532,9 +535,15 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
   const FilaAsig=({a,idx,dIdx=null})=>{
     const [alerta,setAlerta]=useState(null);
     const edit=(k,v)=>{
-      if(dIdx===null) setForm(f=>{const asigs=[...f.asignaciones];asigs[idx]={...asigs[idx],[k]:v};return{...f,asignaciones:asigs};});
-      else setForm(f=>{const dias=[...f.dias],asigs=[...dias[dIdx].asignaciones];asigs[idx]={...asigs[idx],[k]:v};dias[dIdx]={...dias[dIdx],asignaciones:asigs};return{...f,dias};});
-      if(k==="interprete_id"&&v) setAlerta(conflicto(v));
+      const extra=k==="interprete_id"?{conflicto_ok:false}:{};
+      if(dIdx===null) setForm(f=>{const asigs=[...f.asignaciones];asigs[idx]={...asigs[idx],[k]:v,...extra};return{...f,asignaciones:asigs};});
+      else setForm(f=>{const dias=[...f.dias],asigs=[...dias[dIdx].asignaciones];asigs[idx]={...asigs[idx],[k]:v,...extra};dias[dIdx]={...dias[dIdx],asignaciones:asigs};return{...f,dias};});
+      if(k==="interprete_id") setAlerta(v?conflicto(v):null);
+    };
+    const aceptarConflicto=()=>{
+      if(dIdx===null) setForm(f=>{const asigs=[...f.asignaciones];asigs[idx]={...asigs[idx],conflicto_ok:true};return{...f,asignaciones:asigs};});
+      else setForm(f=>{const dias=[...f.dias],asigs=[...dias[dIdx].asignaciones];asigs[idx]={...asigs[idx],conflicto_ok:true};dias[dIdx]={...dias[dIdx],asignaciones:asigs};return{...f,dias};});
+      setAlerta(null);
     };
     const rem=()=>{
       if(dIdx===null) setForm(f=>{const asigs=[...f.asignaciones];asigs.splice(idx,1);return{...f,asignaciones:asigs};});
@@ -543,11 +552,19 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
     const interp=interpretes.find(x=>x.id===a.interprete_id);
     return (
       <div style={{border:`1.5px solid ${a.es_host_zoom?"#E03131":C.grisBorde}`,borderRadius:"10px",padding:"14px",marginBottom:"10px",background:C.gris,boxShadow:a.es_host_zoom?"0 0 0 2px #fecaca":undefined}}>
-        {alerta&&<div style={{background:"#fef3c7",border:"1px solid #f59e0b",borderRadius:"8px",padding:"10px 14px",marginBottom:"10px",fontSize:"13px",color:"#92400e"}}>
-          <div style={{fontWeight:"500",marginBottom:"8px"}}>⚠️ {interp?.nombre||"Este intérprete"} ya tiene asignado "{alerta.nombre_evento||"otro evento"}" el {formatLargo(alerta.fecha_inicio)}. ¿Deseas agregarlo de todos modos?</div>
-          <div style={{display:"flex",gap:"8px"}}>
-            <button onClick={()=>setAlerta(null)} style={{padding:"5px 12px",background:"#92400e",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"13px",fontFamily:"inherit"}}>Sí, agregar igual</button>
-            <button onClick={()=>{edit("interprete_id","");setAlerta(null);}} style={{padding:"5px 12px",background:"none",color:"#92400e",border:"1px solid #92400e",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"13px",fontFamily:"inherit"}}>Cambiar intérprete</button>
+        {alerta&&<div style={{background:"#FEF2F2",border:"2px solid #DC2626",borderRadius:"10px",padding:"14px 16px",marginBottom:"12px",boxShadow:"0 0 0 4px rgba(220,38,38,0.12)"}}>
+          <div style={{display:"flex",alignItems:"flex-start",gap:"10px"}}>
+            <span style={{fontSize:"22px",flexShrink:0,lineHeight:1.2}}>🚫</span>
+            <div style={{flex:1}}>
+              <div style={{fontWeight:"700",fontSize:"14px",color:"#991B1B",marginBottom:"4px"}}>Conflicto de agenda detectado</div>
+              <div style={{fontSize:"13px",color:"#7F1D1D",marginBottom:"12px",lineHeight:1.5}}>
+                <strong>{interp?.nombre||"Este intérprete"}</strong> ya está asignado a <strong>"{alerta.nombre_evento||"otro evento"}"</strong> el {formatLargo(alerta.fecha_inicio)}.<br/>No puedes guardar hasta resolver este conflicto.
+              </div>
+              <div style={{display:"flex",gap:"8px",flexWrap:"wrap"}}>
+                <button onClick={aceptarConflicto} style={{padding:"6px 16px",background:"#991B1B",color:"#fff",border:"none",borderRadius:"7px",cursor:"pointer",fontWeight:"600",fontSize:"13px",fontFamily:"inherit"}}>✓ Asignar como excepción</button>
+                <button onClick={()=>{edit("interprete_id","");}} style={{padding:"6px 16px",background:"none",color:"#991B1B",border:"1.5px solid #DC2626",borderRadius:"7px",cursor:"pointer",fontWeight:"600",fontSize:"13px",fontFamily:"inherit"}}>← Cambiar intérprete</button>
+              </div>
+            </div>
           </div>
         </div>}
         <div style={S.fila}>
@@ -2650,7 +2667,7 @@ function ModalNuevoLugar({onGuardado,onCerrar}) {
   );
 }
 
-function VistaDisponibilidad({ eventos, interpretes, pares, clientes=[], onAbrir }) {
+function VistaDisponibilidad({ eventos, interpretes, pares, clientes=[], onAbrir, busqueda="" }) {
   const [mesOff, setMesOff] = useState(0);
   const [popover, setPopover] = useState(null);
   const hoyFecha = new Date();
@@ -2722,7 +2739,12 @@ function VistaDisponibilidad({ eventos, interpretes, pares, clientes=[], onAbrir
     return { ocupacion: ocu, colorMap: clrMap };
   }, [eventos, pares, clientes, año, mes]);
 
-  const interpsActivos = interpretes.filter(i => i.activo !== false);
+  const interpsActivos = interpretes.filter(i => {
+    if(i.activo===false) return false;
+    if(!busqueda.trim()) return true;
+    const b=busqueda.toLowerCase().trim();
+    return (`${i.nombre||""} ${i.apellido||""}`).toLowerCase().includes(b);
+  });
   const dias = Array.from({ length: diasEnMes }, (_, i) => i + 1);
   const btnNav = { background:"rgba(255,255,255,0.15)", color:"#FFFFFF", border:"none", borderRadius:"8px", padding:"7px 14px", fontSize:"15px", cursor:"pointer", fontFamily:"inherit" };
 
@@ -3488,7 +3510,7 @@ export default function App() {
         {vista==="agenda"&&<VistaAgenda vista={vista} eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} filtros={filtros} setFiltros={setFiltros} onAbrir={abrirEvento} onVerMultidia={verTodosLosDias}/>}
         {vista==="grilla"&&<VistaGrilla eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} contactos={contactos} onAbrir={abrirEvento} onVerMultidia={verTodosLosDias} vista={vista}/>}
       </>}
-      {pantalla==="disponibilidad"&&<VistaDisponibilidad eventos={eventos} interpretes={interpretes} pares={pares} clientes={clientes} onAbrir={abrirEvento}/>}
+      {pantalla==="disponibilidad"&&<VistaDisponibilidad eventos={eventos} interpretes={interpretes} pares={pares} clientes={clientes} onAbrir={abrirEvento} busqueda={busqueda}/>}
       {pantalla==="config"&&esAdmin&&<PantallaConfig clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} onActualizar={cargarDatos} perfil={perfil}/>}
 
       {/* ── MODALES ── */}
