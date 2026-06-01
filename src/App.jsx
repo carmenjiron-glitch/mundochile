@@ -1909,12 +1909,15 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
       {tab==="interpretes"&&<>
         {/* Header: buscador + botón nuevo */}
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"20px",gap:"12px"}}>
-          <input
-            style={{padding:"8px 12px",border:"1px solid #D1D5DB",borderRadius:"8px",fontSize:"13px",color:"#1A1A1A",background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",width:"240px"}}
-            placeholder="Buscar intérprete..."
-            value={busquedaInterp}
-            onChange={e=>setBusquedaInterp(e.target.value)}
-          />
+          <div style={{position:"relative",display:"inline-flex",alignItems:"center"}}>
+            <input
+              style={{padding:"8px 12px",paddingRight:busquedaInterp?"32px":"12px",border:"1px solid #D1D5DB",borderRadius:"8px",fontSize:"13px",color:"#1A1A1A",background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",width:"240px"}}
+              placeholder="Buscar intérprete..."
+              value={busquedaInterp}
+              onChange={e=>setBusquedaInterp(e.target.value)}
+            />
+            {busquedaInterp&&<button onClick={()=>setBusquedaInterp("")} style={{position:"absolute",right:"8px",background:"#EF4444",color:"#FFFFFF",border:"none",borderRadius:"50%",width:"18px",height:"18px",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:"11px",fontWeight:"700",lineHeight:1,padding:0,flexShrink:0}}>×</button>}
+          </div>
           <button onClick={()=>{setEditando("nuevo");setFormEdit({nombre:"",apellido:"",email:"",telefono:"",ciudad:"",modalidad_trabajo:"ambas",es_host_zoom:false,notas:"",activo:true});}} style={S.btnA}>+ Nuevo intérprete</button>
         </div>
 
