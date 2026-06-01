@@ -715,6 +715,8 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
               </div>
               <div style={{marginBottom:"20px"}}><label style={S.lbl}>Detalles del lugar</label><input style={S.inp} value={form.lugar_detalle} onChange={e=>setF("lugar_detalle",e.target.value)} placeholder="Sala Andes, piso 3…"/></div>
             </>}
+            {/* Comentarios */}
+            <div style={{marginBottom:"16px",marginTop:"8px"}}><label style={S.lbl}>💬 Comentarios</label><textarea style={{...S.inp,minHeight:"80px",resize:"vertical",height:"auto",border:"1.5px solid #A0A09F"}} value={form.comentarios||""} onChange={e=>setF("comentarios",e.target.value)} placeholder="Notas adicionales…"/></div>
             {/* Panel contable */}
             <div style={{border:"2px solid #F0C890",borderRadius:"12px",padding:"16px",background:"#FFF5E6",marginTop:"16px",marginBottom:"16px"}}>
               <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"16px",paddingBottom:"10px",borderBottom:"1px solid #E5E7EB"}}>
@@ -1049,14 +1051,6 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
               </div>
             </div>
           );})}</>}
-          {/* Comentarios — siempre al final del formulario */}
-          <div style={{marginTop:"24px",paddingTop:"16px",borderTop:`1px solid ${C.grisBorde}`}}>
-            <label style={S.lbl}>💬 Comentarios</label>
-            <textarea style={{...S.inp,minHeight:"80px",resize:"vertical",height:"auto",border:"1.5px solid #A0A09F"}}
-              value={form.comentarios||""}
-              onChange={e=>setF("comentarios",e.target.value)}
-              placeholder="Notas adicionales…"/>
-          </div>
         </div>
         {/* Footer */}
         <div style={{padding:"16px 24px",borderTop:`1px solid ${C.grisBorde}`,flexShrink:0,display:"flex",gap:"10px",justifyContent:"flex-end",alignItems:"center",background:C.gris,borderRadius:"0 0 20px 20px"}}>
