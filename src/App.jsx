@@ -2412,16 +2412,8 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
                   <td data-celda={`${fi}-6`} onClick={()=>setCeldaActiva({fila:fi,col:6})} style={cs(6)}>{detalleEq}</td>
                   <td data-celda={`${fi}-7`} onClick={()=>setCeldaActiva({fila:fi,col:7})} style={cs(7)}>{provNom}</td>
                   <td data-celda={`${fi}-8`} onClick={()=>setCeldaActiva({fila:fi,col:8})} style={cs(8)}>{detalleInst}</td>
-                  <td data-celda={`${fi}-9`} onClick={()=>setCeldaActiva({fila:fi,col:9})} style={cs(9,{verticalAlign:"middle"})}>
-                    <span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"2px 8px",borderRadius:"20px",fontSize:"11px",fontWeight:"600",whiteSpace:"nowrap",color:(B_MOD[ev.modalidad]||{ct:"#565656"}).ct,background:(B_MOD[ev.modalidad]||{bg:"#F7F7F5"}).bg,border:`1.5px solid ${(B_MOD[ev.modalidad]||{c:"#6B6B6B"}).c}`}}>
-                      {ev.modalidad==="presencial"?<IconPresencial size={11} color={(B_MOD[ev.modalidad]||{ct:"#565656"}).ct}/>:ev.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[ev.modalidad]||ev.modalidad}
-                    </span>
-                  </td>
-                  <td data-celda={`${fi}-10`} onClick={()=>setCeldaActiva({fila:fi,col:10})} style={cs(10,{verticalAlign:"top"})}>
-                    <div style={{display:"flex",flexWrap:"wrap",gap:"3px"}}>
-                      {tiposArr(ev.tipo).map(t=>{const bt=B_TIPO[t]||{bg:"#EEF2FF",c:"#3B5BDB"};return(<span key={t} style={{display:"inline-flex",alignItems:"center",gap:"3px",padding:"2px 7px",borderRadius:"20px",fontSize:"11px",fontWeight:"600",whiteSpace:"nowrap",color:bt.c,background:bt.bg,border:`1.5px solid ${bt.c}`}}>{t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤":"🤫"} {t}</span>);})}
-                    </div>
-                  </td>
+                  <td data-celda={`${fi}-9`} onClick={()=>setCeldaActiva({fila:fi,col:9})} style={cs(9)}>{LBL_MODAL[ev.modalidad]||ev.modalidad||""}</td>
+                  <td data-celda={`${fi}-10`} onClick={()=>setCeldaActiva({fila:fi,col:10})} style={cs(10)}>{tiposArr(ev.tipo).join(", ")}</td>
                   <td data-celda={`${fi}-11`} onClick={()=>setCeldaActiva({fila:fi,col:11})} style={cs(11)}>{ev.nombre_evento||""}</td>
                   <td data-celda={`${fi}-12`} onClick={()=>setCeldaActiva({fila:fi,col:12})} style={cs(12)}>{ev.lugar||""}</td>
                   <td data-celda={`${fi}-13`} onClick={()=>setCeldaActiva({fila:fi,col:13})} style={cs(13)}>{par?.descripcion||""}</td>
