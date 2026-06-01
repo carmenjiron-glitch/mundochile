@@ -3051,13 +3051,13 @@ export default function App() {
             const evs=evsDia(iso),esHoy=iso===hoy();
             if(!esMes) return (
               <div key={i} onClick={()=>{setDiaActual(iso);setVista("dia");}}
-                style={{minHeight:"90px",background:"#F3F4F6",borderRadius:"8px",padding:"8px",opacity:0.6,boxSizing:"border-box",cursor:"pointer"}}>
-                <div style={{marginBottom:"4px",display:"flex",alignItems:"baseline",justifyContent:"space-between",width:"100%"}}>
-                  <div style={{display:"flex",alignItems:"baseline",gap:"4px"}}>
+                style={{minHeight:"90px",background:"#F3F4F6",borderRadius:"8px",padding:"8px",opacity:0.82,boxSizing:"border-box",cursor:"pointer"}}>
+                <div style={{marginBottom:"4px",display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:"4px"}}>
                     <span style={{fontWeight:"400",fontSize:"15px",color:"#9CA3AF"}}>{dia}</span>
                     <span style={{fontWeight:"400",fontSize:"15px",color:"#C4C9D4"}}>{fecha.toLocaleDateString('es-CL',{weekday:'long'})}</span>
                   </div>
-                  <span style={{fontSize:"10px",fontWeight:"400",color:"#C4C9D4"}}>{fecha.toLocaleDateString('es-CL',{month:'long'})}</span>
+                  <span style={{fontSize:"13.5px",fontWeight:"400",fontStyle:"italic",color:"#C4C9D4"}}>{fecha.toLocaleDateString('es-CL',{month:'short'})}</span>
                 </div>
                 {evs.length>0&&<div style={{opacity:0.5}}>
                   {evs.slice(0,2).map((ev,j)=><div key={j} onClick={e=>{e.stopPropagation();abrirEvento(ev);}} style={{fontSize:"13px",fontWeight:"500",background:colorCliente(ev.cliente_id),color:"#fff",borderRadius:"4px",padding:"3px 8px",marginBottom:"2px",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{clientes.find(c=>c.id===ev.cliente_id)?.nombre_empresa||ev.nombre_evento||"Evento"}</div>)}
@@ -3068,12 +3068,15 @@ export default function App() {
             return <div key={i} onClick={()=>{setDiaActual(iso);setVista("dia");}}
               style={{minHeight:"90px",border:esHoy?"1.5px solid rgba(249,115,22,0.35)":"none",borderRadius:"8px",padding:"8px",cursor:"pointer",background:"#FFFFFF",boxSizing:"border-box"}}
               onMouseEnter={e=>e.currentTarget.style.background="#F8FAFC"} onMouseLeave={e=>e.currentTarget.style.background="#FFFFFF"}>
-              <div style={{marginBottom:"4px",display:"flex",alignItems:"center",gap:"6px",width:"100%"}}>
-                {esHoy
-                  ?<div style={{width:"26px",height:"26px",borderRadius:"50%",background:"#F97316",color:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"14px",fontWeight:"700",flexShrink:0}}>{dia}</div>
-                  :<span style={{fontWeight:"700",fontSize:"15px",color:"#111827"}}>{dia}</span>
-                }
-                <span style={{fontWeight:"400",fontSize:"14px",color:"#6B7280"}}>{fecha.toLocaleDateString('es-CL',{weekday:'long'})}</span>
+              <div style={{marginBottom:"4px",display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%"}}>
+                <div style={{display:"flex",alignItems:"center",gap:"6px"}}>
+                  {esHoy
+                    ?<div style={{width:"26px",height:"26px",borderRadius:"50%",background:"#F97316",color:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"14px",fontWeight:"700",flexShrink:0}}>{dia}</div>
+                    :<span style={{fontWeight:"700",fontSize:"15px",color:"#111827"}}>{dia}</span>
+                  }
+                  <span style={{fontWeight:"400",fontSize:"14px",color:"#6B7280"}}>{fecha.toLocaleDateString('es-CL',{weekday:'long'})}</span>
+                </div>
+                <span style={{fontSize:"13.5px",fontWeight:"400",fontStyle:"italic",color:"#9CA3AF"}}>{fecha.toLocaleDateString('es-CL',{month:'short'})}</span>
               </div>
               {evs.slice(0,2).map((ev,j)=><div key={j} onClick={e=>{e.stopPropagation();abrirEvento(ev);}} style={{fontSize:"13px",fontWeight:"500",background:colorCliente(ev.cliente_id),color:"#fff",borderRadius:"4px",padding:"3px 8px",marginBottom:"2px",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{clientes.find(c=>c.id===ev.cliente_id)?.nombre_empresa||ev.nombre_evento||"Evento"}</div>)}
               {evs.length>2&&<div style={{fontSize:"13px",color:"#6B7280",fontWeight:"500",marginTop:"1px"}}>+{evs.length-2} más</div>}
