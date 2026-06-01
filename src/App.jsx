@@ -27,7 +27,7 @@ const IconAV = ({size=24}) => (
   </svg>
 )
 const IconoSimultanea = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+  <svg width="12.6" height="12.6" viewBox="0 0 24 24" fill="none"
     stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="9" y="2" width="6" height="12" rx="3"/>
     <path d="M5 10a7 7 0 0 0 14 0"/>
@@ -37,8 +37,8 @@ const IconoSimultanea = () => (
 )
 const IconPresencial = ({size=16,color="currentColor"}) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M3 22V8l9-6 9 6v14H3z"/>
-    <path d="M9 22v-8h6v8"/>
+    <path d="M2 10L12 2L22 10V21a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V10z"/>
+    <path d="M9 22v-7h6v7"/>
   </svg>
 )
 
@@ -70,7 +70,7 @@ const idiomaBorde=(idioma)=>IDIOMA_BORDE[idioma]||"#3451d1";
 const idiomaFlag=(idioma)=>IDIOMA_FLAG[idioma]||"🌐";
 const IDIOMA_CDN={"Inglés":"gb","Francés":"fr","Portugués":"br","Español":"es","Alemán":"de","Italiano":"it","Chino":"cn","Japonés":"jp"};
 function FlagImg({idioma}){const c=IDIOMA_CDN[idioma];if(!c)return<span style={{fontSize:"14px"}}>🌐</span>;return<img src={`https://flagcdn.com/28x21/${c}.png`} style={{width:"25px",height:"18px",objectFit:"cover",borderRadius:"2px",verticalAlign:"middle",display:"inline-block",flexShrink:0}} alt={idioma}/>;}
-const B_TIPO={"Simultánea":{bg:"#FFFFFF",c:"#0B5CFF",ct:"#0B5CFF"},"Consecutiva":{bg:"#FCE4EC",c:"#C2185B",ct:"#881140"},"Whispering":{bg:"#F3E5F5",c:"#7B1FA2",ct:"#561671"}};
+const B_TIPO={"Simultánea":{bg:"#FFFFFF",c:"#0057FF",ct:"#0057FF"},"Consecutiva":{bg:"#FCE4EC",c:"#C2185B",ct:"#881140"},"Whispering":{bg:"#F3E5F5",c:"#7B1FA2",ct:"#561671"}};
 const B_MOD={"presencial":{bg:"#F0FDF4",c:"#16A34A",ct:"#15803D"},"remoto":{bg:"#E0F7FA",c:"#00838F",ct:"#005C64"},"hibrido":{bg:"#FBE9E7",c:"#BF360C",ct:"#862608"}};
 const B_EST=(e)=>e==="Facturado"?{bg:"#FFFFFF",c:"#1A1A1A",b:"#E57373"}:{bg:"#FFFFFF",c:"#1A1A1A",b:"#E57373"};
 const bS=(bg,c,b)=>({display:"inline-flex",alignItems:"center",gap:"4px",padding:"3px 8px",borderRadius:"20px",fontSize:"10px",fontWeight:"700",lineHeight:"1.4",color:c,background:bg,border:`2px solid ${b||c}`,whiteSpace:"nowrap"});
@@ -1171,7 +1171,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
   })();
   const LBL={remoto:"Remoto",presencial:"Presencial",hibrido:"Híbrido"};
   const LBL_LARGA={txt:"13px",fw:"600",c:"#0F172A",tt:"uppercase",ls:"0.04em"};
-  const B_TIPO_D={"Simultánea":{bg:"#FFFFFF",c:"#0B5CFF"},"Consecutiva":{bg:"#FCE4EC",c:"#9B1349"},"Whispering":{bg:"#F3E5F5",c:"#621982"}};
+  const B_TIPO_D={"Simultánea":{bg:"#FFFFFF",c:"#0057FF"},"Consecutiva":{bg:"#FCE4EC",c:"#9B1349"},"Whispering":{bg:"#F3E5F5",c:"#621982"}};
   const B_MOD_D={"presencial":{bg:"#F0FDF4",c:"#16A34A"},"remoto":{bg:"#E0F7FA",c:"#006972"},"hibrido":{bg:"#FBE9E7",c:"#992B0A"}};
   const B_EST_D=(e)=>e==="Facturado"?{bg:"#FFFFFF",c:"#1A1A1A",b:"#E57373"}:{bg:"#FFFFFF",c:"#1A1A1A",b:"#E57373"};
   const SL=({t})=><div style={{fontSize:"12px",fontWeight:"700",color:"#1E3A6E",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:"10px",background:"#EEF4FF",padding:"6px 28px",marginLeft:"-28px",marginRight:"-28px",display:"flex",alignItems:"center",gap:"6px",WebkitFontSmoothing:"antialiased"}}>{t}</div>;
@@ -3066,14 +3066,14 @@ export default function App() {
               </div>
             );
             return <div key={i} onClick={()=>{setDiaActual(iso);setVista("dia");}}
-              style={{minHeight:"90px",border:esHoy?"2px solid #4C6EF5":"none",borderRadius:"8px",padding:"8px",cursor:"pointer",background:"#FFFFFF",boxSizing:"border-box"}}
+              style={{minHeight:"90px",border:esHoy?"1.5px solid rgba(249,115,22,0.35)":"none",borderRadius:"8px",padding:"8px",cursor:"pointer",background:"#FFFFFF",boxSizing:"border-box"}}
               onMouseEnter={e=>e.currentTarget.style.background="#F8FAFC"} onMouseLeave={e=>e.currentTarget.style.background="#FFFFFF"}>
-              <div style={{marginBottom:"4px",display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%"}}>
-                <div style={{display:"flex",alignItems:"baseline",gap:"4px"}}>
-                  <span style={{fontWeight:"700",fontSize:"15px",color:esHoy?"#4C6EF5":"#111827"}}>{dia}</span>
-                  <span style={{fontWeight:"400",fontSize:"15px",color:"#6B7280"}}>{fecha.toLocaleDateString('es-CL',{weekday:'long'})}</span>
-                </div>
-                {esHoy&&<div style={{width:"9px",height:"9px",borderRadius:"50%",background:"#22C55E",boxShadow:"0 0 6px #22C55E",flexShrink:0}}/>}
+              <div style={{marginBottom:"4px",display:"flex",alignItems:"center",gap:"6px",width:"100%"}}>
+                {esHoy
+                  ?<div style={{width:"26px",height:"26px",borderRadius:"50%",background:"#F97316",color:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"14px",fontWeight:"700",flexShrink:0}}>{dia}</div>
+                  :<span style={{fontWeight:"700",fontSize:"15px",color:"#111827"}}>{dia}</span>
+                }
+                <span style={{fontWeight:"400",fontSize:"14px",color:"#6B7280"}}>{fecha.toLocaleDateString('es-CL',{weekday:'long'})}</span>
               </div>
               {evs.slice(0,2).map((ev,j)=><div key={j} onClick={e=>{e.stopPropagation();abrirEvento(ev);}} style={{fontSize:"13px",fontWeight:"500",background:colorCliente(ev.cliente_id),color:"#fff",borderRadius:"4px",padding:"3px 8px",marginBottom:"2px",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{clientes.find(c=>c.id===ev.cliente_id)?.nombre_empresa||ev.nombre_evento||"Evento"}</div>)}
               {evs.length>2&&<div style={{fontSize:"13px",color:"#6B7280",fontWeight:"500",marginTop:"1px"}}>+{evs.length-2} más</div>}

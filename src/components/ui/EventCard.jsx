@@ -14,7 +14,7 @@ const nombreCorto = (nombre, apellido) => {
 
 // ── Íconos SVG nítidos ────────────────────────────────────────────────────────
 const IconoSimultanea = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+  <svg width="12.6" height="12.6" viewBox="0 0 24 24" fill="none"
     stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="9" y="2" width="6" height="12" rx="3"/>
     <path d="M5 10a7 7 0 0 0 14 0"/>
@@ -52,7 +52,7 @@ const darken = (hex, f) => { const n = hex.replace("#",""); const r=Math.round(p
 
 // ── Badge rectangular estilo Trello ──────────────────────────────────────────
 const BADGE = {
-  "Simultánea":            { bg:"#FFFFFF", c:"#0B5CFF", b:"#0B5CFF" },
+  "Simultánea":            { bg:"#FFFFFF", c:"#0057FF", b:"#0057FF" },
   "Consecutiva":           { bg:"#FCE4EC", c:"#C2185B", b:"#C2185B" },
   "Whispering":            { bg:"#F3E5F5", c:"#7B1FA2", b:"#7B1FA2" },
   "Presencial":            { bg:"#E8F5E9", c:"#2E7D32", b:"#2E7D32" },
