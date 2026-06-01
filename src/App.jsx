@@ -435,6 +435,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
         zoom_administrador:form.zoom_administrador==="__manual__"?adminZoomManual:(form.zoom_administrador||""), zoom_link:form.zoom_link||"", contacto_id:form.contacto_id?Number(form.contacto_id):null, estado:form.estado||"Facturación Pendiente",
         comentarios:form.comentarios||"", edited_by:perfil?.id||null, edited_by_nombre:perfil?.nombre||"",
       };
+      console.log('tipo enviado:', payload.tipo, '| tipo raw form.tipo:', form.tipo, '| tiposPg result:', tiposPg(form.tipo));
       let eventoId=form.id;
       if(form.id){const{error:e}=await sb.from("eventos").update(payload).eq("id",form.id);if(e)throw e;}
       else {
@@ -3374,7 +3375,7 @@ export default function App() {
 
       {/* ── CONTENIDO ── */}
       {pantalla==="calendario"&&<>
-        {vista!=="grilla"&&<div style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",width:"100%",left:"0",paddingLeft:"0",paddingRight:"12px",display:"flex",justifyContent:"center",alignItems:"center",gap:"8px",boxSizing:"border-box"}}>
+        {vista!=="grilla"&&<div style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",width:"100%",left:"0",paddingLeft:"0",paddingRight:"32px",display:"flex",justifyContent:"center",alignItems:"center",gap:"8px",boxSizing:"border-box"}}>
           <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:"8px",flex:1,maxWidth:"100%",padding:"6px 24px",boxSizing:"border-box"}}>
             <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes} clientes={clientesConEventos} pares={paresConEventos} proveedores={proveedoresConEventos}/>
           </div>
