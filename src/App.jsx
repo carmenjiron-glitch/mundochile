@@ -373,6 +373,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
   const [form,setForm]=useState(()=>eventoInicial?JSON.parse(JSON.stringify(eventoInicial)):evVacio());
   const [tab,setTab]=useState("general");
   const [guardando,setGuardando]=useState(false);
+  const guardandoRef=useRef(false);
   const [error,setError]=useState("");
   const [guardadoOk,setGuardadoOk]=useState(false);
   const setF=useCallback((k,v)=>setForm(f=>({...f,[k]:v})),[]);
@@ -422,7 +423,9 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
   };
 
   const guardar=async({cerrar=true}={})=>{
-    if(!form.cliente_id){setError("Selecciona un cliente");return;}
+    if(guardandoRef.current)return;
+    guardandoRef.current=true;
+    if(!form.cliente_id){guardandoRef.current=false;setError("Selecciona un cliente");return;}
     setGuardando(true);setError("");
     try {
       const payload={
@@ -521,7 +524,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
       if(cerrar){onGuardar();}
       else{setGuardadoOk(true);setTimeout(()=>setGuardadoOk(false),2000);}
     } catch(e){setError("Error al guardar: "+(e.message||JSON.stringify(e)));}
-    finally{setGuardando(false);}
+    finally{setGuardando(false);guardandoRef.current=false;}
   };
 
   // Fila de asignación
