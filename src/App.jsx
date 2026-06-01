@@ -1280,7 +1280,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                   📍 Ver en Maps
                 </a>
                 <button
-                  title="Copiar coordenadas"
+                  title="Copiar link de Google Maps"
                   onClick={async()=>{
                     if(geoLoading)return;
                     setGeoLoading(true);setGeoOk(false);
@@ -1289,14 +1289,14 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                       const res=await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(q)}`);
                       const data=await res.json();
                       if(data&&data[0]){
-                        const coords=`${parseFloat(data[0].lat).toFixed(6)},${parseFloat(data[0].lon).toFixed(6)}`;
-                        await navigator.clipboard.writeText(coords);
+                        const mapsUrl=`https://www.google.com/maps?q=${parseFloat(data[0].lat).toFixed(6)},${parseFloat(data[0].lon).toFixed(6)}`;
+                        await navigator.clipboard.writeText(mapsUrl);
                         setGeoOk(true);setTimeout(()=>setGeoOk(false),2500);
                       }
                     }catch(e){console.error("geocoding",e);}finally{setGeoLoading(false);}
                   }}
                   style={{padding:"6px 12px",borderRadius:"8px",border:`1px solid ${geoOk?"#86EFAC":"#93C5FD"}`,background:geoOk?"#F0FDF4":"#EFF6FF",display:"inline-flex",alignItems:"center",gap:"5px",cursor:geoLoading?"wait":"pointer",fontSize:"13px",fontWeight:"500",color:geoOk?"#166534":"#114D84",fontFamily:"inherit"}}
-                >{geoLoading?"⏳ Buscando…":geoOk?"✓ Coordenadas copiadas":"⊕ Copiar coordenadas"}</button>
+                >{geoLoading?"⏳ Buscando…":geoOk?"✓ Link copiado":"⊕ Copiar link Maps"}</button>
               </div>
             </div>
           </div>}
