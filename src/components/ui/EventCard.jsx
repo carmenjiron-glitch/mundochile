@@ -383,11 +383,6 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             <span style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"4px 10px", borderRadius:20, fontSize:12, fontWeight:700, lineHeight:1.4, color:"#475569", background:"#F1F5F9", border:"1.5px solid #CBD5E1", whiteSpace:"nowrap", marginTop:10 }}>📍 {ev.lugar}</span>
           )}
 
-          {/* Estado */}
-          <div style={{ marginTop:10 }}>
-            <Chip label={estadoLabel} emoji={estadoLabel==="Facturado"?"✓ ":"🟠 "} fontSize={12} padding="4px 10px" />
-          </div>
-
           {/* Intérpretes agrupados */}
           {Object.entries(grupos).map(([key, grupo]) => {
             const pillClr = IDIOMA_PILL_CLR[grupo.idioma] || "#4C6EF5";
@@ -429,6 +424,11 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
               <IconAV size={13} /> {provNombre || "Equipos AV"}
             </div>
           )}
+
+          {/* Estado — siempre al final */}
+          <div style={{ marginTop:10 }}>
+            <Chip label={estadoLabel} emoji={estadoLabel==="Facturado"?"✓ ":"🟠 "} fontSize={12} padding="4px 10px" />
+          </div>
         </>
       )}
     </div>

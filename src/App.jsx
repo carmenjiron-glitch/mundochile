@@ -1430,6 +1430,11 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
               </div>
             ))}
           </div>}
+          {/* Comentarios */}
+          {evento.comentarios&&<div style={{background:"#F8FAFC",borderRadius:"10px",padding:"12px 16px",marginTop:"12px"}}>
+            <SL t="💬 Comentarios"/>
+            <div style={{color:"#0F172A",fontSize:"17px"}}>{evento.comentarios}</div>
+          </div>}
           <HR/>
           {/* Estado */}
           <div style={{marginBottom:"8px"}}>
@@ -1439,11 +1444,6 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
               {evento.numero_factura&&<div style={{display:"flex",alignItems:"center",gap:"6px",color:"#374151",fontSize:"13px"}}><span style={{color:"#6B7280",fontWeight:"500"}}>N° Factura:</span><span style={{fontWeight:"600"}}>{evento.numero_factura}</span></div>}
             </div>
           </div>
-          {/* Comentarios */}
-          {evento.comentarios&&<div style={{background:"#F8FAFC",borderRadius:"10px",padding:"12px 16px",marginTop:"12px"}}>
-            <SL t="💬 Comentarios"/>
-            <div style={{color:"#0F172A",fontSize:"17px"}}>{evento.comentarios}</div>
-          </div>}
           {/* Historial */}
           <div style={{fontSize:"14px",color:"#6B7280",display:"flex",gap:"16px",flexWrap:"wrap",paddingTop:"12px",marginTop:"12px",borderTop:"1px solid #E5E7EB"}}>
             {evento.created_by_nombre&&<span>Creado por <strong>{evento.created_by_nombre}</strong>{evento.created_at&&" el "+new Date(evento.created_at).toLocaleString("es-CL")}</span>}
@@ -2739,16 +2739,18 @@ function VistaDisponibilidad({ eventos, interpretes, pares, clientes=[], onAbrir
     setPopover({ items, d, x: Math.min(rect.left, window.innerWidth - 290), y: Math.min(rect.bottom + 6, window.innerHeight - 220) });
   };
 
-  const SlotCell = ({ items }) => {
+  const SlotCell = ({ items, label }) => {
     const ocupado = items.length > 0;
     const item = items[0];
-    const txt = ocupado ? (item.cliNombre ? `${item.cliNombre} · ${item.nombre}` : item.nombre) : "";
+    const tooltip = ocupado ? (item.cliNombre ? `${item.cliNombre} · ${item.nombre}` : item.nombre) : "";
     return (
-      <div style={{ height:"14px", background: ocupado ? "#F97316" : "rgba(134,239,172,0.18)", display:"flex", alignItems:"center", padding: ocupado ? "0 3px" : "0", overflow:"hidden", cursor: ocupado ? "pointer" : "default" }}>
-        {ocupado && <>
-          <span style={{ fontSize:"8px", color:"#fff", fontWeight:"800", flexShrink:0, marginRight:"2px" }}>×</span>
-          <span style={{ fontSize:"8px", color:"#fff", overflow:"hidden", whiteSpace:"nowrap", textOverflow:"ellipsis", flex:1, lineHeight:1 }}>{txt}</span>
-        </>}
+      <div title={tooltip} style={{ height:"17px", display:"flex", alignItems:"center", gap:"3px", padding:"0 3px", background: ocupado ? "#D1FAE5" : "transparent", cursor: ocupado ? "pointer" : "default" }}>
+        <span style={{ fontSize:"8px", fontWeight:"700", color: ocupado ? "#065F46" : "rgba(255,255,255,0.45)", flexShrink:0, minWidth:"10px", lineHeight:1 }}>{label}</span>
+        {!ocupado && (
+          <div style={{ width:"11px", height:"11px", borderRadius:"50%", background:"#F97316", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+            <span style={{ fontSize:"9px", color:"#fff", fontWeight:"900", lineHeight:1 }}>×</span>
+          </div>
+        )}
       </div>
     );
   };
@@ -2783,9 +2785,9 @@ function VistaDisponibilidad({ eventos, interpretes, pares, clientes=[], onAbrir
                   return (
                     <td key={d} onClick={anyOcupado ? e=>openPopover(e, interp.id, d) : undefined}
                       style={{ padding:"1px 1px", borderBottom:"1px solid rgba(255,255,255,0.06)", borderLeft:"1px solid rgba(255,255,255,0.04)", verticalAlign:"middle", cursor: anyOcupado ? "pointer" : "default" }}>
-                      <SlotCell items={slot.am}/>
+                      <SlotCell items={slot.am} label="AM"/>
                       <div style={{ height:"1px", background:"rgba(255,255,255,0.08)" }}/>
-                      <SlotCell items={slot.pm}/>
+                      <SlotCell items={slot.pm} label="PM"/>
                     </td>
                   );
                 })}
