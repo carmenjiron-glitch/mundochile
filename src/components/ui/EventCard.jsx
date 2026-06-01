@@ -231,8 +231,8 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             </div>
 
             <div style={{ display:"flex", gap:5, flexWrap:"wrap", alignItems:"center" }}>
-              <Chip label={ev.tipo} emoji={ev.tipo==="Simultánea"?<IconoSimultanea/>:ev.tipo==="Consecutiva"?"🎤 ":"🤫 "} fontSize={14} padding="5px 12px" />
-              <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?"🏛 ":ev.modalidad==="hibrido"?"🔀 ":"💻 "} fontSize={14} padding="5px 12px" />
+              {(Array.isArray(ev.tipo)?ev.tipo:[ev.tipo||"Simultánea"]).map(t=><Chip key={t} label={t} emoji={t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤 ":"🤫 "} fontSize={14} padding="5px 12px" />)}
+              <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?"🏢 ":ev.modalidad==="hibrido"?"🔀 ":"💻 "} fontSize={14} padding="5px 12px" />
             </div>
 
             {!esPresencial && ev.plataforma && (
@@ -364,8 +364,8 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
           {/* Badges tipo + modalidad */}
           <div style={{ display:"flex", gap:5, flexWrap:"wrap", alignItems:"center" }}>
-            <Chip label={ev.tipo} emoji={ev.tipo==="Simultánea"?<IconoSimultanea/>:ev.tipo==="Consecutiva"?"🎤 ":"🤫 "} fontSize={12} padding="4px 10px" />
-            <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?"🏛 ":ev.modalidad==="hibrido"?"🔀 ":"💻 "} fontSize={12} padding="4px 10px" />
+            {(Array.isArray(ev.tipo)?ev.tipo:[ev.tipo||"Simultánea"]).map(t=><Chip key={t} label={t} emoji={t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤 ":"🤫 "} fontSize={12} padding="4px 10px" />)}
+            <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?"🏢 ":ev.modalidad==="hibrido"?"🔀 ":"💻 "} fontSize={12} padding="4px 10px" />
           </div>
 
           {/* Plataforma / Lugar */}

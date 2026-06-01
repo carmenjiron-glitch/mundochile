@@ -35,12 +35,10 @@ const IconoSimultanea = () => (
     <line x1="8" y1="22" x2="16" y2="22"/>
   </svg>
 )
-const IconPresencial = ({size=14,color="currentColor"}) => (
+const IconPresencial = ({size=16,color="currentColor"}) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/>
-    <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/>
-    <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/>
-    <path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>
+    <path d="M3 22V8l9-6 9 6v14H3z"/>
+    <path d="M9 22v-8h6v8"/>
   </svg>
 )
 
@@ -83,6 +81,9 @@ const nombreCorto=(nombre,apellido)=>{if(!apellido)return nombre;const completo=
 
 // ─── CONSTANTES ──────────────────────────────────────────────────────────────
 const TIPOS      = ["Simultánea","Consecutiva","Whispering"];
+const tiposArr   = (t) => Array.isArray(t) ? t : (t ? [t] : ["Simultánea"]);
+// Convierte array JS → literal PostgreSQL text[]: ["A","B"] → {A,B}
+const tiposPg    = (t) => `{${tiposArr(t).join(',')}}`;
 const MODALIDADES= ["remoto","presencial","hibrido"];
 const LBL_MODAL  = {remoto:"Remoto",presencial:"Presencial",hibrido:"Híbrido"};
 const PLATAFORMAS= ["Zoom MundoChile","Zoom Cliente","Teams","Webex","Meet","Otro"];
@@ -161,7 +162,7 @@ const S = {
 
 // ─── ESTADO VACÍO ─────────────────────────────────────────────────────────────
 const evVacio = () => ({
-  id:null, cliente_id:"", nro_oc:"", nombre_evento:"", tipo:"Simultánea",
+  id:null, cliente_id:"", nro_oc:"", nombre_evento:"", tipo:["Simultánea"],
   fecha_inicio:toISO(new Date(new Date().getTime()+86400000)), fecha_termino:toISO(new Date(new Date().getTime()+86400000)), hora_inicio:"09:00", hora_termino:"13:00",
   jornada:"Media Jornada", jornada_personalizada:"", lugar:"", lugar_detalle:"",
   modalidad:"remoto", plataforma:"Zoom MundoChile", zoom_owner:"mundochile",
@@ -296,7 +297,7 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
     diaXdeY={x,y};
   }
 
-  const bt=B_TIPO[ev.tipo]||{bg:"#EEF2FF",c:"#3B5BDB"};
+  const bt=B_TIPO[tiposArr(ev.tipo)[0]]||{bg:"#EEF2FF",c:"#3B5BDB"};
   const bm=B_MOD[ev.modalidad]||{bg:"#F7F7F5",c:"#6B6B6B"};
   const be=B_EST(ev.estado);
 
@@ -312,7 +313,7 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
       {cliente?.nombre_contacto&&<div style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",fontSize:"0.55em",fontStyle:"italic",color:"#6B7280",marginBottom:"6px"}}>{cliente.nombre_contacto}</div>}
       <div style={{fontSize:"17px",fontWeight:"500",color:"#1A1A1A",marginBottom:"8px"}}>{ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)} hrs</div>
       <div style={{display:"flex",gap:"4px",flexWrap:"wrap",alignItems:"center",marginBottom:"8px"}}>
-        <span style={bS(bt.bg,bt.c)}>{TIPO_ICON[ev.tipo]}{ev.tipo}</span>
+        {tiposArr(ev.tipo).map(t=><span key={t} style={bS((B_TIPO[t]||{bg:"#EEF2FF"}).bg,(B_TIPO[t]||{c:"#3B5BDB"}).c)}>{TIPO_ICON[t]}{t}</span>)}
         <span style={bS(bm.bg,bm.c)}>{MOD_ICON[ev.modalidad]}{LBL_MODAL[ev.modalidad]||ev.modalidad}</span>
       </div>
       {esPresencial&&ev.lugar&&<div style={{fontSize:"15px",color:"#475569",marginBottom:"8px"}}>📌 {ev.lugar}</div>}
@@ -426,7 +427,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
     try {
       const payload={
         cliente_id:form.cliente_id||null, nro_oc:form.nro_oc||"", nombre_evento:(form.nombre_evento||"").trim().replace(/\s+/g,' '),
-        tipo:form.tipo||"Simultánea", fecha_inicio:form.fecha_inicio, fecha_termino:form.fecha_termino,
+        tipo:tiposPg(form.tipo), fecha_inicio:form.fecha_inicio, fecha_termino:form.fecha_termino,
         hora_inicio:form.hora_inicio||"09:00", hora_termino:form.hora_termino||"13:00",
         jornada:form.jornada||"Media Jornada", jornada_personalizada:form.jornada_personalizada||"",
         lugar:form.lugar||"", lugar_detalle:form.lugar_detalle||"", modalidad:form.modalidad||"remoto",
@@ -486,7 +487,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
             hora_inicio:dia.hora_inicio||"09:00", hora_termino:dia.hora_termino||"13:00",
             jornada:dia.jornada||"Media Jornada", jornada_personalizada:dia.jornada_personalizada||"",
           };
-          if(dia.tipo!==null&&dia.tipo!==undefined)diaPayload.tipo=dia.tipo;
+          if(dia.tipo!==null&&dia.tipo!==undefined)diaPayload.tipo=tiposPg(dia.tipo);
           if(dia.modalidad!==null&&dia.modalidad!==undefined)diaPayload.modalidad=dia.modalidad;
           if(dia.lugar!==null&&dia.lugar!==undefined)diaPayload.lugar=dia.lugar;
           if(dia.lugar_detalle!==null&&dia.lugar_detalle!==undefined)diaPayload.lugar_detalle=dia.lugar_detalle;
@@ -644,7 +645,15 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
             {/* Tipo + Modalidad */}
             <div style={{...S.fila,marginBottom:"20px"}}>
               <div style={S.camp}><label style={{...S.lbl,display:"flex",alignItems:"center",gap:"5px"}}><IconMic size={16}/> Tipo de interpretación</label>
-                <select style={S.sel} value={form.tipo} onChange={e=>setF("tipo",e.target.value)}>{TIPOS.map(t=><option key={t}>{t}</option>)}</select></div>
+                <div style={{display:"flex",gap:"7px",flexWrap:"wrap",paddingTop:"4px"}}>
+                  {TIPOS.map(t=>{const on=tiposArr(form.tipo).includes(t);const clr=(B_TIPO[t]||{c:"#3B5BDB"}).c;const bg=(B_TIPO[t]||{bg:"#EEF2FF"}).bg;return(
+                    <label key={t} style={{display:"inline-flex",alignItems:"center",gap:"7px",cursor:"pointer",padding:"8px 14px",borderRadius:"10px",border:`2px solid ${on?clr:"#E2E8F0"}`,background:on?bg:"#F8FAFC",transition:"all 0.12s",userSelect:"none",fontSize:"14px",fontWeight:on?"600":"400",color:on?clr:"#374151"}}>
+                      <input type="checkbox" checked={on} onChange={()=>{const cur=tiposArr(form.tipo);const nx=on?cur.filter(x=>x!==t):[...cur,t];setF("tipo",nx.length?nx:cur);}} style={{display:"none"}}/>
+                      <span style={{width:"16px",height:"16px",borderRadius:"4px",border:`2px solid ${on?clr:"#CBD5E1"}`,background:on?clr:"transparent",display:"inline-flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{on&&<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1.5 5L4 7.5L8.5 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}</span>
+                      {TIPO_ICON[t]} {t}
+                    </label>
+                  );})}
+                </div></div>
               <div style={S.camp}><label style={S.lbl}>🔄 Modalidad</label>
                 <select style={S.sel} value={form.modalidad} onChange={e=>setF("modalidad",e.target.value)}>{MODALIDADES.map(m=><option key={m} value={m}>{LBL_MODAL[m]}</option>)}</select></div>
             </div>
@@ -863,7 +872,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
             <div style={{background:"#EEF2FF",borderRadius:"10px",padding:"12px 16px",marginBottom:"16px",border:"1.5px solid #C7D2FE"}}>
               <div style={{fontSize:"12px",fontWeight:"700",color:"#4338CA",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:"10px"}}>🌐 Información General del evento — Aplica a todos los días salvo excepción</div>
               <div style={{display:"flex",gap:"9px",flexWrap:"wrap",alignItems:"center",marginBottom:"8px"}}>
-                {form.tipo&&<span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"4px 11px",borderRadius:"20px",fontSize:"13px",fontWeight:"600",color:(B_TIPO[form.tipo]||{ct:"#294099"}).ct,background:(B_TIPO[form.tipo]||{bg:"#EEF2FF"}).bg,border:`1.5px solid ${(B_TIPO[form.tipo]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>{form.tipo}</span>}
+                {tiposArr(form.tipo).map(t=><span key={t} style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"4px 11px",borderRadius:"20px",fontSize:"13px",fontWeight:"600",color:(B_TIPO[t]||{ct:"#294099"}).ct,background:(B_TIPO[t]||{bg:"#EEF2FF"}).bg,border:`1.5px solid ${(B_TIPO[t]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>{t}</span>)}
                 {form.modalidad&&<span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"4px 11px",borderRadius:"20px",fontSize:"13px",fontWeight:"600",color:(B_MOD[form.modalidad]||{ct:"#4B4B4B"}).ct,background:(B_MOD[form.modalidad]||{bg:"#F7F7F5"}).bg,border:`1.5px solid ${(B_MOD[form.modalidad]||{c:"#6B6B6B"}).c}`,whiteSpace:"nowrap"}}>{form.modalidad==="presencial"?<IconPresencial size={14} color={(B_MOD.presencial).ct}/>:form.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[form.modalidad]}</span>}
                 {(form.modalidad==="presencial"||form.modalidad==="hibrido")&&form.lugar&&<span style={{display:"inline-flex",alignItems:"center",padding:"4px 11px",borderRadius:"20px",fontSize:"13px",fontWeight:"600",color:"#5B21B6",background:"#EDE9FE",border:"1.5px solid #7C3AED",whiteSpace:"nowrap"}}>📍 {form.lugar}</span>}
               </div>
@@ -885,7 +894,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                   <div style={{fontSize:"13px",color:"#64748B",marginTop:"2px"}}>{dia.hora_inicio?.slice(0,5)||"–"} – {dia.hora_termino?.slice(0,5)||"–"} · {pluralizarJornada(dia.jornada)||""}</div>
                 </div>
                 <div style={{display:"flex",gap:"6px",alignItems:"center",flexWrap:"wrap",justifyContent:"flex-end"}}>
-                  {dia.tipo&&<span style={{display:"inline-flex",padding:"3px 9px",borderRadius:"20px",fontSize:"13px",fontWeight:"700",color:(B_TIPO[dia.tipo]||{ct:"#294099"}).ct,background:(B_TIPO[dia.tipo]||{bg:"#EEF2FF"}).bg,border:`1.5px solid ${(B_TIPO[dia.tipo]||{c:"#3B5BDB"}).c}`}}>⚡ {dia.tipo}</span>}
+                  {dia.tipo&&tiposArr(dia.tipo).map(t=><span key={t} style={{display:"inline-flex",padding:"3px 9px",borderRadius:"20px",fontSize:"13px",fontWeight:"700",color:(B_TIPO[t]||{ct:"#294099"}).ct,background:(B_TIPO[t]||{bg:"#EEF2FF"}).bg,border:`1.5px solid ${(B_TIPO[t]||{c:"#3B5BDB"}).c}`}}>⚡ {t}</span>)}
                   {dia.modalidad&&<span style={{display:"inline-flex",padding:"3px 9px",borderRadius:"20px",fontSize:"13px",fontWeight:"700",color:(B_MOD[dia.modalidad]||{ct:"#4B4B4B"}).ct,background:(B_MOD[dia.modalidad]||{bg:"#F7F7F5"}).bg,border:`1.5px solid ${(B_MOD[dia.modalidad]||{c:"#6B6B6B"}).c}`}}>⚡ {LBL_MODAL[dia.modalidad]}</span>}
                   {dia.lugar&&<span style={{display:"inline-flex",padding:"3px 9px",borderRadius:"20px",fontSize:"13px",fontWeight:"700",color:"#5B21B6",background:"#EDE9FE",border:"1.5px solid #7C3AED"}}>⚡ 📍 {dia.lugar}</span>}
                   {dIdx>0&&<button onClick={()=>copyFromPrev(dIdx)} style={{padding:"4px 10px",fontSize:"12px",background:"none",border:`1px solid ${C.grisBorde}`,borderRadius:"6px",cursor:"pointer",color:C.textoMed,fontFamily:"inherit"}}>↑ Copiar día anterior</button>}
@@ -899,7 +908,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                     {["tipo","modalidad","lugar"].map(campo=>(
                       <label key={campo} style={{display:"flex",alignItems:"center",gap:"5px",cursor:"pointer",fontSize:"13px",color:"#334155"}}>
                         <input type="checkbox" checked={dia[campo]!==null} onChange={e=>{
-                          const val=e.target.checked?(campo==="tipo"?form.tipo:campo==="modalidad"?form.modalidad:form.lugar):null;
+                          const val=e.target.checked?(campo==="tipo"?[...tiposArr(form.tipo)]:campo==="modalidad"?form.modalidad:form.lugar):null;
                           setDiaField(dIdx,campo,val);
                           if(campo==="modalidad"&&!e.target.checked)setDiaField(dIdx,"lugar",null);
                         }} style={{width:"15px",height:"15px",cursor:"pointer"}}/>
@@ -910,9 +919,15 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                   {tieneOverride&&<div style={{...S.fila,marginTop:"6px"}}>
                     {dia.tipo!==null&&<div style={S.camp}>
                       <label style={S.lbl}>Tipo</label>
-                      <select style={S.sel} value={dia.tipo} onChange={e=>setDiaField(dIdx,"tipo",e.target.value)}>
-                        {TIPOS.map(t=><option key={t}>{t}</option>)}
-                      </select>
+                      <div style={{display:"flex",gap:"5px",flexWrap:"wrap",paddingTop:"2px"}}>
+                        {TIPOS.map(t=>{const on=tiposArr(dia.tipo).includes(t);const clr=(B_TIPO[t]||{c:"#3B5BDB"}).c;const bg=(B_TIPO[t]||{bg:"#EEF2FF"}).bg;return(
+                          <label key={t} style={{display:"inline-flex",alignItems:"center",gap:"5px",cursor:"pointer",padding:"5px 10px",borderRadius:"8px",border:`1.5px solid ${on?clr:"#E2E8F0"}`,background:on?bg:"#F8FAFC",userSelect:"none",fontSize:"13px",fontWeight:on?"600":"400",color:on?clr:"#374151"}}>
+                            <input type="checkbox" checked={on} onChange={()=>{const cur=tiposArr(dia.tipo);const nx=on?cur.filter(x=>x!==t):[...cur,t];setDiaField(dIdx,"tipo",nx.length?nx:cur);}} style={{display:"none"}}/>
+                            <span style={{width:"13px",height:"13px",borderRadius:"3px",border:`2px solid ${on?clr:"#CBD5E1"}`,background:on?clr:"transparent",display:"inline-flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{on&&<svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M1.5 5L4 7.5L8.5 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}</span>
+                            {t}
+                          </label>
+                        );})}
+                      </div>
                     </div>}
                     {dia.modalidad!==null&&<div style={S.camp}>
                       <label style={S.lbl}>Modalidad</label>
@@ -1205,7 +1220,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           {/* Fila 3 (multidía): rango de fechas + tipo/modalidad — sticky */}
           {esMultidia&&<div style={{display:"flex",alignItems:"center",gap:"12px",flexWrap:"wrap",marginTop:"8px",paddingTop:"8px",borderTop:"1px solid #F1F5F9"}}>
             <div style={{fontSize:"15px",fontWeight:"600",color:"#1E293B",whiteSpace:"nowrap"}}>📅 {formatMedioES(evento.fecha_inicio)} → {formatMedioES(evento.fecha_termino)}</div>
-            <span style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"4px 10px",borderRadius:"20px",fontSize:"13px",fontWeight:"500",lineHeight:"1.4",color:(B_TIPO_D[evento.tipo]||{c:"#2F49AF"}).c,background:(B_TIPO_D[evento.tipo]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO_D[evento.tipo]||{c:"#2F49AF"}).c}`,whiteSpace:"nowrap"}}>{evento.tipo==="Simultánea"?<IconoSimultanea/>:evento.tipo==="Consecutiva"?"🎤":"🤫"} {evento.tipo}</span>
+            {tiposArr(evento.tipo).map(t=><span key={t} style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"4px 10px",borderRadius:"20px",fontSize:"13px",fontWeight:"500",lineHeight:"1.4",color:(B_TIPO_D[t]||{c:"#2F49AF"}).c,background:(B_TIPO_D[t]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO_D[t]||{c:"#2F49AF"}).c}`,whiteSpace:"nowrap"}}>{t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤":"🤫"} {t}</span>)}
             <span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"4px 10px",borderRadius:"20px",fontSize:"13px",fontWeight:"500",lineHeight:"1.4",color:(B_MOD_D[evento.modalidad]||{c:"#565656"}).c,background:(B_MOD_D[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD_D[evento.modalidad]||{c:"#565656"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?<IconPresencial size={13} color={(B_MOD_D[evento.modalidad]||{c:"#565656"}).c}/>:evento.modalidad==="hibrido"?"🔀":"💻"} {LBL[evento.modalidad]||evento.modalidad}</span>
           </div>}
         </div>
@@ -1221,7 +1236,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             </div>
             <HR/>
             <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center",marginBottom:"4px"}}>
-              <span style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:(B_TIPO_D[evento.tipo]||{c:"#2F49AF"}).c,background:(B_TIPO_D[evento.tipo]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO_D[evento.tipo]||{c:"#2F49AF"}).c}`,whiteSpace:"nowrap"}}>{evento.tipo==="Simultánea"?<IconoSimultanea/>:evento.tipo==="Consecutiva"?"🎤":"🤫"} {evento.tipo}</span>
+              {tiposArr(evento.tipo).map(t=><span key={t} style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:(B_TIPO_D[t]||{c:"#2F49AF"}).c,background:(B_TIPO_D[t]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO_D[t]||{c:"#2F49AF"}).c}`,whiteSpace:"nowrap"}}>{t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤":"🤫"} {t}</span>)}
               <span style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:(B_MOD_D[evento.modalidad]||{c:"#565656"}).c,background:(B_MOD_D[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD_D[evento.modalidad]||{c:"#565656"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?<IconPresencial size={14} color={(B_MOD_D[evento.modalidad]||{c:"#565656"}).c}/>:evento.modalidad==="hibrido"?"🔀":"💻"} {LBL[evento.modalidad]||evento.modalidad}</span>
             </div>
           </>}
@@ -1596,7 +1611,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
                       {campos.cliente&&cliente&&<><div style={sH}>Cliente</div><div style={sB}><div style={{fontSize:"18px",fontWeight:"700",color:"#000000",lineHeight:1.2}}>{cliente.nombre_empresa}</div>{cliente.nombre_contacto&&<div style={{fontSize:"14px",color:"#484f56",fontStyle:"italic",marginTop:"3px"}}>{cliente.nombre_contacto}</div>}</div></>}
                     </td>
                     {hasDerecha&&<td style={{padding:0,verticalAlign:"top"}}>
-                      {(campos.tipo||campos.modalidad)&&<><div style={{...sH,textAlign:"center"}}>Tipo / Modalidad</div><div style={{...sB}}><div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center",justifyContent:"center"}}>{campos.tipo&&evento.tipo&&<span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:(B_TIPO[evento.tipo]||{ct:"#294099"}).ct,WebkitFontSmoothing:"antialiased",background:(B_TIPO[evento.tipo]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>{evento.tipo==="Simultánea"?<IconoSimultanea/>:evento.tipo==="Consecutiva"?"🎤":"🤫"} {evento.tipo}</span>}{campos.modalidad&&evento.modalidad&&<span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:(B_MOD[evento.modalidad]||{ct:"#4B4B4B"}).ct,WebkitFontSmoothing:"antialiased",background:(B_MOD[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?<IconPresencial size={14} color={(B_MOD[evento.modalidad]||{ct:"#4B4B4B"}).ct}/>:evento.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evento.modalidad]}</span>}</div></div></>}
+                      {(campos.tipo||campos.modalidad)&&<><div style={{...sH,textAlign:"center"}}>Tipo / Modalidad</div><div style={{...sB}}><div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center",justifyContent:"center"}}>{campos.tipo&&tiposArr(evento.tipo).map(t=><span key={t} style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:(B_TIPO[t]||{ct:"#294099"}).ct,WebkitFontSmoothing:"antialiased",background:(B_TIPO[t]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO[t]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>{t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤":"🤫"} {t}</span>)}{campos.modalidad&&evento.modalidad&&<span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:(B_MOD[evento.modalidad]||{ct:"#4B4B4B"}).ct,WebkitFontSmoothing:"antialiased",background:(B_MOD[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?<IconPresencial size={14} color={(B_MOD[evento.modalidad]||{ct:"#4B4B4B"}).ct}/>:evento.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evento.modalidad]}</span>}</div></div></>}
                     </td>}
                   </tr>
                   {/* Fila 2: Evento | (vacío) */}
@@ -2617,6 +2632,126 @@ function ModalNuevoLugar({onGuardado,onCerrar}) {
   );
 }
 
+function VistaDisponibilidad({ eventos, interpretes, pares }) {
+  const [mesOff, setMesOff] = useState(0);
+  const hoyFecha = new Date();
+  const base = new Date(hoyFecha.getFullYear(), hoyFecha.getMonth() + mesOff, 1);
+  const año = base.getFullYear();
+  const mes = base.getMonth();
+  const diasEnMes = new Date(año, mes + 1, 0).getDate();
+  const MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+
+  const { ocupacion, colorMap } = useMemo(() => {
+    const ocu = {};
+    const clrMap = {};
+    for (const ev of eventos) {
+      if (ev.asignaciones) {
+        for (const a of ev.asignaciones) {
+          if (a.interprete_id && a.par_id && !clrMap[a.interprete_id]) {
+            const par = pares.find(p => p.id === a.par_id);
+            if (par) clrMap[a.interprete_id] = IDIOMA_PILL_CLR[par.idioma_origen] || "#1A6FD4";
+          }
+        }
+      }
+      if (ev.evento_dias) {
+        for (const dia of ev.evento_dias) {
+          if (dia.asignaciones_dia) {
+            for (const a of dia.asignaciones_dia) {
+              if (a.interprete_id && a.par_id && !clrMap[a.interprete_id]) {
+                const par = pares.find(p => p.id === a.par_id);
+                if (par) clrMap[a.interprete_id] = IDIOMA_PILL_CLR[par.idioma_origen] || "#1A6FD4";
+              }
+            }
+          }
+        }
+      }
+    }
+    for (const ev of eventos) {
+      const nombre = ev.nombre_evento || "(sin nombre)";
+      if (ev.asignaciones?.length) {
+        const fi = new Date(ev.fecha_inicio + 'T12:00:00');
+        const ft = new Date((ev.fecha_termino || ev.fecha_inicio) + 'T12:00:00');
+        const cur = new Date(fi);
+        while (cur <= ft) {
+          if (cur.getFullYear() === año && cur.getMonth() === mes) {
+            const dNum = cur.getDate();
+            for (const a of ev.asignaciones) {
+              if (!a.interprete_id) continue;
+              if (!ocu[a.interprete_id]) ocu[a.interprete_id] = {};
+              if (!ocu[a.interprete_id][dNum]) ocu[a.interprete_id][dNum] = [];
+              if (!ocu[a.interprete_id][dNum].includes(nombre)) ocu[a.interprete_id][dNum].push(nombre);
+            }
+          }
+          cur.setDate(cur.getDate() + 1);
+        }
+      }
+      if (ev.evento_dias) {
+        for (const dia of ev.evento_dias) {
+          if (!dia.fecha || !dia.asignaciones_dia?.length) continue;
+          const dDate = new Date(dia.fecha + 'T12:00:00');
+          if (dDate.getFullYear() === año && dDate.getMonth() === mes) {
+            const dNum = dDate.getDate();
+            for (const a of dia.asignaciones_dia) {
+              if (!a.interprete_id) continue;
+              if (!ocu[a.interprete_id]) ocu[a.interprete_id] = {};
+              if (!ocu[a.interprete_id][dNum]) ocu[a.interprete_id][dNum] = [];
+              if (!ocu[a.interprete_id][dNum].includes(nombre)) ocu[a.interprete_id][dNum].push(nombre);
+            }
+          }
+        }
+      }
+    }
+    return { ocupacion: ocu, colorMap: clrMap };
+  }, [eventos, pares, año, mes]);
+
+  const interpsActivos = interpretes.filter(i => i.activo !== false);
+  const dias = Array.from({ length: diasEnMes }, (_, i) => i + 1);
+  const btnNav = { background:"rgba(255,255,255,0.15)", color:"#FFFFFF", border:"none", borderRadius:"8px", padding:"7px 14px", fontSize:"15px", cursor:"pointer", fontFamily:"inherit" };
+
+  return (
+    <div style={{ padding:"28px 24px" }}>
+      <div style={{ display:"flex", alignItems:"center", gap:"10px", marginBottom:"20px" }}>
+        <button onClick={()=>setMesOff(o=>o-1)} style={btnNav} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>← Ant</button>
+        <button onClick={()=>setMesOff(0)} style={btnNav} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>Hoy</button>
+        <button onClick={()=>setMesOff(o=>o+1)} style={btnNav} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>Sig →</button>
+        <span style={{ color:"#FFFFFF", fontSize:"20px", fontWeight:"600", marginLeft:"6px" }}>{MESES[mes]} {año}</span>
+      </div>
+      <div style={{ overflowX:"auto" }}>
+        <table style={{ borderCollapse:"collapse", fontSize:"12px", minWidth:"max-content" }}>
+          <thead>
+            <tr>
+              <th style={{ padding:"6px 14px", textAlign:"left", color:"rgba(255,255,255,0.65)", fontWeight:"600", borderBottom:"1px solid rgba(255,255,255,0.15)", position:"sticky", left:0, background:"#162654", zIndex:2, whiteSpace:"nowrap" }}>Intérprete</th>
+              {dias.map(d=>(
+                <th key={d} style={{ padding:"6px 6px", textAlign:"center", color:"rgba(255,255,255,0.65)", fontWeight:"500", borderBottom:"1px solid rgba(255,255,255,0.15)", minWidth:"30px", fontSize:"11px" }}>{d}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {interpsActivos.map((interp, idx)=>{
+              const color = colorMap[interp.id] || "#1A6FD4";
+              return (
+                <tr key={interp.id} style={{ background: idx%2===0 ? "rgba(255,255,255,0.03)" : "transparent" }}>
+                  <td style={{ padding:"5px 14px", color:"#FFFFFF", fontWeight:"500", borderBottom:"1px solid rgba(255,255,255,0.06)", position:"sticky", left:0, background: idx%2===0 ? "rgba(22,40,76,0.98)" : "rgba(18,32,60,0.98)", zIndex:1, whiteSpace:"nowrap", fontSize:"13px" }}>
+                    {interp.nombre}{interp.apellido?" "+interp.apellido:""}
+                  </td>
+                  {dias.map(d=>{
+                    const nombres = ocupacion[interp.id]?.[d] || [];
+                    return (
+                      <td key={d} title={nombres.length ? nombres.join(" / ") : undefined}
+                        style={{ width:"30px", height:"26px", padding:0, textAlign:"center", borderBottom:"1px solid rgba(255,255,255,0.06)", borderLeft:"1px solid rgba(255,255,255,0.04)", background: nombres.length ? color : "transparent" }}/>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      {interpsActivos.length===0&&<div style={{ color:"rgba(255,255,255,0.5)", textAlign:"center", marginTop:"40px", fontSize:"15px" }}>No hay intérpretes activos.</div>}
+    </div>
+  );
+}
+
 export default function App() {
   // TEMP: login desactivado — para reactivar cambiar SKIP_LOGIN a false
   const SKIP_LOGIN = true;
@@ -2730,7 +2865,7 @@ export default function App() {
     if(filtros.estado==="no_incluir") evs=evs.filter(e=>!e.estado);
     else if(filtros.estado) evs=evs.filter(e=>e.estado===filtros.estado);
     if(filtros.modalidad) evs=evs.filter(e=>e.modalidad===filtros.modalidad);
-    if(filtros.tipo) evs=evs.filter(e=>e.tipo===filtros.tipo);
+    if(filtros.tipo) evs=evs.filter(e=>tiposArr(e.tipo).includes(filtros.tipo));
     if(filtros.interprete_id) evs=evs.filter(e=>(e.asignaciones||[]).some(a=>String(a.interprete_id)===String(filtros.interprete_id)));
     if(filtros.cliente_id) evs=evs.filter(e=>String(e.cliente_id)===String(filtros.cliente_id));
     if(filtros.par_id) evs=evs.filter(e=>(e.asignaciones||[]).some(a=>String(a.par_id)===String(filtros.par_id)));
@@ -2972,7 +3107,7 @@ export default function App() {
       const borderC=colorCliente(evM.cliente_id);
       const esPresD=evM.modalidad==="presencial"||evM.modalidad==="hibrido";
       const esZoomMCD=evM.plataforma==="Zoom MundoChile"||evM.plataforma==="Zoom";
-      const bTipo=B_TIPO[evM.tipo]||{bg:"#EEF2FF",c:"#3B5BDB"};
+      const bTipo=B_TIPO[tiposArr(evM.tipo)[0]]||{bg:"#EEF2FF",c:"#3B5BDB"};
       const bMod=B_MOD[evM.modalidad]||{bg:"#F7F7F5",c:"#565656"};
       const bEst=B_EST(evM.estado);
       const grupos={};
@@ -3033,7 +3168,7 @@ export default function App() {
                 <div style={{fontSize:"16px",fontWeight:"500",color:"#0F172A",marginBottom:"6px"}}>🕐 {evM.hora_inicio?.slice(0,5)} – {evM.hora_termino?.slice(0,5)} hrs{evM.jornada&&<span style={{fontWeight:"400",color:"#6B7280",fontSize:"14px"}}> · {pluralizarJornada(evM.jornada)}</span>}</div>
                 <HRD/>
                 <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center",marginBottom:"4px"}}>
-                  <span style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:dk10(bTipo.c),background:bTipo.bg,border:`2px solid ${bTipo.c}`,whiteSpace:"nowrap"}}>{evM.tipo==="Simultánea"?<IconoSimultanea/>:evM.tipo==="Consecutiva"?"🎤":"🤫"} {evM.tipo}</span>
+                  {tiposArr(evM.tipo).map(t=>{const bt=B_TIPO[t]||{bg:"#EEF2FF",c:"#3B5BDB"};return(<span key={t} style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:dk10(bt.c),background:bt.bg,border:`2px solid ${bt.c}`,whiteSpace:"nowrap"}}>{t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤":"🤫"} {t}</span>);})}
                   <span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:dk10(bMod.c),background:bMod.bg,border:`2px solid ${bMod.c}`,whiteSpace:"nowrap"}}>{evM.modalidad==="presencial"?<IconPresencial size={14} color={dk10(bMod.c)}/>:evM.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evM.modalidad]||evM.modalidad}</span>
                 </div>
                 <HRD/>
@@ -3090,7 +3225,7 @@ export default function App() {
               const esPresD=ev.modalidad==="presencial"||ev.modalidad==="hibrido";
               const esZoomMCD=ev.plataforma==="Zoom MundoChile"||ev.plataforma==="Zoom";
               const esMultidiaD=ev.fecha_inicio!==ev.fecha_termino;
-              const bTipo=B_TIPO[ev.tipo]||{bg:"#EEF2FF",c:"#3B5BDB"};
+              const bTipo=B_TIPO[tiposArr(ev.tipo)[0]]||{bg:"#EEF2FF",c:"#3B5BDB"};
               const bMod=B_MOD[ev.modalidad]||{bg:"#F7F7F5",c:"#565656"};
               const bEst=B_EST(ev.estado);
               let diaXdeY=null;
@@ -3125,7 +3260,7 @@ export default function App() {
                   <HRD/>
                   {/* Pills tipo + modalidad */}
                   <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center",marginBottom:"4px"}}>
-                    <span style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:dk10(bTipo.c),background:bTipo.bg,border:`2px solid ${bTipo.c}`,whiteSpace:"nowrap"}}>{ev.tipo==="Simultánea"?<IconoSimultanea/>:ev.tipo==="Consecutiva"?"🎤":"🤫"} {ev.tipo}</span>
+                    {tiposArr(ev.tipo).map(t=>{const bt=B_TIPO[t]||{bg:"#EEF2FF",c:"#3B5BDB"};return(<span key={t} style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:dk10(bt.c),background:bt.bg,border:`2px solid ${bt.c}`,whiteSpace:"nowrap"}}>{t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤":"🤫"} {t}</span>);})}
                     <span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:dk10(bMod.c),background:bMod.bg,border:`2px solid ${bMod.c}`,whiteSpace:"nowrap"}}>{ev.modalidad==="presencial"?<IconPresencial size={14} color={dk10(bMod.c)}/>:ev.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[ev.modalidad]||ev.modalidad}</span>
                   </div>
                   <HRD/>
@@ -3206,10 +3341,13 @@ export default function App() {
             </div>
           </div>
           {/* CENTRO: tabs */}
-          {pantalla==="calendario"&&<div style={{display:"flex",gap:"4px",alignItems:"center",flex:1,justifyContent:"center",flexWrap:"nowrap",overflow:"visible"}}>
-            {[["semana","Semana"],["dia","Día"],["mes","Mes"],["agenda","Agenda"],["grilla","Grilla"]].map(([v,l])=>(
-              <button key={v} onClick={()=>setVista(v)} style={{padding:"6px 12px",background:vista===v?"#FFFFFF":"rgba(255,255,255,0.12)",border:"none",borderRadius:"8px",color:vista===v?"#1E3A6E":"#FFFFFF",fontWeight:vista===v?"600":"400",cursor:"pointer",fontSize:"13px",fontFamily:"inherit",transition:"all 0.15s",whiteSpace:"nowrap"}}>{l}</button>
-            ))}
+          {(pantalla==="calendario"||pantalla==="disponibilidad")&&<div style={{display:"flex",gap:"4px",alignItems:"center",flex:1,justifyContent:"center",flexWrap:"nowrap",overflow:"visible"}}>
+            {[["semana","Semana"],["dia","Día"],["mes","Mes"],["agenda","Agenda"],["grilla","Grilla"]].map(([v,l])=>{
+              const activo=pantalla==="calendario"&&vista===v;
+              return(<button key={v} onClick={()=>{setVista(v);setPantalla("calendario");}} style={{padding:"6px 12px",background:activo?"#FFFFFF":"rgba(255,255,255,0.12)",border:"none",borderRadius:"8px",color:activo?"#1E3A6E":"#FFFFFF",fontWeight:activo?"600":"400",cursor:"pointer",fontSize:"13px",fontFamily:"inherit",transition:"all 0.15s",whiteSpace:"nowrap"}}>{l}</button>);
+            })}
+            <div style={{width:"1px",height:"20px",background:"rgba(255,255,255,0.2)",margin:"0 4px"}}/>
+            <button onClick={()=>setPantalla("disponibilidad")} style={{padding:"6px 12px",background:pantalla==="disponibilidad"?"#FFFFFF":"rgba(255,255,255,0.12)",border:"none",borderRadius:"8px",color:pantalla==="disponibilidad"?"#1E3A6E":"#FFFFFF",fontWeight:pantalla==="disponibilidad"?"600":"400",cursor:"pointer",fontSize:"13px",fontFamily:"inherit",transition:"all 0.15s",whiteSpace:"nowrap"}}>Disponibilidad</button>
           </div>}
           {/* DERECHA: nav + utilidades */}
           <div style={{display:"flex",gap:"6px",alignItems:"center",flexShrink:0}}>
@@ -3253,6 +3391,7 @@ export default function App() {
         {vista==="agenda"&&<VistaAgenda vista={vista} eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} filtros={filtros} setFiltros={setFiltros} onAbrir={abrirEvento} onVerMultidia={verTodosLosDias}/>}
         {vista==="grilla"&&<VistaGrilla eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} contactos={contactos} onAbrir={abrirEvento} onVerMultidia={verTodosLosDias} vista={vista}/>}
       </>}
+      {pantalla==="disponibilidad"&&<VistaDisponibilidad eventos={eventos} interpretes={interpretes} pares={pares}/>}
       {pantalla==="config"&&esAdmin&&<PantallaConfig clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} onActualizar={cargarDatos} perfil={perfil}/>}
 
       {/* ── MODALES ── */}
