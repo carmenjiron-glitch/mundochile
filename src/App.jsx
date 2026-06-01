@@ -2224,7 +2224,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
   const filteredRef=useRef([]);
   const onAbrirRef=useRef(onAbrir);
   const onVerMultidiaRef=useRef(onVerMultidia);
-  const COLS=["Mes","Orden de Compra","Cliente","Contacto Cliente","# Evento","Detalle Equipos AV","Proveedor","Detalles Instalación","Tipo","Nombre Evento","Lugar","Par de Idiomas","Jornada","Horario","Fecha Inicio","Fecha Término","Comentarios","Intérprete 1","Nro OT","Nro Boleta Intérprete 1","Intérprete 2","Nro OT 2","Nro Boleta Intérprete 2"];
+  const COLS=["Mes","Orden de Compra","Cliente","Contacto Cliente","# Evento","Detalle Equipos AV","Proveedor","Detalles Instalación","Modalidad","Tipo","Nombre Evento","Lugar","Par de Idiomas","Jornada","Horario","Fecha Inicio","Fecha Término","Comentarios","Intérprete 1","Nro OT","Nro Boleta Intérprete 1","Intérprete 2","Nro OT 2","Nro Boleta Intérprete 2"];
   const FILTERABLE=COLS;
   const TOTAL_COLS=COLS.length+1;
   useEffect(()=>{onAbrirRef.current=onAbrir;},[onAbrir]);
@@ -2262,7 +2262,8 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
     "Detalle Equipos AV":[...new Set(allRows.map(r=>r.detalleEq||""))].filter(Boolean),
     "Proveedor":[...new Set(allRows.map(r=>r.provNom||""))].filter(Boolean),
     "Detalles Instalación":[...new Set(allRows.map(r=>r.detalleInst||""))].filter(Boolean),
-    "Tipo":[...new Set(allRows.map(r=>r.ev.tipo||""))].filter(Boolean),
+    "Modalidad":[...new Set(allRows.map(r=>r.ev.modalidad||""))].filter(Boolean),
+    "Tipo":[...new Set(allRows.flatMap(r=>tiposArr(r.ev.tipo)))].filter(Boolean),
     "Nombre Evento":[...new Set(allRows.map(r=>r.ev.nombre_evento||""))].filter(Boolean),
     "Lugar":[...new Set(allRows.map(r=>r.ev.lugar||""))].filter(Boolean),
     "Par de Idiomas":[...new Set(allRows.map(r=>r.par?.descripcion||""))].filter(Boolean),
@@ -2287,7 +2288,8 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
     if(colFiltros["Detalle Equipos AV"]&&(r.detalleEq||"")!==colFiltros["Detalle Equipos AV"])return false;
     if(colFiltros["Proveedor"]&&(r.provNom||"")!==colFiltros["Proveedor"])return false;
     if(colFiltros["Detalles Instalación"]&&(r.detalleInst||"")!==colFiltros["Detalles Instalación"])return false;
-    if(colFiltros["Tipo"]&&(r.ev.tipo||"")!==colFiltros["Tipo"])return false;
+    if(colFiltros["Modalidad"]&&(r.ev.modalidad||"")!==colFiltros["Modalidad"])return false;
+    if(colFiltros["Tipo"]&&!tiposArr(r.ev.tipo).includes(colFiltros["Tipo"]))return false;
     if(colFiltros["Nombre Evento"]&&(r.ev.nombre_evento||"")!==colFiltros["Nombre Evento"])return false;
     if(colFiltros["Lugar"]&&(r.ev.lugar||"")!==colFiltros["Lugar"])return false;
     if(colFiltros["Par de Idiomas"]&&(r.par?.descripcion||"")!==colFiltros["Par de Idiomas"])return false;
@@ -2334,7 +2336,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
     const el=tablaRef.current.querySelector(`[data-celda="${celdaActiva.fila}-${celdaActiva.col}"]`);
     if(el) el.scrollIntoView({block:"nearest",inline:"nearest"});
   },[celdaActiva]);
-  const COL_MINW={"Mes":"60px","Orden de Compra":"90px","Cliente":"120px","Contacto Cliente":"110px","# Evento":"70px","Detalle Equipos AV":"90px","Proveedor":"90px","Detalles Instalación":"90px","Tipo":"90px","Nombre Evento":"150px","Lugar":"100px","Par de Idiomas":"100px","Jornada":"90px","Horario":"100px","Fecha Inicio":"100px","Fecha Término":"100px","Comentarios":"90px","Intérprete 1":"100px","Nro OT":"80px","Nro Boleta":"80px","Intérprete 2":"100px","Nro OT 2":"80px"};
+  const COL_MINW={"Mes":"60px","Orden de Compra":"90px","Cliente":"120px","Contacto Cliente":"110px","# Evento":"70px","Detalle Equipos AV":"90px","Proveedor":"90px","Detalles Instalación":"90px","Modalidad":"90px","Tipo":"110px","Nombre Evento":"150px","Lugar":"100px","Par de Idiomas":"100px","Jornada":"90px","Horario":"100px","Fecha Inicio":"100px","Fecha Término":"100px","Comentarios":"90px","Intérprete 1":"100px","Nro OT":"80px","Nro Boleta":"80px","Intérprete 2":"100px","Nro OT 2":"80px"};
   const thS={background:"#1E3A5F",color:"#FFFFFF",position:"sticky",top:0,zIndex:50,borderRight:"1px solid rgba(255,255,255,0.15)",borderBottom:"2px solid #94A3B8",height:"auto",padding:0,textAlign:"center"};
   const renderThFiltro=(col)=>{
     const active=!!colFiltros[col];const isOpen=openCol===col;
@@ -2410,21 +2412,30 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
                   <td data-celda={`${fi}-6`} onClick={()=>setCeldaActiva({fila:fi,col:6})} style={cs(6)}>{detalleEq}</td>
                   <td data-celda={`${fi}-7`} onClick={()=>setCeldaActiva({fila:fi,col:7})} style={cs(7)}>{provNom}</td>
                   <td data-celda={`${fi}-8`} onClick={()=>setCeldaActiva({fila:fi,col:8})} style={cs(8)}>{detalleInst}</td>
-                  <td data-celda={`${fi}-9`} onClick={()=>setCeldaActiva({fila:fi,col:9})} style={cs(9)}>{ev.tipo||""}</td>
-                  <td data-celda={`${fi}-10`} onClick={()=>setCeldaActiva({fila:fi,col:10})} style={cs(10)}>{ev.nombre_evento||""}</td>
-                  <td data-celda={`${fi}-11`} onClick={()=>setCeldaActiva({fila:fi,col:11})} style={cs(11)}>{ev.lugar||""}</td>
-                  <td data-celda={`${fi}-12`} onClick={()=>setCeldaActiva({fila:fi,col:12})} style={cs(12)}>{par?.descripcion||""}</td>
-                  <td data-celda={`${fi}-13`} onClick={()=>setCeldaActiva({fila:fi,col:13})} style={cs(13)}>{pluralizarJornada(ev.jornada)||""}</td>
-                  <td data-celda={`${fi}-14`} onClick={()=>setCeldaActiva({fila:fi,col:14})} style={cs(14,{whiteSpace:"nowrap"})}>{ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)}</td>
-                  <td data-celda={`${fi}-15`} onClick={()=>setCeldaActiva({fila:fi,col:15})} style={cs(15,{whiteSpace:"nowrap"})}>{formatCorto(ev.fecha_inicio)}</td>
-                  <td data-celda={`${fi}-16`} onClick={()=>setCeldaActiva({fila:fi,col:16})} style={cs(16,{whiteSpace:"nowrap"})}>{formatCorto(ev.fecha_termino)}</td>
-                  <td data-celda={`${fi}-17`} onClick={()=>setCeldaActiva({fila:fi,col:17})} style={cs(17)}>{ev.comentarios||""}</td>
-                  <td data-celda={`${fi}-18`} onClick={()=>setCeldaActiva({fila:fi,col:18})} style={cs(18)}>{i1N}</td>
-                  <td data-celda={`${fi}-19`} onClick={()=>setCeldaActiva({fila:fi,col:19})} style={cs(19)}>{a1?.nro_ot||""}</td>
-                  <td data-celda={`${fi}-20`} onClick={()=>setCeldaActiva({fila:fi,col:20})} style={cs(20)}>{a1?.nro_boleta||""}</td>
-                  <td data-celda={`${fi}-21`} onClick={()=>setCeldaActiva({fila:fi,col:21})} style={cs(21)}>{i2N}</td>
-                  <td data-celda={`${fi}-22`} onClick={()=>setCeldaActiva({fila:fi,col:22})} style={cs(22)}>{a2?.nro_ot||""}</td>
-                  <td data-celda={`${fi}-23`} onClick={()=>setCeldaActiva({fila:fi,col:23})} style={cs(23)}>{ev.nro_boleta_2||""}</td>
+                  <td data-celda={`${fi}-9`} onClick={()=>setCeldaActiva({fila:fi,col:9})} style={cs(9,{verticalAlign:"middle"})}>
+                    <span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"2px 8px",borderRadius:"20px",fontSize:"11px",fontWeight:"600",whiteSpace:"nowrap",color:(B_MOD[ev.modalidad]||{ct:"#565656"}).ct,background:(B_MOD[ev.modalidad]||{bg:"#F7F7F5"}).bg,border:`1.5px solid ${(B_MOD[ev.modalidad]||{c:"#6B6B6B"}).c}`}}>
+                      {ev.modalidad==="presencial"?<IconPresencial size={11} color={(B_MOD[ev.modalidad]||{ct:"#565656"}).ct}/>:ev.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[ev.modalidad]||ev.modalidad}
+                    </span>
+                  </td>
+                  <td data-celda={`${fi}-10`} onClick={()=>setCeldaActiva({fila:fi,col:10})} style={cs(10,{verticalAlign:"top"})}>
+                    <div style={{display:"flex",flexWrap:"wrap",gap:"3px"}}>
+                      {tiposArr(ev.tipo).map(t=>{const bt=B_TIPO[t]||{bg:"#EEF2FF",c:"#3B5BDB"};return(<span key={t} style={{display:"inline-flex",alignItems:"center",gap:"3px",padding:"2px 7px",borderRadius:"20px",fontSize:"11px",fontWeight:"600",whiteSpace:"nowrap",color:bt.c,background:bt.bg,border:`1.5px solid ${bt.c}`}}>{t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤":"🤫"} {t}</span>);})}
+                    </div>
+                  </td>
+                  <td data-celda={`${fi}-11`} onClick={()=>setCeldaActiva({fila:fi,col:11})} style={cs(11)}>{ev.nombre_evento||""}</td>
+                  <td data-celda={`${fi}-12`} onClick={()=>setCeldaActiva({fila:fi,col:12})} style={cs(12)}>{ev.lugar||""}</td>
+                  <td data-celda={`${fi}-13`} onClick={()=>setCeldaActiva({fila:fi,col:13})} style={cs(13)}>{par?.descripcion||""}</td>
+                  <td data-celda={`${fi}-14`} onClick={()=>setCeldaActiva({fila:fi,col:14})} style={cs(14)}>{pluralizarJornada(ev.jornada)||""}</td>
+                  <td data-celda={`${fi}-15`} onClick={()=>setCeldaActiva({fila:fi,col:15})} style={cs(15,{whiteSpace:"nowrap"})}>{ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)}</td>
+                  <td data-celda={`${fi}-16`} onClick={()=>setCeldaActiva({fila:fi,col:16})} style={cs(16,{whiteSpace:"nowrap"})}>{formatCorto(ev.fecha_inicio)}</td>
+                  <td data-celda={`${fi}-17`} onClick={()=>setCeldaActiva({fila:fi,col:17})} style={cs(17,{whiteSpace:"nowrap"})}>{formatCorto(ev.fecha_termino)}</td>
+                  <td data-celda={`${fi}-18`} onClick={()=>setCeldaActiva({fila:fi,col:18})} style={cs(18)}>{ev.comentarios||""}</td>
+                  <td data-celda={`${fi}-19`} onClick={()=>setCeldaActiva({fila:fi,col:19})} style={cs(19)}>{i1N}</td>
+                  <td data-celda={`${fi}-20`} onClick={()=>setCeldaActiva({fila:fi,col:20})} style={cs(20)}>{a1?.nro_ot||""}</td>
+                  <td data-celda={`${fi}-21`} onClick={()=>setCeldaActiva({fila:fi,col:21})} style={cs(21)}>{a1?.nro_boleta||""}</td>
+                  <td data-celda={`${fi}-22`} onClick={()=>setCeldaActiva({fila:fi,col:22})} style={cs(22)}>{i2N}</td>
+                  <td data-celda={`${fi}-23`} onClick={()=>setCeldaActiva({fila:fi,col:23})} style={cs(23)}>{a2?.nro_ot||""}</td>
+                  <td data-celda={`${fi}-24`} onClick={()=>setCeldaActiva({fila:fi,col:24})} style={cs(24)}>{ev.nro_boleta_2||""}</td>
                 </tr>
               );
             })}
@@ -3410,7 +3421,7 @@ export default function App() {
       {pantalla==="calendario"&&<>
         {vista!=="grilla"&&<div style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",width:"100%",display:"flex",alignItems:"center",flexWrap:"nowrap",gap:"8px",padding:"0 16px",boxSizing:"border-box",overflow:"hidden"}}>
           {/* IZQUIERDA: Disponibilidad */}
-          <button onClick={()=>setPantalla("disponibilidad")} style={{flexShrink:0,display:"flex",alignItems:"center",gap:"6px",padding:"5px 11px",borderRadius:"10px",background:"rgba(253,230,138,0.12)",color:"#FDE68A",fontSize:"12.1px",fontWeight:"500",border:"1.5px solid #FCD34D",height:"26px",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit",letterSpacing:"0.02em",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>
+          <button onClick={()=>setPantalla("disponibilidad")} style={{flexShrink:0,marginLeft:"38px",display:"flex",alignItems:"center",gap:"6px",padding:"5px 11px",borderRadius:"10px",background:"rgba(253,230,138,0.12)",color:"#FDE68A",fontSize:"12.1px",fontWeight:"500",border:"1.5px solid #FCD34D",height:"26px",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit",letterSpacing:"0.02em",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#86EFAC" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}><polyline points="20 6 9 17 4 12"/></svg>
             Disponibilidad
           </button>
