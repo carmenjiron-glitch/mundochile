@@ -94,10 +94,10 @@ const calcJornada=(mins,mod)=>{
     else if(mins>540&&mins<=600)r="Jornada Completa + 1 hora adicional";
     else r="Otro horario personalizado";
   } else {
-    if(mins===60)r="1 hora";else if(mins>60&&mins<=240)r="Media Jornada";
-    else if(mins>240&&mins<=300)r="Media Jornada + 1 hora adicional";
-    else if(mins>300&&mins<=540)r="Jornada Completa";
-    else if(mins>540&&mins<=600)r="Jornada Completa + 1 hora adicional";
+    if(mins<=60)r="1 hora";
+    else if(mins<=360)r="Media Jornada";
+    else if(mins<=420)r="Media Jornada + 1 hora adicional";
+    else if(mins<=600)r="Jornada Completa";
     else r="Otro horario personalizado";
   }
   r=r.replace(/(\d+) Jornadas? Completas?/g,(_,n)=>Number(n)>1?`${n} Jornadas Completas`:`${n} Jornada Completa`);
@@ -141,10 +141,10 @@ const S = {
   btnA:{padding:"10px 20px",background:"#3a7bd5",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",height:"40px",fontFamily:"inherit"},
   btnR:{padding:"10px 20px",background:"#E03131",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",height:"40px",fontFamily:"inherit"},
   btnV:{padding:"10px 20px",background:"#2F9E44",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",height:"40px",fontFamily:"inherit"},
-  btnG:{padding:"10px 20px",background:"#FFF5F5",color:"#E53E3E",border:"1.5px solid #FC8181",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",height:"40px",fontFamily:"inherit"},
+  btnG:{padding:"10px 20px",background:"#FFF5F5",color:"#A02B2B",border:"1.5px solid #B05A5A",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",height:"40px",fontFamily:"inherit"},
   btnSave:{padding:"10px 20px",background:"#2F9E44",color:"#fff",border:"2px solid #1B5E20",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",height:"40px",fontFamily:"inherit"},
   btnDel:{padding:"10px 20px",background:"#E03131",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",height:"40px",fontFamily:"inherit"},
-  btnCancel:{padding:"10px 20px",background:"#FFF5F5",color:"#E53E3E",border:"1.5px solid #FC8181",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",height:"40px",fontFamily:"inherit"},
+  btnCancel:{padding:"10px 20px",background:"#FFF5F5",color:"#A02B2B",border:"1.5px solid #B05A5A",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"14px",height:"40px",fontFamily:"inherit"},
   btnEdit:{padding:"4px 10px",background:"#E67700",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",height:"28px",fontFamily:"inherit"},
   btnFicha:{padding:"4px 10px",background:"#1971C2",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",height:"28px",fontFamily:"inherit"},
   btnDup:{padding:"4px 10px",background:"#9C36B5",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",height:"28px",fontFamily:"inherit"},
@@ -158,7 +158,7 @@ const evVacio = () => ({
   jornada:"Media Jornada", jornada_personalizada:"", lugar:"", lugar_detalle:"",
   modalidad:"remoto", plataforma:"Zoom MundoChile", zoom_owner:"mundochile",
   zoom_administrador:"", zoom_link:"", estado:"Facturación Pendiente", numero_factura:"", comentarios:"",
-  nro_hes:"", nro_otros:"", nro_boleta_2:"", comentarios_av:"", contacto_id:"",
+  nro_hes:"", nro_otros:"", comentarios_av:"", contacto_id:"", fecha_emision:"",
   asignaciones:[], dias:[], equipos:[],
 });
 const asigVacia = () => ({interprete_id:"",par_id:"",nro_ot:"",nro_boleta:"",es_boleta_adicional:false,es_host_zoom:false,rol:"Principal",hora_presentacion:"",estado_pago:"Pendiente"});
@@ -360,14 +360,12 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
 }
 
 // ─── MODAL EVENTO ─────────────────────────────────────────────────────────────
-function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugares=[],contactos=[],todos_eventos,perfil,onGuardar,onCerrar,onNuevoCliente,onNuevoContacto,onNuevoInterprete,onLugarCreado,onNuevoProveedor}) {
+function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugares=[],contactos=[],todos_eventos,perfil,onGuardar,onCerrar,onNuevoCliente,onNuevoContacto,onNuevoInterprete,onLugarCreado,onNuevoLugar,onNuevoProveedor}) {
   const [form,setForm]=useState(()=>eventoInicial?JSON.parse(JSON.stringify(eventoInicial)):evVacio());
   const [tab,setTab]=useState("general");
   const [guardando,setGuardando]=useState(false);
   const [error,setError]=useState("");
   const [guardadoOk,setGuardadoOk]=useState(false);
-  const [agregarLugar,setAgregarLugar]=useState(false);
-  const [nuevoLugar,setNuevoLugar]=useState("");
   const setF=useCallback((k,v)=>setForm(f=>({...f,[k]:v})),[]);
   const [zoomOtro,setZoomOtro]=useState(!ZOOM_ADMIN.includes(form.zoom_administrador)&&!!form.zoom_administrador);
   const [adminZoomManual,setAdminZoomManual]=useState("");
@@ -676,37 +674,19 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
             {(form.modalidad==="presencial"||form.modalidad==="hibrido")&&<>
               <div style={{marginBottom:"10px"}}>
                 <label style={S.lbl}>📍 Lugar</label>
-                {agregarLugar
-                  ?<div style={{display:"flex",gap:"6px"}}>
-                      <input style={{...S.inp,flex:1}} value={nuevoLugar} onChange={e=>setNuevoLugar(e.target.value)} placeholder="Nombre del lugar…" autoFocus onKeyDown={async e=>{
-                        if(e.key==="Enter"&&nuevoLugar.trim()){
-                          const{data}=await sb.from("lugares").insert({nombre:nuevoLugar.trim(),activo:true}).select().single();
-                          if(data){setF("lugar",data.nombre);if(onLugarCreado)onLugarCreado();}
-                          setAgregarLugar(false);setNuevoLugar("");
-                        }
-                      }}/>
-                      <button onClick={async()=>{
-                        if(!nuevoLugar.trim())return;
-                        const{data}=await sb.from("lugares").insert({nombre:nuevoLugar.trim(),activo:true}).select().single();
-                        if(data){setF("lugar",data.nombre);if(onLugarCreado)onLugarCreado();}
-                        setAgregarLugar(false);setNuevoLugar("");
-                      }} style={{...S.btnV,padding:"9px 14px",fontSize:"15px",whiteSpace:"nowrap"}}>✓</button>
-                      <button onClick={()=>{setAgregarLugar(false);setNuevoLugar("");}} style={{...S.btnG,padding:"9px 10px",fontSize:"15px"}}>✕</button>
-                    </div>
-                  :<div style={{display:"flex",gap:"6px"}}>
-                      <select style={S.sel} value={form.lugar||""} onChange={e=>setF("lugar",e.target.value)}>
-                        <option value="">Seleccionar lugar…</option>
-                        {lugares.filter(l=>l.activo!==false).map(l=><option key={l.id} value={l.nombre}>{l.nombre}</option>)}
-                        {form.lugar&&!lugares.find(l=>l.nombre===form.lugar)&&<option value={form.lugar}>{form.lugar}</option>}
-                      </select>
-                      <button onClick={()=>setAgregarLugar(true)} style={{...S.btnP,whiteSpace:"nowrap"}}>+ Nuevo</button>
-                    </div>
-                }
+                <div style={{display:"flex",gap:"6px"}}>
+                  <select style={S.sel} value={form.lugar||""} onChange={e=>setF("lugar",e.target.value)}>
+                    <option value="">Seleccionar lugar…</option>
+                    {lugares.filter(l=>l.activo!==false).map(l=><option key={l.id} value={l.nombre}>{l.nombre}</option>)}
+                    {form.lugar&&!lugares.find(l=>l.nombre===form.lugar)&&<option value={form.lugar}>{form.lugar}</option>}
+                  </select>
+                  <button onClick={()=>onNuevoLugar&&onNuevoLugar(l=>{setF("lugar",l.nombre);if(onLugarCreado)onLugarCreado();})} style={{padding:"0",width:"42px",height:"42px",background:"#3B82F6",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"20px",fontWeight:"300",fontFamily:"inherit",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,lineHeight:1}}>+</button>
+                </div>
               </div>
               <div style={{marginBottom:"20px"}}><label style={S.lbl}>Detalles del lugar</label><input style={S.inp} value={form.lugar_detalle} onChange={e=>setF("lugar_detalle",e.target.value)} placeholder="Sala Andes, piso 3…"/></div>
             </>}
             {/* Panel contable */}
-            <div style={{border:"2px solid #E5E7EB",borderRadius:"12px",padding:"16px",background:"#F8FAFF",marginTop:"16px",marginBottom:"16px"}}>
+            <div style={{border:"2px solid #F0C890",borderRadius:"12px",padding:"16px",background:"#FFF5E6",marginTop:"16px",marginBottom:"16px"}}>
               <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"16px",paddingBottom:"10px",borderBottom:"1px solid #E5E7EB"}}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A6FD4" strokeWidth="2">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -725,21 +705,48 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                   <div><label style={{...S.lbl,fontSize:"11px",fontWeight:"600",textTransform:"uppercase",marginBottom:"4px",whiteSpace:"nowrap"}}>Otros</label><input style={{...S.inp,fontSize:"13px",padding:"6px 10px",width:"100%",boxSizing:"border-box"}} value={form.nro_otros||""} onChange={e=>setF("nro_otros",e.target.value)} placeholder="Ref. adicional…"/></div>
                 </div>
               </div>
-              {/* Estado de facturación + N° Factura + N° Boleta Intérprete 2 */}
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"12px",alignItems:"end"}}>
+              {/* Estado de facturación + N° Factura */}
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",alignItems:"end",marginBottom:"12px"}}>
                 <div style={S.camp}><label style={S.lbl}>Estado de facturación</label>
-                  <select style={S.sel} value={form.estado} onChange={e=>setF("estado",e.target.value)}>{ESTADOS.map(e=><option key={e}>{e}</option>)}</select>
+                  <select style={{...S.sel,textAlign:"left"}} value={form.estado} onChange={e=>setF("estado",e.target.value)}>{ESTADOS.map(e=><option key={e} style={{textAlign:"left"}}>{e}</option>)}</select>
                 </div>
                 <div style={S.camp}><label style={S.lbl}>N° Factura</label>
                   <input style={S.inp} type="text" value={form.numero_factura||""} onChange={e=>setF("numero_factura",e.target.value)} placeholder="Ej: 12345"/>
                 </div>
-                <div style={S.camp}><label style={S.lbl}>N° Boleta Intérprete 2</label>
-                  <input style={S.inp} type="text" value={form.nro_boleta_2||""} onChange={e=>setF("nro_boleta_2",e.target.value)} placeholder="000"/>
-                </div>
               </div>
+              {/* Fecha de emisión + Fecha de pago automática */}
+              {(()=>{
+                const clienteActual=clientes.find(c=>c.id===form.cliente_id);
+                const esMagix=/magix/i.test(clienteActual?.nombre_empresa||"");
+                const diasPago=esMagix?60:30;
+                const calcFechaPago=(iso)=>{
+                  if(!iso)return"";
+                  const d=new Date(iso+"T12:00:00");
+                  d.setDate(d.getDate()+diasPago);
+                  const off=(d.getDay()-3+7)%7;
+                  d.setDate(d.getDate()-off);
+                  return d.toISOString().slice(0,10);
+                };
+                const fechaPago=calcFechaPago(form.fecha_emision);
+                const fmtCL=(iso)=>{if(!iso)return"";const[y,m,d]=iso.split("-");return`${d}/${m}/${y}`;};
+                return(
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",alignItems:"end"}}>
+                    <div style={S.camp}>
+                      <label style={S.lbl}>📅 Fecha de emisión</label>
+                      <input style={S.inp} type="date" value={form.fecha_emision||""} onChange={e=>setF("fecha_emision",e.target.value)}/>
+                    </div>
+                    <div style={S.camp}>
+                      <label style={{...S.lbl,color:"#6B7280"}}>💸 Fecha de pago{esMagix?" (60 días — Magix)":""}</label>
+                      <div style={{...S.inp,display:"flex",alignItems:"center",background:"#F1F5F9",color:fechaPago?"#0F172A":"#9CA3AF",fontWeight:fechaPago?"600":"400",border:"1.5px solid #CBD5E1",cursor:"default"}}>
+                        {fechaPago?fmtCL(fechaPago):"— completar fecha de emisión"}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
             {/* Comentarios */}
-            <div style={{marginBottom:"4px"}}><label style={S.lbl}>💬 Comentarios</label><textarea style={{...S.inp,minHeight:"80px",resize:"vertical"}} value={form.comentarios} onChange={e=>setF("comentarios",e.target.value)}/></div>
+            <div style={{marginBottom:"4px"}}><label style={S.lbl}>💬 Comentarios</label><textarea style={{...S.inp,minHeight:"80px",resize:"vertical",height:"auto",border:"1.5px solid #A0A09F"}} value={form.comentarios} onChange={e=>setF("comentarios",e.target.value)}/></div>
           </>}
 
           {/* ── TAB INTÉRPRETES (un día) ── */}
@@ -753,7 +760,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
             {form.asignaciones.length>0&&<button onClick={()=>addAsig()} style={{...S.btnP,width:"100%",padding:"9px"}}>+ Agregar otro intérprete</button>}
           <div style={{marginTop:"20px",borderTop:`1px solid ${C.grisBorde}`,paddingTop:"16px"}}>
             <label style={S.lbl}>💬 Comentarios</label>
-            <textarea style={{...S.inp,minHeight:"80px",resize:"vertical"}}
+            <textarea style={{...S.inp,minHeight:"80px",resize:"vertical",height:"auto",border:"1.5px solid #A0A09F"}}
               value={form.comentarios||""}
               onChange={e=>setF("comentarios",e.target.value)}
               placeholder="Notas adicionales sobre los intérpretes…"/>
@@ -851,18 +858,18 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                     </select></div>
                 </div>
                 {/* Intérpretes del día */}
-                <div style={{marginTop:"12px",border:"2px solid #93252D",borderRadius:"16px",padding:"16px",background:"rgba(147,37,45,0.06)",marginBottom:"16px"}}>
+                <div style={{marginTop:"12px",border:"2px solid #E03131",borderRadius:"16px",padding:"16px",background:"rgba(224,49,49,0.06)",marginBottom:"16px"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
-                    <div style={{fontWeight:"500",color:"#93252D",fontSize:"16px",display:"flex",alignItems:"center",gap:"5px"}}><IconMic size={16}/> Intérpretes de este día</div>
+                    <div style={{fontWeight:"500",color:"#E03131",fontSize:"16px",display:"flex",alignItems:"center",gap:"5px"}}><IconMic size={16}/> Intérpretes de este día</div>
                     <button onClick={()=>addAsig(dIdx)} style={{...S.btnP,fontSize:"13px",color:"#2C5CA0",border:"1px solid #869CB8"}}>+ Agregar intérprete</button>
                   </div>
                   {(dia.asignaciones||[]).length===0&&<div style={{color:C.textoSuave,fontSize:"15px",textAlign:"center",padding:"12px",border:`1.5px dashed ${C.grisBorde}`,borderRadius:"8px"}}>Sin intérpretes para este día</div>}
                   {(dia.asignaciones||[]).map((a,aIdx)=><FilaAsig key={aIdx} a={a} idx={aIdx} dIdx={dIdx}/>)}
                 </div>
                 {/* Equipos AV */}
-                {form.modalidad!=="remoto"&&<div style={{marginTop:"14px",border:"2px solid #12823B",borderRadius:"16px",padding:"16px",background:"rgba(18,130,59,0.06)",marginBottom:"16px"}}>
+                {form.modalidad!=="remoto"&&<div style={{marginTop:"14px",border:"2px solid #155724",borderRadius:"16px",padding:"16px",background:"rgba(21,87,36,0.06)",marginBottom:"16px"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
-                    <div style={{fontWeight:"500",color:"#12823B",fontSize:"16px",display:"flex",alignItems:"center",gap:"5px"}}><IconAV size={16}/> Equipos AV de este día</div>
+                    <div style={{fontWeight:"500",color:"#155724",fontSize:"16px",display:"flex",alignItems:"center",gap:"5px"}}><IconAV size={16}/> Equipos AV de este día</div>
                     <button onClick={()=>addEq(dIdx)} style={{...S.btnP,fontSize:"13px",color:"#2C5CA0",border:"1px solid #869CB8"}}>+ Agregar equipos</button>
                   </div>
                   {(dia.equipos||[]).map((eq,eIdx)=>(
@@ -2400,6 +2407,120 @@ function ModalNuevoContacto({clienteId,onGuardar,onCerrar}) {
   );
 }
 
+// ─── MODAL NUEVO LUGAR ─────────────────────────────────────────────────────────
+function ModalNuevoLugar({onGuardado,onCerrar}) {
+  const TIPOS=[
+    {v:"hotel",l:"Hotel"},{v:"centro_eventos",l:"Centro de eventos"},
+    {v:"universidad",l:"Universidad"},{v:"edificio_corporativo",l:"Edificio corporativo"},
+    {v:"oficina_cliente",l:"Oficina del cliente"},{v:"planta_produccion",l:"Planta de producción"},
+    {v:"faena_minera",l:"Faena minera"},{v:"ministerio",l:"Ministerio"},
+    {v:"edificio_gobierno",l:"Edificio de gobierno"},
+  ];
+  const CT={tipo:"",nombre:"",salon:"",espacio:"",tipo_espacio:"auditorio",piso:"",calle:"",numero:"",comuna:"",ciudad:"Santiago",pais:"Chile",otro:""};
+  const [f,setFl]=useState(CT);
+  const [guardando,setGuardando]=useState(false);
+  const [error,setError]=useState("");
+  const u=(k,v)=>setFl(x=>({...x,[k]:v}));
+  const hasSalon=["hotel","centro_eventos"].includes(f.tipo);
+  const hasUniv=f.tipo==="universidad";
+  const hasPiso=["edificio_corporativo","oficina_cliente","edificio_gobierno"].includes(f.tipo);
+  const computeNombre=()=>{
+    let n=f.nombre.trim();if(!n)return"";
+    if(hasSalon&&f.salon.trim())n+=`, Sala ${f.salon.trim()}`;
+    if(hasUniv&&f.espacio.trim())n+=`, ${f.tipo_espacio==="auditorio"?"Auditorio ":""}${f.espacio.trim()}`;
+    if(hasPiso&&f.piso.trim())n+=`, Piso ${f.piso.trim()}`;
+    return n;
+  };
+  const computeDireccion=()=>{
+    const pts=[f.calle.trim(),f.numero.trim(),f.comuna.trim(),f.ciudad.trim(),f.pais.trim()].filter(Boolean);
+    let d=pts.join(", ");if(f.otro.trim())d+=(d?" · ":"")+f.otro.trim();return d;
+  };
+  const guardar=async()=>{
+    const nombre=computeNombre();
+    if(!nombre){setError("El nombre del lugar es obligatorio.");return;}
+    setGuardando(true);setError("");
+    const payload={nombre,activo:true};
+    const dir=computeDireccion();if(dir)payload.direccion=dir;
+    const{data,error:err}=await sb.from("lugares").insert(payload).select().single();
+    setGuardando(false);
+    if(err){setError("Error al guardar: "+err.message);return;}
+    onGuardado(data);
+  };
+  const INP={width:"100%",padding:"9px 12px",border:"1.5px solid #E2E8F0",borderRadius:"8px",fontSize:"14px",color:"#0F172A",background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",height:"42px"};
+  const LBL={fontSize:"11px",fontWeight:"600",color:"#475569",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:"5px",display:"block"};
+  const GRP={marginBottom:"14px"};
+  return(
+    <div style={{position:"fixed",top:0,left:0,width:"100vw",height:"100vh",background:"rgba(0,0,0,0.6)",zIndex:2000,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px",boxSizing:"border-box"}}>
+      <div style={{background:"#FFFFFF",borderRadius:"16px",width:"100%",maxWidth:"540px",maxHeight:"90vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,0.3)"}}>
+        <div style={{padding:"20px 24px 16px",borderBottom:"1px solid #E2E8F0",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
+          <div style={{fontSize:"16px",fontWeight:"700",color:"#0F172A"}}>📍 Nuevo lugar</div>
+          <button onClick={onCerrar} style={{background:"none",border:"none",cursor:"pointer",fontSize:"20px",color:"#64748B",padding:"4px",lineHeight:1}}>×</button>
+        </div>
+        <div style={{flex:1,overflowY:"auto",padding:"20px 24px"}}>
+          <div style={GRP}>
+            <label style={LBL}>Tipo de lugar</label>
+            <select style={{...INP,cursor:"pointer"}} value={f.tipo} onChange={e=>u("tipo",e.target.value)}>
+              <option value="">Seleccionar…</option>
+              {TIPOS.map(t=><option key={t.v} value={t.v}>{t.l}</option>)}
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+          <div style={GRP}>
+            <label style={LBL}>Nombre del lugar *</label>
+            <input style={INP} autoFocus value={f.nombre} onChange={e=>u("nombre",e.target.value)} placeholder={
+              f.tipo==="hotel"?"Marriott, Sheraton…":f.tipo==="centro_eventos"?"Centro de Convenciones…":
+              f.tipo==="universidad"?"Universidad de Chile…":f.tipo==="ministerio"?"de Economía, de Salud…":"Nombre del lugar…"
+            }/>
+          </div>
+          {hasSalon&&<div style={GRP}>
+            <label style={LBL}>Nombre del salón</label>
+            <input style={INP} value={f.salon} onChange={e=>u("salon",e.target.value)} placeholder="Salón Andes, Sala Principal…"/>
+          </div>}
+          {hasUniv&&<div style={{display:"grid",gridTemplateColumns:"160px 1fr",gap:"12px",...GRP}}>
+            <div>
+              <label style={LBL}>Tipo de espacio</label>
+              <select style={{...INP,cursor:"pointer"}} value={f.tipo_espacio} onChange={e=>u("tipo_espacio",e.target.value)}>
+                <option value="auditorio">Auditorio</option>
+                <option value="sala">Sala</option>
+                <option value="otro">Otro espacio</option>
+              </select>
+            </div>
+            <div>
+              <label style={LBL}>Nombre del espacio</label>
+              <input style={INP} value={f.espacio} onChange={e=>u("espacio",e.target.value)} placeholder="Principal, Sala 301…"/>
+            </div>
+          </div>}
+          {hasPiso&&<div style={GRP}>
+            <label style={LBL}>Piso</label>
+            <input style={{...INP,width:"120px"}} value={f.piso} onChange={e=>u("piso",e.target.value)} placeholder="Ej: 12"/>
+          </div>}
+          <div style={{background:"#F8FAFC",borderRadius:"10px",padding:"14px 16px",marginBottom:"14px"}}>
+            <div style={{fontSize:"11px",fontWeight:"700",color:"#475569",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:"12px"}}>Dirección</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 100px",gap:"10px",marginBottom:"10px"}}>
+              <div><label style={LBL}>Calle</label><input style={INP} value={f.calle} onChange={e=>u("calle",e.target.value)} placeholder="Av. Kennedy"/></div>
+              <div><label style={LBL}>Número</label><input style={INP} value={f.numero} onChange={e=>u("numero",e.target.value)} placeholder="4601"/></div>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"10px"}}>
+              <div><label style={LBL}>Comuna</label><input style={INP} value={f.comuna} onChange={e=>u("comuna",e.target.value)} placeholder="Las Condes"/></div>
+              <div><label style={LBL}>Ciudad</label><input style={INP} value={f.ciudad} onChange={e=>u("ciudad",e.target.value)}/></div>
+            </div>
+            <div><label style={LBL}>País</label><input style={{...INP,width:"160px"}} value={f.pais} onChange={e=>u("pais",e.target.value)}/></div>
+          </div>
+          <div style={GRP}>
+            <label style={LBL}>Otro / información adicional</label>
+            <textarea style={{...INP,height:"auto",minHeight:"58px",resize:"vertical",lineHeight:1.5}} value={f.otro} onChange={e=>u("otro",e.target.value)} placeholder="Estacionamiento, acceso, referencia…"/>
+          </div>
+          {error&&<div style={{color:"#EF4444",fontSize:"13px",marginBottom:"10px"}}>{error}</div>}
+        </div>
+        <div style={{padding:"16px 24px",borderTop:"1px solid #E2E8F0",display:"flex",gap:"10px",justifyContent:"flex-end",flexShrink:0}}>
+          <button onClick={onCerrar} style={S.btnCancel}>Cancelar</button>
+          <button onClick={guardar} disabled={guardando} style={S.btnA}>{guardando?"Guardando…":"💾 Guardar lugar"}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   // TEMP: login desactivado — para reactivar cambiar SKIP_LOGIN a false
   const SKIP_LOGIN = true;
@@ -2430,6 +2551,7 @@ export default function App() {
   const [modalNuevoCli,setModalNuevoCli]=useState(false);
   const [modalNuevoInt,setModalNuevoInt]=useState(null);
   const [modalNuevoContacto,setModalNuevoContacto]=useState(null);
+  const [modalNuevoLugar,setModalNuevoLugar]=useState(null);
   // Búsqueda, filtros y toasts
   const [busqueda,setBusqueda]=useState("");
   const [buscando,setBuscando]=useState(false);
@@ -3038,13 +3160,14 @@ export default function App() {
       {pantalla==="config"&&esAdmin&&<PantallaConfig clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} onActualizar={cargarDatos} perfil={perfil}/>}
 
       {/* ── MODALES ── */}
-      {modalEvento&&<ModalEvento eventoInicial={modalEvento.data} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} contactos={contactos} todos_eventos={eventos} perfil={perfil} onGuardar={()=>{setModalEvento(null);cargarDatos();addToast("Evento guardado correctamente","success");}} onCerrar={()=>setModalEvento(null)} onNuevoCliente={(cb)=>setModalNuevoCli({cb})} onNuevoContacto={setModalNuevoContacto} onNuevoInterprete={(ai,di)=>setModalNuevoInt({ai,di})} onLugarCreado={cargarDatos} onNuevoProveedor={prov=>setProveedores(prev=>[...prev,prov])}/>}
+      {modalEvento&&<ModalEvento eventoInicial={modalEvento.data} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} contactos={contactos} todos_eventos={eventos} perfil={perfil} onGuardar={()=>{setModalEvento(null);cargarDatos();addToast("Evento guardado correctamente","success");}} onCerrar={()=>setModalEvento(null)} onNuevoCliente={(cb)=>setModalNuevoCli({cb})} onNuevoContacto={setModalNuevoContacto} onNuevoInterprete={(ai,di)=>setModalNuevoInt({ai,di})} onLugarCreado={cargarDatos} onNuevoLugar={(cb)=>setModalNuevoLugar({cb})} onNuevoProveedor={prov=>setProveedores(prev=>[...prev,prov])}/>}
       {modalDetalle&&<ModalDetalle evento={modalDetalle} clientes={clientes} interpretes={interpretes} pares={pares} perfil={perfil} onEditar={()=>editarEvento(modalDetalle)} onEliminar={()=>eliminarEvento(modalDetalle.id)} onCerrar={()=>setModalDetalle(null)} onVerFicha={()=>{setModalFicha(modalDetalle);setModalDetalle(null);}} onNavDia={(dIdx)=>{setVistaAnterior(vista);setEventoMultidiaId(modalDetalle.id);setDiaMultidiaSeleccionado(dIdx+1);setModoMultidia(true);setVista("dia");setModalDetalle(null);}} addToast={addToast}/>}
       {modalFicha&&<ModalFicha evento={modalFicha} clientes={clientes} interpretes={interpretes} pares={pares} onCerrar={()=>setModalFicha(null)}/>}
       {modalFichasMultiples&&<ModalFichasMultiples eventosLista={modalFichasMultiples} clientes={clientes} interpretes={interpretes} pares={pares} onCerrar={()=>setModalFichasMultiples(null)}/>}
       {modalNuevoCli&&<ModalNuevoCliente onGuardar={async(d)=>{const{data}=await sb.from("clientes").insert(d).select().single();if(data)setClientes(prev=>[...prev,data]);const cb=modalNuevoCli?.cb;setModalNuevoCli(false);if(data){cb?.(data.id);addToast("Cliente creado","success");}cargarDatos();}} onCerrar={()=>setModalNuevoCli(false)}/>}
       {modalNuevoInt&&<ModalNuevoInterprete onGuardar={async(d)=>{await sb.from("interpretes").insert(d);await cargarDatos();setModalNuevoInt(null);addToast("Intérprete creado","success");}} onCerrar={()=>setModalNuevoInt(null)}/>}
       {modalNuevoContacto&&<ModalNuevoContacto clienteId={modalNuevoContacto.cliente_id} onGuardar={async(d)=>{const{data:nc}=await sb.from("contactos").insert({...d,cliente_id:Number(modalNuevoContacto.cliente_id),activo:true}).select().single();if(nc&&modalNuevoContacto.cb)modalNuevoContacto.cb(nc);await cargarDatos();setModalNuevoContacto(null);addToast("Contacto creado","success");}} onCerrar={()=>setModalNuevoContacto(null)}/>}
+      {modalNuevoLugar&&<ModalNuevoLugar onGuardado={async(data)=>{if(modalNuevoLugar.cb)modalNuevoLugar.cb(data);await cargarDatos();setModalNuevoLugar(null);addToast("Lugar creado","success");}} onCerrar={()=>setModalNuevoLugar(null)}/>}
       <ToastContainer toasts={toasts} onRemove={removeToast}/>
     </div>
   );
