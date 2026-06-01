@@ -3036,13 +3036,34 @@ export default function App() {
     const diasLF=diasSemana.slice(0,5);
     const diasFS=diasSemana.slice(5,7);
     const evsFinSemana=diasFS.flatMap(d=>evsDia(toISO(d)));
-    const nombresDia=["LUN","MAR","MIÉ","JUE","VIE"];
+    const hayFS=evsFinSemana.length>0;
+    const nombresDia=["LUN","MAR","MIÉ","JUE","VIE","SÁB","DOM"];
+
+    const renderCol=(d,i,esWeekend=false)=>{
+      const iso=toISO(d),evs=evsDia(iso),esHoy=iso===hoy();
+      const mesLargo=MESES_L[d.getMonth()].charAt(0).toUpperCase()+MESES_L[d.getMonth()].slice(1);
+      const opac=esWeekend?0.82:1;
+      const colBg=esHoy?"rgba(255,255,255,0.06)":evs.length>0?`rgba(255,255,255,${esWeekend?0.09:0.13})`:`rgba(255,255,255,${esWeekend?0.04:0.07})`;
+      const hdrBg=esHoy?"rgba(255,255,255,0.15)":`rgba(255,255,255,${esWeekend?0.05:0.08})`;
+      return <div key={`${esWeekend?"fs":"lf"}-${i}`} style={{background:colBg,backdropFilter:"blur(4px)",WebkitBackdropFilter:"blur(4px)",borderRadius:"12px",padding:"10px",minHeight:"calc(100vh - 260px)",opacity:opac}}>
+        <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{textAlign:"center",padding:"12px 8px",borderRadius:"10px",marginBottom:"8px",background:hdrBg,cursor:"pointer",transition:"background 0.15s"}}
+          onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"}
+          onMouseLeave={e=>{e.currentTarget.style.background=hdrBg;}}>
+          <div style={{fontSize:"16px",fontWeight:"500",color:esWeekend?"rgba(255,255,255,0.75)":"#fff",textTransform:"uppercase",letterSpacing:"0.05em"}}>{nombresDia[i]}</div>
+          {esHoy
+            ?<div style={{width:"40px",height:"40px",borderRadius:"50%",background:"#F97316",color:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"22px",fontWeight:"700",margin:"4px auto"}}>{d.getDate()}</div>
+            :<div style={{fontSize:"32px",fontWeight:"600",lineHeight:1,color:esWeekend?"rgba(255,255,255,0.75)":"#fff",margin:"4px 0"}}>{d.getDate()}</div>
+          }
+          <div style={{fontSize:"14px",color:"rgba(255,255,255,0.65)"}}>{mesLargo} {d.getFullYear()}</div>
+          {evs.length>0&&<div style={{display:"inline-block",background:"rgba(255,255,255,0.20)",color:"#fff",fontSize:"14px",fontWeight:"500",padding:"2px 8px",borderRadius:"10px",marginTop:"6px"}}>{evs.length} evento{evs.length!==1?"s":""}</div>}
+        </div>
+        {evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} onNavegar={d=>{setDiaActual(d);setVista("dia");}} onVerMultidia={verTodosLosDias} solidPill/>)}
+        {evs.length===0&&<div style={{textAlign:"center",color:esWeekend?"rgba(255,255,255,0.30)":"rgba(255,255,255,0.5)",fontWeight:"500",fontSize:"15px",padding:"20px 0"}}>Sin eventos</div>}
+      </div>;
+    };
 
     if(esMobile) return (
       <div style={{padding:"10px 12px 80px"}}>
-        {evsFinSemana.length>0&&<div onClick={()=>{setDiaActual(toISO(diasFS[0]));setVista("dia");}} style={{background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.3)",borderRadius:"8px",padding:"8px 16px",marginBottom:"12px",cursor:"pointer",display:"flex",alignItems:"center",gap:"8px",color:"#fff",fontSize:"15px",fontWeight:"500"}}>
-          ⚡ Ver {evsFinSemana.length} evento{evsFinSemana.length!==1?"s":""} este fin de semana
-        </div>}
         {diasLF.map((d,i)=>{
           const iso=toISO(d),evs=evsDia(iso),esHoy=iso===hoy();
           const mesLargo=MESES_L[d.getMonth()].charAt(0).toUpperCase()+MESES_L[d.getMonth()].slice(1);
@@ -3060,35 +3081,35 @@ export default function App() {
             {evs.length>0&&<div style={{padding:"0 10px 10px"}}>{evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} onNavegar={d=>{setDiaActual(d);setVista("dia");}} onVerMultidia={verTodosLosDias} solidPill/>)}</div>}
           </div>;
         })}
+        {hayFS&&<div style={{height:"1px",background:"rgba(255,255,255,0.15)",margin:"8px 0"}}/>}
+        {hayFS&&diasFS.map((d,i)=>{
+          const iso=toISO(d),evs=evsDia(iso),esHoy=iso===hoy();
+          const mesLargo=MESES_L[d.getMonth()].charAt(0).toUpperCase()+MESES_L[d.getMonth()].slice(1);
+          const colBg=esHoy?"rgba(255,255,255,0.20)":evs.length>0?"rgba(255,255,255,0.10)":"rgba(255,255,255,0.05)";
+          return <div key={`fs-${i}`} style={{marginBottom:"10px",background:colBg,borderRadius:"12px",overflow:"hidden",opacity:0.88}}>
+            <div style={{padding:"12px 14px",display:"flex",alignItems:"center",gap:"12px",cursor:"pointer"}} onClick={()=>{setDiaActual(iso);setVista("dia");}}>
+              <div style={{textAlign:"center",minWidth:"54px"}}>
+                <div style={{fontSize:"16px",fontWeight:"500",color:"rgba(255,255,255,0.75)",textTransform:"uppercase",letterSpacing:"0.05em"}}>{nombresDia[i+5]}</div>
+                <div style={{fontSize:"32px",fontWeight:"600",lineHeight:1,color:"rgba(255,255,255,0.80)"}}>{d.getDate()}</div>
+                <div style={{fontSize:"14px",color:"rgba(255,255,255,0.60)"}}>{mesLargo}</div>
+              </div>
+              <div style={{flex:1,color:"#fff",fontWeight:"500",fontSize:"17px"}}>{evs.length>0?`${evs.length} evento${evs.length!==1?"s":""}`:""}</div>
+              <div style={{fontSize:"14px",color:"rgba(255,255,255,0.6)"}}>›</div>
+            </div>
+            {evs.length>0&&<div style={{padding:"0 10px 10px"}}>{evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} onNavegar={d=>{setDiaActual(d);setVista("dia");}} onVerMultidia={verTodosLosDias} solidPill/>)}</div>}
+          </div>;
+        })}
+        {!hayFS&&<div style={{textAlign:"right",color:"rgba(255,255,255,0.35)",fontSize:"11px",fontStyle:"italic",padding:"6px 4px"}}>📅 Sin eventos este fin de semana</div>}
       </div>
     );
 
     return (
       <div style={{padding:"16px 24px 80px"}}>
-        {evsFinSemana.length>0&&<div onClick={()=>{setDiaActual(toISO(diasFS[0]));setVista("dia");}} style={{background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.3)",borderRadius:"8px",padding:"8px 16px",marginBottom:"12px",cursor:"pointer",display:"inline-flex",alignItems:"center",gap:"8px",color:"#fff",fontSize:"15px",fontWeight:"500"}}>
-          ⚡ Ver {evsFinSemana.length} evento{evsFinSemana.length!==1?"s":""} este fin de semana
-        </div>}
-        <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:"8px",padding:"8px"}}>
-          {diasLF.map((d,i)=>{
-            const iso=toISO(d),evs=evsDia(iso),esHoy=iso===hoy();
-            const mesLargo=MESES_L[d.getMonth()].charAt(0).toUpperCase()+MESES_L[d.getMonth()].slice(1);
-            const colBg=esHoy?"rgba(255,255,255,0.06)":evs.length>0?"rgba(255,255,255,0.13)":"rgba(255,255,255,0.07)";
-            return <div key={i} style={{background:colBg,backdropFilter:"blur(4px)",WebkitBackdropFilter:"blur(4px)",borderRadius:"12px",padding:"10px",minHeight:"calc(100vh - 260px)"}}>
-              <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{textAlign:"center",padding:"12px 8px",borderRadius:"10px",marginBottom:"8px",background:esHoy?"rgba(255,255,255,0.15)":"rgba(255,255,255,0.08)",cursor:"pointer",transition:"background 0.15s"}}
-                onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"}
-                onMouseLeave={e=>{e.currentTarget.style.background=esHoy?"rgba(255,255,255,0.15)":"rgba(255,255,255,0.08)";}}>
-                <div style={{fontSize:"16px",fontWeight:"500",color:"#fff",textTransform:"uppercase",letterSpacing:"0.05em"}}>{nombresDia[i]}</div>
-                {esHoy
-                  ?<div style={{width:"40px",height:"40px",borderRadius:"50%",background:"#F97316",color:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"22px",fontWeight:"700",margin:"4px auto"}}>{d.getDate()}</div>
-                  :<div style={{fontSize:"32px",fontWeight:"600",lineHeight:1,color:"#fff",margin:"4px 0"}}>{d.getDate()}</div>
-                }
-                <div style={{fontSize:"14px",color:"rgba(255,255,255,0.75)"}}>{mesLargo} {d.getFullYear()}</div>
-                {evs.length>0&&<div style={{display:"inline-block",background:"rgba(255,255,255,0.20)",color:"#fff",fontSize:"14px",fontWeight:"500",padding:"2px 8px",borderRadius:"10px",marginTop:"6px"}}>{evs.length} evento{evs.length!==1?"s":""}</div>}
-              </div>
-              {evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} onNavegar={d=>{setDiaActual(d);setVista("dia");}} onVerMultidia={verTodosLosDias} solidPill/>)}
-              {evs.length===0&&<div style={{textAlign:"center",color:"rgba(255,255,255,0.5)",fontWeight:"500",fontSize:"15px",padding:"20px 0"}}>Sin eventos</div>}
-            </div>;
-          })}
+        {!hayFS&&<div style={{textAlign:"right",color:"rgba(255,255,255,0.38)",fontSize:"11px",fontStyle:"italic",marginBottom:"6px",paddingRight:"8px"}}>📅 Sin eventos este fin de semana</div>}
+        <div style={{display:"grid",gridTemplateColumns:hayFS?"repeat(5,1fr) 2px repeat(2,1fr)":"repeat(5,1fr)",gap:"8px",padding:"8px",alignItems:"stretch"}}>
+          {diasLF.map((d,i)=>renderCol(d,i,false))}
+          {hayFS&&<div style={{background:"rgba(255,255,255,0.14)",borderRadius:"2px",alignSelf:"stretch"}}/>}
+          {hayFS&&diasFS.map((d,i)=>renderCol(d,i+5,true))}
         </div>
       </div>
     );
