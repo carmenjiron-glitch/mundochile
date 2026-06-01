@@ -874,9 +874,9 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                   <div style={{fontSize:"13px",color:"#64748B",marginTop:"2px"}}>{dia.hora_inicio?.slice(0,5)||"–"} – {dia.hora_termino?.slice(0,5)||"–"} · {pluralizarJornada(dia.jornada)||""}</div>
                 </div>
                 <div style={{display:"flex",gap:"6px",alignItems:"center",flexWrap:"wrap",justifyContent:"flex-end"}}>
-                  {dia.tipo&&<span style={{display:"inline-flex",padding:"2px 8px",borderRadius:"20px",fontSize:"11px",fontWeight:"700",color:(B_TIPO[dia.tipo]||{ct:"#294099"}).ct,background:(B_TIPO[dia.tipo]||{bg:"#EEF2FF"}).bg,border:`1.5px solid ${(B_TIPO[dia.tipo]||{c:"#3B5BDB"}).c}`}}>⚡ {dia.tipo}</span>}
-                  {dia.modalidad&&<span style={{display:"inline-flex",padding:"2px 8px",borderRadius:"20px",fontSize:"11px",fontWeight:"700",color:(B_MOD[dia.modalidad]||{ct:"#4B4B4B"}).ct,background:(B_MOD[dia.modalidad]||{bg:"#F7F7F5"}).bg,border:`1.5px solid ${(B_MOD[dia.modalidad]||{c:"#6B6B6B"}).c}`}}>⚡ {LBL_MODAL[dia.modalidad]}</span>}
-                  {dia.lugar&&<span style={{display:"inline-flex",padding:"2px 8px",borderRadius:"20px",fontSize:"11px",fontWeight:"700",color:"#5B21B6",background:"#EDE9FE",border:"1.5px solid #7C3AED"}}>⚡ 📍 {dia.lugar}</span>}
+                  {dia.tipo&&<span style={{display:"inline-flex",padding:"3px 9px",borderRadius:"20px",fontSize:"13px",fontWeight:"700",color:(B_TIPO[dia.tipo]||{ct:"#294099"}).ct,background:(B_TIPO[dia.tipo]||{bg:"#EEF2FF"}).bg,border:`1.5px solid ${(B_TIPO[dia.tipo]||{c:"#3B5BDB"}).c}`}}>⚡ {dia.tipo}</span>}
+                  {dia.modalidad&&<span style={{display:"inline-flex",padding:"3px 9px",borderRadius:"20px",fontSize:"13px",fontWeight:"700",color:(B_MOD[dia.modalidad]||{ct:"#4B4B4B"}).ct,background:(B_MOD[dia.modalidad]||{bg:"#F7F7F5"}).bg,border:`1.5px solid ${(B_MOD[dia.modalidad]||{c:"#6B6B6B"}).c}`}}>⚡ {LBL_MODAL[dia.modalidad]}</span>}
+                  {dia.lugar&&<span style={{display:"inline-flex",padding:"3px 9px",borderRadius:"20px",fontSize:"13px",fontWeight:"700",color:"#5B21B6",background:"#EDE9FE",border:"1.5px solid #7C3AED"}}>⚡ 📍 {dia.lugar}</span>}
                   {dIdx>0&&<button onClick={()=>copyFromPrev(dIdx)} style={{padding:"4px 10px",fontSize:"12px",background:"none",border:`1px solid ${C.grisBorde}`,borderRadius:"6px",cursor:"pointer",color:C.textoMed,fontFamily:"inherit"}}>↑ Copiar día anterior</button>}
                 </div>
               </div>
