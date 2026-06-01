@@ -3108,7 +3108,10 @@ export default function App() {
 
     return (
       <div style={{padding:"16px 24px 80px"}}>
-        {!hayFS&&<div style={{textAlign:"right",color:"rgba(255,255,255,0.38)",fontSize:"11px",fontStyle:"italic",marginBottom:"6px",paddingRight:"8px"}}>📅 Sin eventos este fin de semana</div>}
+        {!hayFS&&<div style={{display:"flex",gap:"8px",padding:"0 8px 4px"}}>
+          <div style={{flex:1}}/><div style={{flex:1}}/><div style={{flex:1}}/><div style={{flex:1}}/>
+          <div style={{flex:1,textAlign:"center",color:"#FFFFFF",fontSize:"16.5px",fontStyle:"italic",opacity:0.7}}>📅 Sin eventos este fin de semana</div>
+        </div>}
         <div style={{display:"grid",gridTemplateColumns:hayFS?"repeat(5,1fr) 2px repeat(2,1fr)":"repeat(5,1fr)",gap:"8px",padding:"8px",alignItems:"stretch"}}>
           {diasLF.map((d,i)=>renderCol(d,i,false))}
           {hayFS&&<div style={{background:"rgba(255,255,255,0.14)",borderRadius:"2px",alignSelf:"stretch"}}/>}
@@ -3343,7 +3346,7 @@ export default function App() {
   const esEditor=perfil?.rol==="editor"||esAdmin;
 
   return (
-    <div style={{fontFamily:"'Inter','Segoe UI',system-ui,sans-serif",minHeight:"100vh",background:"linear-gradient(135deg, #1a2a4a 0%, #1e3a6e 50%, #2563a8 100%)",color:"#FFFFFF",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",textRendering:"optimizeLegibility"}}>
+    <div style={{fontFamily:"'Inter','Segoe UI',system-ui,sans-serif",minHeight:"100vh",background:"linear-gradient(135deg, #1a2a4a 0%, #1e3a6e 50%, #2563a8 100%)",color:"#FFFFFF",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",textRendering:"optimizeLegibility",overflowX:"hidden"}}>
       {/* ── TOPBAR ── */}
       <div style={{position:"sticky",top:0,zIndex:100,background:"#162654"}}>
         <div style={{padding:"0 24px",display:"flex",alignItems:"center",justifyContent:"space-between",height:"96px",gap:"14px"}}>
@@ -3407,9 +3410,9 @@ export default function App() {
             <button onClick={generarFichaMultiple} style={{display:"flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"12px",background:"#1A6FD4",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",height:"26px",boxShadow:"0 2px 4px rgba(26,111,212,0.3)",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📋 Fichas</button>
             <button onClick={exportarExcelFiltrado} style={{display:"flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"12px",background:"#059669",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",height:"26px",boxShadow:"0 2px 4px rgba(5,150,105,0.3)",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📊 Excel</button>
           </div>
-          <button onClick={()=>setPantalla("disponibilidad")} style={{flexShrink:0,display:"flex",alignItems:"center",gap:"6px",padding:"5px 11px",borderRadius:"10px",background:"rgba(253,230,138,0.12)",color:"#FDE68A",fontSize:"12.1px",fontWeight:"500",border:"1.5px solid #FCD34D",height:"26px",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit",letterSpacing:"0.02em",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#86EFAC" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            Disponibilidad de intérpretes
+          <button onClick={()=>setPantalla("disponibilidad")} style={{flexShrink:1,minWidth:0,display:"flex",alignItems:"center",gap:"6px",padding:"5px 11px",borderRadius:"10px",background:"rgba(253,230,138,0.12)",color:"#FDE68A",fontSize:"12.1px",fontWeight:"500",border:"1.5px solid #FCD34D",height:"26px",cursor:"pointer",overflow:"hidden",fontFamily:"inherit",letterSpacing:"0.02em",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#86EFAC" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}><polyline points="20 6 9 17 4 12"/></svg>
+            <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>Disponibilidad de intérpretes</span>
           </button>
         </div>}
         {vista==="semana"&&renderSemana()}
