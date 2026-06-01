@@ -29,7 +29,7 @@ export const PALETA_CLIENTE = PALETA
 export const colorCliente = clientColor
 
 export const BADGE = {
-  'Simultánea':           {bg:'#FFFFFF',c:'#0B5CFF',b:'#0B5CFF'},
+  'Simultánea':           {bg:'#FFFFFF',c:'#0057FF',b:'#0057FF'},
   'Consecutiva':          {bg:'#FCE4EC',c:'#C2185B',b:'#C2185B'},
   'Whispering':           {bg:'#F3E5F5',c:'#7B1FA2',b:'#7B1FA2'},
   'presencial':           {bg:'#E8F5E9',c:'#2E7D32',b:'#2E7D32'},
@@ -64,7 +64,7 @@ export const tokens = {
   },
   font: { family: "'Inter', 'Segoe UI', system-ui, sans-serif" },
   badge: {
-    'Simultánea':            { bg: '#FFFFFF', text: '#0B5CFF', border: '#0B5CFF' },
+    'Simultánea':            { bg: '#FFFFFF', text: '#0057FF', border: '#0057FF' },
     'Consecutiva':           { bg: '#F0FFF4', text: '#2F9E44', border: '#2F9E44' },
     'Whispering':            { bg: '#F5F3FF', text: '#9C36B5', border: '#9C36B5' },
     'Presencial':            { bg: '#FFF0F6', text: '#C2255C', border: '#C2255C' },
