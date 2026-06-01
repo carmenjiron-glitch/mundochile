@@ -23,6 +23,14 @@ const IconoSimultanea = () => (
   </svg>
 );
 
+const IconoPresencial = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 9.5L12 3l9 6.5V21a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/>
+    <path d="M9 22V12h6v10"/>
+  </svg>
+);
+
 const IconAV = ({ size = 14 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
     stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -232,7 +240,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
             <div style={{ display:"flex", gap:5, flexWrap:"wrap", alignItems:"center" }}>
               {(Array.isArray(ev.tipo)?ev.tipo:[ev.tipo||"Simultánea"]).map(t=><Chip key={t} label={t} emoji={t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤 ":"🤫 "} fontSize={14} padding="5px 12px" />)}
-              <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?"🏢 ":ev.modalidad==="hibrido"?"🔀 ":"💻 "} fontSize={14} padding="5px 12px" />
+              <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?<IconoPresencial/>:ev.modalidad==="hibrido"?"🔀 ":"💻 "} fontSize={14} padding="5px 12px" />
             </div>
 
             {!esPresencial && ev.plataforma && (
@@ -365,7 +373,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
           {/* Badges tipo + modalidad */}
           <div style={{ display:"flex", gap:5, flexWrap:"wrap", alignItems:"center" }}>
             {(Array.isArray(ev.tipo)?ev.tipo:[ev.tipo||"Simultánea"]).map(t=><Chip key={t} label={t} emoji={t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤 ":"🤫 "} fontSize={12} padding="4px 10px" />)}
-            <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?"🏢 ":ev.modalidad==="hibrido"?"🔀 ":"💻 "} fontSize={12} padding="4px 10px" />
+            <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?<IconoPresencial/>:ev.modalidad==="hibrido"?"🔀 ":"💻 "} fontSize={12} padding="4px 10px" />
           </div>
 
           {/* Plataforma / Lugar */}
