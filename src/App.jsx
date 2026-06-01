@@ -2842,7 +2842,7 @@ export default function App() {
       sb.from("lugares").select("*").order("nombre"),
       sb.from("contactos").select("*").order("nombre"),
     ]);
-    if(evR.data) setEventos(evR.data);
+    if(evR.data) setEventos(evR.data.filter((e,i,a)=>a.findIndex(x=>x.id===e.id)===i));
     if(cliR.data) setClientes(cliR.data);
     if(intR.data) setInterpretes(intR.data);
     if(parR.data) setPares(parR.data);
@@ -2879,7 +2879,8 @@ export default function App() {
     if(filtros.cliente_id) evs=evs.filter(e=>String(e.cliente_id)===String(filtros.cliente_id));
     if(filtros.par_id) evs=evs.filter(e=>(e.asignaciones||[]).some(a=>String(a.par_id)===String(filtros.par_id)));
     if(filtros.proveedor_av) evs=evs.filter(e=>{const eqs=(e.evento_dias||[]).flatMap(d=>d.equipos_dia||[]);if(filtros.proveedor_av==="sin_proveedor")return eqs.length>0&&eqs.every(eq=>!eq.proveedor_id);return eqs.some(eq=>String(eq.proveedor_id)===String(filtros.proveedor_av));});
-    return evs;
+    const seen=new Set();
+    return evs.filter(e=>{if(seen.has(e.id))return false;seen.add(e.id);return true;});
   },[eventos,busqueda,filtros,clientes,interpretes]);
 
   const evsDia=(iso)=>eventosFiltrados.filter(e=>e.fecha_inicio<=iso&&e.fecha_termino>=iso).sort((a,b)=>(a.hora_inicio||"").localeCompare(b.hora_inicio||""));
@@ -3407,11 +3408,11 @@ export default function App() {
 
       {/* ── CONTENIDO ── */}
       {pantalla==="calendario"&&<>
-        {vista!=="grilla"&&<div style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",width:"100%",display:"flex",alignItems:"center",gap:"12px",padding:"0 16px",boxSizing:"border-box",overflow:"hidden"}}>
+        {vista!=="grilla"&&<div style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",width:"100%",display:"flex",alignItems:"center",flexWrap:"nowrap",gap:"8px",padding:"0 16px",boxSizing:"border-box",overflow:"hidden"}}>
           {/* IZQUIERDA: Disponibilidad */}
           <button onClick={()=>setPantalla("disponibilidad")} style={{flexShrink:0,display:"flex",alignItems:"center",gap:"6px",padding:"5px 11px",borderRadius:"10px",background:"rgba(253,230,138,0.12)",color:"#FDE68A",fontSize:"12.1px",fontWeight:"500",border:"1.5px solid #FCD34D",height:"26px",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit",letterSpacing:"0.02em",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#86EFAC" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}><polyline points="20 6 9 17 4 12"/></svg>
-            Disponibilidad de intérpretes
+            Disponibilidad
           </button>
           {/* DERECHA: filtros + Fichas/Excel */}
           <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"flex-end",padding:"6px 0",minWidth:0,overflow:"hidden"}}>
