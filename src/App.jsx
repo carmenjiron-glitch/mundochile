@@ -376,7 +376,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
   const guardandoRef=useRef(false);
   const [error,setError]=useState("");
   const [guardadoOk,setGuardadoOk]=useState(false);
-  const setF=useCallback((k,v)=>setForm(f=>({...f,[k]:v})),[]);
+  const setF=useCallback((k,v)=>{guardandoRef.current=false;setForm(f=>({...f,[k]:v}));},[ ]);
   const [zoomOtro,setZoomOtro]=useState(!ZOOM_ADMIN.includes(form.zoom_administrador)&&!!form.zoom_administrador);
   const [adminZoomManual,setAdminZoomManual]=useState("");
   const [modalNuevoProveedor,setModalNuevoProveedor]=useState(null);
@@ -523,8 +523,9 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
       }
       if(cerrar){onGuardar();}
       else{setGuardadoOk(true);setTimeout(()=>setGuardadoOk(false),2000);}
-    } catch(e){setError("Error al guardar: "+(e.message||JSON.stringify(e)));}
-    finally{setGuardando(false);guardandoRef.current=false;}
+      // Éxito: ref queda bloqueado hasta próxima edición del form (via setF)
+    } catch(e){setError("Error al guardar: "+(e.message||JSON.stringify(e)));guardandoRef.current=false;}
+    finally{setGuardando(false);}
   };
 
   // Fila de asignación
@@ -3410,9 +3411,9 @@ export default function App() {
             <button onClick={generarFichaMultiple} style={{display:"flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"12px",background:"#1A6FD4",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",height:"26px",boxShadow:"0 2px 4px rgba(26,111,212,0.3)",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📋 Fichas</button>
             <button onClick={exportarExcelFiltrado} style={{display:"flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"12px",background:"#059669",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",height:"26px",boxShadow:"0 2px 4px rgba(5,150,105,0.3)",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📊 Excel</button>
           </div>
-          <button onClick={()=>setPantalla("disponibilidad")} style={{flexShrink:1,minWidth:0,display:"flex",alignItems:"center",gap:"6px",padding:"5px 11px",borderRadius:"10px",background:"rgba(253,230,138,0.12)",color:"#FDE68A",fontSize:"12.1px",fontWeight:"500",border:"1.5px solid #FCD34D",height:"26px",cursor:"pointer",overflow:"hidden",fontFamily:"inherit",letterSpacing:"0.02em",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>
+          <button onClick={()=>setPantalla("disponibilidad")} style={{flexShrink:0,display:"flex",alignItems:"center",gap:"6px",padding:"5px 11px",borderRadius:"10px",background:"rgba(253,230,138,0.12)",color:"#FDE68A",fontSize:"12.1px",fontWeight:"500",border:"1.5px solid #FCD34D",height:"26px",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit",letterSpacing:"0.02em",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#86EFAC" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}><polyline points="20 6 9 17 4 12"/></svg>
-            <span style={{overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",minWidth:0}}>Disponibilidad de intérpretes</span>
+            Disponibilidad de intérpretes
           </button>
         </div>}
         {vista==="semana"&&renderSemana()}
