@@ -63,7 +63,7 @@ const BADGE = {
   "Simultánea":            { bg:"#FFFFFF", c:"#0057FF", b:"#0057FF" },
   "Consecutiva":           { bg:"#FCE4EC", c:"#C2185B", b:"#C2185B" },
   "Whispering":            { bg:"#F3E5F5", c:"#7B1FA2", b:"#7B1FA2" },
-  "Presencial":            { bg:"#E8F5E9", c:"#2E7D32", b:"#2E7D32" },
+  "Presencial":            { bg:"#E6FFF2", c:"#00C261", b:"#00C261" },
   "Remoto":                { bg:"#E0F7FA", c:"#00838F", b:"#00838F" },
   "Híbrido":               { bg:"#FBE9E7", c:"#BF360C", b:"#BF360C" },
   "Facturado":             { bg:"#FFFFFF", c:"#1A1A1A", b:"#E57373", bw:"2px", fw:400 },
@@ -305,12 +305,12 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                 const soloUno  = grupo.items.length === 1;
                 return (
                   <div key={key} style={{ marginTop:10 }}>
-                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:5 }}>
-                      <div style={{ fontSize:14, fontWeight:600, color:/inglés.*español/i.test(key)?"#2D8CFF":darken(pillClr,0.80), textTransform:"uppercase", letterSpacing:"0.07em", opacity:0.85, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", WebkitFontSmoothing:"antialiased", textAlign:"center", width:"100%", display:"block" }}>
+                    <div style={{ position:"relative", marginBottom:5 }}>
+                      <div style={{ fontSize:14, fontWeight:600, color:"#1565C0", textTransform:"uppercase", letterSpacing:"0.07em", opacity:0.9, whiteSpace:"nowrap", WebkitFontSmoothing:"antialiased", textAlign:"center", width:"100%", display:"block" }}>
                         {key}
                       </div>
                       {hp && (
-                        <div style={{ fontSize:11, color:"#64748B", display:"inline-flex", alignItems:"center", gap:4, flexShrink:0 }}>
+                        <div style={{ position:"absolute", right:0, top:"50%", transform:"translateY(-50%)", fontSize:11, color:"#64748B", display:"inline-flex", alignItems:"center", gap:4 }}>
                           🕐 {hp.slice(0,5)} hrs
                         </div>
                       )}
@@ -401,7 +401,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             const flagSz  = solidPill ? 19 : 20;
             return (
               <div key={key} style={{ marginTop:14 }}>
-                <div style={{ fontSize:solidPill?12:14, fontWeight:600, color:/inglés.*español/i.test(key)?"#2D8CFF":darken(pillClr,0.80), textTransform:"uppercase", letterSpacing:"0.07em", marginBottom:5, opacity:0.85, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", textAlign:"center", width:"100%", display:"block" }}>
+                <div style={{ fontSize:solidPill?12:14, fontWeight:600, color:"#1565C0", textTransform:"uppercase", letterSpacing:"0.07em", marginBottom:5, opacity:0.9, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", textAlign:"center", width:"100%", display:"block" }}>
                   {key}
                 </div>
                 <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6, ...(pillsHalf?{maxWidth:"50%"}:{}) }}>

@@ -71,7 +71,7 @@ const idiomaFlag=(idioma)=>IDIOMA_FLAG[idioma]||"🌐";
 const IDIOMA_CDN={"Inglés":"gb","Francés":"fr","Portugués":"br","Español":"es","Alemán":"de","Italiano":"it","Chino":"cn","Japonés":"jp"};
 function FlagImg({idioma}){const c=IDIOMA_CDN[idioma];if(!c)return<span style={{fontSize:"14px"}}>🌐</span>;return<img src={`https://flagcdn.com/28x21/${c}.png`} style={{width:"25px",height:"18px",objectFit:"cover",borderRadius:"2px",verticalAlign:"middle",display:"inline-block",flexShrink:0}} alt={idioma}/>;}
 const B_TIPO={"Simultánea":{bg:"#FFFFFF",c:"#0057FF",ct:"#0057FF"},"Consecutiva":{bg:"#FCE4EC",c:"#C2185B",ct:"#881140"},"Whispering":{bg:"#F3E5F5",c:"#7B1FA2",ct:"#561671"}};
-const B_MOD={"presencial":{bg:"#F0FDF4",c:"#16A34A",ct:"#15803D"},"remoto":{bg:"#E0F7FA",c:"#00838F",ct:"#005C64"},"hibrido":{bg:"#FBE9E7",c:"#BF360C",ct:"#862608"}};
+const B_MOD={"presencial":{bg:"#E6FFF2",c:"#00C261",ct:"#009E4E"},"remoto":{bg:"#E0F7FA",c:"#00838F",ct:"#005C64"},"hibrido":{bg:"#FBE9E7",c:"#BF360C",ct:"#862608"}};
 const B_EST=(e)=>e==="Facturado"?{bg:"#FFFFFF",c:"#1A1A1A",b:"#E57373"}:{bg:"#FFFFFF",c:"#1A1A1A",b:"#E57373"};
 const bS=(bg,c,b)=>({display:"inline-flex",alignItems:"center",gap:"4px",padding:"3px 8px",borderRadius:"20px",fontSize:"10px",fontWeight:"700",lineHeight:"1.4",color:c,background:bg,border:`2px solid ${b||c}`,whiteSpace:"nowrap"});
 const TIPO_ICON={"Simultánea":<IconoSimultanea/>,"Consecutiva":"🎤","Whispering":"🤫"};
@@ -1171,7 +1171,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
   const LBL={remoto:"Remoto",presencial:"Presencial",hibrido:"Híbrido"};
   const LBL_LARGA={txt:"13px",fw:"600",c:"#0F172A",tt:"uppercase",ls:"0.04em"};
   const B_TIPO_D={"Simultánea":{bg:"#FFFFFF",c:"#0057FF"},"Consecutiva":{bg:"#FCE4EC",c:"#9B1349"},"Whispering":{bg:"#F3E5F5",c:"#621982"}};
-  const B_MOD_D={"presencial":{bg:"#F0FDF4",c:"#16A34A"},"remoto":{bg:"#E0F7FA",c:"#006972"},"hibrido":{bg:"#FBE9E7",c:"#992B0A"}};
+  const B_MOD_D={"presencial":{bg:"#E6FFF2",c:"#00C261"},"remoto":{bg:"#E0F7FA",c:"#006972"},"hibrido":{bg:"#FBE9E7",c:"#992B0A"}};
   const B_EST_D=(e)=>e==="Facturado"?{bg:"#FFFFFF",c:"#1A1A1A",b:"#E57373"}:{bg:"#FFFFFF",c:"#1A1A1A",b:"#E57373"};
   const SL=({t})=><div style={{fontSize:"12px",fontWeight:"700",color:"#1E3A6E",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:"10px",background:"#EEF4FF",padding:"6px 28px",marginLeft:"-28px",marginRight:"-28px",display:"flex",alignItems:"center",gap:"6px",WebkitFontSmoothing:"antialiased"}}>{t}</div>;
   const HR=()=><hr style={{border:"none",borderTop:"1px solid #E5E7EB",margin:"16px 0"}}/>;
@@ -1337,7 +1337,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                 const hp=grupo.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
                 return(<div key={key} style={{marginBottom:"12px"}}>
                   <div style={{position:"relative",textAlign:"center",marginBottom:"6px"}}>
-                    <span style={{fontSize:"12px",fontWeight:"600",color:/inglés.*español/i.test(key)?"#2D8CFF":titleColor,textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
+                    <span style={{fontSize:"12px",fontWeight:"600",color:"#1565C0",textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
                     {hp&&<span style={{position:"absolute",right:0,top:"50%",transform:"translateY(-50%)",fontSize:"13px",color:"#6B7280",whiteSpace:"nowrap"}}>🕐 {hp.slice(0,5)} hrs</span>}
                   </div>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
@@ -1391,7 +1391,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                       const hp=grupo.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
                       return(<div key={key} style={{marginBottom:"12px"}}>
                         <div style={{position:"relative",textAlign:"center",marginBottom:"6px"}}>
-                          <span style={{fontSize:"12px",fontWeight:"600",color:/inglés.*español/i.test(key)?"#2D8CFF":titleColor,textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
+                          <span style={{fontSize:"12px",fontWeight:"600",color:"#1565C0",textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
                           {hp&&<span style={{position:"absolute",right:0,top:"50%",transform:"translateY(-50%)",fontSize:"13px",color:"#6B7280",whiteSpace:"nowrap"}}>🕐 {hp.slice(0,5)} hrs</span>}
                         </div>
                         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"4px"}}>
@@ -2743,11 +2743,11 @@ function VistaDisponibilidad({ eventos, interpretes, pares, clientes=[], onAbrir
     const item = items[0];
     const tooltip = ocupado ? (item.cliNombre ? `${item.cliNombre} · ${item.nombre}` : item.nombre) : "";
     return (
-      <div title={tooltip} style={{ height:"17px", display:"flex", alignItems:"center", gap:"3px", padding:"0 3px", background: ocupado ? "#D1FAE5" : "transparent", cursor: ocupado ? "pointer" : "default" }}>
-        <span style={{ fontSize:"8px", fontWeight:"700", color: ocupado ? "#065F46" : "rgba(255,255,255,0.45)", flexShrink:0, minWidth:"10px", lineHeight:1 }}>{label}</span>
+      <div title={tooltip} style={{ height:"21px", display:"flex", alignItems:"center", gap:"3px", padding:"0 4px", background: ocupado ? "#D1FAE5" : "transparent", cursor: ocupado ? "pointer" : "default" }}>
+        <span style={{ fontSize:"10px", fontWeight:"700", color: ocupado ? "#065F46" : "rgba(255,255,255,0.45)", flexShrink:0, minWidth:"12px", lineHeight:1 }}>{label}</span>
         {!ocupado && (
-          <div style={{ width:"11px", height:"11px", borderRadius:"50%", background:"#F97316", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-            <span style={{ fontSize:"9px", color:"#fff", fontWeight:"900", lineHeight:1 }}>×</span>
+          <div style={{ width:"13px", height:"13px", borderRadius:"50%", background:"#F97316", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+            <span style={{ fontSize:"10px", color:"#fff", fontWeight:"900", lineHeight:1 }}>×</span>
           </div>
         )}
       </div>
