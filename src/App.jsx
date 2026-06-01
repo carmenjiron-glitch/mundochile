@@ -775,8 +775,6 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                 );
               })()}
             </div>
-            {/* Comentarios */}
-            <div style={{marginBottom:"4px"}}><label style={S.lbl}>💬 Comentarios</label><textarea style={{...S.inp,minHeight:"80px",resize:"vertical",height:"auto",border:"1.5px solid #A0A09F"}} value={form.comentarios} onChange={e=>setF("comentarios",e.target.value)}/></div>
           </>}
 
           {/* ── TAB INTÉRPRETES (un día) ── */}
@@ -788,13 +786,6 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
             {form.asignaciones.length===0&&<div style={{textAlign:"center",color:C.textoSuave,padding:"40px 20px",border:`2px dashed ${C.grisBorde}`,borderRadius:"12px"}}>Sin intérpretes — Agrega uno arriba</div>}
             {form.asignaciones.map((a,idx)=><FilaAsig key={idx} a={a} idx={idx}/>)}
             {form.asignaciones.length>0&&<button onClick={()=>addAsig()} style={{...S.btnP,width:"100%",padding:"9px"}}>+ Agregar otro intérprete</button>}
-          <div style={{marginTop:"20px",borderTop:`1px solid ${C.grisBorde}`,paddingTop:"16px"}}>
-            <label style={S.lbl}>💬 Comentarios</label>
-            <textarea style={{...S.inp,minHeight:"80px",resize:"vertical",height:"auto",border:"1.5px solid #A0A09F"}}
-              value={form.comentarios||""}
-              onChange={e=>setF("comentarios",e.target.value)}
-              placeholder="Notas adicionales sobre los intérpretes…"/>
-          </div>
           </>}
 
           {/* ── TAB EQUIPOS AV (un día) ── */}
@@ -1058,6 +1049,14 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
               </div>
             </div>
           );})}</>}
+          {/* Comentarios — siempre al final del formulario */}
+          <div style={{marginTop:"24px",paddingTop:"16px",borderTop:`1px solid ${C.grisBorde}`}}>
+            <label style={S.lbl}>💬 Comentarios</label>
+            <textarea style={{...S.inp,minHeight:"80px",resize:"vertical",height:"auto",border:"1.5px solid #A0A09F"}}
+              value={form.comentarios||""}
+              onChange={e=>setF("comentarios",e.target.value)}
+              placeholder="Notas adicionales…"/>
+          </div>
         </div>
         {/* Footer */}
         <div style={{padding:"16px 24px",borderTop:`1px solid ${C.grisBorde}`,flexShrink:0,display:"flex",gap:"10px",justifyContent:"flex-end",alignItems:"center",background:C.gris,borderRadius:"0 0 20px 20px"}}>
@@ -1430,11 +1429,6 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
               </div>
             ))}
           </div>}
-          {/* Comentarios */}
-          {evento.comentarios&&<div style={{background:"#F8FAFC",borderRadius:"10px",padding:"12px 16px",marginTop:"12px"}}>
-            <SL t="💬 Comentarios"/>
-            <div style={{color:"#0F172A",fontSize:"17px"}}>{evento.comentarios}</div>
-          </div>}
           <HR/>
           {/* Estado */}
           <div style={{marginBottom:"8px"}}>
@@ -1449,6 +1443,11 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             {evento.created_by_nombre&&<span>Creado por <strong>{evento.created_by_nombre}</strong>{evento.created_at&&" el "+new Date(evento.created_at).toLocaleString("es-CL")}</span>}
             {evento.edited_by_nombre&&<span>Última edición por <strong>{evento.edited_by_nombre}</strong>{evento.updated_at&&" el "+new Date(evento.updated_at).toLocaleString("es-CL")}</span>}
           </div>
+          {/* Comentarios — al final de todo */}
+          {evento.comentarios&&<div style={{background:"#F8FAFC",borderRadius:"10px",padding:"12px 16px",marginTop:"12px"}}>
+            <SL t="💬 Comentarios"/>
+            <div style={{color:"#0F172A",fontSize:"17px"}}>{evento.comentarios}</div>
+          </div>}
         </div>
       </div>
     </div>
