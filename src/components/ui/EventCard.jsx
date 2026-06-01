@@ -232,7 +232,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
             <div style={{ display:"flex", gap:5, flexWrap:"wrap", alignItems:"center" }}>
               <Chip label={ev.tipo} emoji={ev.tipo==="Simultánea"?<IconoSimultanea/>:ev.tipo==="Consecutiva"?"🎤 ":"🤫 "} fontSize={14} padding="5px 12px" />
-              <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?"📍 ":ev.modalidad==="hibrido"?"🔀 ":"💻 "} fontSize={14} padding="5px 12px" />
+              <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?"🏛 ":ev.modalidad==="hibrido"?"🔀 ":"💻 "} fontSize={14} padding="5px 12px" />
             </div>
 
             {!esPresencial && ev.plataforma && (
@@ -365,7 +365,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
           {/* Badges tipo + modalidad */}
           <div style={{ display:"flex", gap:5, flexWrap:"wrap", alignItems:"center" }}>
             <Chip label={ev.tipo} emoji={ev.tipo==="Simultánea"?<IconoSimultanea/>:ev.tipo==="Consecutiva"?"🎤 ":"🤫 "} fontSize={12} padding="4px 10px" />
-            <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?"📍 ":ev.modalidad==="hibrido"?"🔀 ":"💻 "} fontSize={12} padding="4px 10px" />
+            <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?"🏛 ":ev.modalidad==="hibrido"?"🔀 ":"💻 "} fontSize={12} padding="4px 10px" />
           </div>
 
           {/* Plataforma / Lugar */}
@@ -380,7 +380,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             </div>
           )}
           {esPresencial && ev.lugar && (
-            <div style={{ fontSize:14, color:"#475569", marginTop:10 }}>📍 {ev.lugar}</div>
+            <span style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"4px 10px", borderRadius:20, fontSize:12, fontWeight:700, lineHeight:1.4, color:"#475569", background:"#F1F5F9", border:"1.5px solid #CBD5E1", whiteSpace:"nowrap", marginTop:10 }}>📍 {ev.lugar}</span>
           )}
 
           {/* Estado */}
