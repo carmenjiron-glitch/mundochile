@@ -405,9 +405,8 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
   );
   useEffect(()=>{
     if(!form.cliente_id){setContactosLocal([]);return;}
-    sb.from("contactos").select("*").eq("cliente_id",Number(form.cliente_id)).eq("activo",true).order("nombre")
-      .then(({data})=>setContactosLocal(data||[]));
-  },[form.cliente_id]);
+    setContactosLocal(contactos.filter(c=>Number(c.cliente_id)===Number(form.cliente_id)&&c.activo!==false));
+  },[contactos,form.cliente_id]);
 
   const esMultidia=form.dias.length>1;
 
@@ -522,9 +521,9 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           }
         }
       }
+      guardandoRef.current=false;
       if(cerrar){onGuardar();}
       else{setGuardadoOk(true);setTimeout(()=>setGuardadoOk(false),2000);}
-      // Éxito: ref queda bloqueado hasta próxima edición del form (via setF)
     } catch(e){setError("Error al guardar: "+(e.message||JSON.stringify(e)));guardandoRef.current=false;}
     finally{setGuardando(false);}
   };
