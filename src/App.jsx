@@ -2359,15 +2359,25 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
   const byMonth={};let rowIdx=0;
   filtered.forEach(r=>{if(!byMonth[r.mesKey])byMonth[r.mesKey]={label:r.mesLargo,rows:[]};byMonth[r.mesKey].rows.push(r);});
   const hayFiltros=mesFiltro||Object.values(colFiltros).some(Boolean);
-  const inpS={padding:"6px 12px",border:"1px solid #D1D5DB",borderRadius:"8px",fontSize:"13px",fontFamily:"inherit",background:"#FFFFFF",color:"#1A1A1A",width:"180px"};
+  const mesIdx=mesFiltro?mesesDisponibles.indexOf(mesFiltro):-1;
+  const navGrilla=(dir)=>{
+    if(!mesesDisponibles.length)return;
+    if(mesIdx===-1){setMesFiltro(dir>0?mesesDisponibles[0]:mesesDisponibles[mesesDisponibles.length-1]);}
+    else{const ni=mesIdx+dir;if(ni>=0&&ni<mesesDisponibles.length)setMesFiltro(mesesDisponibles[ni]);}
+  };
+  const countMes=filtered.length;
+  const mesLabel=mesFiltro||"Todos los meses";
+  const btnGrilla={background:"rgba(255,255,255,0.15)",color:"#FFFFFF",border:"none",borderRadius:"8px",padding:"6px 14px",fontSize:"14px",cursor:mesesDisponibles.length?"pointer":"default",fontFamily:"inherit",opacity:mesesDisponibles.length?1:0.4};
   return (
     <div style={{paddingBottom:"80px",width:"100%"}}>
-      <div style={{padding:"6px 16px",display:"flex",alignItems:"center",gap:"10px",background:"rgba(26,47,90,0.97)"}}>
-        <select value={mesFiltro} onChange={e=>setMesFiltro(e.target.value)} style={inpS}>
-          <option value="">Todos los meses</option>
-          {mesesDisponibles.map(m=><option key={m} value={m}>{m}</option>)}
-        </select>
-        {hayFiltros&&<button onClick={()=>{setMesFiltro("");setColFiltros({});}} style={{padding:"6px 12px",background:"#EF4444",color:"#FFFFFF",border:"none",borderRadius:"6px",cursor:"pointer",fontSize:"12px",fontFamily:"inherit"}}>✕ Limpiar filtros</button>}
+      <div style={{padding:"8px 16px",display:"flex",alignItems:"center",justifyContent:"center",gap:"16px",background:"rgba(26,47,90,0.97)",position:"relative"}}>
+        <button onClick={()=>navGrilla(-1)} style={btnGrilla} onMouseEnter={e=>{if(mesesDisponibles.length)e.currentTarget.style.background="rgba(255,255,255,0.25)";}} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>← Ant</button>
+        <div style={{display:"flex",alignItems:"center",gap:"8px"}}>
+          <span style={{padding:"5px 16px",borderRadius:"20px",background:"#FFFFFF",color:"#1E3A6E",fontSize:"14px",fontWeight:"700",whiteSpace:"nowrap"}}>{mesLabel}</span>
+          <span style={{padding:"4px 12px",borderRadius:"20px",background:"rgba(255,255,255,0.15)",color:"rgba(255,255,255,0.85)",fontSize:"12px",fontWeight:"500",whiteSpace:"nowrap"}}>{countMes} evento{countMes!==1?"s":""}</span>
+        </div>
+        <button onClick={()=>navGrilla(1)} style={btnGrilla} onMouseEnter={e=>{if(mesesDisponibles.length)e.currentTarget.style.background="rgba(255,255,255,0.25)";}} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>Sig →</button>
+        {Object.values(colFiltros).some(Boolean)&&<button onClick={()=>setColFiltros({})} style={{position:"absolute",right:"16px",padding:"5px 10px",background:"#EF4444",color:"#FFFFFF",border:"none",borderRadius:"6px",cursor:"pointer",fontSize:"11px",fontFamily:"inherit"}}>✕ Filtros</button>}
       </div>
       <div ref={tablaRef} style={{overflowX:"auto",overflowY:"auto",width:"100%",height:"calc(100vh - 200px)",outline:"none",background:"#F1F5F9"}} tabIndex={0}>
       <table style={{borderCollapse:"collapse",tableLayout:"fixed",minWidth:"2200px",width:"100%",fontSize:"12px",background:"#F1F5F9"}}>
