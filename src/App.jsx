@@ -3044,7 +3044,7 @@ export default function App() {
       {modalFichasMultiples&&<ModalFichasMultiples eventosLista={modalFichasMultiples} clientes={clientes} interpretes={interpretes} pares={pares} onCerrar={()=>setModalFichasMultiples(null)}/>}
       {modalNuevoCli&&<ModalNuevoCliente onGuardar={async(d)=>{const{data}=await sb.from("clientes").insert(d).select().single();if(data)setClientes(prev=>[...prev,data]);const cb=modalNuevoCli?.cb;setModalNuevoCli(false);if(data){cb?.(data.id);addToast("Cliente creado","success");}cargarDatos();}} onCerrar={()=>setModalNuevoCli(false)}/>}
       {modalNuevoInt&&<ModalNuevoInterprete onGuardar={async(d)=>{await sb.from("interpretes").insert(d);await cargarDatos();setModalNuevoInt(null);addToast("Intérprete creado","success");}} onCerrar={()=>setModalNuevoInt(null)}/>}
-      {modalNuevoContacto&&<ModalNuevoContacto clienteId={modalNuevoContacto.cliente_id} onGuardar={async(d)=>{const{data:nc}=await sb.from("contactos").insert({...d,cliente_id:Number(modalNuevoContacto.cliente_id)}).select().single();if(nc&&modalNuevoContacto.cb)modalNuevoContacto.cb(nc);await cargarDatos();setModalNuevoContacto(null);addToast("Contacto creado","success");}} onCerrar={()=>setModalNuevoContacto(null)}/>}
+      {modalNuevoContacto&&<ModalNuevoContacto clienteId={modalNuevoContacto.cliente_id} onGuardar={async(d)=>{const{data:nc}=await sb.from("contactos").insert({...d,cliente_id:Number(modalNuevoContacto.cliente_id),activo:true}).select().single();if(nc&&modalNuevoContacto.cb)modalNuevoContacto.cb(nc);await cargarDatos();setModalNuevoContacto(null);addToast("Contacto creado","success");}} onCerrar={()=>setModalNuevoContacto(null)}/>}
       <ToastContainer toasts={toasts} onRemove={removeToast}/>
     </div>
   );
