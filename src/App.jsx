@@ -3346,8 +3346,6 @@ export default function App() {
               const activo=pantalla==="calendario"&&vista===v;
               return(<button key={v} onClick={()=>{setVista(v);setPantalla("calendario");}} style={{padding:"6px 12px",background:activo?"#FFFFFF":"rgba(255,255,255,0.12)",border:"none",borderRadius:"8px",color:activo?"#1E3A6E":"#FFFFFF",fontWeight:activo?"600":"400",cursor:"pointer",fontSize:"13px",fontFamily:"inherit",transition:"all 0.15s",whiteSpace:"nowrap"}}>{l}</button>);
             })}
-            <div style={{width:"1px",height:"20px",background:"rgba(255,255,255,0.2)",margin:"0 4px"}}/>
-            <button onClick={()=>setPantalla("disponibilidad")} style={{padding:"6px 12px",background:pantalla==="disponibilidad"?"#FFFFFF":"rgba(255,255,255,0.12)",border:"none",borderRadius:"8px",color:pantalla==="disponibilidad"?"#1E3A6E":"#FFFFFF",fontWeight:pantalla==="disponibilidad"?"600":"400",cursor:"pointer",fontSize:"13px",fontFamily:"inherit",transition:"all 0.15s",whiteSpace:"nowrap"}}>Disponibilidad</button>
           </div>}
           {/* DERECHA: nav + utilidades */}
           <div style={{display:"flex",gap:"6px",alignItems:"center",flexShrink:0}}>
@@ -3376,14 +3374,15 @@ export default function App() {
 
       {/* ── CONTENIDO ── */}
       {pantalla==="calendario"&&<>
-        {vista!=="grilla"&&<div style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",width:"100%",left:"0",paddingLeft:"0",paddingRight:"0",display:"flex",justifyContent:"center",alignItems:"center",gap:"8px",boxSizing:"border-box"}}>
-          <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:"8px",width:"100%",maxWidth:"100%",padding:"6px 24px",boxSizing:"border-box"}}>
+        {vista!=="grilla"&&<div style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",width:"100%",left:"0",paddingLeft:"0",paddingRight:"12px",display:"flex",justifyContent:"center",alignItems:"center",gap:"8px",boxSizing:"border-box"}}>
+          <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:"8px",flex:1,maxWidth:"100%",padding:"6px 24px",boxSizing:"border-box"}}>
             <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes} clientes={clientesConEventos} pares={paresConEventos} proveedores={proveedoresConEventos}/>
           </div>
           <div style={{display:"flex",gap:"8px",flexShrink:0,transition:"opacity 0.2s, transform 0.2s",opacity:hayFiltros?1:0,transform:hayFiltros?"scale(1)":"scale(0.9)",visibility:hayFiltros?"visible":"hidden"}}>
             <button onClick={generarFichaMultiple} style={{display:"flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"12px",background:"#1A6FD4",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",height:"26px",boxShadow:"0 2px 4px rgba(26,111,212,0.3)",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📋 Fichas</button>
             <button onClick={exportarExcelFiltrado} style={{display:"flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"12px",background:"#059669",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",height:"26px",boxShadow:"0 2px 4px rgba(5,150,105,0.3)",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📊 Excel</button>
           </div>
+          <button onClick={()=>setPantalla("disponibilidad")} style={{flexShrink:0,display:"flex",alignItems:"center",gap:"5px",padding:"5px 11px",borderRadius:"10px",background:"rgba(251,191,36,0.10)",color:"#FCD34D",fontSize:"11px",fontWeight:"700",border:"1.5px solid #FBBF24",height:"26px",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit",letterSpacing:"0.02em"}}>📅 Disponibilidad de intérpretes</button>
         </div>}
         {vista==="semana"&&renderSemana()}
         {vista==="dia"&&renderDia()}
