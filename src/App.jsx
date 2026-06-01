@@ -2362,13 +2362,17 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
   const btnGrilla={background:"rgba(255,255,255,0.15)",color:"#FFFFFF",border:"none",borderRadius:"8px",padding:"6px 14px",fontSize:"14px",cursor:mesesDisponibles.length?"pointer":"default",fontFamily:"inherit",opacity:mesesDisponibles.length?1:0.4};
   return (
     <div style={{paddingBottom:"80px",width:"100%"}}>
-      <div style={{padding:"8px 16px",display:"flex",alignItems:"center",justifyContent:"center",gap:"16px",background:"rgba(26,47,90,0.97)",position:"relative"}}>
-        <button onClick={()=>navGrilla(-1)} style={btnGrilla} onMouseEnter={e=>{if(mesesDisponibles.length)e.currentTarget.style.background="rgba(255,255,255,0.25)";}} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>← Ant</button>
-        <div style={{display:"flex",alignItems:"center",gap:"8px"}}>
-          <span style={{padding:"5px 16px",borderRadius:"20px",background:"#FFFFFF",color:"#1E3A6E",fontSize:"14px",fontWeight:"700",whiteSpace:"nowrap"}}>{mesLabel}</span>
-          <span style={{padding:"4px 12px",borderRadius:"20px",background:"rgba(255,255,255,0.15)",color:"rgba(255,255,255,0.85)",fontSize:"12px",fontWeight:"500",whiteSpace:"nowrap"}}>{countMes} evento{countMes!==1?"s":""}</span>
+      <div style={{padding:"8px 16px",display:"grid",gridTemplateColumns:"1fr auto 1fr",alignItems:"center",background:"rgba(26,47,90,0.97)",position:"relative"}}>
+        <div style={{display:"flex",justifyContent:"flex-end",paddingRight:"12px"}}>
+          <button onClick={()=>navGrilla(-1)} style={btnGrilla} onMouseEnter={e=>{if(mesesDisponibles.length)e.currentTarget.style.background="rgba(255,255,255,0.25)";}} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>← Ant</button>
         </div>
-        <button onClick={()=>navGrilla(1)} style={btnGrilla} onMouseEnter={e=>{if(mesesDisponibles.length)e.currentTarget.style.background="rgba(255,255,255,0.25)";}} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>Sig →</button>
+        <div style={{display:"flex",alignItems:"center",gap:"0",background:"#FFFFFF",borderRadius:"8px",overflow:"hidden",border:"2px solid rgba(255,255,255,0.25)"}}>
+          <span style={{padding:"6px 18px",color:"#1E3A6E",fontSize:"14px",fontWeight:"700",whiteSpace:"nowrap"}}>{mesLabel}</span>
+          <span style={{padding:"6px 14px",background:"#1E3A6E",color:"#FFFFFF",fontSize:"12px",fontWeight:"600",whiteSpace:"nowrap",borderLeft:"1px solid #CBD5E1"}}>{countMes} evento{countMes!==1?"s":""}</span>
+        </div>
+        <div style={{display:"flex",justifyContent:"flex-start",paddingLeft:"12px"}}>
+          <button onClick={()=>navGrilla(1)} style={btnGrilla} onMouseEnter={e=>{if(mesesDisponibles.length)e.currentTarget.style.background="rgba(255,255,255,0.25)";}} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>Sig →</button>
+        </div>
         {Object.values(colFiltros).some(Boolean)&&<button onClick={()=>setColFiltros({})} style={{position:"absolute",right:"16px",padding:"5px 10px",background:"#EF4444",color:"#FFFFFF",border:"none",borderRadius:"6px",cursor:"pointer",fontSize:"11px",fontFamily:"inherit"}}>✕ Filtros</button>}
       </div>
       <div ref={tablaRef} style={{overflowX:"auto",overflowY:"auto",width:"100%",height:"calc(100vh - 200px)",outline:"none",background:"#F1F5F9"}} tabIndex={0}>
