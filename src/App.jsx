@@ -3407,18 +3407,20 @@ export default function App() {
 
       {/* ── CONTENIDO ── */}
       {pantalla==="calendario"&&<>
-        {vista!=="grilla"&&<div style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",width:"100%",left:"0",paddingLeft:"0",paddingRight:"32px",display:"flex",justifyContent:"center",alignItems:"center",gap:"8px",boxSizing:"border-box"}}>
-          <div style={{display:"flex",alignItems:"center",flex:1,maxWidth:"100%",padding:"6px 0 6px 24px",boxSizing:"border-box"}}>
+        {vista!=="grilla"&&<div style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",width:"100%",display:"flex",alignItems:"center",gap:"12px",padding:"0 16px",boxSizing:"border-box",overflow:"hidden"}}>
+          {/* IZQUIERDA: Disponibilidad */}
+          <button onClick={()=>setPantalla("disponibilidad")} style={{flexShrink:0,display:"flex",alignItems:"center",gap:"6px",padding:"5px 11px",borderRadius:"10px",background:"rgba(253,230,138,0.12)",color:"#FDE68A",fontSize:"12.1px",fontWeight:"500",border:"1.5px solid #FCD34D",height:"26px",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit",letterSpacing:"0.02em",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#86EFAC" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}><polyline points="20 6 9 17 4 12"/></svg>
+            Disponibilidad de intérpretes
+          </button>
+          {/* DERECHA: filtros + Fichas/Excel */}
+          <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"flex-end",padding:"6px 0",minWidth:0,overflow:"hidden"}}>
             <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes} clientes={clientesConEventos} pares={paresConEventos} proveedores={proveedoresConEventos}/>
           </div>
           <div style={{display:"flex",gap:"8px",flexShrink:0,transition:"opacity 0.2s, transform 0.2s",opacity:hayFiltros?1:0,transform:hayFiltros?"scale(1)":"scale(0.9)",visibility:hayFiltros?"visible":"hidden"}}>
             <button onClick={generarFichaMultiple} style={{display:"flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"12px",background:"#1A6FD4",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",height:"26px",boxShadow:"0 2px 4px rgba(26,111,212,0.3)",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📋 Fichas</button>
             <button onClick={exportarExcelFiltrado} style={{display:"flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"12px",background:"#059669",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",height:"26px",boxShadow:"0 2px 4px rgba(5,150,105,0.3)",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📊 Excel</button>
           </div>
-          <button onClick={()=>setPantalla("disponibilidad")} style={{flexShrink:0,display:"flex",alignItems:"center",gap:"6px",padding:"5px 11px",borderRadius:"10px",background:"rgba(253,230,138,0.12)",color:"#FDE68A",fontSize:"12.1px",fontWeight:"500",border:"1.5px solid #FCD34D",height:"26px",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit",letterSpacing:"0.02em",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#86EFAC" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}><polyline points="20 6 9 17 4 12"/></svg>
-            Disponibilidad de intérpretes
-          </button>
         </div>}
         {vista==="semana"&&renderSemana()}
         {vista==="dia"&&renderDia()}
