@@ -3467,13 +3467,16 @@ export default function App() {
               return(<button key={v} onClick={()=>{setVista(v);setPantalla("calendario");}} style={{padding:"6px 12px",background:activo?"#FFFFFF":"rgba(255,255,255,0.12)",border:"none",borderRadius:"8px",color:activo?"#1E3A6E":"#FFFFFF",fontWeight:activo?"600":"400",cursor:"pointer",fontSize:"13px",fontFamily:"inherit",transition:"all 0.15s",whiteSpace:"nowrap"}}>{l}</button>);
             })}
           </div>}
+          {/* TEXTO PILL: fecha + contador, centrado entre Grilla y Ant */}
+          {pantalla==="calendario"&&vista!=="agenda"&&vista!=="grilla"&&(
+            <div style={{flexShrink:0,padding:"5px 18px",border:"1px solid rgba(255,255,255,0.85)",borderRadius:"10px",background:"transparent",textAlign:"center"}}>
+              <div style={{color:"#FFFFFF",fontSize:"19px",fontWeight:"500",lineHeight:1.2}}>{tituloNav()}</div>
+              <div style={{color:"rgba(255,255,255,0.70)",fontSize:"15px"}}>{contadorSubtitulo()}</div>
+            </div>
+          )}
           {/* DERECHA: nav + utilidades */}
           <div style={{display:"flex",gap:"6px",alignItems:"center",flexShrink:0}}>
             {pantalla==="calendario"&&vista!=="agenda"&&vista!=="grilla"&&<>
-              <div style={{textAlign:"right",marginRight:"6px"}}>
-                <div style={{color:"#FFFFFF",fontSize:"19px",fontWeight:"500",lineHeight:1.2}}>{tituloNav()}</div>
-                <div style={{color:"rgba(255,255,255,0.70)",fontSize:"15px"}}>{contadorSubtitulo()}</div>
-              </div>
               <button onClick={navAnterior} style={{background:"rgba(255,255,255,0.15)",color:"#FFFFFF",border:"none",borderRadius:"8px",padding:"7px 14px",fontSize:"15px",cursor:"pointer",fontFamily:"inherit"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>← Ant</button>
               <button onClick={()=>{setSemanaOff(0);setMesOff(0);setDiaActual(hoy());}} style={{background:"rgba(255,255,255,0.15)",color:"#FFFFFF",border:"none",borderRadius:"8px",padding:"7px 14px",fontSize:"15px",cursor:"pointer",fontFamily:"inherit"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>Hoy</button>
               <button onClick={navSiguiente} style={{background:"rgba(255,255,255,0.15)",color:"#FFFFFF",border:"none",borderRadius:"8px",padding:"7px 14px",fontSize:"15px",cursor:"pointer",fontFamily:"inherit"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>Sig →</button>
