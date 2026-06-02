@@ -1286,7 +1286,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             <SL t="📍 Lugar"/>
             <div style={{display:"flex",flexDirection:"column",gap:"8px",padding:"12px 18px",borderRadius:"16px",border:"2px solid #7C3AED",background:"#F5F3FF"}}>
               <div>
-                <span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 14px",borderRadius:"6px",fontSize:"15px",fontWeight:"700",color:"#991B1B",background:"#FEF2F2",border:"2px solid #DC2626",whiteSpace:"nowrap"}}>📍 {evento.lugar}</span>
+                <span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 14px",borderRadius:"6px",fontSize:"15px",fontWeight:"700",color:"#8F2424",background:"#FEF2F2",border:"2px solid #CE3434",whiteSpace:"nowrap"}}>📍 {evento.lugar}</span>
                 {evento.lugar_detalle&&<div style={{fontSize:"15px",fontWeight:"400",color:"#6D28D9",marginTop:"2px"}}>{evento.lugar_detalle}</div>}
               </div>
               <div style={{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap"}}>
@@ -2381,9 +2381,9 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
         <div style={{display:"flex",justifyContent:"flex-end",paddingRight:"12px"}}>
           <button onClick={()=>navGrilla(-1)} style={btnGrilla} onMouseEnter={e=>{if(mesesDisponibles.length)e.currentTarget.style.background="rgba(255,255,255,0.25)";}} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>← Ant</button>
         </div>
-        <div style={{display:"flex",alignItems:"center",gap:"0",background:"#FFFFFF",borderRadius:"8px",overflow:"hidden",border:"2px solid rgba(255,255,255,0.25)"}}>
-          <span style={{padding:"6px 18px",color:"#1E3A6E",fontSize:"14px",fontWeight:"700",whiteSpace:"nowrap"}}>{mesLabel}</span>
-          <span style={{padding:"6px 14px",background:"#1E3A6E",color:"#FFFFFF",fontSize:"12px",fontWeight:"600",whiteSpace:"nowrap",borderLeft:"1px solid #CBD5E1"}}>{countMes} evento{countMes!==1?"s":""}</span>
+        <div style={{display:"flex",alignItems:"center",gap:"0",background:"transparent",borderRadius:"8px",overflow:"hidden",border:"2px solid rgba(255,255,255,0.85)"}}>
+          <span style={{padding:"6px 18px",color:"#FFFFFF",fontSize:"14px",fontWeight:"700",whiteSpace:"nowrap"}}>{mesLabel}</span>
+          <span style={{padding:"6px 14px",background:"rgba(255,255,255,0.12)",color:"rgba(255,255,255,0.85)",fontSize:"12px",fontWeight:"600",whiteSpace:"nowrap",borderLeft:"1px solid rgba(255,255,255,0.4)"}}>{countMes} evento{countMes!==1?"s":""}</span>
         </div>
         <div style={{display:"flex",justifyContent:"flex-start",paddingLeft:"12px"}}>
           <button onClick={()=>navGrilla(1)} style={btnGrilla} onMouseEnter={e=>{if(mesesDisponibles.length)e.currentTarget.style.background="rgba(255,255,255,0.25)";}} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>Sig →</button>

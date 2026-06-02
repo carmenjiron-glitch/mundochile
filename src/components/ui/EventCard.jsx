@@ -255,7 +255,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             )}
             {esPresencial && ev.lugar && (
               <div>
-                <span style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"5px 12px", borderRadius:6, fontSize:14, fontWeight:700, lineHeight:1.4, color:"#991B1B", background:"#FEF2F2", border:"2px solid #DC2626", whiteSpace:"nowrap" }}>📍 {ev.lugar}</span>
+                <span style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"5px 12px", borderRadius:6, fontSize:14, fontWeight:700, lineHeight:1.4, color:"#8F2424", background:"#FEF2F2", border:"2px solid #CE3434", whiteSpace:"nowrap" }}>📍 {ev.lugar}</span>
                 <div style={{ display:"flex", alignItems:"center", gap:"8px", marginTop:"6px", flexWrap:"wrap" }}>
                   <a
                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.lugar)}`}
@@ -388,7 +388,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             </div>
           )}
           {esPresencial && ev.lugar && (
-            <span style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"4px 10px", borderRadius:6, fontSize:12, fontWeight:700, lineHeight:1.4, color:"#991B1B", background:"#FEF2F2", border:"2px solid #DC2626", whiteSpace:"nowrap", marginTop:10 }}>📍 {ev.lugar}</span>
+            <span style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"4px 10px", borderRadius:6, fontSize:12, fontWeight:700, lineHeight:1.4, color:"#8F2424", background:"#FEF2F2", border:"2px solid #CE3434", whiteSpace:"nowrap", marginTop:10 }}>📍 {ev.lugar}</span>
           )}
 
           {/* Intérpretes agrupados */}
