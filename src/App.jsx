@@ -2762,6 +2762,11 @@ function VistaDisponibilidad({ eventos, interpretes, pares, clientes=[], onAbrir
     return (
       <div title={tooltip} style={{ height:"21px", display:"flex", alignItems:"center", gap:"3px", padding:"0 4px", background: ocupado ? "#D1FAE5" : "transparent", cursor: ocupado ? "pointer" : "default" }}>
         <span style={{ fontSize:"10px", fontWeight:"700", color: ocupado ? "#065F46" : "rgba(255,255,255,0.45)", flexShrink:0, minWidth:"12px", lineHeight:1 }}>{label}</span>
+        {ocupado && (
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" style={{ flexShrink:0, marginLeft:"auto" }}>
+            <polyline points="1.5,6 4.5,9 10.5,3" stroke="#047857" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        )}
         {!ocupado && (
           <div style={{ width:"13px", height:"13px", borderRadius:"50%", background:"#F97316", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
             <span style={{ fontSize:"10px", color:"#fff", fontWeight:"900", lineHeight:1 }}>×</span>
