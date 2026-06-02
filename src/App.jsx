@@ -1438,7 +1438,8 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             ))}
           </div>}
           {/* Comentarios */}
-          {evento.comentarios&&<div style={{marginTop:"12px"}}>
+          {evento.comentarios&&<div style={{borderRadius:"10px",padding:"12px 16px",marginTop:"12px",border:"2px solid #F9A8D4",position:"relative"}}>
+            <div style={{position:"absolute",top:"10px",right:"10px",width:"10px",height:"10px",borderRadius:"50%",background:"#F472B6",boxShadow:"0 0 6px #F472B6",animation:"flash 2.4s ease-in-out infinite"}}/>
             <SL t="💬 Comentarios"/>
             <div style={{color:"#0F172A",fontSize:"17px"}}>{evento.comentarios}</div>
           </div>}
@@ -3460,22 +3461,26 @@ export default function App() {
               <div style={{fontSize:"13px",color:"rgba(255,255,255,0.70)",marginTop:"3px"}}>Translations & Interpreters · Since 2003</div>
             </div>
           </div>
-          {/* CENTRO: tabs */}
-          {(pantalla==="calendario"||pantalla==="disponibilidad")&&<div style={{display:"flex",gap:"4px",alignItems:"center",flex:1,justifyContent:"center",flexWrap:"nowrap",overflow:"visible"}}>
-            {[["semana","Semana"],["dia","Día"],["mes","Mes"],["agenda","Agenda"],["grilla","Grilla"]].map(([v,l])=>{
-              const activo=pantalla==="calendario"&&vista===v;
-              return(<button key={v} onClick={()=>{setVista(v);setPantalla("calendario");}} style={{padding:"6px 12px",background:activo?"#FFFFFF":"rgba(255,255,255,0.12)",border:"none",borderRadius:"8px",color:activo?"#1E3A6E":"#FFFFFF",fontWeight:activo?"600":"400",cursor:"pointer",fontSize:"13px",fontFamily:"inherit",transition:"all 0.15s",whiteSpace:"nowrap"}}>{l}</button>);
-            })}
+          {/* CENTRO: tabs + contador agenda centrado */}
+          {(pantalla==="calendario"||pantalla==="disponibilidad")&&<div style={{display:"grid",gridTemplateColumns:"1fr auto 1fr",alignItems:"center",flex:1,gap:"8px"}}>
+            <div/>
+            <div style={{display:"flex",gap:"4px",alignItems:"center"}}>
+              {[["semana","Semana"],["dia","Día"],["mes","Mes"],["agenda","Agenda"],["grilla","Grilla"]].map(([v,l])=>{
+                const activo=pantalla==="calendario"&&vista===v;
+                return(<button key={v} onClick={()=>{setVista(v);setPantalla("calendario");}} style={{padding:"6px 12px",background:activo?"#FFFFFF":"rgba(255,255,255,0.12)",border:"none",borderRadius:"8px",color:activo?"#1E3A6E":"#FFFFFF",fontWeight:activo?"600":"400",cursor:"pointer",fontSize:"13px",fontFamily:"inherit",transition:"all 0.15s",whiteSpace:"nowrap"}}>{l}</button>);
+              })}
+            </div>
+            <div style={{display:"flex",justifyContent:"center",alignItems:"center"}}>
+              {pantalla==="calendario"&&vista==="agenda"&&(()=>{
+                const semIni=toISO(diasSemana[0]);const semFin=toISO(diasSemana[6]);
+                const n=eventosFiltrados.filter(e=>e.fecha_inicio<=semFin&&(e.fecha_termino||e.fecha_inicio)>=semIni).length;
+                return(<div style={{padding:"6px 21px",border:"1px solid rgba(255,255,255,0.85)",borderRadius:"12px",background:"transparent",textAlign:"center"}}>
+                  <div style={{color:"#FFFFFF",fontSize:"17px",fontWeight:"550",lineHeight:1.3}}>{n} evento{n!==1?"s":""}</div>
+                  <div style={{color:"rgba(255,255,255,0.70)",fontSize:"14px"}}>esta semana</div>
+                </div>);
+              })()}
+            </div>
           </div>}
-          {/* CONTADOR AGENDA: x eventos esta semana, entre Grilla y lupa */}
-          {pantalla==="calendario"&&vista==="agenda"&&(()=>{
-            const semIni=toISO(diasSemana[0]);const semFin=toISO(diasSemana[6]);
-            const n=eventosFiltrados.filter(e=>e.fecha_inicio<=semFin&&(e.fecha_termino||e.fecha_inicio)>=semIni).length;
-            return(<div style={{flexShrink:0,padding:"5px 18px",border:"1px solid rgba(255,255,255,0.85)",borderRadius:"10px",background:"transparent",textAlign:"center"}}>
-              <div style={{color:"#FFFFFF",fontSize:"15px",fontWeight:"600",lineHeight:1.3}}>{n} evento{n!==1?"s":""}</div>
-              <div style={{color:"rgba(255,255,255,0.70)",fontSize:"12px"}}>esta semana</div>
-            </div>);
-          })()}
           {/* TEXTO PILL: fecha + contador, centrado entre Grilla y Ant */}
           {pantalla==="calendario"&&vista!=="agenda"&&vista!=="grilla"&&(
             <div style={{flexShrink:0,padding:"5px 18px",border:"1px solid rgba(255,255,255,0.85)",borderRadius:"10px",background:"transparent",textAlign:"center"}}>
