@@ -1438,8 +1438,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             ))}
           </div>}
           {/* Comentarios */}
-          {evento.comentarios&&<div style={{background:"#FFF0F6",borderRadius:"10px",padding:"12px 16px",marginTop:"12px",border:"2px solid #F9A8D4",position:"relative"}}>
-            <div style={{position:"absolute",top:"10px",right:"10px",width:"10px",height:"10px",borderRadius:"50%",background:"#F472B6",boxShadow:"0 0 6px #F472B6",animation:"flash 2.4s ease-in-out infinite"}}/>
+          {evento.comentarios&&<div style={{marginTop:"12px"}}>
             <SL t="💬 Comentarios"/>
             <div style={{color:"#0F172A",fontSize:"17px"}}>{evento.comentarios}</div>
           </div>}
