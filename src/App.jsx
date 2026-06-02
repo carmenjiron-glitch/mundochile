@@ -347,7 +347,7 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
             <div key={key} style={{marginTop:"8px"}}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"6px"}}>
                 <span style={{fontSize:"12px",fontWeight:"600",color:/inglés.*español/i.test(key)?"#2D8CFF":titleColor,textTransform:"uppercase",letterSpacing:"0.06em",filter:"brightness(0.65)",textAlign:"center",width:"100%",display:"block"}}>{key}</span>
-                {hp&&<span style={{fontSize:"12px",color:"#6B7280",display:"flex",alignItems:"center",gap:"4px"}}>🕐 {hp.slice(0,5)} hrs</span>}
+                {hp&&<span style={{fontSize:"14px",color:"#545B68",display:"flex",alignItems:"center",gap:"4px"}}>🕐 {hp.slice(0,5)} hrs</span>}
               </div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
                 {grupo.interpretes.map((interp,i)=>(
@@ -1345,8 +1345,8 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                 const hp=grupo.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
                 return(<div key={key} style={{marginBottom:"12px"}}>
                   <div style={{position:"relative",textAlign:"center",marginBottom:"6px"}}>
-                    <span style={{fontSize:"12px",fontWeight:"600",color:"#1565C0",textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
-                    {hp&&<span style={{position:"absolute",right:0,top:"50%",transform:"translateY(-50%)",fontSize:"13px",color:"#6B7280",whiteSpace:"nowrap"}}>🕐 {hp.slice(0,5)} hrs</span>}
+                    <span style={{fontSize:"13px",fontWeight:"600",color:"#1565C0",textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
+                    {hp&&<span style={{position:"absolute",right:0,top:"50%",transform:"translateY(-50%)",fontSize:"16px",color:"#545B68",whiteSpace:"nowrap"}}>🕐 {hp.slice(0,5)} hrs</span>}
                   </div>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
                     {grupo.items.map(({interp,isHost},i)=>(
@@ -1399,8 +1399,8 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                       const hp=grupo.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
                       return(<div key={key} style={{marginBottom:"12px"}}>
                         <div style={{position:"relative",textAlign:"center",marginBottom:"6px"}}>
-                          <span style={{fontSize:"12px",fontWeight:"600",color:"#1565C0",textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
-                          {hp&&<span style={{position:"absolute",right:0,top:"50%",transform:"translateY(-50%)",fontSize:"13px",color:"#6B7280",whiteSpace:"nowrap"}}>🕐 {hp.slice(0,5)} hrs</span>}
+                          <span style={{fontSize:"13px",fontWeight:"600",color:"#1565C0",textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
+                          {hp&&<span style={{position:"absolute",right:0,top:"50%",transform:"translateY(-50%)",fontSize:"16px",color:"#545B68",whiteSpace:"nowrap"}}>🕐 {hp.slice(0,5)} hrs</span>}
                         </div>
                         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"4px"}}>
                           {grupo.items.map(({interp,isHost},i)=>(
@@ -1452,7 +1452,8 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             {evento.edited_by_nombre&&<span>Última edición por <strong>{evento.edited_by_nombre}</strong>{evento.updated_at&&" el "+new Date(evento.updated_at).toLocaleString("es-CL")}</span>}
           </div>
           {/* Comentarios — al final de todo */}
-          {evento.comentarios&&<div style={{background:"#F8FAFC",borderRadius:"10px",padding:"12px 16px",marginTop:"12px"}}>
+          {evento.comentarios&&<div style={{background:"#FFF0F6",borderRadius:"10px",padding:"12px 16px",marginTop:"12px",border:"2px solid #F9A8D4",position:"relative"}}>
+            <div style={{position:"absolute",top:"10px",right:"10px",width:"10px",height:"10px",borderRadius:"50%",background:"#F472B6",boxShadow:"0 0 6px #F472B6",animation:"flash 2.4s ease-in-out infinite"}}/>
             <SL t="💬 Comentarios"/>
             <div style={{color:"#0F172A",fontSize:"17px"}}>{evento.comentarios}</div>
           </div>}
@@ -1594,7 +1595,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
                       <div style={{display:"grid",gridTemplateColumns:"1fr",gap:"5px"}}>
                         {g.items.map(({interp,asig},j)=>(<div key={j} style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"9px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>))}
                       </div>
-                      {hp&&<div style={{textAlign:"center",fontSize:"11px",color:"#505860",marginTop:"6px"}}>🕐 Hora de presentación intérpretes: {hp.slice(0,5)} hrs</div>}
+                      {hp&&<div style={{textAlign:"center",fontSize:"13px",color:"#40464D",marginTop:"6px"}}>🕐 Hora de presentación intérpretes: {hp.slice(0,5)} hrs</div>}
                     </div>);
                   })}
                   {solos.length>0&&(<div style={{display:"grid",gridTemplateColumns:"1fr",gap:"6px"}}>
@@ -1604,7 +1605,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
                       return(<div key={i}>
                         <div style={{textAlign:"center",fontSize:"12px",fontWeight:"600",color:/inglés.*español/i.test(g.desc)?dimClr("#2D8CFF"):dimClr(clr),marginBottom:"3px",textTransform:"uppercase",letterSpacing:"0.06em"}}>{g.desc}</div>
                         <div style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"9px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>
-                        {asig.hora_presentacion&&<div style={{textAlign:"center",fontSize:"11px",color:"#505860",marginTop:"6px"}}>🕐 Hora de presentación intérpretes: {asig.hora_presentacion.slice(0,5)} hrs</div>}
+                        {asig.hora_presentacion&&<div style={{textAlign:"center",fontSize:"13px",color:"#40464D",marginTop:"6px"}}>🕐 Hora de presentación intérpretes: {asig.hora_presentacion.slice(0,5)} hrs</div>}
                       </div>);
                     })}
                   </div>)}
@@ -1720,7 +1721,7 @@ function ModalFichasMultiples({eventosLista,clientes,interpretes,pares,onCerrar}
           <div style={{display:"grid",gridTemplateColumns:"1fr",gap:"8px"}}>
             {g.items.map(({interp,asig},j)=>(<div key={j} style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"10px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>))}
           </div>
-          {hp&&<div style={{textAlign:"center",fontSize:"11px",color:"#505860",marginTop:"6px"}}>🕐 Hora de presentación intérpretes: {hp.slice(0,5)} hrs</div>}
+          {hp&&<div style={{textAlign:"center",fontSize:"13px",color:"#40464D",marginTop:"6px"}}>🕐 Hora de presentación intérpretes: {hp.slice(0,5)} hrs</div>}
         </div>);
       })}
       {solos.length>0&&(<div style={{display:"grid",gridTemplateColumns:"1fr",gap:"12px"}}>
@@ -1730,7 +1731,7 @@ function ModalFichasMultiples({eventosLista,clientes,interpretes,pares,onCerrar}
           return(<div key={i}>
             <div style={{textAlign:"center",fontSize:"13px",fontWeight:"600",color:/inglés.*español/i.test(g.desc)?"#2D8CFF":clr,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em",width:"100%",display:"block"}}>{g.desc}</div>
             <div style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"10px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>
-            {asig.hora_presentacion&&<div style={{textAlign:"center",fontSize:"11px",color:"#505860",marginTop:"6px"}}>🕐 Hora de presentación intérpretes: {asig.hora_presentacion.slice(0,5)} hrs</div>}
+            {asig.hora_presentacion&&<div style={{textAlign:"center",fontSize:"13px",color:"#40464D",marginTop:"6px"}}>🕐 Hora de presentación intérpretes: {asig.hora_presentacion.slice(0,5)} hrs</div>}
           </div>);
         })}
       </div>)}
@@ -3302,7 +3303,7 @@ export default function App() {
                     return(<div key={key} style={{marginBottom:"12px"}}>
                       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"6px"}}>
                         <span style={{fontSize:"12px",fontWeight:"600",color:pillClr,textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
-                        {hp&&<span style={{fontSize:"14px",color:"#6B7280",display:"flex",alignItems:"center",gap:"4px"}}>🕐 {hp.slice(0,5)} hrs</span>}
+                        {hp&&<span style={{fontSize:"17px",color:"#545B68",display:"flex",alignItems:"center",gap:"4px"}}>🕐 {hp.slice(0,5)} hrs</span>}
                       </div>
                       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
                         {grupo.items.map(({interp,isHost},i)=>(
@@ -3396,7 +3397,7 @@ export default function App() {
                       return(<div key={key} style={{marginBottom:"12px"}}>
                         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"6px"}}>
                           <span style={{fontSize:"12px",fontWeight:"600",color:pillClr,textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
-                          {hp&&<span style={{fontSize:"14px",color:"#6B7280",display:"flex",alignItems:"center",gap:"4px"}}>🕐 {hp.slice(0,5)} hrs</span>}
+                          {hp&&<span style={{fontSize:"17px",color:"#545B68",display:"flex",alignItems:"center",gap:"4px"}}>🕐 {hp.slice(0,5)} hrs</span>}
                         </div>
                         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
                           {grupo.items.map(({interp,isHost},i)=>(

@@ -222,7 +222,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             </div>
 
             {cliente?.nombre_contacto && (
-              <div style={{ fontSize:14, color:"#454A53", fontStyle:"italic", marginTop:2 }}>
+              <div style={{ fontSize:16, color:"#3E4349", fontStyle:"italic", marginTop:2 }}>
                 Contacto: {cliente.nombre_contacto}
               </div>
             )}
@@ -238,7 +238,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
               🕐 {ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)} hrs
             </div>
 
-            <div style={{ display:"flex", gap:5, flexWrap:"wrap", alignItems:"center" }}>
+            <div style={{ display:"flex", gap:8, flexWrap:"wrap", alignItems:"center" }}>
               {(Array.isArray(ev.tipo)?ev.tipo:[ev.tipo||"Simultánea"]).map(t=><Chip key={t} label={t} emoji={t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤 ":"🤫 "} fontSize={14} padding="5px 12px" />)}
               <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?<IconoPresencial/>:ev.modalidad==="hibrido"?"🔀 ":"💻 "} fontSize={14} padding="5px 12px" />
             </div>
@@ -262,14 +262,14 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={e=>e.stopPropagation()}
-                    style={{ display:"inline-flex", alignItems:"center", gap:"4px", fontSize:"12px", fontWeight:"500", color:"#1971C2", padding:"5px 10px", borderRadius:"8px", border:"1px solid #93C5FD", background:"#EFF6FF", textDecoration:"none", cursor:"pointer" }}
+                    style={{ display:"inline-flex", alignItems:"center", gap:"4px", fontSize:"13px", fontWeight:"500", color:"#1566AE", padding:"5px 11px", borderRadius:"8px", border:"1px solid #84B1E4", background:"#EFF6FF", textDecoration:"none", cursor:"pointer" }}
                   >
                     📍 Ver en Maps
                   </a>
                   <button
-                    onClick={e=>{e.stopPropagation();navigator.clipboard.writeText(ev.lugar);}}
+                    onClick={e=>{e.stopPropagation();const u=ev.lugar;if(navigator.clipboard){navigator.clipboard.writeText(u).catch(()=>{const t=document.createElement("textarea");t.value=u;document.body.appendChild(t);t.select();document.execCommand("copy");document.body.removeChild(t);});}else{const t=document.createElement("textarea");t.value=u;document.body.appendChild(t);t.select();document.execCommand("copy");document.body.removeChild(t);}}}
                     title="Copiar dirección"
-                    style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", padding:"5px 10px", borderRadius:"8px", border:"1px solid #93C5FD", background:"#EFF6FF", cursor:"pointer", color:"#1971C2", fontFamily:"inherit" }}
+                    style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", padding:"5px 11px", borderRadius:"8px", border:"1px solid #84B1E4", background:"#EFF6FF", cursor:"pointer", color:"#1566AE", fontFamily:"inherit" }}
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
@@ -297,7 +297,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
               INTÉRPRETES
             </div>
             {Object.keys(grupos).length === 0 ? (
-              <div style={{ color:"#9CA3AF", fontSize:13, textAlign:"center" }}>Sin intérpretes asignados</div>
+              <div style={{ color:"#848B95", fontSize:14, textAlign:"center" }}>Sin intérpretes asignados</div>
             ) : (
               Object.entries(grupos).map(([key, grupo]) => {
                 const pillClr  = IDIOMA_PILL_CLR[grupo.idioma] || "#4C6EF5";
@@ -310,7 +310,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                         {key}
                       </div>
                       {hp && (
-                        <div style={{ position:"absolute", right:0, top:"50%", transform:"translateY(-50%)", fontSize:11, color:"#64748B", display:"inline-flex", alignItems:"center", gap:4 }}>
+                        <div style={{ position:"absolute", right:0, top:"50%", transform:"translateY(-50%)", fontSize:13, color:"#4A5768", display:"inline-flex", alignItems:"center", gap:4 }}>
                           🕐 {hp.slice(0,5)} hrs
                         </div>
                       )}
