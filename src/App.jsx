@@ -1345,7 +1345,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                 const hp=grupo.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
                 return(<div key={key} style={{marginBottom:"12px"}}>
                   <div style={{position:"relative",textAlign:"center",marginBottom:"6px"}}>
-                    <span style={{fontSize:"13px",fontWeight:"600",color:"#1565C0",textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
+                    <span style={{fontSize:"13px",fontWeight:"600",color:"#1256A3",textTransform:"uppercase",letterSpacing:"0.06em",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>{key}</span>
                     {hp&&<span style={{position:"absolute",right:0,top:"50%",transform:"translateY(-50%)",fontSize:"16px",color:"#545B68",whiteSpace:"nowrap"}}>🕐 {hp.slice(0,5)} hrs</span>}
                   </div>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
@@ -1399,7 +1399,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                       const hp=grupo.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
                       return(<div key={key} style={{marginBottom:"12px"}}>
                         <div style={{position:"relative",textAlign:"center",marginBottom:"6px"}}>
-                          <span style={{fontSize:"13px",fontWeight:"600",color:"#1565C0",textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
+                          <span style={{fontSize:"13px",fontWeight:"600",color:"#1256A3",textTransform:"uppercase",letterSpacing:"0.06em",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>{key}</span>
                           {hp&&<span style={{position:"absolute",right:0,top:"50%",transform:"translateY(-50%)",fontSize:"16px",color:"#545B68",whiteSpace:"nowrap"}}>🕐 {hp.slice(0,5)} hrs</span>}
                         </div>
                         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"4px"}}>
@@ -2509,7 +2509,7 @@ function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,
         const idDia=`agenda-dia-${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
         return (
           <div key={fecha} id={idDia} data-fecha={fecha} style={{marginBottom:"32px"}}>
-            <div style={{background:esHoy?"rgba(34,197,94,0.18)":"rgba(255,255,255,0.12)",color:"#fff",fontSize:"14px",fontWeight:"500",padding:"10px 16px",borderRadius:"8px",margin:"16px 0 8px",letterSpacing:"0.03em",border:esHoy?"1px solid rgba(34,197,94,0.4)":"1px solid transparent"}}>
+            <div style={{position:"sticky",top:"140px",zIndex:10,background:esHoy?"rgba(34,197,94,0.18)":"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",color:"#fff",fontSize:"14px",fontWeight:"500",padding:"10px 16px",borderRadius:"8px",margin:"16px 0 8px",letterSpacing:"0.03em",border:esHoy?"1px solid rgba(34,197,94,0.4)":"1px solid rgba(255,255,255,0.12)"}}>
               {esHoy?"📅 Hoy — ":""}{formatLargo(fecha)} · {evs.length} evento{evs.length!==1?"s":""}
             </div>
             {evs.length===0
@@ -3293,7 +3293,7 @@ export default function App() {
                   <span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:dk10(bMod.c),background:bMod.bg,border:`2px solid ${bMod.c}`,whiteSpace:"nowrap"}}>{evM.modalidad==="presencial"?<IconPresencial size={14} color={dk10(bMod.c)}/>:evM.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evM.modalidad]||evM.modalidad}</span>
                 </div>
                 <HRD/>
-                {esPresD&&evM.lugar&&<div style={{marginBottom:"12px"}}><SLD t="📍 Lugar"/><div style={{fontSize:"15px",fontWeight:"500",color:"#0F172A"}}>{evM.lugar}</div></div>}
+                {esPresD&&evM.lugar&&<div style={{marginBottom:"12px"}}><SLD t="📍 Lugar"/><div style={{display:"flex",gap:6,flexWrap:"wrap"}}><span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"4px 9px",borderRadius:6,fontSize:11,fontWeight:700,color:"#9A3A3A",background:"#FEF2F2",border:"2px solid #D34848",whiteSpace:"nowrap"}}>📍 {evM.lugar}</span>{evM.lugar_detalle&&<span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"4px 9px",borderRadius:6,fontSize:11,fontWeight:700,color:"#9A3A3A",background:"#FEF2F2",border:"2px solid #D34848",whiteSpace:"nowrap"}}>📍 {evM.lugar_detalle}</span>}</div></div>}
                 {!esPresD&&evM.plataforma&&<div style={{marginBottom:"12px"}}><SLD t="💻 Plataforma"/><PlatformChip platform={evM.plataforma==="Zoom"?"Zoom MundoChile":evM.plataforma} isMundoChile={esZoomMCD} extra={esZoomMCD?evM.zoom_administrador:""}/></div>}
                 {grupoEntries.length>0&&<div style={{marginBottom:"4px"}}>
                   <SLD t="🎙 Intérpretes"/>
@@ -3303,7 +3303,7 @@ export default function App() {
                     return(<div key={key} style={{marginBottom:"12px"}}>
                       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"6px"}}>
                         <span style={{fontSize:"12px",fontWeight:"600",color:pillClr,textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
-                        {hp&&<span style={{fontSize:"17px",color:"#545B68",display:"flex",alignItems:"center",gap:"4px"}}>🕐 {hp.slice(0,5)} hrs</span>}
+                        {hp&&<span style={{fontSize:"14px",color:"#4F5663",display:"flex",alignItems:"center",gap:"4px"}}>Hora de presentación intérprete{grupo.items.length!==1?"s":""}: 🕐 {hp.slice(0,5)} hrs</span>}
                       </div>
                       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
                         {grupo.items.map(({interp,isHost},i)=>(
@@ -3386,7 +3386,7 @@ export default function App() {
                   </div>
                   <HRD/>
                   {/* Lugar / Plataforma */}
-                  {esPresD&&ev.lugar&&<div style={{marginBottom:"12px"}}><SLD t="📍 Lugar"/><div style={{fontSize:"15px",fontWeight:"500",color:"#0F172A"}}>{ev.lugar}</div></div>}
+                  {esPresD&&ev.lugar&&<div style={{marginBottom:"12px"}}><SLD t="📍 Lugar"/><div style={{display:"flex",gap:6,flexWrap:"wrap"}}><span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"4px 9px",borderRadius:6,fontSize:11,fontWeight:700,color:"#9A3A3A",background:"#FEF2F2",border:"2px solid #D34848",whiteSpace:"nowrap"}}>📍 {ev.lugar}</span>{ev.lugar_detalle&&<span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"4px 9px",borderRadius:6,fontSize:11,fontWeight:700,color:"#9A3A3A",background:"#FEF2F2",border:"2px solid #D34848",whiteSpace:"nowrap"}}>📍 {ev.lugar_detalle}</span>}</div></div>}
                   {!esPresD&&ev.plataforma&&<div style={{marginBottom:"12px"}}><SLD t="💻 Plataforma"/><PlatformChip platform={ev.plataforma==="Zoom"?"Zoom MundoChile":ev.plataforma} isMundoChile={esZoomMCD} extra={esZoomMCD?ev.zoom_administrador:""}/></div>}
                   {/* Intérpretes */}
                   {grupoEntries.length>0&&<div style={{marginBottom:"4px"}}>
@@ -3397,7 +3397,7 @@ export default function App() {
                       return(<div key={key} style={{marginBottom:"12px"}}>
                         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"6px"}}>
                           <span style={{fontSize:"12px",fontWeight:"600",color:pillClr,textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
-                          {hp&&<span style={{fontSize:"17px",color:"#545B68",display:"flex",alignItems:"center",gap:"4px"}}>🕐 {hp.slice(0,5)} hrs</span>}
+                          {hp&&<span style={{fontSize:"14px",color:"#4F5663",display:"flex",alignItems:"center",gap:"4px"}}>Hora de presentación intérprete{grupo.items.length!==1?"s":""}: 🕐 {hp.slice(0,5)} hrs</span>}
                         </div>
                         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
                           {grupo.items.map(({interp,isHost},i)=>(
@@ -3439,7 +3439,7 @@ export default function App() {
   const esEditor=perfil?.rol==="editor"||esAdmin;
 
   return (
-    <div style={{fontFamily:"'Inter','Segoe UI',system-ui,sans-serif",minHeight:"100vh",background:"linear-gradient(135deg, #1a2a4a 0%, #1e3a6e 50%, #2563a8 100%)",color:"#FFFFFF",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",textRendering:"optimizeLegibility",overflowX:"hidden"}}>
+    <div style={{fontFamily:"'Inter','Segoe UI',system-ui,sans-serif",minHeight:"100vh",background:"linear-gradient(135deg, #1a2a4a 0%, #1e3a6e 50%, #2563a8 100%)",color:"#FFFFFF",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",textRendering:"optimizeLegibility",overflowX:"clip"}}>
       {/* ── TOPBAR ── */}
       <div style={{position:"sticky",top:0,zIndex:100,background:"#162654"}}>
         <div style={{padding:"0 24px",display:"flex",alignItems:"center",justifyContent:"space-between",height:"96px",gap:"14px"}}>
@@ -3468,6 +3468,15 @@ export default function App() {
               return(<button key={v} onClick={()=>{setVista(v);setPantalla("calendario");}} style={{padding:"6px 12px",background:activo?"#FFFFFF":"rgba(255,255,255,0.12)",border:"none",borderRadius:"8px",color:activo?"#1E3A6E":"#FFFFFF",fontWeight:activo?"600":"400",cursor:"pointer",fontSize:"13px",fontFamily:"inherit",transition:"all 0.15s",whiteSpace:"nowrap"}}>{l}</button>);
             })}
           </div>}
+          {/* CONTADOR AGENDA: x eventos esta semana, entre Grilla y lupa */}
+          {pantalla==="calendario"&&vista==="agenda"&&(()=>{
+            const semIni=toISO(diasSemana[0]);const semFin=toISO(diasSemana[6]);
+            const n=eventosFiltrados.filter(e=>e.fecha_inicio<=semFin&&(e.fecha_termino||e.fecha_inicio)>=semIni).length;
+            return(<div style={{flexShrink:0,padding:"5px 18px",border:"1px solid rgba(255,255,255,0.85)",borderRadius:"10px",background:"transparent",textAlign:"center"}}>
+              <div style={{color:"#FFFFFF",fontSize:"15px",fontWeight:"600",lineHeight:1.3}}>{n} evento{n!==1?"s":""}</div>
+              <div style={{color:"rgba(255,255,255,0.70)",fontSize:"12px"}}>esta semana</div>
+            </div>);
+          })()}
           {/* TEXTO PILL: fecha + contador, centrado entre Grilla y Ant */}
           {pantalla==="calendario"&&vista!=="agenda"&&vista!=="grilla"&&(
             <div style={{flexShrink:0,padding:"5px 18px",border:"1px solid rgba(255,255,255,0.85)",borderRadius:"10px",background:"transparent",textAlign:"center"}}>

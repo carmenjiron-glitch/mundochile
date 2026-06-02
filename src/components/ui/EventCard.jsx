@@ -306,7 +306,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                 return (
                   <div key={key} style={{ marginTop:10 }}>
                     <div style={{ position:"relative", marginBottom:5 }}>
-                      <div style={{ fontSize:14, fontWeight:600, color:"#1565C0", textTransform:"uppercase", letterSpacing:"0.07em", opacity:0.9, whiteSpace:"nowrap", WebkitFontSmoothing:"antialiased", textAlign:"center", width:"100%", display:"block" }}>
+                      <div style={{ fontSize:14, fontWeight:600, color:"#1256A3", textTransform:"uppercase", letterSpacing:"0.07em", WebkitFontSmoothing:"antialiased", MozOsxFontSmoothing:"grayscale", opacity:0.9, whiteSpace:"nowrap", WebkitFontSmoothing:"antialiased", textAlign:"center", width:"100%", display:"block" }}>
                         {key}
                       </div>
                       {hp && (
@@ -401,7 +401,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             const flagSz  = solidPill ? 19 : 24;
             return (
               <div key={key} style={{ marginTop:14 }}>
-                <div style={{ fontSize:solidPill?12:14, fontWeight:600, color:"#1565C0", textTransform:"uppercase", letterSpacing:"0.07em", marginBottom:5, opacity:0.9, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", textAlign:"center", width:"100%", display:"block" }}>
+                <div style={{ fontSize:solidPill?12:14, fontWeight:600, color:"#1256A3", textTransform:"uppercase", letterSpacing:"0.07em", WebkitFontSmoothing:"antialiased", MozOsxFontSmoothing:"grayscale", marginBottom:5, opacity:0.9, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", textAlign:"center", width:"100%", display:"block" }}>
                   {key}
                 </div>
                 <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6, ...(pillsHalf?{maxWidth:"50%"}:{}) }}>
