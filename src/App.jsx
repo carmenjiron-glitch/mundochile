@@ -1437,8 +1437,19 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
               </div>
             ))}
           </div>}
+          {/* Historial */}
+          <div style={{fontSize:"14px",color:"#6B7280",display:"flex",gap:"16px",flexWrap:"wrap",paddingTop:"12px",marginTop:"12px",borderTop:"1px solid #E5E7EB"}}>
+            {evento.created_by_nombre&&<span>Creado por <strong>{evento.created_by_nombre}</strong>{evento.created_at&&" el "+new Date(evento.created_at).toLocaleString("es-CL")}</span>}
+            {evento.edited_by_nombre&&<span>Última edición por <strong>{evento.edited_by_nombre}</strong>{evento.updated_at&&" el "+new Date(evento.updated_at).toLocaleString("es-CL")}</span>}
+          </div>
+          {/* Comentarios */}
+          {evento.comentarios&&<div style={{background:"#FFF0F6",borderRadius:"10px",padding:"12px 16px",marginTop:"12px",border:"2px solid #F9A8D4",position:"relative"}}>
+            <div style={{position:"absolute",top:"10px",right:"10px",width:"10px",height:"10px",borderRadius:"50%",background:"#F472B6",boxShadow:"0 0 6px #F472B6",animation:"flash 2.4s ease-in-out infinite"}}/>
+            <SL t="💬 Comentarios"/>
+            <div style={{color:"#0F172A",fontSize:"17px"}}>{evento.comentarios}</div>
+          </div>}
           <HR/>
-          {/* Estado */}
+          {/* Estado — al final */}
           <div style={{marginBottom:"8px"}}>
             <SL t="Estado de facturación"/>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:"16px"}}>
@@ -1446,17 +1457,6 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
               {evento.numero_factura&&<div style={{display:"flex",alignItems:"center",gap:"6px",color:"#374151",fontSize:"13px"}}><span style={{color:"#6B7280",fontWeight:"500"}}>N° Factura:</span><span style={{fontWeight:"600"}}>{evento.numero_factura}</span></div>}
             </div>
           </div>
-          {/* Historial */}
-          <div style={{fontSize:"14px",color:"#6B7280",display:"flex",gap:"16px",flexWrap:"wrap",paddingTop:"12px",marginTop:"12px",borderTop:"1px solid #E5E7EB"}}>
-            {evento.created_by_nombre&&<span>Creado por <strong>{evento.created_by_nombre}</strong>{evento.created_at&&" el "+new Date(evento.created_at).toLocaleString("es-CL")}</span>}
-            {evento.edited_by_nombre&&<span>Última edición por <strong>{evento.edited_by_nombre}</strong>{evento.updated_at&&" el "+new Date(evento.updated_at).toLocaleString("es-CL")}</span>}
-          </div>
-          {/* Comentarios — al final de todo */}
-          {evento.comentarios&&<div style={{background:"#FFF0F6",borderRadius:"10px",padding:"12px 16px",marginTop:"12px",border:"2px solid #F9A8D4",position:"relative"}}>
-            <div style={{position:"absolute",top:"10px",right:"10px",width:"10px",height:"10px",borderRadius:"50%",background:"#F472B6",boxShadow:"0 0 6px #F472B6",animation:"flash 2.4s ease-in-out infinite"}}/>
-            <SL t="💬 Comentarios"/>
-            <div style={{color:"#0F172A",fontSize:"17px"}}>{evento.comentarios}</div>
-          </div>}
         </div>
       </div>
     </div>
