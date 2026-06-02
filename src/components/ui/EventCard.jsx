@@ -396,9 +396,9 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             const pillClr = IDIOMA_PILL_CLR[grupo.idioma] || "#4C6EF5";
             const border  = solidPill ? `2px solid ${pillClr}` : `3px solid ${pillClr}`;
             const hp      = grupo.items.find(i => i.hora)?.hora;
-            const pillPad = solidPill ? "1px 4px" : "5px 9px";
-            const pillFs  = solidPill ? 12 : 28;
-            const flagSz  = solidPill ? 19 : 22;
+            const pillPad = solidPill ? "1px 4px" : "5px 10px";
+            const pillFs  = solidPill ? 12 : 30;
+            const flagSz  = solidPill ? 19 : 24;
             return (
               <div key={key} style={{ marginTop:14 }}>
                 <div style={{ fontSize:solidPill?12:14, fontWeight:600, color:"#1565C0", textTransform:"uppercase", letterSpacing:"0.07em", marginBottom:5, opacity:0.9, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", textAlign:"center", width:"100%", display:"block" }}>
@@ -408,10 +408,10 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                   {grupo.items.map((interp, i) => (
                     <span key={i}
                       title={`${interp.nombre}${interp.apellido ? " " + interp.apellido : ""}`}
-                      style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:5, padding:pillPad, borderRadius:20, fontSize:pillFs, fontWeight:solidPill?600:500, lineHeight:1.4, color:"#1A1A1A", background:"#FFFFFF", border, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"default", WebkitFontSmoothing:"antialiased", MozOsxFontSmoothing:"grayscale", letterSpacing:"0.01em" }}>
+                      style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:5, padding:pillPad, borderRadius:20, fontSize:pillFs, fontWeight:solidPill?600:500, lineHeight:1.4, color:"#333333", background:"#FFFFFF", border, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"default", WebkitFontSmoothing:"antialiased", MozOsxFontSmoothing:"grayscale", letterSpacing:"0.01em" }}>
                       {interp.isHost && <span style={{ fontSize:11 }}>🔑</span>}
                       <Flag idioma={grupo.idioma} size={flagSz} />
-                      <span style={{ overflow:"hidden", textOverflow:"ellipsis", color:"#1A1A1A" }}>
+                      <span style={{ overflow:"hidden", textOverflow:"ellipsis", color:"#333333" }}>
                         {nombreCorto(interp.nombre, interp.apellido)}
                       </span>
                     </span>
