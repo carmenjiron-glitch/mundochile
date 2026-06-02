@@ -370,7 +370,13 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
 
 // ─── MODAL EVENTO ─────────────────────────────────────────────────────────────
 function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugares=[],contactos=[],todos_eventos,perfil,onGuardar,onCerrar,onNuevoCliente,onNuevoContacto,onNuevoInterprete,onLugarCreado,onNuevoLugar,onNuevoProveedor}) {
-  const [form,setForm]=useState(()=>eventoInicial?JSON.parse(JSON.stringify(eventoInicial)):evVacio());
+  const [form,setForm]=useState(()=>{
+    if(!eventoInicial) return evVacio();
+    const f=JSON.parse(JSON.stringify(eventoInicial));
+    f.asignaciones=(f.asignaciones||[]).map(a=>({...a,conflicto_ok:true}));
+    f.dias=(f.dias||[]).map(d=>({...d,asignaciones:(d.asignaciones||[]).map(a=>({...a,conflicto_ok:true}))}));
+    return f;
+  });
   const [tab,setTab]=useState("general");
   const [guardando,setGuardando]=useState(false);
   const guardandoRef=useRef(false);
@@ -1280,7 +1286,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             <SL t="📍 Lugar"/>
             <div style={{display:"flex",flexDirection:"column",gap:"8px",padding:"12px 18px",borderRadius:"16px",border:"2px solid #7C3AED",background:"#F5F3FF"}}>
               <div>
-                <span style={{fontSize:"16px",fontWeight:"500",color:"#4C1D95"}}>📍 {evento.lugar}</span>
+                <span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 14px",borderRadius:"6px",fontSize:"15px",fontWeight:"700",color:"#991B1B",background:"#FEF2F2",border:"2px solid #DC2626",whiteSpace:"nowrap"}}>📍 {evento.lugar}</span>
                 {evento.lugar_detalle&&<div style={{fontSize:"15px",fontWeight:"400",color:"#6D28D9",marginTop:"2px"}}>{evento.lugar_detalle}</div>}
               </div>
               <div style={{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap"}}>
@@ -1290,22 +1296,14 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                 </a>
                 <button
                   title="Copiar link de Google Maps"
-                  onClick={async()=>{
-                    if(geoLoading)return;
-                    setGeoLoading(true);setGeoOk(false);
+                  onClick={()=>{
                     const q=`${evento.lugar||""}${evento.lugar_detalle?", "+evento.lugar_detalle:""}`.trim();
-                    try{
-                      const res=await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(q)}`);
-                      const data=await res.json();
-                      if(data&&data[0]){
-                        const mapsUrl=`https://www.google.com/maps?q=${parseFloat(data[0].lat).toFixed(6)},${parseFloat(data[0].lon).toFixed(6)}`;
-                        await navigator.clipboard.writeText(mapsUrl);
-                        setGeoOk(true);setTimeout(()=>setGeoOk(false),2500);
-                      }
-                    }catch(e){console.error("geocoding",e);}finally{setGeoLoading(false);}
+                    navigator.clipboard.writeText(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`)
+                      .then(()=>{setGeoOk(true);setTimeout(()=>setGeoOk(false),2500);})
+                      .catch(()=>{});
                   }}
-                  style={{padding:"6px 12px",borderRadius:"8px",border:`1px solid ${geoOk?"#86EFAC":"#93C5FD"}`,background:geoOk?"#F0FDF4":"#EFF6FF",display:"inline-flex",alignItems:"center",gap:"5px",cursor:geoLoading?"wait":"pointer",fontSize:"13px",fontWeight:"500",color:geoOk?"#166534":"#114D84",fontFamily:"inherit"}}
-                >{geoLoading?"⏳ Buscando…":geoOk?"✓ Link copiado":"⊕ Copiar link Maps"}</button>
+                  style={{padding:"6px 12px",borderRadius:"8px",border:`1px solid ${geoOk?"#86EFAC":"#93C5FD"}`,background:geoOk?"#F0FDF4":"#EFF6FF",display:"inline-flex",alignItems:"center",gap:"5px",cursor:"pointer",fontSize:"13px",fontWeight:"500",color:geoOk?"#166534":"#114D84",fontFamily:"inherit"}}
+                >{geoOk?"✓ Link copiado":"⊕ Copiar link Maps"}</button>
               </div>
             </div>
           </div>}
