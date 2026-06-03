@@ -81,7 +81,7 @@ const nombreCorto=(nombre,apellido)=>{if(!apellido)return nombre;const completo=
 
 // ─── CONSTANTES ──────────────────────────────────────────────────────────────
 const TIPOS      = ["Simultánea","Consecutiva","Whispering"];
-const tiposArr   = (t) => Array.isArray(t) ? t : (t ? [t] : ["Simultánea"]);
+const tiposArr=(t)=>{if(Array.isArray(t))return t;if(!t)return["Simultánea"];if(typeof t==="string"&&t.startsWith("{")&&t.endsWith("}"))return t.slice(1,-1).split(",").map(s=>s.replace(/^"|"$/g,"").trim());return[t];};
 // Convierte array JS → literal PostgreSQL text[]: ["A","B"] → {A,B}
 const tiposPg    = (t) => `{${tiposArr(t).join(',')}}`;
 const MODALIDADES= ["remoto","presencial","hibrido"];
