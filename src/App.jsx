@@ -1438,7 +1438,8 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             ))}
           </div>}
           {/* Comentarios */}
-          {evento.comentarios&&<div style={{marginTop:"12px"}}>
+          {evento.comentarios&&<div style={{marginTop:"12px",border:"2px solid #F9A8D4",borderRadius:"10px",padding:"12px 16px",position:"relative"}}>
+            <div style={{position:"absolute",top:"10px",right:"10px",width:"10px",height:"10px",borderRadius:"50%",background:"#F472B6",boxShadow:"0 0 6px #F472B6",animation:"flash 2.4s ease-in-out infinite"}}/>
             <SL t="💬 Comentarios"/>
             <div style={{color:"#0F172A",fontSize:"17px"}}>{evento.comentarios}</div>
           </div>}
@@ -1446,27 +1447,29 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           {/* Información Contable */}
           <div style={{marginBottom:"8px"}}>
             <SL t="Información Contable"/>
-            {(()=>{
-              const esMagix=/magix/i.test(cliente?.nombre_empresa||"");
-              const diasPago=esMagix?60:30;
-              const calcFechaPago=(iso)=>{if(!iso)return"";const d=new Date(iso+"T12:00:00");d.setDate(d.getDate()+diasPago);const off=(d.getDay()-3+7)%7;d.setDate(d.getDate()-off);return d.toISOString().slice(0,10);};
-              const fechaPago=calcFechaPago(evento.fecha_emision);
-              const fmtCL=(iso)=>{if(!iso)return"";const[y,m,d]=iso.split("-");return`${d}/${m}/${y}`;};
-              const fila=(lbl,val)=>val?<div style={{display:"flex",gap:"6px",color:"#374151",fontSize:"13px",marginBottom:"4px"}}><span style={{color:"#6B7280",fontWeight:"500"}}>{lbl}:</span><span style={{fontWeight:"600"}}>{val}</span></div>:null;
-              return(
-                <div>
-                  <div style={{marginBottom:"8px"}}>
-                    {(()=>{const be=B_EST_D(evento.estado);return<span style={{display:"inline-flex",alignItems:"center",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:be.c,background:be.bg,border:`2px solid ${be.b||be.c}`,whiteSpace:"nowrap"}}>{evento.estado==="Facturado"?"✓ Facturado":"🟠 Facturación Pendiente"}</span>;})()}
+            <div style={{border:"1px solid #E5E7EB",borderRadius:"10px",padding:"14px 16px"}}>
+              {(()=>{
+                const esMagix=/magix/i.test(cliente?.nombre_empresa||"");
+                const diasPago=esMagix?60:30;
+                const calcFechaPago=(iso)=>{if(!iso)return"";const d=new Date(iso+"T12:00:00");d.setDate(d.getDate()+diasPago);const off=(d.getDay()-3+7)%7;d.setDate(d.getDate()-off);return d.toISOString().slice(0,10);};
+                const fechaPago=calcFechaPago(evento.fecha_emision);
+                const fmtCL=(iso)=>{if(!iso)return"";const[y,m,d]=iso.split("-");return`${d}/${m}/${y}`;};
+                const fila=(lbl,val)=>val?<div style={{display:"flex",gap:"6px",color:"#2C3441",fontSize:"13px",marginBottom:"4px"}}><span style={{color:"#6B7280",fontWeight:"500"}}>{lbl}:</span><span style={{fontWeight:"600"}}>{val}</span></div>:null;
+                return(
+                  <div>
+                    <div style={{marginBottom:"8px"}}>
+                      {(()=>{const be=B_EST_D(evento.estado);return<span style={{display:"inline-flex",alignItems:"center",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:be.c,background:be.bg,border:`2px solid ${be.b||be.c}`,whiteSpace:"nowrap"}}>{evento.estado==="Facturado"?"✓ Facturado":"🟠 Facturación Pendiente"}</span>;})()}
+                    </div>
+                    {fila("N° Factura",evento.numero_factura)}
+                    {fila("N° OC",evento.nro_oc)}
+                    {fila("N° HES",evento.nro_hes)}
+                    {fila("Otros",evento.nro_otros)}
+                    {fila("Fecha de emisión",fmtCL(evento.fecha_emision))}
+                    {fechaPago&&fila(`Fecha de pago${esMagix?" (60 días — Magix)":""}`,fmtCL(fechaPago))}
                   </div>
-                  {fila("N° Factura",evento.numero_factura)}
-                  {fila("N° OC",evento.nro_oc)}
-                  {fila("N° HES",evento.nro_hes)}
-                  {fila("Otros",evento.nro_otros)}
-                  {fila("Fecha de emisión",fmtCL(evento.fecha_emision))}
-                  {fechaPago&&fila(`Fecha de pago${esMagix?" (60 días — Magix)":""}`,fmtCL(fechaPago))}
-                </div>
-              );
-            })()}
+                );
+              })()}
+            </div>
           </div>
           {/* Historial — al final de todo */}
           <div style={{fontSize:"12px",color:"#6B7280",display:"flex",gap:"16px",flexWrap:"wrap",paddingTop:"12px",marginTop:"12px",borderTop:"1px solid #E5E7EB"}}>
