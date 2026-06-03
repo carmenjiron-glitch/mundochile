@@ -3195,7 +3195,7 @@ export default function App() {
             {evs.length>0&&<div style={{padding:"0 10px 10px"}}>{evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} onNavegar={d=>{setDiaActual(d);setVista("dia");}} onVerMultidia={verTodosLosDias} solidPill/>)}</div>}
           </div>;
         })}
-        {!hayFS&&<div style={{textAlign:"right",color:"rgba(255,255,255,0.35)",fontSize:"11px",fontStyle:"italic",padding:"6px 4px"}}>📅 Sin eventos este fin de semana</div>}
+        {!hayFS&&<div style={{textAlign:"center",color:"#FFFFFF",fontSize:"14px",fontStyle:"italic",opacity:0.7,padding:"6px 4px"}}>📅 Sin eventos este fin de semana</div>}
       </div>
     );
 
@@ -3479,15 +3479,14 @@ export default function App() {
                   <div style={{color:"rgba(255,255,255,0.70)",fontSize:"14px"}}>esta semana</div>
                 </div>);
               })()}
+              {pantalla==="calendario"&&vista!=="agenda"&&vista!=="grilla"&&(
+                <div style={{padding:"5px 18px",border:"1px solid rgba(255,255,255,0.85)",borderRadius:"10px",background:"transparent",textAlign:"center"}}>
+                  <div style={{color:"#FFFFFF",fontSize:"19px",fontWeight:"500",lineHeight:1.2}}>{tituloNav()}</div>
+                  <div style={{color:"rgba(255,255,255,0.70)",fontSize:"15px"}}>{contadorSubtitulo()}</div>
+                </div>
+              )}
             </div>
           </div>}
-          {/* TEXTO PILL: fecha + contador, centrado entre Grilla y Ant */}
-          {pantalla==="calendario"&&vista!=="agenda"&&vista!=="grilla"&&(
-            <div style={{flexShrink:0,padding:"5px 18px",border:"1px solid rgba(255,255,255,0.85)",borderRadius:"10px",background:"transparent",textAlign:"center"}}>
-              <div style={{color:"#FFFFFF",fontSize:"19px",fontWeight:"500",lineHeight:1.2}}>{tituloNav()}</div>
-              <div style={{color:"rgba(255,255,255,0.70)",fontSize:"15px"}}>{contadorSubtitulo()}</div>
-            </div>
-          )}
           {/* DERECHA: nav + utilidades */}
           <div style={{display:"flex",gap:"6px",alignItems:"center",flexShrink:0}}>
             {pantalla==="calendario"&&vista!=="agenda"&&vista!=="grilla"&&<>
