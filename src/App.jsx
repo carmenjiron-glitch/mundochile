@@ -3461,28 +3461,27 @@ export default function App() {
               <div style={{fontSize:"13px",color:"rgba(255,255,255,0.70)",marginTop:"3px"}}>Translations & Interpreters · Since 2003</div>
             </div>
           </div>
-          {/* CENTRO: tabs + contador agenda centrado */}
-          {(pantalla==="calendario"||pantalla==="disponibilidad")&&<div style={{display:"grid",gridTemplateColumns:"1fr auto 1fr",alignItems:"center",flex:1,gap:"8px"}}>
-            <div/>
-            <div style={{display:"flex",gap:"4px",alignItems:"center"}}>
+          {/* CENTRO: tabs izquierda + pill derecho centrado */}
+          {(pantalla==="calendario"||pantalla==="disponibilidad")&&<div style={{display:"flex",alignItems:"center",flex:1,minWidth:0,gap:"8px"}}>
+            <div style={{display:"flex",gap:"4px",alignItems:"center",flexShrink:0}}>
               {[["semana","Semana"],["dia","Día"],["mes","Mes"],["agenda","Agenda"],["grilla","Grilla"]].map(([v,l])=>{
                 const activo=pantalla==="calendario"&&vista===v;
                 return(<button key={v} onClick={()=>{setVista(v);setPantalla("calendario");}} style={{padding:"6px 12px",background:activo?"#FFFFFF":"rgba(255,255,255,0.12)",border:"none",borderRadius:"8px",color:activo?"#1E3A6E":"#FFFFFF",fontWeight:activo?"600":"400",cursor:"pointer",fontSize:"13px",fontFamily:"inherit",transition:"all 0.15s",whiteSpace:"nowrap"}}>{l}</button>);
               })}
             </div>
-            <div style={{display:"flex",justifyContent:"center",alignItems:"center"}}>
+            <div style={{flex:1,display:"flex",justifyContent:"center",alignItems:"center",minWidth:0,overflow:"hidden"}}>
               {pantalla==="calendario"&&vista==="agenda"&&(()=>{
                 const semIni=toISO(diasSemana[0]);const semFin=toISO(diasSemana[6]);
                 const n=eventosFiltrados.filter(e=>e.fecha_inicio<=semFin&&(e.fecha_termino||e.fecha_inicio)>=semIni).length;
-                return(<div style={{padding:"6px 21px",border:"1px solid rgba(255,255,255,0.85)",borderRadius:"12px",background:"transparent",textAlign:"center"}}>
-                  <div style={{color:"#FFFFFF",fontSize:"17px",fontWeight:"550",lineHeight:1.3}}>{n} evento{n!==1?"s":""}</div>
-                  <div style={{color:"rgba(255,255,255,0.70)",fontSize:"14px"}}>esta semana</div>
+                return(<div style={{padding:"6px 21px",border:"1px solid rgba(255,255,255,0.85)",borderRadius:"12px",background:"transparent",textAlign:"center",flexShrink:0}}>
+                  <div style={{color:"#FFFFFF",fontSize:"17px",fontWeight:"550",lineHeight:1.3,whiteSpace:"nowrap"}}>{n} evento{n!==1?"s":""}</div>
+                  <div style={{color:"rgba(255,255,255,0.70)",fontSize:"14px",whiteSpace:"nowrap"}}>esta semana</div>
                 </div>);
               })()}
               {pantalla==="calendario"&&vista!=="agenda"&&vista!=="grilla"&&(
-                <div style={{padding:"5px 18px",border:"1px solid rgba(255,255,255,0.85)",borderRadius:"10px",background:"transparent",textAlign:"center"}}>
-                  <div style={{color:"#FFFFFF",fontSize:"19px",fontWeight:"500",lineHeight:1.2}}>{tituloNav()}</div>
-                  <div style={{color:"rgba(255,255,255,0.70)",fontSize:"15px"}}>{contadorSubtitulo()}</div>
+                <div style={{padding:"5px 18px",border:"1px solid rgba(255,255,255,0.85)",borderRadius:"10px",background:"transparent",textAlign:"center",flexShrink:0}}>
+                  <div style={{color:"#FFFFFF",fontSize:"19px",fontWeight:"500",lineHeight:1.2,whiteSpace:"nowrap"}}>{tituloNav()}</div>
+                  <div style={{color:"rgba(255,255,255,0.70)",fontSize:"15px",whiteSpace:"nowrap"}}>{contadorSubtitulo()}</div>
                 </div>
               )}
             </div>
@@ -3512,7 +3511,7 @@ export default function App() {
       {pantalla==="calendario"&&<>
         {vista!=="grilla"&&<div style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",width:"100%",display:"flex",alignItems:"center",flexWrap:"nowrap",gap:"8px",padding:"0 16px",boxSizing:"border-box",overflow:"hidden"}}>
           {/* IZQUIERDA: Disponibilidad */}
-          <button onClick={()=>setPantalla("disponibilidad")} style={{flexShrink:0,marginLeft:"38px",display:"flex",alignItems:"center",gap:"6px",padding:"5px 11px",borderRadius:"10px",background:"rgba(253,230,138,0.12)",color:"#FDE68A",fontSize:"12.1px",fontWeight:"500",border:"1.5px solid #FCD34D",height:"26px",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit",letterSpacing:"0.02em",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>
+          <button onClick={()=>setPantalla("disponibilidad")} style={{flexShrink:0,marginLeft:"38px",display:"flex",alignItems:"center",gap:"6px",padding:"5.5px 12px",borderRadius:"10px",background:"rgba(253,230,138,0.12)",color:"#FDE68A",fontSize:"13px",fontWeight:"500",border:"1.5px solid #FCD34D",height:"29px",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit",letterSpacing:"0.02em",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#86EFAC" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}><polyline points="20 6 9 17 4 12"/></svg>
             Disponibilidad
           </button>
