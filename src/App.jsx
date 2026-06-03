@@ -1189,7 +1189,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
   const B_TIPO_D={"Simultánea":{bg:"#FFFFFF",c:"#0057FF"},"Consecutiva":{bg:"#FCE4EC",c:"#9B1349"},"Whispering":{bg:"#F3E5F5",c:"#621982"}};
   const B_MOD_D={"presencial":{bg:"#E6FFF2",c:"#00AF57"},"remoto":{bg:"#E0F7FA",c:"#006972"},"hibrido":{bg:"#FBE9E7",c:"#992B0A"}};
   const B_EST_D=(e)=>e==="Facturado"?{bg:"#FFFFFF",c:"#1A1A1A",b:"#E57373"}:{bg:"#FFFFFF",c:"#1A1A1A",b:"#E57373"};
-  const SL=({t})=><div style={{fontSize:"12px",fontWeight:"700",color:"#1E3A6E",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:"10px",background:"#EEF4FF",padding:"6px 28px",marginLeft:"-28px",marginRight:"-28px",display:"flex",alignItems:"center",gap:"6px",WebkitFontSmoothing:"antialiased"}}>{t}</div>;
+  const SL=({t})=><div style={{fontSize:"13px",fontWeight:"700",color:"#111827",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:"10px",display:"flex",alignItems:"center",gap:"8px",WebkitFontSmoothing:"antialiased"}}>{t}</div>;
   const HR=()=><hr style={{border:"none",borderTop:"1px solid #E5E7EB",margin:"16px 0"}}/>;
   const btnA=(bg)=>({padding:"8px 16px",background:bg,color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontWeight:"500",fontSize:"13px",height:"36px",fontFamily:"inherit"});
   const interpRows=(asigs)=>asigs.reduce((acc,a)=>{
@@ -1212,7 +1212,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           {/* Fila 1: cliente + botones */}
           <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:"16px"}}>
             <div style={{flex:1,minWidth:0}}>
-              <div style={{display:"flex",alignItems:"center",gap:"12px",flexWrap:"nowrap"}}>
+              <div style={{display:"flex",alignItems:"flex-start",gap:"12px",flexWrap:"nowrap"}}>
                 <div style={{fontSize:"29px",fontWeight:"600",color:"#0F172A",lineHeight:1.2}}>{cliente?.nombre_empresa||"—"}</div>
                 {(()=>{
                   const hoyD=new Date();const manana=new Date();manana.setDate(hoyD.getDate()+1);
@@ -1222,6 +1222,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                   if(!esHoy&&!esManana)return null;
                   return <div style={{width:"14px",height:"14px",borderRadius:"50%",background:esHoy?"#22C55E":"#EAB308",boxShadow:esHoy?"0 0 8px #22C55E":"0 0 8px #EAB308",flexShrink:0}}/>;
                 })()}
+                {evento.comentarios&&<div style={{width:"10px",height:"10px",borderRadius:"50%",background:"#F472B6",boxShadow:"0 0 6px #F472B6",flexShrink:0}}/>}
               </div>
               {cliente?.nombre_contacto&&<div style={{fontSize:"19px",fontWeight:"500",color:"#5B616D",fontStyle:"italic",marginTop:"4px"}}>Contacto: {cliente.nombre_contacto}</div>}
             </div>
@@ -1237,7 +1238,6 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           </div>
           {/* Fila 2: nombre del evento — ancho completo */}
           {(evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion)&&<div style={{fontSize:"17px",fontWeight:"500",color:"#111827",marginTop:"6px",wordBreak:"break-word",overflowWrap:"break-word"}}><span style={{fontWeight:"600",color:"#6B7280"}}>Nombre del evento: </span>{(evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion)?.replace(/[\t\r\n]+/g,' ').replace(/\s{2,}/g,' ').trim()}</div>}
-          {evento.nro_oc&&<div style={{fontSize:"14px",color:"#6B7280",marginTop:"4px"}}>N° OC: {evento.nro_oc}</div>}
           {/* Fila 3 (multidía): rango de fechas + tipo/modalidad — sticky */}
           {esMultidia&&<div style={{display:"flex",alignItems:"center",gap:"12px",flexWrap:"wrap",marginTop:"8px",paddingTop:"8px",borderTop:"1px solid #F1F5F9"}}>
             <div style={{fontSize:"15px",fontWeight:"600",color:"#1E293B",whiteSpace:"nowrap"}}>📅 {formatMedioES(evento.fecha_inicio)} → {formatMedioES(evento.fecha_termino)}</div>
@@ -1286,12 +1286,12 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             <SL t="📍 Lugar"/>
             <div style={{display:"flex",flexDirection:"column",gap:"8px",padding:"12px 18px",borderRadius:"16px",border:"2px solid #7C3AED",background:"#F5F3FF"}}>
               <div>
-                <span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 14px",borderRadius:"6px",fontSize:"15px",fontWeight:"700",color:"#8F2424",background:"#FEF2F2",border:"2px solid #CE3434",whiteSpace:"nowrap"}}>📍 {evento.lugar}</span>
+                <span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 20px",borderRadius:"6px",fontSize:"13.5px",fontWeight:"700",color:"#9F4444",background:"#FEF2F2",border:"2px solid #D55252",whiteSpace:"nowrap"}}>📍 {evento.lugar}</span>
                 {evento.lugar_detalle&&<div style={{fontSize:"15px",fontWeight:"400",color:"#6D28D9",marginTop:"2px"}}>{evento.lugar_detalle}</div>}
               </div>
               <div style={{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap"}}>
                 <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((evento.lugar||"")+" "+(evento.lugar_detalle||""))}`} target="_blank" rel="noreferrer"
-                  style={{display:"inline-flex",alignItems:"center",gap:"5px",fontSize:"13px",fontWeight:"500",color:"#114D84",textDecoration:"none",padding:"6px 12px",border:"1px solid #93C5FD",borderRadius:"8px",background:"#EFF6FF"}}>
+                  style={{display:"inline-flex",alignItems:"center",gap:"5px",fontSize:"14px",fontWeight:"500",color:"#0F4577",textDecoration:"none",padding:"8px 16px",border:"1px solid #84B1E4",borderRadius:"8px",background:"#EFF6FF"}}>
                   📍 Ver en Maps
                 </a>
                 <button
@@ -1302,7 +1302,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                       .then(()=>{setGeoOk(true);setTimeout(()=>setGeoOk(false),2500);})
                       .catch(()=>{});
                   }}
-                  style={{padding:"6px 12px",borderRadius:"8px",border:`1px solid ${geoOk?"#86EFAC":"#93C5FD"}`,background:geoOk?"#F0FDF4":"#EFF6FF",display:"inline-flex",alignItems:"center",gap:"5px",cursor:"pointer",fontSize:"13px",fontWeight:"500",color:geoOk?"#166534":"#114D84",fontFamily:"inherit"}}
+                  style={{padding:"8px 16px",borderRadius:"8px",border:`1px solid ${geoOk?"#79D79B":"#84B1E4"}`,background:geoOk?"#F0FDF4":"#EFF6FF",display:"inline-flex",alignItems:"center",gap:"5px",cursor:"pointer",fontSize:"14px",fontWeight:"500",color:geoOk?"#145B2F":"#0F4577",fontFamily:"inherit"}}
                 >{geoOk?"✓ Link copiado":"⊕ Copiar link Maps"}</button>
               </div>
             </div>
@@ -1438,19 +1438,35 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             ))}
           </div>}
           {/* Comentarios */}
-          {evento.comentarios&&<div style={{borderRadius:"10px",padding:"12px 16px",marginTop:"12px",border:"2px solid #F9A8D4",position:"relative"}}>
-            <div style={{position:"absolute",top:"10px",right:"10px",width:"10px",height:"10px",borderRadius:"50%",background:"#F472B6",boxShadow:"0 0 6px #F472B6",animation:"flash 2.4s ease-in-out infinite"}}/>
+          {evento.comentarios&&<div style={{marginTop:"12px"}}>
             <SL t="💬 Comentarios"/>
             <div style={{color:"#0F172A",fontSize:"17px"}}>{evento.comentarios}</div>
           </div>}
           <HR/>
-          {/* Estado */}
+          {/* Información Contable */}
           <div style={{marginBottom:"8px"}}>
-            <SL t="Estado de facturación"/>
-            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:"16px"}}>
-              {(()=>{const be=B_EST_D(evento.estado);return<span style={{display:"inline-flex",alignItems:"center",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:be.c,background:be.bg,border:`2px solid ${be.b||be.c}`,whiteSpace:"nowrap"}}>{evento.estado==="Facturado"?"✓ Facturado":"🟠 Facturación Pendiente"}</span>;})()}
-              {evento.numero_factura&&<div style={{display:"flex",alignItems:"center",gap:"6px",color:"#374151",fontSize:"13px"}}><span style={{color:"#6B7280",fontWeight:"500"}}>N° Factura:</span><span style={{fontWeight:"600"}}>{evento.numero_factura}</span></div>}
-            </div>
+            <SL t="Información Contable"/>
+            {(()=>{
+              const esMagix=/magix/i.test(cliente?.nombre_empresa||"");
+              const diasPago=esMagix?60:30;
+              const calcFechaPago=(iso)=>{if(!iso)return"";const d=new Date(iso+"T12:00:00");d.setDate(d.getDate()+diasPago);const off=(d.getDay()-3+7)%7;d.setDate(d.getDate()-off);return d.toISOString().slice(0,10);};
+              const fechaPago=calcFechaPago(evento.fecha_emision);
+              const fmtCL=(iso)=>{if(!iso)return"";const[y,m,d]=iso.split("-");return`${d}/${m}/${y}`;};
+              const fila=(lbl,val)=>val?<div style={{display:"flex",gap:"6px",color:"#374151",fontSize:"13px",marginBottom:"4px"}}><span style={{color:"#6B7280",fontWeight:"500"}}>{lbl}:</span><span style={{fontWeight:"600"}}>{val}</span></div>:null;
+              return(
+                <div>
+                  <div style={{marginBottom:"8px"}}>
+                    {(()=>{const be=B_EST_D(evento.estado);return<span style={{display:"inline-flex",alignItems:"center",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:be.c,background:be.bg,border:`2px solid ${be.b||be.c}`,whiteSpace:"nowrap"}}>{evento.estado==="Facturado"?"✓ Facturado":"🟠 Facturación Pendiente"}</span>;})()}
+                  </div>
+                  {fila("N° Factura",evento.numero_factura)}
+                  {fila("N° OC",evento.nro_oc)}
+                  {fila("N° HES",evento.nro_hes)}
+                  {fila("Otros",evento.nro_otros)}
+                  {fila("Fecha de emisión",fmtCL(evento.fecha_emision))}
+                  {fechaPago&&fila(`Fecha de pago${esMagix?" (60 días — Magix)":""}`,fmtCL(fechaPago))}
+                </div>
+              );
+            })()}
           </div>
           {/* Historial — al final de todo */}
           <div style={{fontSize:"12px",color:"#6B7280",display:"flex",gap:"16px",flexWrap:"wrap",paddingTop:"12px",marginTop:"12px",borderTop:"1px solid #E5E7EB"}}>

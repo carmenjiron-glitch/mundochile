@@ -206,6 +206,14 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
           animation: dotEsHoy ? "flash 1.2s ease-in-out infinite" : "flashYellow 1.8s ease-in-out infinite",
         }}/>
       )}
+      {!agendaSmall && ev.comentarios && (
+        <div style={{
+          position:"absolute", top:"8px", right: dotVisible ? "28px" : "8px",
+          width:"10px", height:"10px", borderRadius:"50%",
+          background:"#F472B6", boxShadow:"0 0 6px #F472B6",
+          zIndex: 10,
+        }}/>
+      )}
 
       {agendaSmall ? (
         /* ── AGENDA: layout dos columnas ─────────────────────────────────── */
@@ -213,11 +221,12 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
           {/* COLUMNA IZQUIERDA — info del evento */}
           <div style={{ display:"flex", flexDirection:"column", gap:"10px" }}>
-            <div style={{ display:"flex", alignItems:"center", flexWrap:"nowrap", gap:8, marginBottom:4 }}>
+            <div style={{ display:"flex", alignItems:"flex-start", flexWrap:"nowrap", gap:8, marginBottom:4 }}>
               <div style={{ fontSize:25, fontWeight:600, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em" }}>
                 {cliente?.nombre_empresa || "—"}
               </div>
               {dotVisible && <div style={{ width:"13px", height:"13px", borderRadius:"50%", background:dotEsHoy?"#22C55E":"#EAB308", boxShadow:dotEsHoy?"0 0 6px #22C55E":"0 0 6px #EAB308", flexShrink:0, marginLeft:"16px", animation:dotEsHoy?"flash 1.2s ease-in-out infinite":"flashYellow 1.8s ease-in-out infinite" }}/>}
+              {ev.comentarios && <div style={{ width:"10px", height:"10px", borderRadius:"50%", background:"#F472B6", boxShadow:"0 0 6px #F472B6", flexShrink:0 }}/>}
               {pillMultidia}
             </div>
 
