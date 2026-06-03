@@ -166,7 +166,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
       >
         📅 Día {diaXdeY.x} de {diaXdeY.y} ›
         {!agendaSmall && ev.comentarios && (
-          <div style={{position:"absolute",bottom:"-5px",right:"-5px",width:"10px",height:"10px",borderRadius:"50%",background:"#F472B6",boxShadow:"0 0 6px #F472B6",zIndex:11}}/>
+          <div style={{position:"absolute",bottom:"-5px",right:"-9px",width:"10px",height:"10px",borderRadius:"50%",background:"#F472B6",boxShadow:"0 0 6px #F472B6",zIndex:11}}/>
         )}
       </div>
     );
