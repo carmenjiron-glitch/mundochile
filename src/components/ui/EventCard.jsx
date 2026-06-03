@@ -13,8 +13,8 @@ const nombreCorto = (nombre, apellido) => {
 };
 
 // ── Íconos SVG nítidos ────────────────────────────────────────────────────────
-const IconoSimultanea = () => (
-  <svg width="12.6" height="12.6" viewBox="0 0 24 24" fill="none"
+const IconoSimultanea = ({ size=12.6 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
     stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="9" y="2" width="6" height="12" rx="3"/>
     <path d="M5 10a7 7 0 0 0 14 0"/>
@@ -23,8 +23,8 @@ const IconoSimultanea = () => (
   </svg>
 );
 
-const IconoPresencial = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+const IconoPresencial = ({ size=12 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
     stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M3 9.5L12 3l9 6.5V21a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/>
     <path d="M9 22V12h6v10"/>
@@ -70,8 +70,9 @@ const BADGE = {
   "Facturación Pendiente": { bg:"#FFFFFF", c:"#1A1A1A", b:"#E57373", bw:"2px", fw:400 },
 };
 
-const Chip = ({ label, emoji, fontSize=12, padding="4px 10px" }) => {
-  const s = BADGE[label] || { bg:"#F1F5F9", c:"#475569", b:"#CBD5E1" };
+const Chip = ({ label, emoji, fontSize=12, padding="4px 10px", dark=false }) => {
+  const s0 = BADGE[label] || { bg:"#F1F5F9", c:"#475569", b:"#CBD5E1" };
+  const s = dark ? { ...s0, bg:darken(s0.bg,0.9), c:darken(s0.c,0.9), b:darken(s0.b,0.9) } : s0;
   return (
     <span style={{
       display:"inline-flex", alignItems:"center", gap:4,
@@ -381,8 +382,8 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
           {/* Badges tipo + modalidad */}
           <div style={{ display:"flex", gap:5, flexWrap:"wrap", alignItems:"center" }}>
-            {(Array.isArray(ev.tipo)?ev.tipo:[ev.tipo||"Simultánea"]).map(t=><Chip key={t} label={t} emoji={t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤 ":"🤫 "} fontSize={12} padding="4px 10px" />)}
-            <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?<IconoPresencial/>:ev.modalidad==="hibrido"?"🔀 ":"💻 "} fontSize={12} padding="4px 10px" />
+            {(Array.isArray(ev.tipo)?ev.tipo:[ev.tipo||"Simultánea"]).map(t=><Chip key={t} label={t} emoji={t==="Simultánea"?<IconoSimultanea size={14}/>:t==="Consecutiva"?"🎤 ":"🤫 "} fontSize={13} padding="4px 11px" dark={true} />)}
+            <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?<IconoPresencial size={13}/>:ev.modalidad==="hibrido"?"🔀 ":"💻 "} fontSize={13} padding="4px 11px" dark={true} />
           </div>
 
           {/* Plataforma / Lugar */}
