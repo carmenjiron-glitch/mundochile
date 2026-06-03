@@ -161,9 +161,13 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
           border:"1px solid #BAD7F0",
           whiteSpace:"nowrap", flexShrink:0,
           userSelect:"none",
+          position:"relative",
         }}
       >
         📅 Día {diaXdeY.x} de {diaXdeY.y} ›
+        {!agendaSmall && ev.comentarios && (
+          <div style={{position:"absolute",bottom:"-5px",right:"-5px",width:"10px",height:"10px",borderRadius:"50%",background:"#F472B6",boxShadow:"0 0 6px #F472B6",zIndex:11}}/>
+        )}
       </div>
     );
   })();
@@ -196,13 +200,13 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
       }}
     >
       {/* Indicador hoy/mañana + comentarios — solo absoluto en vistas semana/día */}
-      {!agendaSmall && (dotVisible || ev.comentarios) && (
+      {!agendaSmall && (dotVisible || (!diaXdeY && ev.comentarios)) && (
         <div style={{
           position:"absolute", top:"8px", right:"8px",
           display:"flex", alignItems:"center", gap:"5px",
           zIndex:10,
         }}>
-          {ev.comentarios && (
+          {!diaXdeY && ev.comentarios && (
             <div style={{width:"10px",height:"10px",borderRadius:"50%",background:"#F472B6",boxShadow:"0 0 6px #F472B6"}}/>
           )}
           {dotVisible && (
