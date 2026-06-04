@@ -353,11 +353,11 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
         /* ── SEMANA / DÍA: layout original ──────────────────────────────── */
         <>
           {/* Nombre cliente + pill multidía */}
-          <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:8, marginBottom:4 }}>
-            <div style={{ fontSize:21, fontWeight:600, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", flex:1, minWidth:0 }}>
+          {diaXdeY && <div style={{ position:"absolute", top:"8px", right:"8px", zIndex:11 }}>{pillMultidia}</div>}
+          <div style={{ marginBottom:4, paddingRight: diaXdeY ? "108px" : 0 }}>
+            <div style={{ fontSize:21, fontWeight:600, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", minWidth:0 }}>
               {cliente?.nombre_empresa || "—"}
             </div>
-            {pillMultidia}
           </div>
 
           {/* Contacto */}
