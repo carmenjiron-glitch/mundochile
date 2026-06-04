@@ -682,7 +682,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                     </label>
                   );})}
                 </div></div>
-              <div style={S.camp}><label style={S.lbl}>🔄 Modalidad</label>
+              <div style={S.camp}><label style={S.lbl}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:"inline",verticalAlign:"middle",marginRight:"2px"}}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Modalidad</label>
                 <select style={S.sel} value={form.modalidad} onChange={e=>setF("modalidad",e.target.value)}>{MODALIDADES.map(m=><option key={m} value={m}>{LBL_MODAL[m]}</option>)}</select></div>
             </div>
             {/* Fechas */}
@@ -891,14 +891,14 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           {tab==="dias"&&esMultidia&&<>
             {/* Panel global */}
             <div style={{background:"#EEF2FF",borderRadius:"10px",padding:"12px 16px",marginBottom:"16px",border:"1.5px solid #C7D2FE"}}>
-              <div style={{fontSize:"12px",fontWeight:"700",color:"#4338CA",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:"10px"}}>🌐 Información General del evento — Aplica a todos los días salvo excepción</div>
+              <div style={{fontSize:"12.84px",fontWeight:"700",color:"#4338CA",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:"10px"}}>🌐 Información General del evento — Aplica a todos los días salvo excepción</div>
               <div style={{display:"flex",gap:"9px",flexWrap:"wrap",alignItems:"center",marginBottom:"8px"}}>
-                {tiposArr(form.tipo).map(t=><span key={t} style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"4px 11px",borderRadius:"20px",fontSize:"13px",fontWeight:"600",color:(B_TIPO[t]||{ct:"#294099"}).ct,background:(B_TIPO[t]||{bg:"#EEF2FF"}).bg,border:`1.5px solid ${(B_TIPO[t]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>{t}</span>)}
-                {form.modalidad&&<span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"4px 11px",borderRadius:"20px",fontSize:"13px",fontWeight:"600",color:(B_MOD[form.modalidad]||{ct:"#4B4B4B"}).ct,background:(B_MOD[form.modalidad]||{bg:"#F7F7F5"}).bg,border:`1.5px solid ${(B_MOD[form.modalidad]||{c:"#6B6B6B"}).c}`,whiteSpace:"nowrap"}}>{form.modalidad==="presencial"?<IconPresencial size={14} color={(B_MOD.presencial).ct}/>:form.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[form.modalidad]}</span>}
-                {(form.modalidad==="presencial"||form.modalidad==="hibrido")&&form.lugar&&<span style={{display:"inline-flex",alignItems:"center",padding:"4px 11px",borderRadius:"20px",fontSize:"13px",fontWeight:"600",color:"#5B21B6",background:"#EDE9FE",border:"1.5px solid #7C3AED",whiteSpace:"nowrap"}}>📍 {form.lugar}</span>}
+                {tiposArr(form.tipo).map(t=><span key={t} style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"4.28px 11.77px",borderRadius:"21.4px",fontSize:"13.91px",fontWeight:"600",color:(B_TIPO[t]||{ct:"#294099"}).ct,background:(B_TIPO[t]||{bg:"#EEF2FF"}).bg,border:`1.5px solid ${(B_TIPO[t]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>{TIPO_ICON[t]} {t}</span>)}
+                {form.modalidad&&<span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"4.28px 11.77px",borderRadius:"21.4px",fontSize:"13.91px",fontWeight:"600",color:(B_MOD[form.modalidad]||{ct:"#4B4B4B"}).ct,background:(B_MOD[form.modalidad]||{bg:"#F7F7F5"}).bg,border:`1.5px solid ${(B_MOD[form.modalidad]||{c:"#6B6B6B"}).c}`,whiteSpace:"nowrap"}}>{form.modalidad==="presencial"?<IconPresencial size={15} color={(B_MOD.presencial).ct}/>:form.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[form.modalidad]}</span>}
+                {(form.modalidad==="presencial"||form.modalidad==="hibrido")&&form.lugar&&<span style={{display:"inline-flex",alignItems:"center",padding:"4.28px 11.77px",borderRadius:"21.4px",fontSize:"13.91px",fontWeight:"600",color:"#5B21B6",background:"#EDE9FE",border:"1.5px solid #7C3AED",whiteSpace:"nowrap"}}>📍 {form.lugar}</span>}
               </div>
-              <div style={{display:"flex",alignItems:"center",gap:"6px",fontSize:"13px",fontWeight:"500",color:"#4338CA"}}>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4338CA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="13" r="8"/><polyline points="12 9 12 13 15 16"/><path d="M10 3h4"/><path d="M12 3v2"/></svg>
+              <div style={{display:"flex",alignItems:"center",gap:"6px",fontSize:"13.91px",fontWeight:"500",color:"#4338CA"}}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4338CA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="13" r="8"/><polyline points="12 9 12 13 15 16"/><path d="M10 3h4"/><path d="M12 3v2"/></svg>
                 Horario global: <strong>{form.hora_inicio?.slice(0,5)||"–"} – {form.hora_termino?.slice(0,5)||"–"}</strong>
               </div>
             </div>
@@ -912,7 +912,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
               <div style={{background:tieneOverride?"#FFFBEB":C.grisMed,padding:"12px 16px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                 <div>
                   <div style={{fontWeight:"600",color:tieneOverride?"#92400E":"#234A80",fontSize:"16px"}}>📅 {formatMedioES(dia.fecha)}</div>
-                  <div style={{fontSize:"13px",color:"#64748B",marginTop:"2px"}}>{dia.hora_inicio?.slice(0,5)||"–"} – {dia.hora_termino?.slice(0,5)||"–"} · {pluralizarJornada(dia.jornada)||""}</div>
+                  <div style={{fontSize:"13.91px",color:"#5A687D",marginTop:"2px"}}>{dia.hora_inicio?.slice(0,5)||"–"} – {dia.hora_termino?.slice(0,5)||"–"} hrs — {pluralizarJornada(dia.jornada)||""}</div>
                 </div>
                 <div style={{display:"flex",gap:"6px",alignItems:"center",flexWrap:"wrap",justifyContent:"flex-end"}}>
                   {dia.tipo&&tiposArr(dia.tipo).map(t=><span key={t} style={{display:"inline-flex",padding:"3px 9px",borderRadius:"20px",fontSize:"13px",fontWeight:"700",color:(B_TIPO[t]||{ct:"#294099"}).ct,background:(B_TIPO[t]||{bg:"#EEF2FF"}).bg,border:`1.5px solid ${(B_TIPO[t]||{c:"#3B5BDB"}).c}`}}>⚡ {t}</span>)}
