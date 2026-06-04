@@ -1206,47 +1206,174 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
     </div>:null;
   return (
     <div style={{position:"fixed",top:0,left:0,width:"100vw",height:"100vh",background:"rgba(0,0,0,0.5)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(4px)",padding:"16px",boxSizing:"border-box"}}>
-      <div style={{background:"#FFFFFF",borderRadius:"20px",width:"100%",maxWidth:"760px",maxHeight:"90vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,0.25)",position:"relative",zIndex:1001}}>
+      <div style={{background:"#FFFFFF",borderRadius:"20px",width:"100%",maxWidth:"1140px",maxHeight:"90vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,0.25)",position:"relative",zIndex:1001}}>
         {/* Header */}
         <div style={{background:"#FFFFFF",padding:"20px 24px 14px",borderRadius:"20px 20px 0 0",flexShrink:0,borderBottom:`10px solid ${colorCliente(evento.cliente_id)}`,position:"sticky",top:0,zIndex:10,boxShadow:"0 2px 8px rgba(0,0,0,0.08)"}}>
-          {/* Fila 1: cliente + botones */}
-          <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:"16px"}}>
-            <div style={{flex:1,minWidth:0}}>
-              <div style={{display:"flex",alignItems:"flex-start",gap:"12px",flexWrap:"nowrap"}}>
-                <div style={{fontSize:"29px",fontWeight:"600",color:"#0F172A",lineHeight:1.2,flex:1,minWidth:0}}>{cliente?.nombre_empresa||"—"}</div>
-                {(()=>{
-                  const hoyD=new Date();const manana=new Date();manana.setDate(hoyD.getDate()+1);
-                  const fechaEvento=desdeISO(evento.fecha_inicio);
-                  const esHoy=fechaEvento.toDateString()===hoyD.toDateString();
-                  const esManana=fechaEvento.toDateString()===manana.toDateString();
-                  if(!esHoy&&!esManana)return null;
-                  return <div style={{width:"14px",height:"14px",borderRadius:"50%",background:esHoy?"#22C55E":"#EAB308",boxShadow:esHoy?"0 0 8px #22C55E":"0 0 8px #EAB308",flexShrink:0}}/>;
-                })()}
-                {evento.comentarios&&<div style={{width:"10px",height:"10px",borderRadius:"50%",background:"#F472B6",boxShadow:"0 0 6px #F472B6",flexShrink:0}}/>}
-              </div>
-              {cliente?.nombre_contacto&&<div style={{fontSize:"19px",fontWeight:"500",color:"#5B616D",fontStyle:"italic",marginTop:"4px"}}>Contacto: {cliente.nombre_contacto}</div>}
+          {/* Fila 1: dots izquierda, botones derecha en una línea */}
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"10px"}}>
+            <div style={{display:"flex",alignItems:"center",gap:"6px"}}>
+              {(()=>{
+                const hoyD=new Date();const manana=new Date();manana.setDate(hoyD.getDate()+1);
+                const fechaEvento=desdeISO(evento.fecha_inicio);
+                const esHoy=fechaEvento.toDateString()===hoyD.toDateString();
+                const esManana=fechaEvento.toDateString()===manana.toDateString();
+                if(!esHoy&&!esManana)return null;
+                return <div style={{width:"14px",height:"14px",borderRadius:"50%",background:esHoy?"#22C55E":"#EAB308",boxShadow:esHoy?"0 0 8px #22C55E":"0 0 8px #EAB308",flexShrink:0}}/>;
+              })()}
+              {evento.comentarios&&<div style={{width:"10px",height:"10px",borderRadius:"50%",background:"#F472B6",boxShadow:"0 0 6px #F472B6",flexShrink:0}}/>}
             </div>
-            <div style={{display:"flex",flexDirection:"column",gap:"6px",alignItems:"flex-end",flexShrink:0}}>
-              <div style={{display:"flex",gap:"6px",flexWrap:"wrap"}}>
-                <button onClick={onCerrar} style={{display:"flex",alignItems:"center",gap:"6px",padding:"8px 14px",borderRadius:"8px",background:"#F1F5F9",color:"#374151",border:"1px solid #94A3B8",cursor:"pointer",fontSize:"13px",fontWeight:"500",fontFamily:"inherit"}} onMouseEnter={e=>{e.currentTarget.style.background="#E2E8F0";e.currentTarget.style.border="1px solid #64748B";}} onMouseLeave={e=>{e.currentTarget.style.background="#F1F5F9";e.currentTarget.style.border="1px solid #94A3B8";}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>Volver</button>
-                <button onClick={onVerFicha} style={btnA("#1971C2")}>📄 Ficha</button>
-                <button onClick={onEditar} style={btnA("#E67700")}><span style={{filter:"brightness(10)"}}>✏️</span> Editar</button>
-                <button onClick={onEliminar} style={btnA("#E03131")}>🗑 Eliminar</button>
-                <button onClick={onCerrar} style={{background:"#FFF5F5",border:"1.5px solid #FC8181",cursor:"pointer",fontSize:"13px",color:"#E53E3E",padding:"8px 16px",borderRadius:"8px",fontFamily:"inherit",fontWeight:"500",height:"36px"}}>✕ Cerrar</button>
-              </div>
+            <div style={{display:"flex",gap:"6px",flexWrap:"nowrap",alignItems:"center",flexShrink:0}}>
+              <button onClick={onCerrar} style={{display:"flex",alignItems:"center",gap:"6px",padding:"8px 14px",borderRadius:"8px",background:"#F1F5F9",color:"#374151",border:"1px solid #94A3B8",cursor:"pointer",fontSize:"13px",fontWeight:"500",fontFamily:"inherit",whiteSpace:"nowrap"}} onMouseEnter={e=>{e.currentTarget.style.background="#E2E8F0";}} onMouseLeave={e=>{e.currentTarget.style.background="#F1F5F9";}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>Volver</button>
+              <button onClick={onVerFicha} style={btnA("#1971C2")}>📄 Ficha</button>
+              <button onClick={onEditar} style={btnA("#E67700")}><span style={{filter:"brightness(10)"}}>✏️</span> Editar</button>
+              <button onClick={onEliminar} style={btnA("#E03131")}>🗑 Eliminar</button>
+              <button onClick={onCerrar} style={{background:"#FFF5F5",border:"1.5px solid #FC8181",cursor:"pointer",fontSize:"13px",color:"#E53E3E",padding:"8px 16px",borderRadius:"8px",fontFamily:"inherit",fontWeight:"500",height:"36px",whiteSpace:"nowrap"}}>✕ Cerrar</button>
             </div>
           </div>
-          {/* Fila 2: nombre del evento — ancho completo */}
-          {(evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion)&&<div style={{fontSize:"17px",fontWeight:"500",color:"#111827",marginTop:"6px",wordBreak:"break-word",overflowWrap:"break-word"}}><span style={{fontWeight:"600",color:"#6B7280"}}>Nombre del evento: </span>{(evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion)?.replace(/[\t\r\n]+/g,' ').replace(/\s{2,}/g,' ').trim()}</div>}
-          {/* Fila 3 (multidía): rango de fechas + tipo/modalidad — sticky */}
-          {esMultidia&&<div style={{display:"flex",alignItems:"center",gap:"12px",flexWrap:"wrap",marginTop:"8px",paddingTop:"8px",borderTop:"1px solid #F1F5F9"}}>
+          {/* Fila 2: nombre cliente col1 / contacto col2 */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"16px",marginBottom:"6px",alignItems:"baseline"}}>
+            <div style={{fontSize:"29px",fontWeight:"600",color:"#0F172A",lineHeight:1.2,minWidth:0}}>{cliente?.nombre_empresa||"—"}</div>
+            {cliente?.nombre_contacto&&<div style={{fontSize:"19px",fontWeight:"500",color:"#5B616D",fontStyle:"italic"}}>{cliente.nombre_contacto}</div>}
+          </div>
+          {/* Fila 3: nombre del evento ancho completo */}
+          {(evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion)&&<div style={{fontSize:"17px",fontWeight:"500",color:"#111827",marginBottom:"8px",wordBreak:"break-word",overflowWrap:"break-word"}}><span style={{fontWeight:"600",color:"#6B7280"}}>Nombre del evento: </span>{(evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion)?.replace(/[\t\r\n]+/g,' ').replace(/\s{2,}/g,' ').trim()}</div>}
+          {/* Fila 4 (multidía): franja color con fechas izq + pills der */}
+          {esMultidia&&<div style={{background:`${colorCliente(evento.cliente_id)}18`,border:`2px solid ${colorCliente(evento.cliente_id)}`,borderRadius:"10px",padding:"8px 14px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:"12px",marginTop:"4px"}}>
             <div style={{fontSize:"15px",fontWeight:"600",color:"#1E293B",whiteSpace:"nowrap"}}>📅 {formatMedioES(evento.fecha_inicio)} → {formatMedioES(evento.fecha_termino)}</div>
-            {tiposArr(evento.tipo).map(t=><span key={t} style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"4px 10px",borderRadius:"20px",fontSize:"13px",fontWeight:"500",lineHeight:"1.4",color:(B_TIPO_D[t]||{c:"#2F49AF"}).c,background:(B_TIPO_D[t]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO_D[t]||{c:"#2F49AF"}).c}`,whiteSpace:"nowrap"}}>{t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤":"🤫"} {t}</span>)}
-            <span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"4px 10px",borderRadius:"20px",fontSize:"13px",fontWeight:"500",lineHeight:"1.4",color:(B_MOD_D[evento.modalidad]||{c:"#565656"}).c,background:(B_MOD_D[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD_D[evento.modalidad]||{c:"#565656"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?<IconPresencial size={13} color={(B_MOD_D[evento.modalidad]||{c:"#565656"}).c}/>:evento.modalidad==="hibrido"?"🔀":"💻"} {LBL[evento.modalidad]||evento.modalidad}</span>
+            <div style={{display:"flex",gap:"8px",flexShrink:0,alignItems:"center"}}>
+              {tiposArr(evento.tipo).map(t=><span key={t} style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"4px 10px",borderRadius:"20px",fontSize:"13px",fontWeight:"500",lineHeight:"1.4",color:(B_TIPO_D[t]||{c:"#2F49AF"}).c,background:(B_TIPO_D[t]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO_D[t]||{c:"#2F49AF"}).c}`,whiteSpace:"nowrap"}}>{t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤":"🤫"} {t}</span>)}
+              <span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"4px 10px",borderRadius:"20px",fontSize:"13px",fontWeight:"500",lineHeight:"1.4",color:(B_MOD_D[evento.modalidad]||{c:"#565656"}).c,background:(B_MOD_D[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD_D[evento.modalidad]||{c:"#565656"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?<IconPresencial size={13} color={(B_MOD_D[evento.modalidad]||{c:"#565656"}).c}/>:evento.modalidad==="hibrido"?"🔀":"💻"} {LBL[evento.modalidad]||evento.modalidad}</span>
+            </div>
           </div>}
         </div>
         {/* Cuerpo */}
         <div style={{overflowY:"auto",flex:1,padding:"24px 28px"}}>
+          {esMultidia?(
+            <>
+              {/* ── MULTIDÍA: dos columnas ── */}
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"20px",marginBottom:"20px"}}>
+                {/* COL IZQ: Agenda + Comentarios */}
+                <div style={{display:"flex",flexDirection:"column",gap:"16px"}}>
+                  {dias.length>0&&<div style={{border:"2px solid #1D4ED8",borderRadius:"12px",background:"#EFF6FF",overflow:"hidden"}}>
+                    <div style={{background:"#FEF9C3",padding:"8px 14px",fontWeight:"700",fontSize:"13px",color:"#111827",textTransform:"uppercase",letterSpacing:"0.06em"}}>🗓️ Agenda del evento</div>
+                    <div style={{padding:"12px"}}>
+                      <div style={{borderRadius:"8px",overflow:"hidden",border:"1px solid #BFDBFE"}}>
+                        <table style={{width:"100%",borderCollapse:"collapse"}}>
+                          <thead><tr style={{background:"#1E3A6E",color:"#fff"}}>
+                            {["Día","Fecha","Horario","Jornada"].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:"12px",fontWeight:"600",WebkitFontSmoothing:"antialiased"}}>{h}</th>)}
+                          </tr></thead>
+                          <tbody>{dias.map((dia,dIdx)=>(
+                            <tr key={dIdx} style={{background:dIdx%2===0?"#fff":"#F8FAFC",borderBottom:"1px solid #BFDBFE"}}>
+                              <td onClick={()=>{onNavDia&&onNavDia(dIdx);}} style={{padding:"7px 12px",fontSize:"13px",fontWeight:"600",color:"#1A6FD4",cursor:"pointer",textDecoration:"underline",textDecorationColor:"#93C5FD",WebkitFontSmoothing:"antialiased"}} onMouseEnter={e=>e.currentTarget.style.color="#1D4ED8"} onMouseLeave={e=>e.currentTarget.style.color="#1A6FD4"}>Día {dIdx+1}</td>
+                              <td style={{padding:"7px 12px",fontSize:"13px",color:"#0F172A",WebkitFontSmoothing:"antialiased"}}>{formatLargo(dia.fecha)}</td>
+                              <td style={{padding:"7px 12px",fontSize:"13px",color:"#0F172A",WebkitFontSmoothing:"antialiased"}}>{dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs</td>
+                              <td style={{padding:"7px 12px",fontSize:"13px",color:"#475569",WebkitFontSmoothing:"antialiased"}}>{pluralizarJornada(dia.jornada)}</td>
+                            </tr>
+                          ))}</tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>}
+                  {evento.comentarios&&<div style={{border:"2px solid #F472B6",borderRadius:"12px",background:"#FFF0F6",overflow:"hidden"}}>
+                    <div style={{background:"#FEF9C3",padding:"8px 14px",fontWeight:"700",fontSize:"13px",color:"#111827",textTransform:"uppercase",letterSpacing:"0.06em"}}>💬 Comentarios</div>
+                    <div style={{padding:"12px 14px",color:"#0F172A",fontSize:"16px"}}>{evento.comentarios}</div>
+                  </div>}
+                </div>
+                {/* COL DER: Detalle por día */}
+                <div style={{display:"flex",flexDirection:"column",gap:"12px"}}>
+                  {(()=>{
+                    const todosIguales=dias.length>1&&dias.every(d=>
+                      d.hora_inicio===dias[0].hora_inicio&&
+                      d.hora_termino===dias[0].hora_termino&&
+                      d.jornada===dias[0].jornada&&
+                      JSON.stringify((d.asignaciones_dia||[]).map(a=>a.interprete_id).sort())===JSON.stringify((dias[0].asignaciones_dia||[]).map(a=>a.interprete_id).sort())&&
+                      JSON.stringify((d.equipos_dia||[]).map(e=>e.tipo_equipo).sort())===JSON.stringify((dias[0].equipos_dia||[]).map(e=>e.tipo_equipo).sort())
+                    );
+                    const renderDia=(dia,titulo)=>{
+                      const gDia={};
+                      (dia.asignaciones_dia||[]).forEach(a=>{
+                        const par=pares.find(p=>p.id===a.par_id);
+                        const interp=interpretes.find(x=>x.id===a.interprete_id);
+                        if(!interp)return;
+                        const key=par?.descripcion||"Sin par";
+                        const idioma=par?.idioma_origen||"";
+                        if(!gDia[key])gDia[key]={idioma,items:[]};
+                        gDia[key].items.push({interp,isHost:!!a.es_host_zoom});
+                      });
+                      const eqsDia=dia.equipos_dia||[];
+                      return(
+                        <div style={{border:"2px solid #1D4ED8",borderRadius:"12px",background:"#EFF6FF",overflow:"hidden"}}>
+                          <div style={{background:"#FEF9C3",padding:"8px 14px",fontWeight:"700",fontSize:"13px",color:"#111827",textTransform:"uppercase",letterSpacing:"0.06em"}}>{titulo}</div>
+                          <div style={{padding:"12px 14px"}}>
+                            <div style={{fontSize:"14px",fontWeight:"600",color:"#0F172A",marginBottom:"10px"}}>🕐 {dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs{dia.jornada&&<span style={{fontWeight:"400",color:"#6B7280",fontSize:"13px"}}> · {pluralizarJornada(dia.jornada)}</span>}</div>
+                            {Object.entries(gDia).map(([key,grupo])=>{
+                              const pillClr=IDIOMA_PILL_CLR[grupo.idioma]||"#4C6EF5";
+                              return(<div key={key} style={{marginBottom:"10px"}}>
+                                <div style={{fontSize:"13px",fontWeight:"600",color:"#1256A3",textTransform:"uppercase",letterSpacing:"0.06em",textAlign:"center",marginBottom:"5px",WebkitFontSmoothing:"antialiased"}}>{key}</div>
+                                <div style={{display:"flex",flexWrap:"wrap",gap:"5px"}}>
+                                  {grupo.items.map(({interp,isHost},i)=>(
+                                    <span key={i} style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"3px 10px",borderRadius:"20px",fontSize:"13px",fontWeight:"500",lineHeight:"1.4",color:"#1A1A1A",background:"#FFFFFF",border:`2px solid ${pillClr}`,whiteSpace:"nowrap"}}>
+                                      {isHost&&<span style={{fontSize:"11px"}}>🔑</span>}
+                                      <FlagImg idioma={grupo.idioma}/>
+                                      {interp.nombre}{interp.apellido?" "+interp.apellido:""}
+                                    </span>
+                                  ))}
+                                  {grupo.items.length===1&&<span style={{display:"inline-flex",alignItems:"center",padding:"3px 10px",borderRadius:"20px",fontSize:"13px",fontWeight:"500",color:"#6B7280",background:"#F3F4F6",border:"1px dashed #9CA3AF",fontStyle:"italic"}}>Sin partner</span>}
+                                </div>
+                              </div>);
+                            })}
+                            {eqsDia.map((eq,eIdx)=>(
+                              <div key={eIdx} style={{fontSize:"13px",color:"#6B7280",padding:"5px 10px",background:"#F1F5F9",border:"1px solid #E2E8F0",borderRadius:"6px",marginTop:"6px",display:"flex",alignItems:"center",gap:"6px"}}>
+                                <IconAV size={14}/> {eq.tipo_equipo==="fijo"?"Sistema fijo":eq.tipo_equipo==="portatil"?"Sistema portátil":"Cabina portátil"}
+                                {eq.proveedor_nombre&&` · ${eq.proveedor_nombre}`}{eq.num_receptores>0&&` · ${eq.num_receptores} receptores`}{eq.num_cabinas>0&&` · ${eq.num_cabinas} cabinas`}
+                              </div>
+                            ))}
+                            {!Object.keys(gDia).length&&!eqsDia.length&&<div style={{fontSize:"13px",color:"#9CA3AF",fontStyle:"italic"}}>Sin intérpretes ni equipos asignados</div>}
+                          </div>
+                        </div>
+                      );
+                    };
+                    if(todosIguales){return(<>
+                      {renderDia(dias[0],"📅 Todos los días")}
+                      <div style={{textAlign:"center",fontSize:"13px",color:"#6B7280",fontStyle:"italic",padding:"4px 0"}}>Todos los días son iguales</div>
+                    </>);}
+                    return dias.map((dia,dIdx)=>(<div key={dia.id||dIdx}>{renderDia(dia,`📅 Día ${dIdx+1} — ${formatLargo(dia.fecha)}`)}</div>));
+                  })()}
+                </div>
+              </div>
+              {/* Full width: Info Contable */}
+              <div style={{border:"2px solid #EA580C",borderRadius:"12px",background:"#FFF7ED",overflow:"hidden",marginBottom:"16px"}}>
+                <div style={{background:"#FEF9C3",padding:"8px 14px",fontWeight:"700",fontSize:"13px",color:"#111827",textTransform:"uppercase",letterSpacing:"0.06em"}}>📊 Información Contable</div>
+                <div style={{padding:"14px 16px"}}>
+                  {(()=>{
+                    const esMagix=/magix/i.test(cliente?.nombre_empresa||"");
+                    const diasPago=esMagix?60:30;
+                    const calcFechaPago=(iso)=>{if(!iso)return"";const d=new Date(iso+"T12:00:00");d.setDate(d.getDate()+diasPago);const off=(d.getDay()-3+7)%7;d.setDate(d.getDate()-off);return d.toISOString().slice(0,10);};
+                    const fechaPago=calcFechaPago(evento.fecha_emision);
+                    const fmtCL=(iso)=>{if(!iso)return"";const[y,m,d]=iso.split("-");return`${d}/${m}/${y}`;};
+                    const fila=(lbl,val)=>val?<div style={{display:"flex",gap:"6px",color:"#2C3441",fontSize:"13px",marginBottom:"4px"}}><span style={{color:"#6B7280",fontWeight:"500"}}>{lbl}:</span><span style={{fontWeight:"600"}}>{val}</span></div>:null;
+                    const be=B_EST_D(evento.estado);
+                    return(<div>
+                      <div style={{marginBottom:"8px"}}><span style={{display:"inline-flex",alignItems:"center",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:be.c,background:be.bg,border:`2px solid ${be.b||be.c}`,whiteSpace:"nowrap"}}>{evento.estado==="Facturado"?"✓ Facturado":"🟠 Facturación Pendiente"}</span></div>
+                      {fila("N° Factura",evento.numero_factura)}
+                      {fila("N° OC",evento.nro_oc)}
+                      {fila("N° HES",evento.nro_hes)}
+                      {fila("Otros",evento.nro_otros)}
+                      {fila("Fecha de emisión",fmtCL(evento.fecha_emision))}
+                      {fechaPago&&fila(`Fecha de pago${esMagix?" (60 días — Magix)":""}`,fmtCL(fechaPago))}
+                    </div>);
+                  })()}
+                </div>
+              </div>
+              {/* Historial */}
+              <div style={{fontSize:"12px",color:"#6B7280",display:"flex",gap:"16px",flexWrap:"wrap",paddingTop:"12px",borderTop:"1px solid #E5E7EB"}}>
+                {evento.created_by_nombre&&<span>Creado por <strong>{evento.created_by_nombre}</strong>{evento.created_at&&" el "+new Date(evento.created_at).toLocaleString("es-CL")}</span>}
+                {evento.edited_by_nombre&&<span>Última edición por <strong>{evento.edited_by_nombre}</strong>{evento.updated_at&&" el "+new Date(evento.updated_at).toLocaleString("es-CL")}</span>}
+              </div>
+            </>
+          ):(
+            /* ── UN DÍA: layout original ── */
+            <>
           {/* Fecha + Horario + Badges — solo para evento de un día */}
           {!esMultidia&&<>
             <div style={{fontSize:"16px",fontWeight:"500",color:"#1E293B",marginBottom:"4px"}}>
@@ -1476,6 +1603,8 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             {evento.created_by_nombre&&<span>Creado por <strong>{evento.created_by_nombre}</strong>{evento.created_at&&" el "+new Date(evento.created_at).toLocaleString("es-CL")}</span>}
             {evento.edited_by_nombre&&<span>Última edición por <strong>{evento.edited_by_nombre}</strong>{evento.updated_at&&" el "+new Date(evento.updated_at).toLocaleString("es-CL")}</span>}
           </div>
+            </>
+          )}
         </div>
       </div>
     </div>
