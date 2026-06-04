@@ -353,7 +353,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
         /* ── SEMANA / DÍA: layout original ──────────────────────────────── */
         <>
           {/* Nombre cliente + pill multidía */}
-          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:8, marginBottom:4 }}>
+          <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:8, marginBottom:4 }}>
             <div style={{ fontSize:21, fontWeight:600, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", flex:1 }}>
               {cliente?.nombre_empresa || "—"}
             </div>
