@@ -1483,7 +1483,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
 }
 
 // ─── MODAL FICHA ──────────────────────────────────────────────────────────────
-function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
+function ModalFicha({evento,clientes,interpretes,pares,onCerrar,paginacion=null}) {
   const fichaRef=useRef(null);
   const cliente=clientes.find(c=>c.id===evento.cliente_id);
   const esMultidia=evento.fecha_inicio!==evento.fecha_termino;
@@ -1560,6 +1560,13 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
 
         {/* Selector campos — FUERA del área exportable */}
         <div style={{padding:"10px 20px",borderBottom:"1px solid #E2E8F0",background:"#fff",borderRadius:"20px 20px 0 0",flexShrink:0}}>
+          {paginacion&&<div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"8px",paddingBottom:"8px",borderBottom:"1px solid #E2E8F0"}}>
+            <div style={{color:"#374151",fontSize:"13px",fontWeight:"500"}}>📋 Ficha {paginacion.idx+1} de {paginacion.total}</div>
+            <div style={{display:"flex",gap:"6px"}}>
+              <button onClick={paginacion.onAnterior} disabled={paginacion.idx===0} style={{padding:"4px 12px",background:"#1A6FD4",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:paginacion.idx===0?"default":"pointer",fontSize:"13px",fontFamily:"inherit",opacity:paginacion.idx===0?0.5:1}}>← Ant</button>
+              <button onClick={paginacion.onSiguiente} disabled={paginacion.idx===paginacion.total-1} style={{padding:"4px 12px",background:"#1A6FD4",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:paginacion.idx===paginacion.total-1?"default":"pointer",fontSize:"13px",fontFamily:"inherit",opacity:paginacion.idx===paginacion.total-1?0.5:1}}>Sig →</button>
+            </div>
+          </div>}
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"6px"}}>
             <div style={{fontWeight:"500",color:"#0F172A",fontSize:"14px"}}>Campos visibles</div>
             <button onClick={onCerrar} style={{background:"none",border:"none",cursor:"pointer",fontSize:"14px",color:"#9CA3AF",lineHeight:1}}>✕</button>
@@ -1707,90 +1714,20 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar}) {
 // ─── MODAL FICHAS MÚLTIPLES ──────────────────────────────────────────────────
 function ModalFichasMultiples({eventosLista,clientes,interpretes,pares,onCerrar}) {
   const [idx,setIdx]=useState(0);
-  const evento=eventosLista[idx]||eventosLista[0];
-  const cliente=clientes.find(c=>c.id===evento.cliente_id);
-  const esMultidia=evento.fecha_inicio!==evento.fecha_termino;
-  const esPresencial=evento.modalidad==="presencial"||evento.modalidad==="hibrido";
-  const dias=((evento.evento_dias||evento.dias||[]).sort((a,b)=>(a.orden||0)-(b.orden||0)));
-  const sH={background:"#3D85D8",color:"#D9D9D9",WebkitTextFillColor:"#D9D9D9",fontSize:"13px",fontWeight:"600",letterSpacing:"0.06em",padding:"4px 16px",textTransform:"uppercase"};
-  const sB={padding:"10px 16px",borderBottom:"1px solid #E5E7EB",background:"#FFFFFF"};
-  const pillClrFor=(idioma)=>IDIOMA_PILL_CLR[idioma]||"#4C6EF5";
-  const pillSt=(idioma)=>({background:"#FFFFFF",border:`2px solid ${pillClrFor(idioma)}`,color:"#1A1A1A",borderRadius:"20px",padding:"6px 12px",textAlign:"center",width:"100%",fontSize:"16px",fontWeight:"400",display:"flex",alignItems:"center",justifyContent:"center",gap:"6px",boxSizing:"border-box"});
-  const renderI=(asigs)=>{
-    if(!asigs||asigs.length===0) return null;
-    const gmap={};
-    asigs.forEach(a=>{
-      const par=pares.find(p=>p.id===a.par_id);
-      const interp=interpretes.find(x=>x.id===a.interprete_id);
-      if(!interp) return;
-      const key=a.par_id||"sp";
-      if(!gmap[key]) gmap[key]={idioma:par?.idioma_origen||"",desc:par?.descripcion||"Sin par",items:[]};
-      gmap[key].items.push({interp,asig:a});
-    });
-    const entries=Object.values(gmap);
-    if(!entries.length) return null;
-    const pares2=entries.filter(g=>g.items.length>=2);
-    const solos=entries.filter(g=>g.items.length===1);
-    return(<div>
-      {pares2.map((g,i)=>{
-        const clr=pillClrFor(g.idioma);
-        const hp=g.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
-        return(<div key={i} style={{marginBottom:i<pares2.length-1||solos.length>0?"12px":0}}>
-          <div style={{textAlign:"center",fontSize:"14px",fontWeight:"600",color:/inglés.*español/i.test(g.desc)?"#2D8CFF":clr,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em",width:"100%",display:"block"}}>{g.desc}</div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr",gap:"8px"}}>
-            {g.items.map(({interp,asig},j)=>(<div key={j} style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"10px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>))}
-          </div>
-          {hp&&<div style={{textAlign:"center",fontSize:"13px",color:"#40464D",marginTop:"6px"}}>🕐 Hora de presentación intérpretes: {hp.slice(0,5)} hrs</div>}
-        </div>);
-      })}
-      {solos.length>0&&(<div style={{display:"grid",gridTemplateColumns:"1fr",gap:"12px"}}>
-        {solos.map((g,i)=>{
-          const clr=pillClrFor(g.idioma);
-          const {interp,asig}=g.items[0];
-          return(<div key={i}>
-            <div style={{textAlign:"center",fontSize:"13px",fontWeight:"600",color:/inglés.*español/i.test(g.desc)?"#2D8CFF":clr,marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em",width:"100%",display:"block"}}>{g.desc}</div>
-            <div style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"10px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>
-            {asig.hora_presentacion&&<div style={{textAlign:"center",fontSize:"13px",color:"#40464D",marginTop:"6px"}}>🕐 Hora de presentación intérprete: {asig.hora_presentacion.slice(0,5)} hrs</div>}
-          </div>);
-        })}
-      </div>)}
-    </div>);
-  };
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.75)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(6px)",padding:"16px",overflowY:"auto"}}>
-      <div style={{background:"#F8FAFF",borderRadius:"20px",width:"100%",maxWidth:"820px",maxHeight:"92vh",boxShadow:"0 8px 32px rgba(45,140,255,0.15)",display:"flex",flexDirection:"column"}}>
-        <div style={{padding:"12px 20px",background:"#1A6FD4",borderRadius:"20px 20px 0 0",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-          <div style={{color:"#FFFFFF",fontWeight:"600",fontSize:"15px"}}>📋 Fichas generadas — {eventosLista.length} evento{eventosLista.length!==1?"s":""}</div>
-          <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
-            <button onClick={()=>setIdx(i=>Math.max(0,i-1))} disabled={idx===0} style={{padding:"4px 12px",background:"rgba(255,255,255,0.2)",color:"#FFFFFF",border:"1px solid rgba(255,255,255,0.4)",borderRadius:"8px",cursor:idx===0?"default":"pointer",fontSize:"13px",fontFamily:"inherit",opacity:idx===0?0.5:1}}>← Ant</button>
-            <span style={{color:"#FFFFFF",fontSize:"13px",fontWeight:"500",minWidth:"60px",textAlign:"center"}}>{idx+1} / {eventosLista.length}</span>
-            <button onClick={()=>setIdx(i=>Math.min(eventosLista.length-1,i+1))} disabled={idx===eventosLista.length-1} style={{padding:"4px 12px",background:"rgba(255,255,255,0.2)",color:"#FFFFFF",border:"1px solid rgba(255,255,255,0.4)",borderRadius:"8px",cursor:idx===eventosLista.length-1?"default":"pointer",fontSize:"13px",fontFamily:"inherit",opacity:idx===eventosLista.length-1?0.5:1}}>Sig →</button>
-            <button onClick={onCerrar} style={{padding:"4px 12px",background:"rgba(255,255,255,0.15)",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"13px",fontFamily:"inherit",marginLeft:"8px"}}>✕ Cerrar</button>
-          </div>
-        </div>
-        <div style={{flex:1,overflowY:"auto",background:"#F0F4FA",padding:"12px"}}>
-          <div style={{width:"800px",maxWidth:"100%",margin:"0 auto",background:"#FFFFFF",border:"2px solid #1A6FD4",borderRadius:"12px",overflow:"hidden",fontFamily:"'Inter','Segoe UI',system-ui,sans-serif"}}>
-            <div style={{display:"flex",alignItems:"center",gap:"14px",padding:"18px 24px",background:"#1E3A6E"}}>
-              <img src="/logo.png" alt="MundoChile" style={{height:"52px",width:"auto",objectFit:"contain",display:"block",flexShrink:0}} crossOrigin="anonymous"/>
-              <div>
-                <div data-header-text="" style={{color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF",fontSize:"22px",fontWeight:"700",lineHeight:1.2}}>MundoChile</div>
-                <div data-header-text="" style={{color:"#FFFFFF",WebkitTextFillColor:"#FFFFFF",fontSize:"11px",fontWeight:"400",letterSpacing:"1.5px",opacity:0.85}}>TRANSLATIONS & INTERPRETERS</div>
-              </div>
-            </div>
-            {cliente&&<><div style={sH}>Cliente</div><div style={sB}><div style={{fontSize:"18px",fontWeight:"700",color:"#000000",lineHeight:1.2}}>{cliente.nombre_empresa}</div>{cliente.nombre_contacto&&<div style={{fontSize:"14px",color:"#484f56",fontStyle:"italic",marginTop:"3px"}}>{cliente.nombre_contacto}</div>}</div></>}
-            {evento.nombre_evento&&<><div style={sH}>Evento</div><div style={sB}><div style={{fontSize:"14px",fontWeight:"500",color:"#151c28"}}>{evento.nombre_evento}</div>{evento.nro_oc&&<div style={{fontSize:"13px",color:"#484f56",marginTop:"3px"}}>N° OC: {evento.nro_oc}</div>}</div></>}
-            {(evento.fecha_inicio||evento.hora_inicio)&&<><div style={sH}>Fecha / Horario</div><div style={sB}><div style={{display:"flex",gap:"16px",flexWrap:"wrap",alignItems:"center"}}>{evento.fecha_inicio&&<div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>{esMultidia?`${formatCorto(evento.fecha_inicio)} → ${formatCorto(evento.fecha_termino)}`:formatLargo(evento.fecha_inicio)}</div>}{evento.hora_inicio&&<div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>🕐 {evento.hora_inicio.slice(0,5)} – {evento.hora_termino?.slice(0,5)} hrs</div>}</div></div></>}
-            {evento.jornada&&<><div style={sH}>Jornada</div><div style={sB}><div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>⏱ {pluralizarJornada(evento.jornada)}{evento.jornada_personalizada?` — ${evento.jornada_personalizada}`:""}</div></div></>}
-            {(evento.tipo||evento.modalidad)&&<><div style={sH}>Tipo / Modalidad</div><div style={sB}><div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center"}}>{evento.tipo&&<span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:(B_TIPO[evento.tipo]||{ct:"#294099"}).ct,WebkitFontSmoothing:"antialiased",background:(B_TIPO[evento.tipo]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO[evento.tipo]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>{evento.tipo==="Simultánea"?<IconoSimultanea/>:evento.tipo==="Consecutiva"?"🎤":"🤫"} {evento.tipo}</span>}{evento.modalidad&&<span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:(B_MOD[evento.modalidad]||{ct:"#4B4B4B"}).ct,WebkitFontSmoothing:"antialiased",background:(B_MOD[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?<IconPresencial size={14} color={(B_MOD[evento.modalidad]||{ct:"#4B4B4B"}).ct}/>:evento.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evento.modalidad]}</span>}</div></div></>}
-            {esPresencial&&evento.lugar&&<><div style={sH}>Lugar</div><div style={sB}><div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>📍 {evento.lugar}</div>{evento.lugar_detalle&&<div style={{fontSize:"13px",color:"#303a47",marginTop:"3px"}}>{evento.lugar_detalle}</div>}</div></>}
-            {!esPresencial&&evento.plataforma&&<><div style={sH}>Plataforma</div><div style={sB}><PlatformChip platform={evento.plataforma==="Zoom"?"Zoom MundoChile":evento.plataforma} isMundoChile={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")} extra={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")?evento.zoom_administrador:""}/></div></>}
-            {(()=>{const asigsSingle=esMultidia?[]:(evento.asignaciones||[]);const el=renderI(asigsSingle);return el?<><div style={sH}>Intérpretes</div><div style={sB}>{el}</div></>:null;})()}
-            {esMultidia&&dias.length>0&&<><div style={sH}>Intérpretes por día</div><div style={{background:"#FFFFFF",borderBottom:"1px solid #E5E7EB"}}>{dias.map((dia,dIdx)=>(<div key={dIdx} style={{borderBottom:dIdx<dias.length-1?"1px solid #E5E7EB":"none"}}><div style={{background:"#EBF4FF",padding:"4px 16px",fontSize:"11px",fontWeight:"600",color:"#1A6FD4",textTransform:"uppercase",letterSpacing:"0.04em"}}>Día {dIdx+1}/{dias.length} · {formatCorto(dia.fecha)} · {dia.hora_inicio?.slice(0,5)}–{dia.hora_termino?.slice(0,5)}</div><div style={{padding:"10px 16px"}}>{renderI(dia.asignaciones_dia||dia.asignaciones||[])}</div></div>))}</div></>}
-            {evento.comentarios&&<><div style={sH}>Comentarios</div><div style={{...sB,borderBottom:"none"}}><div style={{fontSize:"13px",color:"#0a0f1d",lineHeight:1.5}}>{evento.comentarios}</div></div></>}
-          </div>
-        </div>
-      </div>
-    </div>
+    <ModalFicha
+      evento={eventosLista[idx]||eventosLista[0]}
+      clientes={clientes}
+      interpretes={interpretes}
+      pares={pares}
+      onCerrar={onCerrar}
+      paginacion={{
+        idx,
+        total:eventosLista.length,
+        onAnterior:()=>setIdx(i=>Math.max(0,i-1)),
+        onSiguiente:()=>setIdx(i=>Math.min(eventosLista.length-1,i+1)),
+      }}
+    />
   );
 }
 
