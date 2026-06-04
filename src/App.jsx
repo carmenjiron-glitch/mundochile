@@ -532,7 +532,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
       }
       guardandoRef.current=false;
       if(cerrar){onGuardar();}
-      else{setGuardadoOk(true);setTimeout(()=>setGuardadoOk(false),2000);}
+      else{setGuardadoOk(true);setTimeout(()=>setGuardadoOk(false),2000);setTimeout(()=>{const m=document.querySelector("[data-modal-scroll]");if(m)m.scrollTop=0;},80);}
     } catch(e){setError("Error al guardar: "+(e.message||JSON.stringify(e)));guardandoRef.current=false;}
     finally{setGuardando(false);}
   };
