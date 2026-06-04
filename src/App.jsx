@@ -1213,7 +1213,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:"16px"}}>
             <div style={{flex:1,minWidth:0}}>
               <div style={{display:"flex",alignItems:"flex-start",gap:"12px",flexWrap:"nowrap"}}>
-                <div style={{fontSize:"29px",fontWeight:"600",color:"#0F172A",lineHeight:1.2}}>{cliente?.nombre_empresa||"—"}</div>
+                <div style={{fontSize:"29px",fontWeight:"600",color:"#0F172A",lineHeight:1.2,flex:1,minWidth:0}}>{cliente?.nombre_empresa||"—"}</div>
                 {(()=>{
                   const hoyD=new Date();const manana=new Date();manana.setDate(hoyD.getDate()+1);
                   const fechaEvento=desdeISO(evento.fecha_inicio);
