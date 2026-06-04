@@ -205,7 +205,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
         <div style={{
           position:"absolute", top:"8px", right:"8px",
           display:"flex", alignItems:"center", gap:"5px",
-          zIndex:10,
+          zIndex:15,
         }}>
           {!diaXdeY && ev.comentarios && (
             <div style={{width:"10px",height:"10px",borderRadius:"50%",background:"#F472B6",boxShadow:"0 0 6px #F472B6"}}/>
@@ -353,7 +353,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
         /* ── SEMANA / DÍA: layout original ──────────────────────────────── */
         <>
           {/* Nombre cliente + pill multidía */}
-          {pillMultidia && <div style={{ position:"absolute", top:"8px", right:"8px" }}>{pillMultidia}</div>}
+          {pillMultidia && <div style={{ position:"absolute", top:"8px", right:"8px", zIndex:5 }}>{pillMultidia}</div>}
           <div style={{ marginBottom:4 }}>
             <div style={{ fontSize:21, fontWeight:600, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", flex:1, minWidth:0, paddingRight:"90px" }}>
               {cliente?.nombre_empresa || "—"}
