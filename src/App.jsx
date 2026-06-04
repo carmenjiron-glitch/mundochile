@@ -3220,8 +3220,12 @@ export default function App() {
 
     return (
       <div style={{padding:"16px 24px 80px"}}>
-        {!hayFS&&<div style={{display:"flex",gap:"8px",padding:"0 8px 4px"}}>
-          <div style={{flex:1}}/><div style={{flex:1}}/><div style={{flex:1}}/><div style={{flex:1}}/>
+        {!hayFS&&<div style={{display:"flex",gap:"8px",padding:"0 8px 4px",alignItems:"center"}}>
+          <button onClick={()=>setPantalla("disponibilidad")} style={{flexShrink:0,display:"flex",alignItems:"center",gap:"6px",padding:"5.5px 12px",borderRadius:"10px",background:"rgba(253,230,138,0.12)",color:"#FDE68A",fontSize:"13px",fontWeight:"500",border:"1.5px solid #FCD34D",height:"29px",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit",letterSpacing:"0.02em",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#86EFAC" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}><polyline points="20 6 9 17 4 12"/></svg>
+            Disponibilidad
+          </button>
+          <div style={{flex:1}}/><div style={{flex:1}}/><div style={{flex:1}}/>
           <div style={{flex:1,textAlign:"center",color:"#FFFFFF",fontSize:"14px",fontStyle:"italic",opacity:0.7}}>📅 Sin eventos este fin de semana</div>
         </div>}
         <div style={{display:"grid",gridTemplateColumns:hayFS?"repeat(5,1fr) 2px repeat(2,1fr)":"repeat(5,1fr)",gap:"8px",padding:"8px",alignItems:"stretch"}}>
@@ -3498,9 +3502,9 @@ export default function App() {
                 </div>);
               })()}
               {pantalla==="calendario"&&vista!=="agenda"&&vista!=="grilla"&&(
-                <div style={{padding:"5px 18px",border:"1px solid rgba(255,255,255,0.85)",borderRadius:"10px",background:"transparent",textAlign:"center",flexShrink:0}}>
-                  <div style={{color:"#FFFFFF",fontSize:"19px",fontWeight:"500",lineHeight:1.2,whiteSpace:"nowrap"}}>{tituloNav()}</div>
-                  <div style={{color:"rgba(255,255,255,0.70)",fontSize:"15px",whiteSpace:"nowrap"}}>{contadorSubtitulo()}</div>
+                <div style={{padding:"4.5px 16px",border:"1px solid rgba(255,255,255,0.85)",borderRadius:"9px",background:"transparent",textAlign:"center",flexShrink:0}}>
+                  <div style={{color:"#FFFFFF",fontSize:"17px",fontWeight:"500",lineHeight:1.2,whiteSpace:"nowrap"}}>{tituloNav()}</div>
+                  <div style={{color:"rgba(255,255,255,0.70)",fontSize:"13.5px",whiteSpace:"nowrap"}}>{contadorSubtitulo()}</div>
                 </div>
               )}
             </div>
@@ -3528,17 +3532,15 @@ export default function App() {
 
       {/* ── CONTENIDO ── */}
       {pantalla==="calendario"&&<>
-        {vista!=="grilla"&&<div style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",width:"100%",display:"flex",alignItems:"center",flexWrap:"nowrap",gap:"8px",padding:"0 16px",boxSizing:"border-box",overflow:"hidden"}}>
-          {/* IZQUIERDA: Disponibilidad */}
-          <button onClick={()=>setPantalla("disponibilidad")} style={{flexShrink:0,marginLeft:"38px",display:"flex",alignItems:"center",gap:"6px",padding:"5.5px 12px",borderRadius:"10px",background:"rgba(253,230,138,0.12)",color:"#FDE68A",fontSize:"13px",fontWeight:"500",border:"1.5px solid #FCD34D",height:"29px",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit",letterSpacing:"0.02em",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#86EFAC" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}><polyline points="20 6 9 17 4 12"/></svg>
-            Disponibilidad
-          </button>
-          {/* DERECHA: filtros + Fichas/Excel */}
-          <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"flex-end",padding:"6px 0",minWidth:0,overflow:"hidden"}}>
+        {vista!=="grilla"&&<div style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",width:"100%",display:"grid",gridTemplateColumns:"1fr auto 1fr",alignItems:"center",padding:"0 16px",boxSizing:"border-box"}}>
+          {/* IZQUIERDA: vacío */}
+          <div/>
+          {/* CENTRO: filtros centrados */}
+          <div style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"6px 0"}}>
             <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes} clientes={clientesConEventos} pares={paresConEventos} proveedores={proveedoresConEventos}/>
           </div>
-          <div style={{display:"flex",gap:"8px",flexShrink:0,transition:"opacity 0.2s, transform 0.2s",opacity:hayFiltros?1:0,transform:hayFiltros?"scale(1)":"scale(0.9)",visibility:hayFiltros?"visible":"hidden"}}>
+          {/* DERECHA: Fichas/Excel */}
+          <div style={{display:"flex",gap:"8px",justifyContent:"flex-end",transition:"opacity 0.2s, transform 0.2s",opacity:hayFiltros?1:0,transform:hayFiltros?"scale(1)":"scale(0.9)",visibility:hayFiltros?"visible":"hidden"}}>
             <button onClick={generarFichaMultiple} style={{display:"flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"12px",background:"#1A6FD4",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",height:"26px",boxShadow:"0 2px 4px rgba(26,111,212,0.3)",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📋 Fichas</button>
             <button onClick={exportarExcelFiltrado} style={{display:"flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"12px",background:"#059669",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",height:"26px",boxShadow:"0 2px 4px rgba(5,150,105,0.3)",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📊 Excel</button>
           </div>
