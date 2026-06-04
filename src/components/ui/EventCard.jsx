@@ -334,37 +334,45 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
       ) : (
         /* ── SEMANA / DÍA: layout original ──────────────────────────────── */
         <>
-          {/* Pill multidía + puntos bajo pill (evento multidía) */}
-          {pillMultidia && (
-            <div style={{ position:"absolute", top:"8px", right:"8px", zIndex:15, display:"flex", flexDirection:"column", alignItems:"stretch", gap:"4px" }}>
-              {pillMultidia}
-              {(dotEsHoy || ev.comentarios) && (
-                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                  <div style={{ width:"12.5px", height:"12.5px" }}>{dotEsHoy && <div style={{ width:"12.5px", height:"12.5px", borderRadius:"50%", background:"#22C55E", boxShadow:"0 0 8px #22C55E", animation:"flash 1.2s ease-in-out infinite" }}/>}</div>
-                  <div style={{ width:"10px", height:"10px" }}>{ev.comentarios && <div style={{ width:"10px", height:"10px", borderRadius:"50%", background:"#F472B6", boxShadow:"0 0 6px #F472B6", animation:"flashYellow 1.8s ease-in-out infinite" }}/>}</div>
+          {/* Evento multidía: fila dots+pill, luego nombre y contacto full width */}
+          {diaXdeY ? (
+            <>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:8, marginBottom:4 }}>
+                <div style={{ display:"flex", alignItems:"center", gap:"5px" }}>
+                  {dotEsHoy && <div style={{ width:"12.5px", height:"12.5px", borderRadius:"50%", background:"#22C55E", boxShadow:"0 0 8px #22C55E", animation:"flash 1.2s ease-in-out infinite" }}/>}
+                  {ev.comentarios && <div style={{ width:"10px", height:"10px", borderRadius:"50%", background:"#F472B6", boxShadow:"0 0 6px #F472B6", animation:"flashYellow 1.8s ease-in-out infinite" }}/>}
+                </div>
+                {pillMultidia}
+              </div>
+              <div style={{ fontSize:21, fontWeight:600, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", minWidth:0, marginBottom:4 }}>
+                {cliente?.nombre_empresa || "—"}
+              </div>
+              {cliente?.nombre_contacto && (
+                <div style={{ fontSize:14, color:"#565D68", fontStyle:"italic", marginTop:2 }}>
+                  Contacto: {cliente.nombre_contacto}
                 </div>
               )}
-            </div>
-          )}
-          {/* Puntos evento de un día (derecha del nombre) */}
-          {!diaXdeY && (dotEsHoy || ev.comentarios) && (
-            <div style={{ position:"absolute", top:"8px", right:"8px", zIndex:15, display:"flex", alignItems:"center", gap:"5px" }}>
-              {dotEsHoy && <div style={{ width:"12.5px", height:"12.5px", borderRadius:"50%", background:"#22C55E", boxShadow:"0 0 8px #22C55E", animation:"flash 1.2s ease-in-out infinite" }}/>}
-              {ev.comentarios && <div style={{ width:"10px", height:"10px", borderRadius:"50%", background:"#F472B6", boxShadow:"0 0 6px #F472B6", animation:"flashYellow 1.8s ease-in-out infinite" }}/>}
-            </div>
-          )}
-          {/* Nombre cliente */}
-          <div style={{ marginBottom:4 }}>
-            <div style={{ fontSize:21, fontWeight:600, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", flex:1, minWidth:0, paddingRight:"90px" }}>
-              {cliente?.nombre_empresa || "—"}
-            </div>
-          </div>
-
-          {/* Contacto */}
-          {cliente?.nombre_contacto && (
-            <div style={{ fontSize:14, color:"#565D68", fontStyle:"italic", marginTop:2 }}>
-              Contacto: {cliente.nombre_contacto}
-            </div>
+            </>
+          ) : (
+            <>
+              {/* Evento un día: dots absolute top-right */}
+              {(dotEsHoy || ev.comentarios) && (
+                <div style={{ position:"absolute", top:"8px", right:"8px", zIndex:15, display:"flex", alignItems:"center", gap:"5px" }}>
+                  {dotEsHoy && <div style={{ width:"12.5px", height:"12.5px", borderRadius:"50%", background:"#22C55E", boxShadow:"0 0 8px #22C55E", animation:"flash 1.2s ease-in-out infinite" }}/>}
+                  {ev.comentarios && <div style={{ width:"10px", height:"10px", borderRadius:"50%", background:"#F472B6", boxShadow:"0 0 6px #F472B6", animation:"flashYellow 1.8s ease-in-out infinite" }}/>}
+                </div>
+              )}
+              <div style={{ marginBottom:4 }}>
+                <div style={{ fontSize:21, fontWeight:600, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", minWidth:0, paddingRight:(dotEsHoy||ev.comentarios)?"44px":0 }}>
+                  {cliente?.nombre_empresa || "—"}
+                </div>
+              </div>
+              {cliente?.nombre_contacto && (
+                <div style={{ fontSize:14, color:"#565D68", fontStyle:"italic", marginTop:2 }}>
+                  Contacto: {cliente.nombre_contacto}
+                </div>
+              )}
+            </>
           )}
 
           {/* Nombre evento */}
