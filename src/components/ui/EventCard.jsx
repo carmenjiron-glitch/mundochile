@@ -200,21 +200,6 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
         e.currentTarget.style.transform = "translateY(0)";
       }}
     >
-      {/* Indicador hoy/mañana + comentarios — solo absoluto en vistas semana/día */}
-      {!agendaSmall && (dotVisible || (!diaXdeY && ev.comentarios)) && (
-        <div style={{
-          position:"absolute", top:"8px", right:"8px",
-          display:"flex", alignItems:"center", gap:"5px",
-          zIndex:5,
-        }}>
-          {!diaXdeY && ev.comentarios && (
-            <div style={{width:"10px",height:"10px",borderRadius:"50%",background:"#F472B6",boxShadow:"0 0 6px #F472B6"}}/>
-          )}
-          {dotVisible && (
-            <div style={{width:"13px",height:"13px",borderRadius:"50%",background:dotEsHoy?"#22C55E":"#EAB308",boxShadow:dotEsHoy?"0 0 6px #22C55E":"0 0 6px #EAB308",animation:dotEsHoy?"flash 1.2s ease-in-out infinite":"flashYellow 1.8s ease-in-out infinite"}}/>
-          )}
-        </div>
-      )}
 
       {agendaSmall ? (
         /* ── AGENDA: layout dos columnas ─────────────────────────────────── */
