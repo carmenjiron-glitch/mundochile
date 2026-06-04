@@ -534,7 +534,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
       if(cerrar){onGuardar();}
       else{setGuardadoOk(true);setTimeout(()=>setGuardadoOk(false),2000);setTimeout(()=>{const m=document.querySelector("[data-modal-scroll]");if(m)m.scrollTop=0;},80);}
     } catch(e){setError("Error al guardar: "+(e.message||JSON.stringify(e)));guardandoRef.current=false;}
-    finally{setGuardando(false);}
+    finally{setGuardando(false);guardandoRef.current=false;}
   };
 
   // Fila de asignación
