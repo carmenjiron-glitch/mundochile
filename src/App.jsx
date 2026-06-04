@@ -1287,7 +1287,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
             <div style={{display:"flex",flexDirection:"column",gap:"8px",padding:"12px 18px",borderRadius:"16px",border:"2px solid #7C3AED",background:"#F5F3FF"}}>
               <div>
                 <span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 20px",borderRadius:"6px",fontSize:"13.5px",fontWeight:"700",color:"#9F4444",background:"#FEF2F2",border:"2px solid #D55252",whiteSpace:"nowrap"}}>📍 {evento.lugar}</span>
-                {evento.lugar_detalle&&<div style={{fontSize:"15px",fontWeight:"400",color:"#6D28D9",marginTop:"2px"}}>{evento.lugar_detalle}</div>}
+                {evento.lugar_detalle&&<div style={{marginTop:"6px"}}><span style={{display:"inline-flex",alignItems:"center",padding:"3px 12px",borderRadius:"6px",fontSize:"12px",fontWeight:"600",color:"#9F4444",background:"#FEF2F2",border:"1.5px solid #D55252",whiteSpace:"nowrap"}}>{evento.lugar_detalle}</span></div>}
               </div>
               <div style={{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap"}}>
                 <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((evento.lugar||"")+" "+(evento.lugar_detalle||""))}`} target="_blank" rel="noreferrer"
