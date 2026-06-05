@@ -1218,7 +1218,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                 const esHoy=fechaEvento.toDateString()===hoyD.toDateString();
                 const esManana=fechaEvento.toDateString()===manana.toDateString();
                 if(!esHoy&&!esManana)return null;
-                return <div style={{width:"14px",height:"14px",borderRadius:"50%",background:esHoy?"#22C55E":"#EAB308",boxShadow:esHoy?"0 0 8px #22C55E":"0 0 8px #EAB308",flexShrink:0}}/>;
+                return <div style={{width:"14px",height:"14px",borderRadius:"50%",background:esHoy?"#22C55E":"#EAB308",boxShadow:esHoy?"0 0 8px #22C55E":"0 0 8px #EAB308",flexShrink:0,animation:esHoy?"flash 1.2s ease-in-out infinite":"flashYellow 1.8s ease-in-out infinite"}}/>;
               })()}
               {evento.comentarios&&<div style={{width:"10px",height:"10px",borderRadius:"50%",background:"#F472B6",boxShadow:"0 0 6px #F472B6",flexShrink:0}}/>}
             </div>
