@@ -1321,7 +1321,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                               </div>);
                             })}
                             {eqsDia.map((eq,eIdx)=>(
-                              <div key={eIdx} style={{fontSize:"13px",color:"#6B7280",padding:"5px 10px",background:"#F1F5F9",border:"1px solid #E2E8F0",borderRadius:"6px",marginTop:"6px",display:"flex",alignItems:"center",gap:"6px"}}>
+                              <div key={eIdx} style={{fontSize:"13px",color:"#166534",padding:"5px 10px",background:"#DCFCE7",border:"1px solid #86EFAC",borderRadius:"6px",marginTop:"6px",display:"flex",alignItems:"center",gap:"6px"}}>
                                 <IconAV size={14}/> {eq.tipo_equipo==="fijo"?"Sistema fijo":eq.tipo_equipo==="portatil"?"Sistema portátil":"Cabina portátil"}
                                 {eq.proveedor_nombre&&` · ${eq.proveedor_nombre}`}{eq.num_receptores>0&&` · ${eq.num_receptores} receptores`}{eq.num_cabinas>0&&` · ${eq.num_cabinas} cabinas`}
                               </div>
@@ -1370,237 +1370,143 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
               </div>
             </>
           ):(
-            /* ── UN DÍA: layout original ── */
+            /* ── UN DÍA: dos columnas ── */
             <>
-          {/* Fecha + Horario + Badges — solo para evento de un día */}
-          {!esMultidia&&<>
-            <div style={{fontSize:"16px",fontWeight:"500",color:"#1E293B",marginBottom:"4px"}}>
-              📅 {formatLargo(evento.fecha_inicio)}
-            </div>
-            <div style={{fontSize:"16px",fontWeight:"500",color:"#0F172A",marginBottom:"6px"}}>
-              🕐 {evento.hora_inicio?.slice(0,5)} – {evento.hora_termino?.slice(0,5)} hrs{evento.jornada&&<span style={{fontWeight:"400",color:"#6B7280",fontSize:"14px"}}> · {pluralizarJornada(evento.jornada)}</span>}
-            </div>
-            <HR/>
-            <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center",marginBottom:"4px"}}>
-              {tiposArr(evento.tipo).map(t=><span key={t} style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:(B_TIPO_D[t]||{c:"#2F49AF"}).c,background:(B_TIPO_D[t]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO_D[t]||{c:"#2F49AF"}).c}`,whiteSpace:"nowrap"}}>{t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤":"🤫"} {t}</span>)}
-              <span style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:(B_MOD_D[evento.modalidad]||{c:"#565656"}).c,background:(B_MOD_D[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD_D[evento.modalidad]||{c:"#565656"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?<IconPresencial size={14} color={(B_MOD_D[evento.modalidad]||{c:"#565656"}).c}/>:evento.modalidad==="hibrido"?"🔀":"💻"} {LBL[evento.modalidad]||evento.modalidad}</span>
-            </div>
-          </>}
-          {/* Programa multidía */}
-          {dias.length>0&&<>{!esMultidia&&<HR/>}<div style={{marginBottom:"12px"}}>
-            <div style={{fontSize:"13px",fontWeight:"700",color:LBL_LARGA.c,textTransform:LBL_LARGA.tt,letterSpacing:"0.05em",marginBottom:"6px",WebkitFontSmoothing:"antialiased"}}>🗓️ Agenda del evento</div>
-            <div style={{borderRadius:"10px",overflow:"hidden",border:"2px solid #CBD5E1"}}>
-              <table style={{width:"100%",borderCollapse:"collapse"}}>
-                <thead><tr style={{background:"#1E3A6E",color:"#fff"}}>
-                  {["Día","Fecha","Horario","Jornada"].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:"12px",fontWeight:"600",WebkitFontSmoothing:"antialiased"}}>{h}</th>)}
-                </tr></thead>
-                <tbody>{dias.map((dia,dIdx)=>(
-                  <tr key={dIdx} style={{background:dIdx%2===0?"#fff":"#F8FAFC",borderBottom:"1px solid #CBD5E1"}}>
-                    <td onClick={()=>{onNavDia&&onNavDia(dIdx);}} style={{padding:"7px 12px",fontSize:"13px",fontWeight:"600",color:"#1A6FD4",cursor:"pointer",textDecoration:"underline",textDecorationColor:"#93C5FD",WebkitFontSmoothing:"antialiased"}} onMouseEnter={e=>e.currentTarget.style.color="#1D4ED8"} onMouseLeave={e=>e.currentTarget.style.color="#1A6FD4"}>Día {dIdx+1}</td>
-                    <td style={{padding:"7px 12px",fontSize:"13px",fontWeight:"400",color:"#0F172A",WebkitFontSmoothing:"antialiased"}}>{formatLargo(dia.fecha)}</td>
-                    <td style={{padding:"7px 12px",fontSize:"13px",fontWeight:"400",color:"#0F172A",WebkitFontSmoothing:"antialiased"}}>{dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs</td>
-                    <td style={{padding:"7px 12px",fontSize:"13px",fontWeight:"400",color:"#475569",WebkitFontSmoothing:"antialiased"}}>{pluralizarJornada(dia.jornada)}</td>
-                  </tr>
-                ))}</tbody>
-              </table>
-            </div>
-          </div></>}
-          <HR/>
-          {/* Lugar / Plataforma */}
-          {esPresencial&&evento.lugar&&<div style={{marginBottom:"4px"}}>
-            <SL t="📍 Lugar"/>
-            <div style={{display:"flex",flexDirection:"column",gap:"8px",padding:"12px 18px",borderRadius:"16px",border:"2px solid #7C3AED",background:"#F5F3FF"}}>
-              <div>
-                <span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 20px",borderRadius:"6px",fontSize:"13.5px",fontWeight:"700",color:"#9F4444",background:"#FEF2F2",border:"2px solid #D55252",whiteSpace:"nowrap"}}>📍 {evento.lugar}</span>
-                {evento.lugar_detalle&&<div style={{marginTop:"6px"}}><span style={{display:"inline-flex",alignItems:"center",padding:"3px 12px",borderRadius:"6px",fontSize:"12px",fontWeight:"600",color:"#9F4444",background:"#FEF2F2",border:"1.5px solid #D55252",whiteSpace:"nowrap"}}>{evento.lugar_detalle}</span></div>}
-              </div>
-              <div style={{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap"}}>
-                <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((evento.lugar||"")+" "+(evento.lugar_detalle||""))}`} target="_blank" rel="noreferrer"
-                  style={{display:"inline-flex",alignItems:"center",gap:"5px",fontSize:"14px",fontWeight:"500",color:"#0F4577",textDecoration:"none",padding:"8px 16px",border:"1px solid #84B1E4",borderRadius:"8px",background:"#EFF6FF"}}>
-                  📍 Ver en Maps
-                </a>
-                <button
-                  title="Copiar link de Google Maps"
-                  onClick={()=>{
-                    const q=`${evento.lugar||""}${evento.lugar_detalle?", "+evento.lugar_detalle:""}`.trim();
-                    navigator.clipboard.writeText(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`)
-                      .then(()=>{setGeoOk(true);setTimeout(()=>setGeoOk(false),2500);})
-                      .catch(()=>{});
-                  }}
-                  style={{padding:"8px 16px",borderRadius:"8px",border:`1px solid ${geoOk?"#79D79B":"#84B1E4"}`,background:geoOk?"#F0FDF4":"#EFF6FF",display:"inline-flex",alignItems:"center",gap:"5px",cursor:"pointer",fontSize:"14px",fontWeight:"500",color:geoOk?"#145B2F":"#0F4577",fontFamily:"inherit"}}
-                >{geoOk?"✓ Link copiado":"⊕ Copiar link Maps"}</button>
-              </div>
-            </div>
-          </div>}
-          {!esPresencial&&evento.plataforma&&<div style={{marginBottom:"4px"}}>
-            <SL t="💻 Plataforma"/>
-            <PlatformChip platform={evento.plataforma} isMundoChile={esZoomMC} extra={esZoomMC?evento.zoom_administrador:""}/>
-            {evento.zoom_link&&(
-              <div style={{display:"flex",alignItems:"center",gap:"8px",marginTop:"8px",padding:"8px 12px",background:"#EFF6FF",borderRadius:"8px",border:"1px solid #BFDBFE"}}>
-                <span style={{fontSize:"15px",color:"#1D4ED8",flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>🔗 {evento.zoom_link}</span>
-                <button onClick={()=>navigator.clipboard.writeText(evento.zoom_link)} style={{padding:"5px 12px",background:"#1D4ED8",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontSize:"14px",fontWeight:"500",whiteSpace:"nowrap",flexShrink:0}}>📋 Copiar</button>
-                <a href={evento.zoom_link} target="_blank" rel="noreferrer" style={{padding:"5px 12px",background:"#059669",color:"#fff",borderRadius:"6px",cursor:"pointer",fontSize:"14px",fontWeight:"500",whiteSpace:"nowrap",textDecoration:"none",flexShrink:0}}>🚀 Abrir</a>
-              </div>
-            )}
-          </div>}
-          {(esPresencial&&evento.lugar)||(!esPresencial&&evento.plataforma)?<HR/>:null}
-          {/* Intérpretes (un día) */}
-          {(()=>{
-            if(esMultidia) return null;
-            const grupos={};
-            asignaciones.forEach(a=>{
-              const par=pares.find(p=>p.id===a.par_id);
-              const interp=interpretes.find(x=>x.id===a.interprete_id);
-              if(!interp) return;
-              const key=par?.descripcion||"Sin par";
-              const idioma=par?.idioma_origen||"";
-              if(!grupos[key]) grupos[key]={idioma,items:[]};
-              grupos[key].items.push({interp,isHost:!!a.es_host_zoom,asig:a});
-            });
-            const entries=Object.entries(grupos);
-            if(!entries.length) return null;
-            return(<div style={{marginBottom:"4px"}}>
-              <SL t={<><IconMic size={20}/> Intérpretes</>}/>
-              {entries.map(([key,grupo])=>{
-                const pillClr=IDIOMA_PILL_CLR[grupo.idioma]||"#4C6EF5";
-                const bubbleBg="#FFFFFF";
-                const bubbleColor="#1A1A1A";
-                const bubbleBorder=`3px solid ${pillClr}`;
-                const titleColor=pillClr;
-                const hp=grupo.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
-                return(<div key={key} style={{marginBottom:"12px"}}>
-                  <div style={{position:"relative",textAlign:"center",marginBottom:"6px"}}>
-                    <span style={{fontSize:"13px",fontWeight:"600",color:"#1256A3",textTransform:"uppercase",letterSpacing:"0.06em",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>{key}</span>
-                    {hp&&<span style={{position:"absolute",right:0,top:"50%",transform:"translateY(-50%)",fontSize:"16px",color:"#545B68",whiteSpace:"nowrap"}}>🕐 {hp.slice(0,5)} hrs</span>}
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"20px",marginBottom:"20px"}}>
+                {/* COL IZQ: Fecha/Horario/Pills + Lugar/Plataforma + Comentarios */}
+                <div style={{display:"flex",flexDirection:"column",gap:"16px"}}>
+                  {/* Fecha + Horario + Pills */}
+                  <div style={{border:"2px solid #1D4ED8",borderRadius:"12px",background:"#EFF6FF",overflow:"hidden"}}>
+                    <div style={{background:"#FEF9C3",padding:"8px 14px",fontWeight:"700",fontSize:"13px",color:"#111827",textTransform:"uppercase",letterSpacing:"0.06em"}}>📅 Fecha y horario</div>
+                    <div style={{padding:"12px 14px"}}>
+                      <div style={{fontSize:"15px",fontWeight:"500",color:"#1E293B",marginBottom:"6px"}}>📅 {formatLargo(evento.fecha_inicio)}</div>
+                      <div style={{fontSize:"15px",fontWeight:"500",color:"#0F172A",marginBottom:"10px"}}>🕐 {evento.hora_inicio?.slice(0,5)} – {evento.hora_termino?.slice(0,5)} hrs{evento.jornada&&<span style={{fontWeight:"400",color:"#6B7280",fontSize:"13px"}}> · {pluralizarJornada(evento.jornada)}</span>}</div>
+                      <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center"}}>
+                        {tiposArr(evento.tipo).map(t=><span key={t} style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:(B_TIPO_D[t]||{c:"#2F49AF"}).c,background:(B_TIPO_D[t]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO_D[t]||{c:"#2F49AF"}).c}`,whiteSpace:"nowrap"}}>{t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤":"🤫"} {t}</span>)}
+                        <span style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:(B_MOD_D[evento.modalidad]||{c:"#565656"}).c,background:(B_MOD_D[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD_D[evento.modalidad]||{c:"#565656"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?<IconPresencial size={14} color={(B_MOD_D[evento.modalidad]||{c:"#565656"}).c}/>:evento.modalidad==="hibrido"?"🔀":"💻"} {LBL[evento.modalidad]||evento.modalidad}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
-                    {grupo.items.map(({interp,isHost},i)=>(
-                      <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"3px 8px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:bubbleColor,background:bubbleBg,border:bubbleBorder,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
-                        {isHost&&<span style={{fontSize:"12px"}}>🔑</span>}
-                        <FlagImg idioma={grupo.idioma}/>
-                        <span style={{overflow:"hidden",textOverflow:"ellipsis",color:"#171717",fontSize:"15px",fontWeight:"500",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",letterSpacing:"0.01em"}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
-                      </span>
-                    ))}
-                    {grupo.items.length===1&&<div style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"6px 12px",borderRadius:"20px",background:"#F3F4F6",color:"#6B7280",border:"1px dashed #9CA3AF",fontSize:"12px",fontWeight:"500",fontStyle:"italic",opacity:0.85}}>Sin partner</div>}
-                  </div>
-                  {grupo.items.map(({asig},i)=>metaRow(asig)?<div key={i}>{metaRow(asig)}</div>:null)}
-                </div>);
-              })}
-            </div>);
-          })()}
-          {/* Intérpretes y equipos por día (multidía) */}
-          {esMultidia&&dias.length>0&&<div style={{display:"flex",alignItems:"center",gap:"8px",fontSize:"13px",fontWeight:"600",textTransform:"uppercase",letterSpacing:"0.06em",color:"#111827",margin:"16px 0 8px 0"}}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-              <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
-            </svg>
-            DETALLE POR DÍA
-          </div>}
-          {esMultidia&&dias.map((dia,dIdx)=>{
-            const asigsDia=dia.asignaciones_dia||[],eqsDia=dia.equipos_dia||[];
-            return (
-              <div key={dia.id||dIdx} style={{border:"1px solid #E5E7EB",borderRadius:"10px",marginBottom:"10px",overflow:"hidden"}}>
-                <div style={{background:"#F8FAFC",padding:"10px 16px",fontWeight:"500",color:"#0F172A",fontSize:"15px"}}>
-                  📅 Día {dIdx+1} — {formatLargo(dia.fecha)} · {dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs{dia.jornada&&<span style={{fontWeight:"400",color:"#6B7280",fontSize:"13px"}}> · {pluralizarJornada(dia.jornada)}</span>}
+                  {/* Lugar / Plataforma */}
+                  {((esPresencial&&evento.lugar)||(!esPresencial&&evento.plataforma))&&(
+                    <div style={{border:"2px solid #7C3AED",borderRadius:"12px",background:"#F5F3FF",overflow:"hidden"}}>
+                      <div style={{background:"#FEF9C3",padding:"8px 14px",fontWeight:"700",fontSize:"13px",color:"#111827",textTransform:"uppercase",letterSpacing:"0.06em"}}>{esPresencial?"📍 Lugar":"💻 Plataforma"}</div>
+                      <div style={{padding:"12px 14px"}}>
+                        {esPresencial&&evento.lugar&&<>
+                          <span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 20px",borderRadius:"6px",fontSize:"13.5px",fontWeight:"700",color:"#9F4444",background:"#FEF2F2",border:"2px solid #D55252",whiteSpace:"nowrap"}}>📍 {evento.lugar}</span>
+                          {evento.lugar_detalle&&<div style={{marginTop:"6px"}}><span style={{display:"inline-flex",alignItems:"center",padding:"3px 12px",borderRadius:"6px",fontSize:"12px",fontWeight:"600",color:"#9F4444",background:"#FEF2F2",border:"1.5px solid #D55252",whiteSpace:"nowrap"}}>{evento.lugar_detalle}</span></div>}
+                          <div style={{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap",marginTop:"10px"}}>
+                            <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((evento.lugar||"")+" "+(evento.lugar_detalle||""))}`} target="_blank" rel="noreferrer" style={{display:"inline-flex",alignItems:"center",gap:"5px",fontSize:"14px",fontWeight:"500",color:"#0F4577",textDecoration:"none",padding:"8px 16px",border:"1px solid #84B1E4",borderRadius:"8px",background:"#EFF6FF"}}>📍 Ver en Maps</a>
+                            <button title="Copiar link" onClick={()=>{const q=`${evento.lugar||""}${evento.lugar_detalle?", "+evento.lugar_detalle:""}`.trim();navigator.clipboard.writeText(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`).then(()=>{setGeoOk(true);setTimeout(()=>setGeoOk(false),2500);}).catch(()=>{});}} style={{padding:"8px 16px",borderRadius:"8px",border:`1px solid ${geoOk?"#79D79B":"#84B1E4"}`,background:geoOk?"#F0FDF4":"#EFF6FF",display:"inline-flex",alignItems:"center",gap:"5px",cursor:"pointer",fontSize:"14px",fontWeight:"500",color:geoOk?"#145B2F":"#0F4577",fontFamily:"inherit"}}>{geoOk?"✓ Copiado":"⊕ Copiar link Maps"}</button>
+                          </div>
+                        </>}
+                        {!esPresencial&&evento.plataforma&&<>
+                          <PlatformChip platform={evento.plataforma} isMundoChile={esZoomMC} extra={esZoomMC?evento.zoom_administrador:""}/>
+                          {evento.zoom_link&&<div style={{display:"flex",alignItems:"center",gap:"8px",marginTop:"8px",padding:"8px 12px",background:"#EFF6FF",borderRadius:"8px",border:"1px solid #BFDBFE"}}>
+                            <span style={{fontSize:"15px",color:"#1D4ED8",flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>🔗 {evento.zoom_link}</span>
+                            <button onClick={()=>navigator.clipboard.writeText(evento.zoom_link)} style={{padding:"5px 12px",background:"#1D4ED8",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontSize:"14px",fontWeight:"500",whiteSpace:"nowrap",flexShrink:0}}>📋 Copiar</button>
+                            <a href={evento.zoom_link} target="_blank" rel="noreferrer" style={{padding:"5px 12px",background:"#059669",color:"#fff",borderRadius:"6px",fontSize:"14px",fontWeight:"500",whiteSpace:"nowrap",textDecoration:"none",flexShrink:0}}>🚀 Abrir</a>
+                          </div>}
+                        </>}
+                      </div>
+                    </div>
+                  )}
+                  {/* Comentarios */}
+                  {evento.comentarios&&<div style={{border:"2px solid #F472B6",borderRadius:"12px",background:"#FFF0F6",overflow:"hidden"}}>
+                    <div style={{background:"#FEF9C3",padding:"8px 14px",fontWeight:"700",fontSize:"13px",color:"#111827",textTransform:"uppercase",letterSpacing:"0.06em",display:"flex",alignItems:"center",gap:"8px"}}>💬 Comentarios<div style={{width:"10px",height:"10px",borderRadius:"50%",background:"#F472B6",boxShadow:"0 0 6px #F472B6",animation:"flash 2.4s ease-in-out infinite",flexShrink:0}}/></div>
+                    <div style={{padding:"12px 14px",color:"#0F172A",fontSize:"16px"}}>{evento.comentarios}</div>
+                  </div>}
                 </div>
-                <div style={{padding:"12px 16px"}}>
+                {/* COL DER: Intérpretes + Equipos AV */}
+                <div style={{display:"flex",flexDirection:"column",gap:"16px"}}>
+                  {/* Intérpretes */}
                   {(()=>{
-                    const gDia={};
-                    asigsDia.forEach(a=>{
+                    const grupos={};
+                    asignaciones.forEach(a=>{
                       const par=pares.find(p=>p.id===a.par_id);
                       const interp=interpretes.find(x=>x.id===a.interprete_id);
                       if(!interp) return;
                       const key=par?.descripcion||"Sin par";
                       const idioma=par?.idioma_origen||"";
-                      if(!gDia[key]) gDia[key]={idioma,items:[]};
-                      gDia[key].items.push({interp,isHost:!!a.es_host_zoom,asig:a});
+                      if(!grupos[key]) grupos[key]={idioma,items:[]};
+                      grupos[key].items.push({interp,isHost:!!a.es_host_zoom,asig:a});
                     });
-                    return Object.entries(gDia).map(([key,grupo])=>{
-                      const pillClr=IDIOMA_PILL_CLR[grupo.idioma]||"#4C6EF5";
-                      const bubbleBg="#FFFFFF";
-                      const bubbleColor="#1A1A1A";
-                      const bubbleBorder=`3px solid ${pillClr}`;
-                      const titleColor=pillClr;
-                      const hp=grupo.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
-                      return(<div key={key} style={{marginBottom:"12px"}}>
-                        <div style={{position:"relative",textAlign:"center",marginBottom:"6px"}}>
-                          <span style={{fontSize:"13px",fontWeight:"600",color:"#1256A3",textTransform:"uppercase",letterSpacing:"0.06em",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>{key}</span>
-                          {hp&&<span style={{position:"absolute",right:0,top:"50%",transform:"translateY(-50%)",fontSize:"16px",color:"#545B68",whiteSpace:"nowrap"}}>🕐 {hp.slice(0,5)} hrs</span>}
+                    const entries=Object.entries(grupos);
+                    return(
+                      <div style={{border:"2px solid #1D4ED8",borderRadius:"12px",background:"#EFF6FF",overflow:"hidden"}}>
+                        <div style={{background:"#FEF9C3",padding:"8px 14px",fontWeight:"700",fontSize:"13px",color:"#111827",textTransform:"uppercase",letterSpacing:"0.06em",display:"flex",alignItems:"center",gap:"6px"}}><IconMic size={14}/> Intérpretes</div>
+                        <div style={{padding:"12px 14px"}}>
+                          {!entries.length&&<div style={{fontSize:"13px",color:"#7D828C",fontStyle:"italic"}}>Sin intérpretes asignados</div>}
+                          {entries.map(([key,grupo])=>{
+                            const pillClr=IDIOMA_PILL_CLR[grupo.idioma]||"#4C6EF5";
+                            const hp=grupo.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
+                            return(<div key={key} style={{marginBottom:"12px"}}>
+                              <div style={{position:"relative",textAlign:"center",marginBottom:"6px"}}>
+                                <span style={{fontSize:"13px",fontWeight:"600",color:"#1256A3",textTransform:"uppercase",letterSpacing:"0.06em",WebkitFontSmoothing:"antialiased"}}>{key}</span>
+                                {hp&&<span style={{position:"absolute",right:0,top:"50%",transform:"translateY(-50%)",fontSize:"14px",color:"#545B68",whiteSpace:"nowrap"}}>🕐 {hp.slice(0,5)} hrs</span>}
+                              </div>
+                              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px"}}>
+                                {grupo.items.map(({interp,isHost},i)=>(
+                                  <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"3px 8px",borderRadius:"20px",fontSize:"13px",fontWeight:"500",lineHeight:"1.4",color:"#1A1A1A",background:"#FFFFFF",border:`2px solid ${pillClr}`,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                                    {isHost&&<span style={{fontSize:"11px"}}>🔑</span>}
+                                    <FlagImg idioma={grupo.idioma}/>
+                                    <span style={{overflow:"hidden",textOverflow:"ellipsis",color:"#171717",fontSize:"14px",fontWeight:"500",WebkitFontSmoothing:"antialiased"}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
+                                  </span>
+                                ))}
+                                {grupo.items.length===1&&<div style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"6px 12px",borderRadius:"20px",background:"#F3F4F6",color:"#6B7280",border:"1px dashed #9CA3AF",fontSize:"12px",fontWeight:"500",fontStyle:"italic",opacity:0.85}}>Sin partner</div>}
+                              </div>
+                              {grupo.items.map(({asig},i)=>metaRow(asig)?<div key={i}>{metaRow(asig)}</div>:null)}
+                            </div>);
+                          })}
                         </div>
-                        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"4px"}}>
-                          {grupo.items.map(({interp,isHost},i)=>(
-                            <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"3px 8px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:bubbleColor,background:bubbleBg,border:bubbleBorder,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
-                              {isHost&&<span style={{fontSize:"12px"}}>🔑</span>}
-                              <FlagImg idioma={grupo.idioma}/>
-                              <span style={{overflow:"hidden",textOverflow:"ellipsis",color:"#171717",fontSize:"15px",fontWeight:"500",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",letterSpacing:"0.01em"}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
-                            </span>
-                          ))}
-                          {grupo.items.length===1&&<div style={{display:"flex",alignItems:"center",justifyContent:"center",padding:"6px 12px",borderRadius:"20px",background:"#F3F4F6",color:"#6B7280",border:"1px dashed #9CA3AF",fontSize:"12px",fontWeight:"500",fontStyle:"italic",opacity:0.85}}>Sin partner</div>}
-                        </div>
-                        {grupo.items.map(({asig},i)=>metaRow(asig)?<div key={i}>{metaRow(asig)}</div>:null)}
-                      </div>);
-                    });
+                      </div>
+                    );
                   })()}
-                  {eqsDia.map((eq,eIdx)=>(
-                    <div key={eIdx} style={{fontSize:"15px",color:"#6B7280",padding:"6px 10px",background:"#F1F5F9",border:"1px solid #E2E8F0",borderRadius:"6px",marginTop:"6px",display:"flex",alignItems:"center",gap:"6px"}}>
-                      <IconAV size={16}/> {eq.tipo_equipo==="fijo"?"Sistema fijo":eq.tipo_equipo==="portatil"?"Sistema portátil":"Cabina portátil"}
-                      {eq.proveedor_nombre&&` · ${eq.proveedor_nombre}`}{eq.num_receptores>0&&` · ${eq.num_receptores} receptores`}{eq.num_cabinas>0&&` · ${eq.num_cabinas} cabinas`}
+                  {/* Equipos AV */}
+                  {(evento.evento_dias||[]).flatMap(d=>d.equipos_dia||[]).length>0&&(
+                    <div style={{border:"2px solid #138B3F",borderRadius:"12px",background:"#F0FDF4",overflow:"hidden"}}>
+                      <div style={{background:"#FEF9C3",padding:"8px 14px",fontWeight:"700",fontSize:"13px",color:"#111827",textTransform:"uppercase",letterSpacing:"0.06em",display:"flex",alignItems:"center",gap:"6px"}}><IconAV size={14}/> Equipos AV</div>
+                      <div style={{padding:"12px 14px"}}>
+                        {(evento.evento_dias||[]).flatMap(d=>d.equipos_dia||[]).map((eq,eIdx)=>(
+                          <div key={eIdx} style={{fontSize:"14px",color:"#166534",padding:"5px 10px",background:"#DCFCE7",border:"1px solid #86EFAC",borderRadius:"6px",marginBottom:"6px",display:"flex",alignItems:"center",gap:"6px"}}>
+                            <IconAV size={14}/> {eq.tipo_equipo==="fijo"?"Sistema fijo":eq.tipo_equipo==="portatil"?"Sistema portátil":"Cabina portátil"}
+                            {eq.proveedor_nombre&&` · ${eq.proveedor_nombre}`}{eq.num_receptores>0&&` · ${eq.num_receptores} receptores`}{eq.num_cabinas>0&&` · ${eq.num_cabinas} cabinas`}
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  ))}
-                  {!asigsDia.length&&!eqsDia.length&&<div style={{fontSize:"13px",color:"#9CA3AF",fontStyle:"italic",padding:"4px 0"}}>Sin intérpretes ni equipos asignados</div>}
+                  )}
                 </div>
               </div>
-            );
-          })}
-          {/* Equipos AV (un día) */}
-          {!esMultidia&&(evento.evento_dias||[]).flatMap(d=>d.equipos_dia||[]).length>0&&<div style={{marginBottom:"12px",background:"#F1F5F9",borderRadius:"10px",padding:"12px 16px"}}>
-            <SL t={<><IconAV size={20}/> Equipos AV</>}/>
-            {(evento.evento_dias||[]).flatMap(d=>d.equipos_dia||[]).map((eq,eIdx)=>(
-              <div key={eIdx} style={{fontSize:"15px",color:"#6B7280",marginBottom:"4px"}}>
-                {eq.tipo_equipo==="fijo"?"Sistema fijo":eq.tipo_equipo==="portatil"?"Sistema portátil":"Cabina portátil"}
-                {eq.proveedor_nombre&&` · ${eq.proveedor_nombre}`}{eq.num_receptores>0&&` · ${eq.num_receptores} receptores`}{eq.num_cabinas>0&&` · ${eq.num_cabinas} cabinas`}
+              {/* Full width: Info Contable */}
+              <div style={{border:"2px solid #EA580C",borderRadius:"12px",background:"#FFF7ED",overflow:"hidden",marginBottom:"16px"}}>
+                <div style={{background:"#FEF9C3",padding:"8px 14px",fontWeight:"700",fontSize:"13px",color:"#111827",textTransform:"uppercase",letterSpacing:"0.06em"}}>📊 Información Contable</div>
+                <div style={{padding:"14px 16px"}}>
+                  {(()=>{
+                    const esMagix=/magix/i.test(cliente?.nombre_empresa||"");
+                    const diasPago=esMagix?60:30;
+                    const calcFechaPago=(iso)=>{if(!iso)return"";const d=new Date(iso+"T12:00:00");d.setDate(d.getDate()+diasPago);const off=(d.getDay()-3+7)%7;d.setDate(d.getDate()-off);return d.toISOString().slice(0,10);};
+                    const fechaPago=calcFechaPago(evento.fecha_emision);
+                    const fmtCL=(iso)=>{if(!iso)return"";const[y,m,d]=iso.split("-");return`${d}/${m}/${y}`;};
+                    const fila=(lbl,val)=>val?<div style={{display:"flex",gap:"6px",color:"#2C3441",fontSize:"13px",marginBottom:"4px"}}><span style={{color:"#6B7280",fontWeight:"500"}}>{lbl}:</span><span style={{fontWeight:"600"}}>{val}</span></div>:null;
+                    const be=B_EST_D(evento.estado);
+                    return(<div>
+                      <div style={{marginBottom:"8px"}}><span style={{display:"inline-flex",alignItems:"center",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:be.c,background:be.bg,border:`2px solid ${be.b||be.c}`,whiteSpace:"nowrap"}}>{evento.estado==="Facturado"?"✓ Facturado":"🟠 Facturación Pendiente"}</span></div>
+                      {fila("N° Factura",evento.numero_factura)}
+                      {fila("N° OC",evento.nro_oc)}
+                      {fila("N° HES",evento.nro_hes)}
+                      {fila("Otros",evento.nro_otros)}
+                      {fila("Fecha de emisión",fmtCL(evento.fecha_emision))}
+                      {fechaPago&&fila(`Fecha de pago${esMagix?" (60 días — Magix)":""}`,fmtCL(fechaPago))}
+                    </div>);
+                  })()}
+                </div>
               </div>
-            ))}
-          </div>}
-          {/* Comentarios */}
-          {evento.comentarios&&<div style={{marginTop:"12px",border:"2px solid #F9A8D4",borderRadius:"10px",padding:"12px 16px",position:"relative"}}>
-            <div style={{position:"absolute",top:"10px",right:"10px",width:"10px",height:"10px",borderRadius:"50%",background:"#F472B6",boxShadow:"0 0 6px #F472B6",animation:"flash 2.4s ease-in-out infinite"}}/>
-            <SL t="💬 Comentarios"/>
-            <div style={{color:"#0F172A",fontSize:"17px"}}>{evento.comentarios}</div>
-          </div>}
-          <HR/>
-          {/* Información Contable */}
-          <div style={{marginBottom:"8px"}}>
-            <SL t="Información Contable"/>
-            <div style={{border:"1px solid #E5E7EB",borderRadius:"10px",padding:"14px 16px"}}>
-              {(()=>{
-                const esMagix=/magix/i.test(cliente?.nombre_empresa||"");
-                const diasPago=esMagix?60:30;
-                const calcFechaPago=(iso)=>{if(!iso)return"";const d=new Date(iso+"T12:00:00");d.setDate(d.getDate()+diasPago);const off=(d.getDay()-3+7)%7;d.setDate(d.getDate()-off);return d.toISOString().slice(0,10);};
-                const fechaPago=calcFechaPago(evento.fecha_emision);
-                const fmtCL=(iso)=>{if(!iso)return"";const[y,m,d]=iso.split("-");return`${d}/${m}/${y}`;};
-                const fila=(lbl,val)=>val?<div style={{display:"flex",gap:"6px",color:"#2C3441",fontSize:"13px",marginBottom:"4px"}}><span style={{color:"#6B7280",fontWeight:"500"}}>{lbl}:</span><span style={{fontWeight:"600"}}>{val}</span></div>:null;
-                return(
-                  <div>
-                    <div style={{marginBottom:"8px"}}>
-                      {(()=>{const be=B_EST_D(evento.estado);return<span style={{display:"inline-flex",alignItems:"center",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:be.c,background:be.bg,border:`2px solid ${be.b||be.c}`,whiteSpace:"nowrap"}}>{evento.estado==="Facturado"?"✓ Facturado":"🟠 Facturación Pendiente"}</span>;})()}
-                    </div>
-                    {fila("N° Factura",evento.numero_factura)}
-                    {fila("N° OC",evento.nro_oc)}
-                    {fila("N° HES",evento.nro_hes)}
-                    {fila("Otros",evento.nro_otros)}
-                    {fila("Fecha de emisión",fmtCL(evento.fecha_emision))}
-                    {fechaPago&&fila(`Fecha de pago${esMagix?" (60 días — Magix)":""}`,fmtCL(fechaPago))}
-                  </div>
-                );
-              })()}
-            </div>
-          </div>
-          {/* Historial — al final de todo */}
-          <div style={{fontSize:"12px",color:"#6B7280",display:"flex",gap:"16px",flexWrap:"wrap",paddingTop:"12px",marginTop:"12px",borderTop:"1px solid #E5E7EB"}}>
-            {evento.created_by_nombre&&<span>Creado por <strong>{evento.created_by_nombre}</strong>{evento.created_at&&" el "+new Date(evento.created_at).toLocaleString("es-CL")}</span>}
-            {evento.edited_by_nombre&&<span>Última edición por <strong>{evento.edited_by_nombre}</strong>{evento.updated_at&&" el "+new Date(evento.updated_at).toLocaleString("es-CL")}</span>}
-          </div>
+              {/* Historial */}
+              <div style={{fontSize:"12px",color:"#6B7280",display:"flex",gap:"16px",flexWrap:"wrap",paddingTop:"12px",borderTop:"1px solid #E5E7EB"}}>
+                {evento.created_by_nombre&&<span>Creado por <strong>{evento.created_by_nombre}</strong>{evento.created_at&&" el "+new Date(evento.created_at).toLocaleString("es-CL")}</span>}
+                {evento.edited_by_nombre&&<span>Última edición por <strong>{evento.edited_by_nombre}</strong>{evento.updated_at&&" el "+new Date(evento.updated_at).toLocaleString("es-CL")}</span>}
+              </div>
             </>
           )}
         </div>
