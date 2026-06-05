@@ -1267,7 +1267,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                             {["Día","Fecha","Horario","Jornada"].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:"12px",fontWeight:"600",WebkitFontSmoothing:"antialiased"}}>{h}</th>)}
                           </tr></thead>
                           <tbody>{dias.map((dia,dIdx)=>(
-                            <tr key={dIdx} style={{background:dIdx%2===0?"#fff":"#F8FAFC",borderBottom:"1px solid #BFDBFE"}}>
+                            <tr key={dIdx} onClick={()=>onNavDia&&onNavDia(dIdx)} style={{background:dIdx%2===0?"#fff":"#F8FAFC",borderBottom:"1px solid #BFDBFE",cursor:onNavDia?"pointer":"default"}} onMouseEnter={e=>{if(onNavDia)e.currentTarget.style.background=dIdx%2===0?"#DBEAFE":"#BFDBFE";}} onMouseLeave={e=>{e.currentTarget.style.background=dIdx%2===0?"#fff":"#F8FAFC";}}>
                               <td style={{padding:"7px 12px",fontSize:"13px",fontWeight:"600",color:"#1A6FD4",WebkitFontSmoothing:"antialiased"}}>{dIdx+1}</td>
                               <td style={{padding:"7px 12px",fontSize:"13px",color:"#0F172A",WebkitFontSmoothing:"antialiased"}}>{formatLargo(dia.fecha).replace(/ de \d{4}$/,"")}</td>
                               <td style={{padding:"7px 12px",fontSize:"13px",color:"#0F172A",WebkitFontSmoothing:"antialiased"}}>{dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs</td>
@@ -3160,7 +3160,7 @@ export default function App() {
         {diasLF.map((d,i)=>{
           const iso=toISO(d),evs=evsDia(iso),esHoy=iso===hoy();
           const mesLargo=MESES_L[d.getMonth()].charAt(0).toUpperCase()+MESES_L[d.getMonth()].slice(1);
-          const colBg=esHoy?"rgba(255,255,255,0.25)":evs.length>0?"rgba(255,255,255,0.13)":"rgba(255,255,255,0.07)";
+          const colBg=evs.length>0?"rgba(255,255,255,0.25)":"rgba(255,255,255,0.14)";
           return <div key={i} style={{marginBottom:"10px",background:colBg,borderRadius:"12px",overflow:"hidden"}}>
             <div style={{padding:"12px 14px",display:"flex",alignItems:"center",gap:"12px",cursor:"pointer"}} onClick={()=>{setDiaActual(iso);setVista("dia");}}>
               <div style={{textAlign:"center",minWidth:"54px"}}>
@@ -3248,8 +3248,8 @@ export default function App() {
       const totalDias=Math.round((fin-ini)/86400000)+1;
       const dias=Array.from({length:totalDias},(_,i)=>{const d=new Date(ini.getTime()+i*86400000);return{iso:toISO(d),x:i+1};});
       return (
-        <div style={{paddingBottom:"80px",margin:"0 auto",maxWidth:"720px",width:"100%"}}>
-          <div data-multidia-header="" style={{position:"sticky",top:"136px",zIndex:50,background:"rgba(18,32,78,0.98)",backdropFilter:"blur(10px)",WebkitBackdropFilter:"blur(10px)",borderBottom:"1px solid rgba(255,255,255,0.15)"}}>
+        <div style={{paddingBottom:"80px",margin:"0 auto",width:"100%",display:"flex",flexDirection:"row",alignItems:"flex-start"}}>
+          <div data-multidia-header="" style={{width:"280px",flexShrink:0,position:"sticky",top:"136px",zIndex:50,background:"rgba(18,32,78,0.98)",backdropFilter:"blur(10px)",WebkitBackdropFilter:"blur(10px)",borderRight:"1px solid rgba(255,255,255,0.15)",overflowY:"auto",maxHeight:"calc(100vh - 136px)"}}>
             {/* Título + Volver inline */}
             <div style={{padding:"10px 12px 7px 17px",display:"flex",alignItems:"center",gap:"7px",flexWrap:"nowrap"}}>
               <span style={{fontSize:"16px",fontWeight:"700",color:"#FFFFFF",whiteSpace:"nowrap"}}>🗓️ Evento Multidía</span>
@@ -3278,10 +3278,10 @@ export default function App() {
               </table>
             </div>
           </div>
-          <div style={{display:"flex",flexDirection:"column",gap:"16px",padding:"16px 24px 0"}}>
+          <div style={{flex:1,display:"flex",flexDirection:"column",gap:"16px",padding:"16px 24px 0"}}>
             {dias.map(({iso,x})=>{const diaEspecifico={...evM,fecha_inicio:iso,_diaNum:x};return(
               <div key={iso} id={`multidia-card-${x}`} onClick={()=>abrirEvento(diaEspecifico)} style={{background:"#FFFFFF",borderLeft:`16px solid ${borderC}`,borderTop:`6px solid ${borderC}`,borderRadius:"0 12px 12px 0",padding:"20px 24px",boxShadow:"0 2px 12px rgba(0,0,0,0.10)",cursor:"pointer"}}>
-                <div style={{fontSize:"15px",fontWeight:"700",color:"#C62828",marginBottom:"12px"}}>📅 Día {x} de {totalDias} — {formatLargo(iso)}</div>
+                <div onClick={(e)=>{e.stopPropagation();setDiaActual(iso);setModoMultidia(false);setEventoMultidiaId(null);setVista("dia");}} style={{fontSize:"15px",fontWeight:"700",color:"#C62828",marginBottom:"12px",cursor:"pointer",textDecoration:"underline",textDecorationColor:"rgba(198,40,40,0.35)"}} onMouseEnter={e=>e.currentTarget.style.color="#B71C1C"} onMouseLeave={e=>e.currentTarget.style.color="#C62828"}>📅 Día {x} de {totalDias} — {formatLargo(iso)}</div>
                 <div style={{fontSize:"34px",fontWeight:"600",color:"#0F172A",lineHeight:1.2,marginBottom:4}}>{cli?.nombre_empresa||"—"}</div>
                 {cli?.nombre_contacto&&<div style={{fontSize:"16px",fontWeight:"500",color:"#6B7280",fontStyle:"italic",marginBottom:4}}>Contacto: {cli.nombre_contacto}</div>}
                 {(evM.nombre_evento||evM.titulo||evM.nombre||evM.descripcion)&&<div style={{fontSize:"16px",fontWeight:"500",color:"#111827",marginTop:2}}><span style={{fontWeight:"600",color:"#6B7280"}}>Nombre del evento: </span>{evM.nombre_evento||evM.titulo||evM.nombre||evM.descripcion}</div>}

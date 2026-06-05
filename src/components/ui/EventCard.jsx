@@ -255,7 +255,10 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             )}
             {esPresencial && ev.lugar && (
               <div>
-                <span style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"5px 12px", borderRadius:6, fontSize:14, fontWeight:700, lineHeight:1.4, color:"#8F2424", background:"#FEF2F2", border:"2px solid #CE3434", whiteSpace:"nowrap" }}>📍 {ev.lugar}</span>
+                <div style={{ display:"flex", gap:6, flexWrap:"wrap", alignItems:"center" }}>
+                  <span style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"5px 12px", borderRadius:6, fontSize:14, fontWeight:700, lineHeight:1.4, color:"#8F2424", background:"#FEF2F2", border:"2px solid #CE3434", whiteSpace:"nowrap" }}>📍 {ev.lugar}</span>
+                  {ev.lugar_detalle && <span style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"4px 10px", borderRadius:6, fontSize:13, fontWeight:700, lineHeight:1.4, color:"#8F2424", background:"#FEF2F2", border:"1px solid #CE3434", whiteSpace:"nowrap" }}>📍 {ev.lugar_detalle}</span>}
+                </div>
                 <div style={{ display:"flex", alignItems:"center", gap:"8px", marginTop:"6px", flexWrap:"wrap" }}>
                   <a
                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.lugar)}`}
@@ -306,7 +309,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                 return (
                   <div key={key} style={{ marginTop:10 }}>
                     <div style={{ position:"relative", marginBottom:5 }}>
-                      <div style={{ fontSize:14, fontWeight:600, color:"#1256A3", textTransform:"uppercase", letterSpacing:"0.07em", WebkitFontSmoothing:"antialiased", MozOsxFontSmoothing:"grayscale", opacity:0.9, whiteSpace:"nowrap", textAlign:"center", width:"100%", display:"block" }}>
+                      <div style={{ fontSize:17.5, fontWeight:600, color:"#1256A3", textTransform:"uppercase", letterSpacing:"0.07em", WebkitFontSmoothing:"antialiased", MozOsxFontSmoothing:"grayscale", opacity:0.9, whiteSpace:"nowrap", textAlign:"center", width:"100%", display:"block" }}>
                         {key}
                       </div>
                       {hp && (
@@ -319,16 +322,16 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                       {grupo.items.map((interp, i) => (
                         <span key={i}
                           title={`${interp.nombre}${interp.apellido ? " " + interp.apellido : ""}`}
-                          style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:5, padding:"4px 5px", borderRadius:20, fontSize:14, fontWeight:500, lineHeight:1.4, color:"#1A1A1A", background:"#FFFFFF", border:`2px solid ${pillClr}`, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"default", WebkitFontSmoothing:"antialiased" }}>
+                          style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:5, padding:"5px 5px", borderRadius:20, fontSize:17.5, fontWeight:500, lineHeight:1.4, color:"#1A1A1A", background:"#FFFFFF", border:`2px solid ${pillClr}`, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"default", WebkitFontSmoothing:"antialiased" }}>
                           {interp.isHost && <span style={{ fontSize:11 }}>🔑</span>}
-                          <Flag idioma={grupo.idioma} size={14} />
+                          <Flag idioma={grupo.idioma} size={16} />
                           <span style={{ overflow:"hidden", textOverflow:"ellipsis", color:"#1A1A1A" }}>
                             {nombreCorto(interp.nombre, interp.apellido)}
                           </span>
                         </span>
                       ))}
                       {soloUno && (
-                        <span style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:5, padding:"4px 5px", borderRadius:20, fontSize:13, fontWeight:500, lineHeight:1.4, color:"#858B95", background:"#D4D5D5", border:"1px dashed #B2B5BA", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"default", fontStyle:"italic", WebkitFontSmoothing:"antialiased" }}>
+                        <span style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:5, padding:"5px 5px", borderRadius:20, fontSize:17.5, fontWeight:500, lineHeight:1.4, color:"#3E444F", background:"#C8CACC", border:"2px dashed #7A818C", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"default", fontStyle:"italic", WebkitFontSmoothing:"antialiased" }}>
                           SIN PARTNER
                         </span>
                       )}
