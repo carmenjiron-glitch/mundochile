@@ -3137,7 +3137,7 @@ export default function App() {
       const colBg=`rgba(255,255,255,${esWeekend?0.07:0.10})`;
       const hdrBg=`rgba(255,255,255,${esWeekend?0.05:0.08})`;
       return <div key={`${esWeekend?"fs":"lf"}-${i}`} style={{background:colBg,backdropFilter:"blur(4px)",WebkitBackdropFilter:"blur(4px)",borderRadius:"12px",padding:"10px",minHeight:"calc(100vh - 260px)",opacity:opac}}>
-        <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{padding:"8px 10px",borderRadius:"10px",marginBottom:"8px",background:hdrBg,cursor:"pointer",transition:"background 0.15s",border:"3px solid #F97316",textAlign:"center"}}
+        <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{padding:"8px 10px",borderRadius:"10px",marginBottom:"8px",background:hdrBg,cursor:"pointer",transition:"background 0.15s",border:esHoy?"3px solid #F97316":"none",textAlign:"center"}}
           onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"}
           onMouseLeave={e=>{e.currentTarget.style.background=hdrBg;}}>
           <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"7px",flexWrap:"nowrap"}}>
