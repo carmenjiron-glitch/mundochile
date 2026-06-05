@@ -1233,7 +1233,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           {/* Fila 2: nombre cliente / contacto alineado a la izquierda */}
           <div style={{display:"flex",flexDirection:"column",marginBottom:"6px"}}>
             <div style={{fontSize:"29px",fontWeight:"600",color:"#0F172A",lineHeight:1.2}}>{cliente?.nombre_empresa||"—"}</div>
-            {cliente?.nombre_contacto&&<div style={{fontSize:"17px",fontWeight:"600",color:"#5B616D",fontStyle:"italic",marginTop:"2px"}}>Contacto: {cliente.nombre_contacto}</div>}
+            {cliente?.nombre_contacto&&<div style={{fontSize:"20px",fontWeight:"600",color:"#494E57",fontStyle:"italic",marginTop:"2px"}}>Contacto: {cliente.nombre_contacto}</div>}
           </div>
           {/* Fila 3: nombre del evento ancho completo */}
           {(evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion)&&<div style={{fontSize:"17px",fontWeight:"500",color:"#111827",marginBottom:"8px",wordBreak:"break-word",overflowWrap:"break-word"}}><span style={{fontWeight:"600",color:"#6B7280"}}>Nombre del evento: </span>{(evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion)?.replace(/[\t\r\n]+/g,' ').replace(/\s{2,}/g,' ').trim()}</div>}
@@ -1328,14 +1328,14 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                                 {eq.proveedor_nombre&&` · ${eq.proveedor_nombre}`}{eq.num_receptores>0&&` · ${eq.num_receptores} receptores`}{eq.num_cabinas>0&&` · ${eq.num_cabinas} cabinas`}
                               </div>
                             ))}
-                            {!Object.keys(gDia).length&&!eqsDia.length&&<div style={{fontSize:"13px",color:"#9CA3AF",fontStyle:"italic"}}>Sin intérpretes ni equipos asignados</div>}
+                            {!Object.keys(gDia).length&&!eqsDia.length&&<div style={{fontSize:"15px",color:"#7D828C",fontStyle:"italic"}}>Sin intérpretes ni equipos asignados</div>}
                           </div>
                         </div>
                       );
                     };
                     if(todosIguales){return(<>
                       {renderDia(dias[0],"📅 Todos los días")}
-                      <div style={{textAlign:"center",fontSize:"13px",color:"#6B7280",fontStyle:"italic",padding:"4px 0"}}>Todos los días son iguales</div>
+                      <div style={{textAlign:"center",fontSize:"15px",color:"#565B66",fontStyle:"italic",padding:"4px 0"}}>Todos los días son iguales</div>
                     </>);}
                     return dias.map((dia,dIdx)=>(<div key={dia.id||dIdx}>{renderDia(dia,`📅 Día ${dIdx+1} — ${formatLargo(dia.fecha)}`)}</div>));
                   })()}
