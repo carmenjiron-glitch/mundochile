@@ -3479,12 +3479,15 @@ export default function App() {
                   <div style={{color:"rgba(255,255,255,0.70)",fontSize:"14px",whiteSpace:"nowrap"}}>esta semana</div>
                 </div>);
               })()}
-              {pantalla==="calendario"&&vista!=="agenda"&&vista!=="grilla"&&(
+              {pantalla==="calendario"&&vista!=="agenda"&&vista!=="grilla"&&(()=>{
+                const _t=tituloNav();
+                const _fs=_t.length>40?11:_t.length>30?13:_t.length>22?15:17;
+                return(
                 <div style={{padding:"4.5px 16px",border:"1px solid rgba(255,255,255,0.85)",borderRadius:"9px",background:"transparent",textAlign:"center",minWidth:0,maxWidth:"100%"}}>
-                  <div style={{color:"#FFFFFF",fontSize:"17px",fontWeight:"500",lineHeight:1.2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{tituloNav()}</div>
+                  <div style={{color:"#FFFFFF",fontSize:`${_fs}px`,fontWeight:"500",lineHeight:1.2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{_t}</div>
                   <div style={{color:"rgba(255,255,255,0.70)",fontSize:"13.5px",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{contadorSubtitulo()}</div>
-                </div>
-              )}
+                </div>);
+              })()}
             </div>
           </div>}
           {/* DERECHA: nav + utilidades */}
