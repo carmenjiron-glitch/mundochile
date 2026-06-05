@@ -508,8 +508,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           if(eD)throw eD;
           const asigsDia=(dia.asignaciones||[]).filter(a=>a.interprete_id&&a.par_id).map(a=>({
             evento_dia_id:dD.id, interprete_id:a.interprete_id, par_id:a.par_id,
-            es_host_zoom:!!a.es_host_zoom,
-            rol:a.rol||"Principal", hora_presentacion:a.hora_presentacion||null,
+            es_host_zoom:!!a.es_host_zoom, hora_presentacion:a.hora_presentacion||null,
           }));
           if(asigsDia.length>0){const{error:eA}=await sb.from("asignaciones_dia").insert(asigsDia);if(eA)throw eA;}
           if(form.modalidad!=="remoto"&&(dia.equipos||[]).length>0){
