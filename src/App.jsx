@@ -3142,7 +3142,10 @@ export default function App() {
           onMouseLeave={e=>{e.currentTarget.style.background=hdrBg;}}>
           <div style={{display:"flex",alignItems:"center",gap:"6px",flexWrap:"nowrap"}}>
             <span style={{fontSize:"14px",fontWeight:"600",color:esWeekend?"rgba(255,255,255,0.75)":"#fff",textTransform:"uppercase",letterSpacing:"0.04em",flexShrink:0}}>{nombresDia[i]}</span>
-            <div style={{width:"26px",height:"26px",borderRadius:"50%",background:"#F97316",color:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"14px",fontWeight:"700",flexShrink:0}}>{d.getDate()}</div>
+            {esHoy
+              ?<div style={{width:"26px",height:"26px",borderRadius:"50%",background:"#F97316",color:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"14px",fontWeight:"700",flexShrink:0}}>{d.getDate()}</div>
+              :<span style={{fontSize:"14px",fontWeight:"700",color:esWeekend?"rgba(255,255,255,0.75)":"#fff",flexShrink:0}}>{d.getDate()}</span>
+            }
             <span style={{fontSize:"14px",color:esWeekend?"rgba(255,255,255,0.70)":"rgba(255,255,255,0.90)",whiteSpace:"nowrap"}}>{mesLargo} {d.getFullYear()}</span>
           </div>
           {evs.length>0&&<div style={{fontSize:"12px",fontWeight:"500",color:"rgba(255,255,255,0.85)",marginTop:"4px"}}>{evs.length} evento{evs.length!==1?"s":""}</div>}
