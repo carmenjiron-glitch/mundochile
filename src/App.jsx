@@ -1316,13 +1316,13 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                                 <div style={{fontSize:"13px",fontWeight:"600",color:"#1256A3",textTransform:"uppercase",letterSpacing:"0.06em",textAlign:"center",marginBottom:"5px",WebkitFontSmoothing:"antialiased"}}>{key}</div>
                                 <div style={{display:"flex",flexWrap:"wrap",gap:"6px",justifyContent:"center"}}>
                                   {grupo.items.map(({interp,isHost},i)=>(
-                                    <span key={i} style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"4px 9px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:"#111111",background:"#FFFFFF",border:`2px solid ${pillClr}`,whiteSpace:"nowrap"}}>
+                                    <span key={i} style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"4px 11px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:"#111111",background:"#FFFFFF",border:`2px solid ${pillClr}`,whiteSpace:"nowrap"}}>
                                       {isHost&&<span style={{fontSize:"12px"}}>🔑</span>}
                                       <FlagImg idioma={grupo.idioma}/>
                                       {interp.nombre}{interp.apellido?" "+interp.apellido:""}
                                     </span>
                                   ))}
-                                  {grupo.items.length===1&&<span style={{display:"inline-flex",alignItems:"center",padding:"4px 9px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:"#505660",background:"#F3F4F6",border:"1px dashed #9CA3AF",fontStyle:"italic"}}>Sin partner</span>}
+                                  {grupo.items.length===1&&<span style={{display:"inline-flex",alignItems:"center",padding:"4px 11px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:"#505660",background:"#F3F4F6",border:"1px dashed #9CA3AF",fontStyle:"italic"}}>Sin partner</span>}
                                 </div>
                               </div>);
                             })}
@@ -1453,13 +1453,13 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                               </div>
                               <div style={{display:"flex",flexWrap:"wrap",gap:"6px",justifyContent:"center"}}>
                                 {grupo.items.map(({interp,isHost},i)=>(
-                                  <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"4px 13px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:"#111111",background:"#FFFFFF",border:`2px solid ${pillClr}`,whiteSpace:"nowrap"}}>
+                                  <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"4px 16px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:"#111111",background:"#FFFFFF",border:`2px solid ${pillClr}`,whiteSpace:"nowrap"}}>
                                     {isHost&&<span style={{fontSize:"12px"}}>🔑</span>}
                                     <FlagImg idioma={grupo.idioma}/>
                                     <span style={{color:"#111111",fontSize:"14px",fontWeight:"500",WebkitFontSmoothing:"antialiased"}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
                                   </span>
                                 ))}
-                                {grupo.items.length===1&&<span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",padding:"4px 13px",borderRadius:"20px",background:"#F3F4F6",color:"#505660",border:"1px dashed #9CA3AF",fontSize:"14px",fontWeight:"500",fontStyle:"italic"}}>Sin partner</span>}
+                                {grupo.items.length===1&&<span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",padding:"4px 16px",borderRadius:"20px",background:"#F3F4F6",color:"#505660",border:"1px dashed #9CA3AF",fontSize:"14px",fontWeight:"500",fontStyle:"italic"}}>Sin partner</span>}
                               </div>
                               {grupo.items.map(({asig},i)=>metaRow(asig)?<div key={i}>{metaRow(asig)}</div>:null)}
                             </div>);
