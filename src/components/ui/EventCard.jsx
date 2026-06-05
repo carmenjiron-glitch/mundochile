@@ -147,11 +147,11 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
     onNavegar(iso);
   };
 
-  // Dot hoy/mañana
+  // Dot hoy/mañana — usa la fecha de la columna (diaDe) para multidía
   const dotHoyD = new Date();
   const dotMan = new Date();
   dotMan.setDate(dotHoyD.getDate() + 1);
-  const dotFecha = desdeISO(ev.fecha_inicio);
+  const dotFecha = diaDe ? desdeISO(diaDe) : desdeISO(ev.fecha_inicio);
   const dotEsHoy = dotFecha.toDateString() === dotHoyD.toDateString();
   const dotEsMan = dotFecha.toDateString() === dotMan.toDateString();
   const dotVisible = dotEsHoy || dotEsMan;
