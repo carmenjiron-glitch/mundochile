@@ -3135,7 +3135,7 @@ export default function App() {
       const mesLargo=MESES_L[d.getMonth()].charAt(0).toUpperCase()+MESES_L[d.getMonth()].slice(1);
       const opac=esWeekend?0.82:1;
       const colBg=`rgba(255,255,255,${esWeekend?0.07:0.10})`;
-      const hdrBg=esHoy?"rgba(255,255,255,0.20)":`rgba(255,255,255,${esWeekend?0.05:0.08})`;
+      const hdrBg=`rgba(255,255,255,${esWeekend?0.05:0.08})`;
       return <div key={`${esWeekend?"fs":"lf"}-${i}`} style={{background:colBg,backdropFilter:"blur(4px)",WebkitBackdropFilter:"blur(4px)",borderRadius:"12px",padding:"10px",minHeight:"calc(100vh - 260px)",opacity:opac}}>
         <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{textAlign:"center",padding:"12px 8px",borderRadius:"10px",marginBottom:"8px",background:hdrBg,cursor:"pointer",transition:"background 0.15s"}}
           onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"}
