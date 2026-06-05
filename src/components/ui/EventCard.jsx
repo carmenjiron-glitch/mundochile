@@ -376,7 +376,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                 </div>
               </div>
               {cliente?.nombre_contacto && (
-                <div style={{ fontSize:14, color:"#565D68", fontStyle:"italic", marginTop:2 }}>
+                <div style={{ fontSize:16, color:"#454A53", fontStyle:"italic", marginTop:2 }}>
                   Contacto: {cliente.nombre_contacto}
                 </div>
               )}
@@ -442,9 +442,10 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                       </span>
                     </span>
                   ))}
+                  {grupo.items.length===1&&<span style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", padding:pillPad, borderRadius:20, fontSize:pillFs, fontWeight:400, lineHeight:1.4, color:"#6B7280", background:"#F3F4F6", border:"1px dashed #9CA3AF", fontStyle:"italic", cursor:"default" }}>Sin partner</span>}
                 </div>
                 {hp && (
-                  <div style={{ fontSize:11, color:"#64748B", marginTop:4, display:"inline-flex", alignItems:"center", gap:4 }}>
+                  <div style={{ fontSize:14, color:"#4B5768", marginTop:4, display:"inline-flex", alignItems:"center", gap:4 }}>
                     🕐 Presentación: {hp.slice(0,5)} hrs
                   </div>
                 )}

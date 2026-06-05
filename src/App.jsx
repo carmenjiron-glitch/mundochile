@@ -1241,7 +1241,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           {/* Fila 3: nombre del evento ancho completo */}
           {(evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion)&&<div style={{fontSize:"17px",fontWeight:"500",color:"#111827",marginBottom:"8px",wordBreak:"break-word",overflowWrap:"break-word"}}><span style={{fontWeight:"600",color:"#6B7280"}}>Nombre del evento: </span>{(evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion)?.replace(/[\t\r\n]+/g,' ').replace(/\s{2,}/g,' ').trim()}</div>}
           {/* Fila 4 (multidía): franja color con fechas izq + pills der */}
-          {esMultidia&&<div style={{background:`${colorCliente(evento.cliente_id)}18`,border:`2px solid ${colorCliente(evento.cliente_id)}`,borderRadius:"10px",padding:"8px 14px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:"12px",marginTop:"4px"}}>
+          {esMultidia&&<div style={{background:`${colorCliente(evento.cliente_id)}18`,border:`2px solid ${colorCliente(evento.cliente_id)}`,borderRadius:"10px",padding:"8px 14px 8px 14px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:"12px",marginTop:"4px",paddingRight:0}}>
             <div style={{fontSize:"15px",fontWeight:"600",color:"#1E293B",whiteSpace:"nowrap"}}>📅 {formatMedioES(evento.fecha_inicio)} → {formatMedioES(evento.fecha_termino)}</div>
             <div style={{display:"flex",gap:"8px",flexShrink:0,alignItems:"center"}}>
               {tiposArr(evento.tipo).map(t=><span key={t} style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"16px",fontWeight:"500",lineHeight:"1.4",color:(B_TIPO_D[t]||{c:"#2F49AF"}).c,background:(B_TIPO_D[t]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO_D[t]||{c:"#2F49AF"}).c}`,whiteSpace:"nowrap"}}>{t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤":"🤫"} {t}</span>)}
@@ -1315,13 +1315,13 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                                 <div style={{fontSize:"13px",fontWeight:"600",color:"#1256A3",textTransform:"uppercase",letterSpacing:"0.06em",textAlign:"center",marginBottom:"5px",WebkitFontSmoothing:"antialiased"}}>{key}</div>
                                 <div style={{display:"flex",flexWrap:"wrap",gap:"6px",justifyContent:"center"}}>
                                   {grupo.items.map(({interp,isHost},i)=>(
-                                    <span key={i} style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"4px 7px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:"#111111",background:"#FFFFFF",border:`2px solid ${pillClr}`,whiteSpace:"nowrap"}}>
+                                    <span key={i} style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"4px 9px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:"#111111",background:"#FFFFFF",border:`2px solid ${pillClr}`,whiteSpace:"nowrap"}}>
                                       {isHost&&<span style={{fontSize:"12px"}}>🔑</span>}
                                       <FlagImg idioma={grupo.idioma}/>
                                       {interp.nombre}{interp.apellido?" "+interp.apellido:""}
                                     </span>
                                   ))}
-                                  {grupo.items.length===1&&<span style={{display:"inline-flex",alignItems:"center",padding:"4px 7px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:"#505660",background:"#F3F4F6",border:"1px dashed #9CA3AF",fontStyle:"italic"}}>Sin partner</span>}
+                                  {grupo.items.length===1&&<span style={{display:"inline-flex",alignItems:"center",padding:"4px 9px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:"#505660",background:"#F3F4F6",border:"1px dashed #9CA3AF",fontStyle:"italic"}}>Sin partner</span>}
                                 </div>
                               </div>);
                             })}
@@ -1331,7 +1331,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                                 {eq.proveedor_nombre&&` · ${eq.proveedor_nombre}`}{eq.num_receptores>0&&` · ${eq.num_receptores} receptores`}{eq.num_cabinas>0&&` · ${eq.num_cabinas} cabinas`}
                               </div>
                             ))}
-                            {!Object.keys(gDia).length&&!eqsDia.length&&<div style={{fontSize:"15px",color:"#6A6F77",fontStyle:"italic"}}>Sin intérpretes ni equipos asignados</div>}
+                            {!Object.keys(gDia).length&&!eqsDia.length&&<div style={{fontSize:"15px",color:"#374151",fontStyle:"italic"}}>Sin intérpretes ni equipos asignados</div>}
                           </div>
                         </div>
                       );
@@ -1385,7 +1385,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                     <div style={{background:"#FEF9C3",padding:"8px 14px",fontWeight:"700",fontSize:"13px",color:"#111827",textTransform:"uppercase",letterSpacing:"0.06em"}}>📅 Fecha y horario</div>
                     <div style={{padding:"12px 14px"}}>
                       <div style={{fontSize:"15px",fontWeight:"500",color:"#1E293B",marginBottom:"6px"}}>📅 {formatLargo(evento.fecha_inicio)}</div>
-                      <div style={{fontSize:"15px",fontWeight:"500",color:"#0F172A",marginBottom:"10px"}}>🕐 {evento.hora_inicio?.slice(0,5)} – {evento.hora_termino?.slice(0,5)} hrs{evento.jornada&&<span style={{fontWeight:"400",color:"#5B616D",fontSize:"13px"}}> · {pluralizarJornada(evento.jornada)}</span>}</div>
+                      <div style={{fontSize:"15px",fontWeight:"500",color:"#0F172A",marginBottom:"10px"}}>🕐 {evento.hora_inicio?.slice(0,5)} – {evento.hora_termino?.slice(0,5)} hrs{evento.jornada&&<span style={{fontWeight:"400",color:"#374151",fontSize:"13px"}}> · {pluralizarJornada(evento.jornada)}</span>}</div>
                       <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center"}}>
                         {tiposArr(evento.tipo).map(t=><span key={t} style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:(B_TIPO_D[t]||{c:"#2F49AF"}).c,background:(B_TIPO_D[t]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO_D[t]||{c:"#2F49AF"}).c}`,whiteSpace:"nowrap"}}>{t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤":"🤫"} {t}</span>)}
                         <span style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:(B_MOD_D[evento.modalidad]||{c:"#565656"}).c,background:(B_MOD_D[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD_D[evento.modalidad]||{c:"#565656"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?<IconPresencial size={14} color={(B_MOD_D[evento.modalidad]||{c:"#565656"}).c}/>:evento.modalidad==="hibrido"?"🔀":"💻"} {LBL[evento.modalidad]||evento.modalidad}</span>
@@ -1441,7 +1441,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                       <div style={{border:"2px solid #1D4ED8",borderRadius:"12px",background:"#EFF6FF",overflow:"hidden"}}>
                         <div style={{background:"#FEF9C3",padding:"8px 14px",fontWeight:"700",fontSize:"13px",color:"#111827",textTransform:"uppercase",letterSpacing:"0.06em",display:"flex",alignItems:"center",gap:"6px"}}><IconMic size={14}/> Intérpretes</div>
                         <div style={{padding:"12px 14px"}}>
-                          {!entries.length&&<div style={{fontSize:"13px",color:"#6A6F77",fontStyle:"italic"}}>Sin intérpretes asignados</div>}
+                          {!entries.length&&<div style={{fontSize:"13px",color:"#374151",fontStyle:"italic"}}>Sin intérpretes asignados</div>}
                           {entries.map(([key,grupo])=>{
                             const pillClr=IDIOMA_PILL_CLR[grupo.idioma]||"#4C6EF5";
                             const hp=grupo.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
@@ -1452,13 +1452,13 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                               </div>
                               <div style={{display:"flex",flexWrap:"wrap",gap:"6px",justifyContent:"center"}}>
                                 {grupo.items.map(({interp,isHost},i)=>(
-                                  <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"4px 11px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:"#111111",background:"#FFFFFF",border:`2px solid ${pillClr}`,whiteSpace:"nowrap"}}>
+                                  <span key={i} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"5px",padding:"4px 13px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:"#111111",background:"#FFFFFF",border:`2px solid ${pillClr}`,whiteSpace:"nowrap"}}>
                                     {isHost&&<span style={{fontSize:"12px"}}>🔑</span>}
                                     <FlagImg idioma={grupo.idioma}/>
                                     <span style={{color:"#111111",fontSize:"14px",fontWeight:"500",WebkitFontSmoothing:"antialiased"}}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
                                   </span>
                                 ))}
-                                {grupo.items.length===1&&<span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",padding:"4px 11px",borderRadius:"20px",background:"#F3F4F6",color:"#505660",border:"1px dashed #9CA3AF",fontSize:"14px",fontWeight:"500",fontStyle:"italic"}}>Sin partner</span>}
+                                {grupo.items.length===1&&<span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",padding:"4px 13px",borderRadius:"20px",background:"#F3F4F6",color:"#505660",border:"1px dashed #9CA3AF",fontSize:"14px",fontWeight:"500",fontStyle:"italic"}}>Sin partner</span>}
                               </div>
                               {grupo.items.map(({asig},i)=>metaRow(asig)?<div key={i}>{metaRow(asig)}</div>:null)}
                             </div>);
