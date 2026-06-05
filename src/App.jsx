@@ -3137,18 +3137,18 @@ export default function App() {
       const colBg=`rgba(255,255,255,${esWeekend?0.07:0.10})`;
       const hdrBg=`rgba(255,255,255,${esWeekend?0.05:0.08})`;
       return <div key={`${esWeekend?"fs":"lf"}-${i}`} style={{background:colBg,backdropFilter:"blur(4px)",WebkitBackdropFilter:"blur(4px)",borderRadius:"12px",padding:"10px",minHeight:"calc(100vh - 260px)",opacity:opac}}>
-        <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{padding:"8px 10px",borderRadius:"10px",marginBottom:"8px",background:hdrBg,cursor:"pointer",transition:"background 0.15s",border:"3px solid #F97316"}}
+        <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{padding:"8px 10px",borderRadius:"10px",marginBottom:"8px",background:hdrBg,cursor:"pointer",transition:"background 0.15s",border:"3px solid #F97316",textAlign:"center"}}
           onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"}
           onMouseLeave={e=>{e.currentTarget.style.background=hdrBg;}}>
-          <div style={{display:"flex",alignItems:"center",gap:"6px",flexWrap:"nowrap"}}>
-            <span style={{fontSize:"14px",fontWeight:"600",color:esWeekend?"rgba(255,255,255,0.75)":"#fff",textTransform:"uppercase",letterSpacing:"0.04em",flexShrink:0}}>{nombresDia[i]}</span>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"7px",flexWrap:"nowrap"}}>
+            <span style={{fontSize:"16px",fontWeight:"700",color:esWeekend?"rgba(255,255,255,0.75)":"#fff",textTransform:"uppercase",letterSpacing:"0.04em",flexShrink:0}}>{nombresDia[i]}</span>
             {esHoy
-              ?<div style={{width:"26px",height:"26px",borderRadius:"50%",background:"#F97316",color:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"14px",fontWeight:"700",flexShrink:0}}>{d.getDate()}</div>
-              :<span style={{fontSize:"14px",fontWeight:"700",color:esWeekend?"rgba(255,255,255,0.75)":"#fff",flexShrink:0}}>{d.getDate()}</span>
+              ?<div style={{width:"30px",height:"30px",borderRadius:"50%",background:"#F97316",color:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"16px",fontWeight:"700",flexShrink:0}}>{d.getDate()}</div>
+              :<span style={{fontSize:"16px",fontWeight:"700",color:esWeekend?"rgba(255,255,255,0.75)":"#fff",flexShrink:0}}>{d.getDate()}</span>
             }
-            <span style={{fontSize:"14px",color:esWeekend?"rgba(255,255,255,0.70)":"rgba(255,255,255,0.90)",whiteSpace:"nowrap"}}>{mesLargo} {d.getFullYear()}</span>
+            <span style={{fontSize:"16px",fontWeight:"500",color:esWeekend?"rgba(255,255,255,0.70)":"rgba(255,255,255,0.90)",whiteSpace:"nowrap"}}>{mesLargo}</span>
           </div>
-          {evs.length>0&&<div style={{fontSize:"12px",fontWeight:"500",color:"rgba(255,255,255,0.85)",marginTop:"4px"}}>{evs.length} evento{evs.length!==1?"s":""}</div>}
+          {evs.length>0&&<div style={{display:"inline-block",background:"rgba(255,255,255,0.20)",color:"#fff",fontSize:"13px",fontWeight:"500",padding:"2px 10px",borderRadius:"20px",marginTop:"5px"}}>{evs.length} evento{evs.length!==1?"s":""}</div>}
         </div>
         {evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} onNavegar={d=>{setDiaActual(d);setVista("dia");}} onVerMultidia={verTodosLosDias} solidPill/>)}
         {evs.length===0&&<div style={{textAlign:"center",color:esWeekend?"rgba(255,255,255,0.30)":"rgba(255,255,255,0.5)",fontWeight:"500",fontSize:"15px",padding:"20px 0"}}>Sin eventos</div>}
