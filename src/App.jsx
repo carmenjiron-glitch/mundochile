@@ -1206,7 +1206,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
     </div>:null;
   return (
     <div style={{position:"fixed",top:0,left:0,width:"100vw",height:"100vh",background:"rgba(0,0,0,0.5)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(4px)",padding:"16px",boxSizing:"border-box"}}>
-      <div style={{background:"#FFFFFF",borderRadius:"20px",width:"100%",maxWidth:"1140px",maxHeight:"90vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,0.25)",position:"relative",zIndex:1001}}>
+      <div style={{background:"#FFFFFF",borderRadius:"20px",width:"100%",maxWidth:"855px",maxHeight:"90vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,0.25)",position:"relative",zIndex:1001}}>
         {/* Header */}
         <div style={{background:"#FFFFFF",padding:"20px 24px 14px",borderRadius:"20px 20px 0 0",flexShrink:0,borderBottom:`10px solid ${colorCliente(evento.cliente_id)}`,position:"sticky",top:0,zIndex:10,boxShadow:"0 2px 8px rgba(0,0,0,0.08)"}}>
           {/* Fila 1: dots izquierda, botones derecha en una línea */}
@@ -1230,10 +1230,10 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
               <button onClick={onCerrar} style={{background:"#FFF5F5",border:"1.5px solid #FC8181",cursor:"pointer",fontSize:"13px",color:"#E53E3E",padding:"8px 16px",borderRadius:"8px",fontFamily:"inherit",fontWeight:"500",height:"36px",whiteSpace:"nowrap"}}>✕ Cerrar</button>
             </div>
           </div>
-          {/* Fila 2: nombre cliente col1 / contacto col2 */}
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"16px",marginBottom:"6px",alignItems:"baseline"}}>
-            <div style={{fontSize:"29px",fontWeight:"600",color:"#0F172A",lineHeight:1.2,minWidth:0}}>{cliente?.nombre_empresa||"—"}</div>
-            {cliente?.nombre_contacto&&<div style={{fontSize:"19px",fontWeight:"500",color:"#5B616D",fontStyle:"italic"}}>{cliente.nombre_contacto}</div>}
+          {/* Fila 2: nombre cliente + contacto inline a 24px del nombre */}
+          <div style={{display:"flex",alignItems:"baseline",flexWrap:"wrap",marginBottom:"6px"}}>
+            <div style={{fontSize:"29px",fontWeight:"600",color:"#0F172A",lineHeight:1.2,flexShrink:0}}>{cliente?.nombre_empresa||"—"}</div>
+            {cliente?.nombre_contacto&&<div style={{fontSize:"17px",fontWeight:"500",color:"#5B616D",fontStyle:"italic",marginLeft:"24px",flexShrink:1,minWidth:0,whiteSpace:"nowrap"}}>Contacto: {cliente.nombre_contacto}</div>}
           </div>
           {/* Fila 3: nombre del evento ancho completo */}
           {(evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion)&&<div style={{fontSize:"17px",fontWeight:"500",color:"#111827",marginBottom:"8px",wordBreak:"break-word",overflowWrap:"break-word"}}><span style={{fontWeight:"600",color:"#6B7280"}}>Nombre del evento: </span>{(evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion)?.replace(/[\t\r\n]+/g,' ').replace(/\s{2,}/g,' ').trim()}</div>}
@@ -1241,8 +1241,8 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           {esMultidia&&<div style={{background:`${colorCliente(evento.cliente_id)}18`,border:`2px solid ${colorCliente(evento.cliente_id)}`,borderRadius:"10px",padding:"8px 14px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:"12px",marginTop:"4px"}}>
             <div style={{fontSize:"15px",fontWeight:"600",color:"#1E293B",whiteSpace:"nowrap"}}>📅 {formatMedioES(evento.fecha_inicio)} → {formatMedioES(evento.fecha_termino)}</div>
             <div style={{display:"flex",gap:"8px",flexShrink:0,alignItems:"center"}}>
-              {tiposArr(evento.tipo).map(t=><span key={t} style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"4px 10px",borderRadius:"20px",fontSize:"13px",fontWeight:"500",lineHeight:"1.4",color:(B_TIPO_D[t]||{c:"#2F49AF"}).c,background:(B_TIPO_D[t]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO_D[t]||{c:"#2F49AF"}).c}`,whiteSpace:"nowrap"}}>{t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤":"🤫"} {t}</span>)}
-              <span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"4px 10px",borderRadius:"20px",fontSize:"13px",fontWeight:"500",lineHeight:"1.4",color:(B_MOD_D[evento.modalidad]||{c:"#565656"}).c,background:(B_MOD_D[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD_D[evento.modalidad]||{c:"#565656"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?<IconPresencial size={13} color={(B_MOD_D[evento.modalidad]||{c:"#565656"}).c}/>:evento.modalidad==="hibrido"?"🔀":"💻"} {LBL[evento.modalidad]||evento.modalidad}</span>
+              {tiposArr(evento.tipo).map(t=><span key={t} style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"16px",fontWeight:"500",lineHeight:"1.4",color:(B_TIPO_D[t]||{c:"#2F49AF"}).c,background:(B_TIPO_D[t]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO_D[t]||{c:"#2F49AF"}).c}`,whiteSpace:"nowrap"}}>{t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤":"🤫"} {t}</span>)}
+              <span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"5px 12px",borderRadius:"20px",fontSize:"16px",fontWeight:"500",lineHeight:"1.4",color:(B_MOD_D[evento.modalidad]||{c:"#565656"}).c,background:(B_MOD_D[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD_D[evento.modalidad]||{c:"#565656"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?<IconPresencial size={15} color={(B_MOD_D[evento.modalidad]||{c:"#565656"}).c}/>:evento.modalidad==="hibrido"?"🔀":"💻"} {LBL[evento.modalidad]||evento.modalidad}</span>
             </div>
           </div>}
         </div>
@@ -1312,13 +1312,13 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                                 <div style={{fontSize:"13px",fontWeight:"600",color:"#1256A3",textTransform:"uppercase",letterSpacing:"0.06em",textAlign:"center",marginBottom:"5px",WebkitFontSmoothing:"antialiased"}}>{key}</div>
                                 <div style={{display:"flex",flexWrap:"wrap",gap:"5px"}}>
                                   {grupo.items.map(({interp,isHost},i)=>(
-                                    <span key={i} style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"3px 10px",borderRadius:"20px",fontSize:"13px",fontWeight:"500",lineHeight:"1.4",color:"#1A1A1A",background:"#FFFFFF",border:`2px solid ${pillClr}`,whiteSpace:"nowrap"}}>
+                                    <span key={i} style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"3px 5px",borderRadius:"20px",fontSize:"13px",fontWeight:"500",lineHeight:"1.4",color:"#1A1A1A",background:"#FFFFFF",border:`2px solid ${pillClr}`,whiteSpace:"nowrap"}}>
                                       {isHost&&<span style={{fontSize:"11px"}}>🔑</span>}
                                       <FlagImg idioma={grupo.idioma}/>
                                       {interp.nombre}{interp.apellido?" "+interp.apellido:""}
                                     </span>
                                   ))}
-                                  {grupo.items.length===1&&<span style={{display:"inline-flex",alignItems:"center",padding:"3px 10px",borderRadius:"20px",fontSize:"13px",fontWeight:"500",color:"#6B7280",background:"#F3F4F6",border:"1px dashed #9CA3AF",fontStyle:"italic"}}>Sin partner</span>}
+                                  {grupo.items.length===1&&<span style={{display:"inline-flex",alignItems:"center",padding:"3px 5px",borderRadius:"20px",fontSize:"13px",fontWeight:"500",color:"#6B7280",background:"#F3F4F6",border:"1px dashed #9CA3AF",fontStyle:"italic"}}>Sin partner</span>}
                                 </div>
                               </div>);
                             })}
