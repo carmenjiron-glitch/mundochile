@@ -1230,10 +1230,10 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
               <button onClick={onCerrar} style={{background:"#FFF5F5",border:"1.5px solid #FC8181",cursor:"pointer",fontSize:"13px",color:"#E53E3E",padding:"8px 16px",borderRadius:"8px",fontFamily:"inherit",fontWeight:"500",height:"36px",whiteSpace:"nowrap"}}>✕ Cerrar</button>
             </div>
           </div>
-          {/* Fila 2: nombre cliente + contacto inline a 24px del nombre */}
-          <div style={{display:"flex",alignItems:"baseline",flexWrap:"wrap",marginBottom:"6px"}}>
-            <div style={{fontSize:"29px",fontWeight:"600",color:"#0F172A",lineHeight:1.2,flexShrink:0}}>{cliente?.nombre_empresa||"—"}</div>
-            {cliente?.nombre_contacto&&<div style={{fontSize:"17px",fontWeight:"500",color:"#5B616D",fontStyle:"italic",marginLeft:"24px",flexShrink:1,minWidth:0,whiteSpace:"nowrap"}}>Contacto: {cliente.nombre_contacto}</div>}
+          {/* Fila 2: nombre cliente / contacto alineado a la izquierda */}
+          <div style={{display:"flex",flexDirection:"column",marginBottom:"6px"}}>
+            <div style={{fontSize:"29px",fontWeight:"600",color:"#0F172A",lineHeight:1.2}}>{cliente?.nombre_empresa||"—"}</div>
+            {cliente?.nombre_contacto&&<div style={{fontSize:"17px",fontWeight:"600",color:"#5B616D",fontStyle:"italic",marginTop:"2px"}}>Contacto: {cliente.nombre_contacto}</div>}
           </div>
           {/* Fila 3: nombre del evento ancho completo */}
           {(evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion)&&<div style={{fontSize:"17px",fontWeight:"500",color:"#111827",marginBottom:"8px",wordBreak:"break-word",overflowWrap:"break-word"}}><span style={{fontWeight:"600",color:"#6B7280"}}>Nombre del evento: </span>{(evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion)?.replace(/[\t\r\n]+/g,' ').replace(/\s{2,}/g,' ').trim()}</div>}
@@ -1265,7 +1265,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                           <tbody>{dias.map((dia,dIdx)=>(
                             <tr key={dIdx} style={{background:dIdx%2===0?"#fff":"#F8FAFC",borderBottom:"1px solid #BFDBFE"}}>
                               <td onClick={()=>{onNavDia&&onNavDia(dIdx);}} style={{padding:"7px 12px",fontSize:"13px",fontWeight:"600",color:"#1A6FD4",cursor:"pointer",textDecoration:"underline",textDecorationColor:"#93C5FD",WebkitFontSmoothing:"antialiased"}} onMouseEnter={e=>e.currentTarget.style.color="#1D4ED8"} onMouseLeave={e=>e.currentTarget.style.color="#1A6FD4"}>Día {dIdx+1}</td>
-                              <td style={{padding:"7px 12px",fontSize:"13px",color:"#0F172A",WebkitFontSmoothing:"antialiased"}}>{formatLargo(dia.fecha)}</td>
+                              <td style={{padding:"7px 12px",fontSize:"13px",color:"#0F172A",WebkitFontSmoothing:"antialiased"}}>{formatLargo(dia.fecha).replace(/ de \d{4}$/,"")}</td>
                               <td style={{padding:"7px 12px",fontSize:"13px",color:"#0F172A",WebkitFontSmoothing:"antialiased"}}>{dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs</td>
                               <td style={{padding:"7px 12px",fontSize:"13px",color:"#475569",WebkitFontSmoothing:"antialiased"}}>{pluralizarJornada(dia.jornada)}</td>
                             </tr>
@@ -1275,7 +1275,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                     </div>
                   </div>}
                   {evento.comentarios&&<div style={{border:"2px solid #F472B6",borderRadius:"12px",background:"#FFF0F6",overflow:"hidden"}}>
-                    <div style={{background:"#FEF9C3",padding:"8px 14px",fontWeight:"700",fontSize:"13px",color:"#111827",textTransform:"uppercase",letterSpacing:"0.06em"}}>💬 Comentarios</div>
+                    <div style={{background:"#FEF9C3",padding:"8px 14px",fontWeight:"700",fontSize:"13px",color:"#111827",textTransform:"uppercase",letterSpacing:"0.06em",display:"flex",alignItems:"center",gap:"8px"}}>💬 Comentarios<div style={{width:"10px",height:"10px",borderRadius:"50%",background:"#F472B6",boxShadow:"0 0 6px #F472B6",animation:"flash 2.4s ease-in-out infinite",flexShrink:0}}/></div>
                     <div style={{padding:"12px 14px",color:"#0F172A",fontSize:"16px"}}>{evento.comentarios}</div>
                   </div>}
                 </div>
