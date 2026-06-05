@@ -348,6 +348,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
               <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:8, marginBottom:4 }}>
                 <div style={{ display:"flex", alignItems:"center", gap:"5px" }}>
                   {dotEsHoy && <div style={{ width:"12.5px", height:"12.5px", borderRadius:"50%", background:"#22C55E", boxShadow:"0 0 8px #22C55E", animation:"flash 1.2s ease-in-out infinite" }}/>}
+                  {dotEsMan && !dotEsHoy && <div style={{ width:"12.5px", height:"12.5px", borderRadius:"50%", background:"#EAB308", boxShadow:"0 0 8px #EAB308", animation:"flashYellow 1.8s ease-in-out infinite" }}/>}
                   {ev.comentarios && <div style={{ width:"10px", height:"10px", borderRadius:"50%", background:"#F472B6", boxShadow:"0 0 6px #F472B6", animation:"flashYellow 1.8s ease-in-out infinite" }}/>}
                 </div>
                 {pillMultidia}
@@ -364,14 +365,15 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
           ) : (
             <>
               {/* Evento un día: dots absolute top-right */}
-              {(dotEsHoy || ev.comentarios) && (
+              {(dotEsHoy || dotEsMan || ev.comentarios) && (
                 <div style={{ position:"absolute", top:"8px", right:"8px", zIndex:15, display:"flex", alignItems:"center", gap:"5px" }}>
                   {dotEsHoy && <div style={{ width:"12.5px", height:"12.5px", borderRadius:"50%", background:"#22C55E", boxShadow:"0 0 8px #22C55E", animation:"flash 1.2s ease-in-out infinite" }}/>}
+                  {dotEsMan && !dotEsHoy && <div style={{ width:"12.5px", height:"12.5px", borderRadius:"50%", background:"#EAB308", boxShadow:"0 0 8px #EAB308", animation:"flashYellow 1.8s ease-in-out infinite" }}/>}
                   {ev.comentarios && <div style={{ width:"10px", height:"10px", borderRadius:"50%", background:"#F472B6", boxShadow:"0 0 6px #F472B6", animation:"flashYellow 1.8s ease-in-out infinite" }}/>}
                 </div>
               )}
               <div style={{ marginBottom:4 }}>
-                <div style={{ fontSize:21, fontWeight:600, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", minWidth:0, paddingRight:(dotEsHoy||ev.comentarios)?"44px":0 }}>
+                <div style={{ fontSize:21, fontWeight:600, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", minWidth:0, paddingRight:(dotEsHoy||dotEsMan||ev.comentarios)?"44px":0 }}>
                   {cliente?.nombre_empresa || "—"}
                 </div>
               </div>
