@@ -113,9 +113,17 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
     ? (todosEquipos[0].proveedor_nombre || proveedores.find(p => p.id === todosEquipos[0].proveedor_id)?.nombre || "")
     : "";
 
-  // Agrupar intérpretes por par de idiomas
+  // Agrupar intérpretes por par de idiomas (asignaciones directas + por día)
+  const todasAsigs = [
+    ...(ev.asignaciones || []),
+    ...(ev.evento_dias || []).flatMap(d => d.asignaciones_dia || []),
+  ];
+  const vistos = new Set();
   const grupos = {};
-  (ev.asignaciones || []).forEach(a => {
+  todasAsigs.forEach(a => {
+    const key2 = `${a.interprete_id}-${a.par_id}`;
+    if (vistos.has(key2)) return;
+    vistos.add(key2);
     const par    = pares.find(p => p.id === a.par_id);
     const interp = interpretes.find(x => x.id === a.interprete_id);
     if (!interp) return;
