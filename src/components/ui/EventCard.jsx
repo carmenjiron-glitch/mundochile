@@ -429,7 +429,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             const flagSz  = solidPill ? 19 : 14;
             return (
               <div key={key} style={{ marginTop:14 }}>
-                <div style={{ fontSize:solidPill?12:14, fontWeight:600, color:"#1256A3", textTransform:"uppercase", letterSpacing:"0.07em", WebkitFontSmoothing:"antialiased", MozOsxFontSmoothing:"grayscale", marginBottom:5, opacity:0.9, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", textAlign:"center", width:"100%", display:"block" }}>
+                <div style={{ fontSize:solidPill?12:14, fontWeight:600, color:"#0E4582", textTransform:"uppercase", letterSpacing:"0.07em", marginBottom:5, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", textAlign:"center", width:"100%", display:"block" }}>
                   {key}
                 </div>
                 <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6, ...(pillsHalf?{maxWidth:"50%"}:{}) }}>
@@ -444,10 +444,10 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                       </span>
                     </span>
                   ))}
-                  {grupo.items.length===1&&<span style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", padding:pillPad, borderRadius:20, fontSize:pillFs, fontWeight:400, lineHeight:1.4, color:"#6B7280", background:"#F3F4F6", border:"1px dashed #9CA3AF", fontStyle:"italic", cursor:"default" }}>Sin partner</span>}
+                  {grupo.items.length===1&&<span style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", padding:pillPad, borderRadius:20, fontSize:pillFs, fontWeight:400, lineHeight:1.4, color:"#505660", background:"#F3F4F6", border:"1px dashed #757A83", fontStyle:"italic", cursor:"default" }}>Sin partner</span>}
                 </div>
                 {hp && (
-                  <div style={{ fontSize:14, color:"#4B5768", marginTop:4, display:"inline-flex", alignItems:"center", gap:4 }}>
+                  <div style={{ fontSize:13, color:"#444E5E", marginTop:4, display:"inline-flex", alignItems:"center", gap:4 }}>
                     🕐 Presentación: {hp.slice(0,5)} hrs
                   </div>
                 )}
