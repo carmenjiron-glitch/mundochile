@@ -1264,7 +1264,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                           </tr></thead>
                           <tbody>{dias.map((dia,dIdx)=>(
                             <tr key={dIdx} style={{background:dIdx%2===0?"#fff":"#F8FAFC",borderBottom:"1px solid #BFDBFE"}}>
-                              <td style={{padding:"7px 12px",fontSize:"13px",fontWeight:"600",color:"#1A6FD4",WebkitFontSmoothing:"antialiased"}}>Día {dIdx+1}</td>
+                              <td style={{padding:"7px 12px",fontSize:"13px",fontWeight:"600",color:"#1A6FD4",WebkitFontSmoothing:"antialiased"}}>{dIdx+1}</td>
                               <td style={{padding:"7px 12px",fontSize:"13px",color:"#0F172A",WebkitFontSmoothing:"antialiased"}}>{formatLargo(dia.fecha).replace(/ de \d{4}$/,"")}</td>
                               <td style={{padding:"7px 12px",fontSize:"13px",color:"#0F172A",WebkitFontSmoothing:"antialiased"}}>{dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs</td>
                               <td style={{padding:"7px 12px",fontSize:"13px",color:"#475569",WebkitFontSmoothing:"antialiased"}}>{pluralizarJornada(dia.jornada)}</td>
