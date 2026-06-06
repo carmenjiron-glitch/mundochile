@@ -3251,10 +3251,10 @@ export default function App() {
         <div style={{paddingBottom:"80px",margin:"0 auto",width:"100%",display:"flex",flexDirection:"row",alignItems:"flex-start"}}>
           <div data-multidia-header="" style={{width:"280px",flexShrink:0,position:"sticky",top:"136px",zIndex:50,background:"rgba(18,32,78,0.98)",backdropFilter:"blur(10px)",WebkitBackdropFilter:"blur(10px)",borderRight:"1px solid rgba(255,255,255,0.15)",overflowY:"auto",overflowX:"hidden",maxHeight:"calc(100vh - 136px)"}}>
             {/* Título + Volver inline */}
-            <div style={{padding:"10px 12px 7px 17px",display:"flex",alignItems:"center",gap:"7px",flexWrap:"nowrap"}}>
-              <span style={{fontSize:"16px",fontWeight:"700",color:"#FFFFFF",whiteSpace:"nowrap"}}>🗓️ Evento Multidía</span>
-              <span style={{fontSize:"16px",fontWeight:"600",color:"rgba(255,255,255,0.9)",whiteSpace:"nowrap"}}>— {cli?.nombre_empresa||"—"}</span>
-              <span style={{fontSize:"14px",color:"rgba(255,255,255,0.70)",whiteSpace:"nowrap"}}>· {totalDias} días</span>
+            <div style={{padding:"10px 12px 7px 17px",display:"flex",alignItems:"center",gap:"7px",flexWrap:"wrap"}}>
+              <span style={{fontSize:"16px",fontWeight:"700",color:"#FFFFFF",whiteSpace:"normal",wordBreak:"break-word",overflow:"hidden",minWidth:0}}>🗓️ Evento Multidía</span>
+              <span style={{fontSize:"16px",fontWeight:"600",color:"rgba(255,255,255,0.9)",whiteSpace:"normal",wordBreak:"break-word",overflow:"hidden",minWidth:0}}>— {cli?.nombre_empresa||"—"}</span>
+              <span style={{fontSize:"14px",color:"rgba(255,255,255,0.70)",whiteSpace:"normal",wordBreak:"break-word"}}>· {totalDias} días</span>
               <button onClick={()=>{setModoMultidia(false);setEventoMultidiaId(null);setVista(vistaAnterior);}} title="Volver" style={{marginLeft:"auto",display:"flex",alignItems:"center",justifyContent:"center",width:"31px",height:"31px",borderRadius:"50%",background:"rgba(255,255,255,0.15)",color:"#FFFFFF",border:"1px solid rgba(255,255,255,0.3)",cursor:"pointer",padding:0,flexShrink:0,fontFamily:"inherit"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.28)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg></button>
             </div>
             {/* Tabla agenda */}
@@ -3278,7 +3278,7 @@ export default function App() {
               </table>
             </div>
           </div>
-          <div style={{flex:1,maxWidth:"720px",display:"flex",flexDirection:"column",gap:"16px",padding:"16px 24px 0"}}>
+          <div style={{flex:1,display:"flex",flexDirection:"column",gap:"16px",padding:"16px 24px 0",alignItems:"center"}}>
             {dias.map(({iso,x})=>{const diaEspecifico={...evM,fecha_inicio:iso,_diaNum:x};return(
               <div key={iso} id={`multidia-card-${x}`} onClick={()=>abrirEvento(diaEspecifico)} style={{background:"#FFFFFF",borderLeft:`16px solid ${borderC}`,borderTop:`6px solid ${borderC}`,borderRadius:"0 12px 12px 0",padding:"20px 24px",boxShadow:"0 2px 12px rgba(0,0,0,0.10)",cursor:"pointer"}}>
                 <div onClick={(e)=>{e.stopPropagation();setDiaActual(iso);setModoMultidia(false);setEventoMultidiaId(null);setVista("dia");}} style={{fontSize:"15px",fontWeight:"700",color:"#C62828",marginBottom:"12px",cursor:"pointer",textDecoration:"underline",textDecorationColor:"rgba(198,40,40,0.35)"}} onMouseEnter={e=>e.currentTarget.style.color="#B71C1C"} onMouseLeave={e=>e.currentTarget.style.color="#C62828"}>📅 Día {x} de {totalDias} — {formatLargo(iso)}</div>
@@ -3319,7 +3319,7 @@ export default function App() {
                   })}
                 </div>}
                 <HRD/>
-                <div><SLD t="Estado de facturación"/>
+                <div><SLD t="Información Contable"/>
                   <span style={{display:"inline-flex",alignItems:"center",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:bEst.c,background:bEst.bg,border:`2px solid ${bEst.b||bEst.c}`,whiteSpace:"nowrap"}}>{evM.estado==="Facturado"?"✓ Facturado":"🟠 Facturación Pendiente"}</span>
                 </div>
               </div>
