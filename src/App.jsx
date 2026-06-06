@@ -1237,7 +1237,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           {/* Fila 2: nombre cliente / contacto alineado a la izquierda */}
           <div style={{display:"flex",flexDirection:"column",marginBottom:"6px"}}>
             <div style={{fontSize:"29px",fontWeight:"600",color:"#0F172A",lineHeight:1.2}}>{cliente?.nombre_empresa||"—"}</div>
-            {cliente?.nombre_contacto&&<div style={{fontSize:"20px",fontWeight:"600",color:"#494E57",fontStyle:"italic",marginTop:"2px"}}>Contacto: {cliente.nombre_contacto}</div>}
+            {cliente?.nombre_contacto&&<div style={{fontSize:"23px",fontWeight:"600",color:"#373B41",fontStyle:"italic",marginTop:"2px"}}>Contacto: {cliente.nombre_contacto}</div>}
           </div>
           {/* Fila 3: nombre del evento ancho completo */}
           {(evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion)&&<div style={{fontSize:"17px",fontWeight:"500",color:"#111827",marginBottom:"8px",wordBreak:"break-word",overflowWrap:"break-word"}}><span style={{fontWeight:"600",color:"#6B7280"}}>Nombre del evento: </span>{(evento.nombre_evento||evento.titulo||evento.nombre||evento.descripcion)?.replace(/[\t\r\n]+/g,' ').replace(/\s{2,}/g,' ').trim()}</div>}
@@ -1293,7 +1293,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                       JSON.stringify((d.asignaciones_dia||[]).map(a=>a.interprete_id).sort())===JSON.stringify((dias[0].asignaciones_dia||[]).map(a=>a.interprete_id).sort())&&
                       JSON.stringify((d.equipos_dia||[]).map(e=>e.tipo_equipo).sort())===JSON.stringify((dias[0].equipos_dia||[]).map(e=>e.tipo_equipo).sort())
                     );
-                    const renderDia=(dia,titulo)=>{
+                    const renderDia=(dia,titulo,dIdx=null)=>{
                       const gDia={};
                       (dia.asignaciones_dia||[]).forEach(a=>{
                         const par=pares.find(p=>p.id===a.par_id);
@@ -1307,7 +1307,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                       const eqsDia=dia.equipos_dia||[];
                       return(
                         <div style={{border:"2px solid #1D4ED8",borderRadius:"12px",background:"#EFF6FF",overflow:"hidden"}}>
-                          <div style={{background:"#FEF9C3",padding:"8px 14px",fontWeight:"700",fontSize:"13px",color:"#111827",textTransform:"uppercase",letterSpacing:"0.06em"}}>{titulo}</div>
+                          <div onClick={dIdx!==null&&onNavDia?()=>onNavDia(dIdx):undefined} style={{background:"#FEF9C3",padding:"8px 14px",fontWeight:"700",fontSize:"13px",color:"#111827",textTransform:"uppercase",letterSpacing:"0.06em",cursor:dIdx!==null&&onNavDia?"pointer":"default"}}>{titulo}</div>
                           <div style={{padding:"12px 14px"}}>
                             <div style={{fontSize:"14px",fontWeight:"600",color:"#0F172A",marginBottom:"10px"}}>🕐 {dia.hora_inicio?.slice(0,5)} – {dia.hora_termino?.slice(0,5)} hrs{dia.jornada&&<span style={{fontWeight:"400",color:"#6B7280",fontSize:"13px"}}> · {pluralizarJornada(dia.jornada)}</span>}</div>
                             {Object.entries(gDia).map(([key,grupo])=>{
@@ -1341,7 +1341,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                       {renderDia(dias[0],"📅 Todos los días")}
                       <div style={{textAlign:"center",fontSize:"15px",color:"#565B66",fontStyle:"italic",padding:"4px 0"}}>Todos los días son iguales</div>
                     </>);}
-                    return dias.map((dia,dIdx)=>(<div key={dia.id||dIdx}>{renderDia(dia,`📅 Día ${dIdx+1} — ${formatLargo(dia.fecha)}`)}</div>));
+                    return dias.map((dia,dIdx)=>(<div key={dia.id||dIdx}>{renderDia(dia,`📅 Día ${dIdx+1} — ${formatLargo(dia.fecha)}`,dIdx)}</div>));
                   })()}
                 </div>
               </div>
@@ -3249,7 +3249,7 @@ export default function App() {
       const dias=Array.from({length:totalDias},(_,i)=>{const d=new Date(ini.getTime()+i*86400000);return{iso:toISO(d),x:i+1};});
       return (
         <div style={{paddingBottom:"80px",margin:"0 auto",width:"100%",display:"flex",flexDirection:"row",alignItems:"flex-start"}}>
-          <div data-multidia-header="" style={{width:"280px",flexShrink:0,position:"sticky",top:"136px",zIndex:50,background:"rgba(18,32,78,0.98)",backdropFilter:"blur(10px)",WebkitBackdropFilter:"blur(10px)",borderRight:"1px solid rgba(255,255,255,0.15)",overflowY:"auto",maxHeight:"calc(100vh - 136px)"}}>
+          <div data-multidia-header="" style={{width:"280px",flexShrink:0,position:"sticky",top:"136px",zIndex:50,background:"rgba(18,32,78,0.98)",backdropFilter:"blur(10px)",WebkitBackdropFilter:"blur(10px)",borderRight:"1px solid rgba(255,255,255,0.15)",overflowY:"auto",overflowX:"hidden",maxHeight:"calc(100vh - 136px)"}}>
             {/* Título + Volver inline */}
             <div style={{padding:"10px 12px 7px 17px",display:"flex",alignItems:"center",gap:"7px",flexWrap:"nowrap"}}>
               <span style={{fontSize:"16px",fontWeight:"700",color:"#FFFFFF",whiteSpace:"nowrap"}}>🗓️ Evento Multidía</span>
@@ -3278,7 +3278,7 @@ export default function App() {
               </table>
             </div>
           </div>
-          <div style={{flex:1,display:"flex",flexDirection:"column",gap:"16px",padding:"16px 24px 0"}}>
+          <div style={{flex:1,maxWidth:"720px",display:"flex",flexDirection:"column",gap:"16px",padding:"16px 24px 0"}}>
             {dias.map(({iso,x})=>{const diaEspecifico={...evM,fecha_inicio:iso,_diaNum:x};return(
               <div key={iso} id={`multidia-card-${x}`} onClick={()=>abrirEvento(diaEspecifico)} style={{background:"#FFFFFF",borderLeft:`16px solid ${borderC}`,borderTop:`6px solid ${borderC}`,borderRadius:"0 12px 12px 0",padding:"20px 24px",boxShadow:"0 2px 12px rgba(0,0,0,0.10)",cursor:"pointer"}}>
                 <div onClick={(e)=>{e.stopPropagation();setDiaActual(iso);setModoMultidia(false);setEventoMultidiaId(null);setVista("dia");}} style={{fontSize:"15px",fontWeight:"700",color:"#C62828",marginBottom:"12px",cursor:"pointer",textDecoration:"underline",textDecorationColor:"rgba(198,40,40,0.35)"}} onMouseEnter={e=>e.currentTarget.style.color="#B71C1C"} onMouseLeave={e=>e.currentTarget.style.color="#C62828"}>📅 Día {x} de {totalDias} — {formatLargo(iso)}</div>

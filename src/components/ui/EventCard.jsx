@@ -360,7 +360,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                 {cliente?.nombre_empresa || "—"}
               </div>
               {cliente?.nombre_contacto && (
-                <div style={{ fontSize:16, color:"#454A53", fontStyle:"italic", marginTop:2 }}>
+                <div style={{ fontSize:16, color:"#373B42", fontStyle:"italic", marginTop:2 }}>
                   Contacto: {cliente.nombre_contacto}
                 </div>
               )}
@@ -381,7 +381,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                 </div>
               </div>
               {cliente?.nombre_contacto && (
-                <div style={{ fontSize:16, color:"#454A53", fontStyle:"italic", marginTop:2 }}>
+                <div style={{ fontSize:16, color:"#373B42", fontStyle:"italic", marginTop:2 }}>
                   Contacto: {cliente.nombre_contacto}
                 </div>
               )}
@@ -390,7 +390,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
           {/* Nombre evento */}
           {ev.nombre_evento && (
-            <div style={{ fontSize:14, color:"#6B7280", marginTop:2 }}>
+            <div style={{ fontSize:14, color:"#565B66", marginTop:2 }}>
               <span style={{ fontWeight:600 }}>Nombre del evento:</span>{" "}
               <span style={{ fontWeight:400 }}>{ev.nombre_evento}</span>
             </div>
@@ -403,8 +403,8 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
           {/* Badges tipo + modalidad */}
           <div style={{ display:"flex", gap:5, flexWrap:"nowrap", alignItems:"center" }}>
-            {(Array.isArray(ev.tipo)?ev.tipo:[ev.tipo||"Simultánea"]).map(t=><Chip key={t} label={t} emoji={t==="Simultánea"?<IconoSimultanea size={14}/>:t==="Consecutiva"?"🎤 ":"🤫 "} fontSize={13} padding="4px 11px" dark={true} />)}
-            <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?<IconoPresencial size={13}/>:ev.modalidad==="hibrido"?"🔀 ":"💻 "} fontSize={13} padding="4px 11px" dark={true} />
+            {(Array.isArray(ev.tipo)?ev.tipo:[ev.tipo||"Simultánea"]).map(t=><Chip key={t} label={t} emoji={t==="Simultánea"?<IconoSimultanea size={14}/>:t==="Consecutiva"?"🎤 ":"🤫 "} fontSize={13} padding="4px 11px" dark={false} />)}
+            <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?<IconoPresencial size={13}/>:ev.modalidad==="hibrido"?"🔀 ":"💻 "} fontSize={13} padding="4px 11px" dark={false} />
           </div>
 
           {/* Plataforma / Lugar */}
@@ -447,10 +447,10 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                       </span>
                     </span>
                   ))}
-                  {grupo.items.length===1&&<span style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", padding:pillPad, borderRadius:20, fontSize:pillFs, fontWeight:400, lineHeight:1.4, color:"#505660", background:"#F3F4F6", border:"1px dashed #757A83", fontStyle:"italic", cursor:"default" }}>Sin partner</span>}
+                  {grupo.items.length===1&&<span style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", padding:pillPad, borderRadius:20, fontSize:pillFs, fontWeight:400, lineHeight:1.4, color:"#40454D", background:"#F3F4F6", border:"1px dashed #757A83", fontStyle:"italic", cursor:"default" }}>Sin partner</span>}
                 </div>
                 {hp && (
-                  <div style={{ fontSize:13, color:"#444E5E", marginTop:4, display:"inline-flex", alignItems:"center", gap:4 }}>
+                  <div style={{ fontSize:13, color:"#363E4B", marginTop:4, display:"inline-flex", alignItems:"center", gap:4 }}>
                     🕐 Presentación: {hp.slice(0,5)} hrs
                   </div>
                 )}
@@ -467,7 +467,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
           {/* Estado — siempre al final */}
           <div style={{ marginTop:10 }}>
-            <Chip label={estadoLabel} emoji={estadoLabel==="Facturado"?"✓ ":"🟠 "} fontSize={12} padding="4px 10px" />
+            <Chip label={estadoLabel} emoji={estadoLabel==="Facturado"?<span style={{color:"#F97316",fontWeight:900}}>✔ </span>:"🟠 "} fontSize={10} padding="4px 10px" />
           </div>
         </>
       )}
