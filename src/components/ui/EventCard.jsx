@@ -95,7 +95,7 @@ const BADGE = {
   "Presencial":            { bg:"#00AF57", c:"#FFFFFF", b:"#00AF57" },
   "Remoto":                { bg:"#0E7490", c:"#FFFFFF", b:"#0E7490" },
   "Híbrido":               { bg:"#D97706", c:"#FFFFFF", b:"#D97706" },
-  "Facturado":             { bg:"#FFFFFF", c:"#1A1A1A", b:"#E57373", bw:"2px", fw:400 },
+  "Facturado":             { bg:"#FFF7ED", c:"#181818", b:"#FB923C", bw:"2px", fw:400 },
   "Facturación Pendiente": { bg:"#FFFFFF", c:"#1A1A1A", b:"#E57373", bw:"2px", fw:400 },
 };
 
@@ -495,7 +495,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
           )}
 
           {/* Estado — siempre al final */}
-          <div style={{ marginTop:10 }}>
+          <div style={{ marginTop:2 }}>
             <Chip label={estadoLabel} emoji={estadoLabel==="Facturado"?<span style={{color:"#F97316",fontWeight:900}}>✔ </span>:"🟠 "} fontSize={12} padding="4.8px 12px" />
           </div>
         </>

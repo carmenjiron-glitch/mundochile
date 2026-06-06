@@ -38,7 +38,7 @@ export const BADGE = {
   'Presencial':           {bg:'#00AF57',c:'#FFFFFF',b:'#00AF57'},
   'Remoto':               {bg:'#0E7490',c:'#FFFFFF',b:'#0E7490'},
   'Híbrido':              {bg:'#D97706',c:'#FFFFFF',b:'#D97706'},
-  'Facturado':            {bg:'#E3F2FD',c:'#1565C0',b:'#1565C0'},
+  'Facturado':            {bg:'#FFF7ED',c:'#181818',b:'#FB923C'},
   'Facturación Pendiente':{bg:'#FFEB3B',c:'#C62828',b:'#F9A825'},
 }
 
@@ -70,7 +70,7 @@ export const tokens = {
     'Presencial':            { bg: '#00AF57', text: '#FFFFFF', border: '#00AF57' },
     'Remoto':                { bg: '#0E7490', text: '#FFFFFF', border: '#0E7490' },
     'Híbrido':               { bg: '#D97706', text: '#FFFFFF', border: '#D97706' },
-    'Facturado':             { bg: '#E7F5FF', text: '#1971C2', border: '#1971C2' },
+    'Facturado':             { bg: '#FFF7ED', text: '#181818', border: '#FB923C' },
     'Facturación Pendiente': { bg: '#FFF9DB', text: '#E67700', border: '#E67700' },
   },
   interpreter: {
