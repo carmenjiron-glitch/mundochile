@@ -927,77 +927,19 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
             </div>
             {form.dias.map((dia,dIdx)=>{
               const modEfectiva=dia.modalidad||form.modalidad;
-              const esPresD=modEfectiva==="presencial"||modEfectiva==="hibrido";
-              const tieneOverride=dia.tipo!==null||dia.modalidad!==null||dia.lugar!==null;
               return(
-            <div key={dia.fecha} data-dia-section={dIdx} style={{border:`2px solid ${tieneOverride?"#F59E0B":C.grisBorde}`,borderRadius:"14px",marginBottom:"16px",overflow:"hidden"}}>
+            <div key={dia.fecha} data-dia-section={dIdx} style={{border:`2px solid ${C.grisBorde}`,borderRadius:"14px",marginBottom:"16px",overflow:"hidden"}}>
               {/* Header del día */}
-              <div style={{background:tieneOverride?"#FFFBEB":C.grisMed,padding:"12px 16px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+              <div style={{background:C.grisMed,padding:"12px 16px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                 <div>
-                  <div style={{fontWeight:"600",color:tieneOverride?"#92400E":"#234A80",fontSize:"16px"}}>📅 {formatMedioES(dia.fecha)}</div>
+                  <div style={{fontWeight:"600",color:"#234A80",fontSize:"16px"}}>📅 {formatMedioES(dia.fecha)}</div>
                   <div style={{fontSize:"13.91px",color:"#5A687D",marginTop:"2px"}}>{dia.hora_inicio?.slice(0,5)||"–"} – {dia.hora_termino?.slice(0,5)||"–"} hrs — {pluralizarJornada(dia.jornada)||""}</div>
                 </div>
                 <div style={{display:"flex",gap:"6px",alignItems:"center",flexWrap:"wrap",justifyContent:"flex-end"}}>
-                  {dia.tipo&&tiposArr(dia.tipo).map(t=>{const bt=B_TIPO[t]||{bg:"#1D4ED8",c:"#FFFFFF",ct:"#FFFFFF"};return<span key={t} style={{display:"inline-flex",padding:"3px 9px",borderRadius:"20px",fontSize:"13px",fontWeight:"700",color:bt.ct,background:bt.bg,border:"none"}}>⚡ {t}</span>;})}
-                  {dia.modalidad&&<span style={{display:"inline-flex",padding:"3px 9px",borderRadius:"20px",fontSize:"13px",fontWeight:"700",color:(B_MOD[dia.modalidad]||{ct:"#FFFFFF"}).ct,background:(B_MOD[dia.modalidad]||{bg:"#0E7490"}).bg,border:"none"}}>⚡ {LBL_MODAL[dia.modalidad]}</span>}
-                  {dia.lugar&&<span style={{display:"inline-flex",padding:"3px 9px",borderRadius:"20px",fontSize:"13px",fontWeight:"700",color:"#5B21B6",background:"#EDE9FE",border:"1.5px solid #7C3AED"}}>⚡ 📍 {dia.lugar}</span>}
                   {dIdx>0&&<button onClick={()=>copyFromPrev(dIdx)} style={{padding:"4px 10px",fontSize:"12px",background:"none",border:`1px solid ${C.grisBorde}`,borderRadius:"6px",cursor:"pointer",color:C.textoMed,fontFamily:"inherit"}}>↑ Copiar día anterior</button>}
                 </div>
               </div>
               <div style={{padding:"16px"}}>
-                {/* Override box */}
-                <div style={{background:"#F8FAFC",borderRadius:"8px",padding:"12px 14px",marginBottom:"14px",border:"1px solid #E2E8F0"}}>
-                  <div style={{fontSize:"11px",fontWeight:"700",color:"#64748B",textTransform:"uppercase",letterSpacing:"0.04em",marginBottom:"8px"}}>Personalizar este día</div>
-                  <div style={{display:"flex",gap:"16px",flexWrap:"wrap",marginBottom:tieneOverride?"10px":"0"}}>
-                    {["tipo","modalidad","lugar"].map(campo=>(
-                      <label key={campo} style={{display:"flex",alignItems:"center",gap:"5px",cursor:"pointer",fontSize:"13px",color:"#334155"}}>
-                        <input type="checkbox" checked={dia[campo]!==null} onChange={e=>{
-                          const val=e.target.checked?(campo==="tipo"?[...tiposArr(form.tipo)]:campo==="modalidad"?form.modalidad:form.lugar):null;
-                          setDiaField(dIdx,campo,val);
-                          if(campo==="modalidad"&&!e.target.checked)setDiaField(dIdx,"lugar",null);
-                        }} style={{width:"15px",height:"15px",cursor:"pointer"}}/>
-                        {campo==="tipo"?"Tipo diferente":campo==="modalidad"?"Modalidad diferente":"Lugar diferente"}
-                      </label>
-                    ))}
-                  </div>
-                  {tieneOverride&&<div style={{...S.fila,marginTop:"6px"}}>
-                    {dia.tipo!==null&&<div style={S.camp}>
-                      <label style={S.lbl}>Tipo</label>
-                      <div style={{display:"flex",gap:"5px",flexWrap:"wrap",paddingTop:"2px"}}>
-                        {TIPOS.map(t=>{const on=tiposArr(dia.tipo).includes(t);const clr=(B_TIPO[t]||{c:"#3B5BDB"}).c;const bg=(B_TIPO[t]||{bg:"#EEF2FF"}).bg;return(
-                          <label key={t} style={{display:"inline-flex",alignItems:"center",gap:"5px",cursor:"pointer",padding:"5px 10px",borderRadius:"8px",border:`1.5px solid ${on?clr:"#E2E8F0"}`,background:on?bg:"#F8FAFC",userSelect:"none",fontSize:"13px",fontWeight:on?"600":"400",color:on?clr:"#374151"}}>
-                            <input type="checkbox" checked={on} onChange={()=>{const cur=tiposArr(dia.tipo);const nx=on?cur.filter(x=>x!==t):[...cur,t];setDiaField(dIdx,"tipo",nx.length?nx:cur);}} style={{display:"none"}}/>
-                            <span style={{width:"13px",height:"13px",borderRadius:"3px",border:`2px solid ${on?clr:"#CBD5E1"}`,background:on?clr:"transparent",display:"inline-flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{on&&<svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M1.5 5L4 7.5L8.5 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}</span>
-                            {t}
-                          </label>
-                        );})}
-                      </div>
-                    </div>}
-                    {dia.modalidad!==null&&<div style={S.camp}>
-                      <label style={S.lbl}>Modalidad</label>
-                      <select style={S.sel} value={dia.modalidad} onChange={e=>setDiaField(dIdx,"modalidad",e.target.value)}>
-                        <option value="presencial">Presencial</option>
-                        <option value="remoto">Remoto</option>
-                        <option value="hibrido">Híbrido</option>
-                      </select>
-                    </div>}
-                    {dia.lugar!==null&&<div style={S.camp}>
-                      <label style={S.lbl}>Lugar</label>
-                      <div style={{display:"flex",gap:"6px"}}>
-                        <select style={S.sel} value={dia.lugar||""} onChange={e=>setDiaField(dIdx,"lugar",e.target.value)}>
-                          <option value="">Seleccionar…</option>
-                          {lugares.filter(l=>l.activo!==false).map(l=><option key={l.id} value={l.nombre}>{l.nombre}</option>)}
-                          {dia.lugar&&!lugares.find(l=>l.nombre===dia.lugar)&&<option value={dia.lugar}>{dia.lugar}</option>}
-                        </select>
-                        <button onClick={()=>onNuevoLugar&&onNuevoLugar(l=>{setDiaField(dIdx,"lugar",l.nombre);if(onLugarCreado)onLugarCreado();})} style={{padding:"0",width:"42px",height:"42px",background:"#3B82F6",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"20px",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>+</button>
-                      </div>
-                    </div>}
-                  </div>}
-                  {dia.lugar!==null&&esPresD&&<div style={{marginTop:"8px"}}>
-                    <label style={S.lbl}>Detalles del lugar este día</label>
-                    <input style={S.inp} value={dia.lugar_detalle||""} onChange={e=>setDiaField(dIdx,"lugar_detalle",e.target.value)} placeholder="Sala específica, piso…"/>
-                  </div>}
-                </div>
                 {/* Horario del día */}
                 <div style={{...S.fila,marginBottom:"12px"}}>
                   <div style={S.camp}><label style={S.lbl}>🕐 Hora inicio</label><SelHora value={dia.hora_inicio} onChange={v=>{
@@ -1725,30 +1667,29 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar,paginacion=null}
                       {(campos.tipo||campos.modalidad)&&<><div style={{...sH,textAlign:"center"}}>Tipo / Modalidad</div><div style={{...sB}}><div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center",justifyContent:"center"}}>{campos.tipo&&tiposArr(evento.tipo).map(t=><span key={t} style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:(B_TIPO[t]||{ct:"#294099"}).ct,WebkitFontSmoothing:"antialiased",background:(B_TIPO[t]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO[t]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>{t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤":"🤫"} {t}</span>)}{campos.modalidad&&evento.modalidad&&<span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:(B_MOD[evento.modalidad]||{ct:"#4B4B4B"}).ct,WebkitFontSmoothing:"antialiased",background:(B_MOD[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?<IconPresencial size={14} color={(B_MOD[evento.modalidad]||{ct:"#4B4B4B"}).ct}/>:evento.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evento.modalidad]}</span>}</div></div></>}
                     </td>}
                   </tr>
-                  {/* Fila 2: Evento | (vacío) */}
-                  {campos.evento&&evento.nombre_evento&&<tr>
+                  {/* Fila 2: Evento | Intérpretes */}
+                  {(campos.evento&&evento.nombre_evento||hasInterps)&&<tr>
                     <td style={{padding:0,verticalAlign:"top",borderRight:hasDerecha?"2px solid #D1D5DB":"none"}}>
-                      <div style={sH}>Evento</div><div style={sB}><div style={{fontSize:"14px",fontWeight:"500",color:"#151c28"}}>{evento.nombre_evento}</div>{evento.nro_oc&&<div style={{fontSize:"13px",color:"#484f56",marginTop:"3px"}}>N° OC: {evento.nro_oc}</div>}</div>
-                    </td>
-                    {hasDerecha&&<td style={{padding:0}}></td>}
-                  </tr>}
-                  {/* Fila 3: Fecha/Horario | Intérpretes — ALINEADOS */}
-                  {((campos.fecha||campos.horario)||interpsEl)&&<tr>
-                    <td style={{padding:0,verticalAlign:"top",borderRight:hasDerecha?"2px solid #D1D5DB":"none"}}>
-                      {(campos.fecha||campos.horario)&&<><div style={sH}>Fecha / Horario</div><div style={sB}><div>{campos.fecha&&evento.fecha_inicio&&<div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>{esMultidia?`${formatCorto(evento.fecha_inicio)} → ${formatCorto(evento.fecha_termino)}`:formatLargo(evento.fecha_inicio)}</div>}{campos.horario&&evento.hora_inicio&&<div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d",marginTop:"4px"}}>🕐 {evento.hora_inicio.slice(0,5)} – {evento.hora_termino?.slice(0,5)} hrs</div>}</div></div></>}
+                      {campos.evento&&evento.nombre_evento&&<><div style={sH}>Evento</div><div style={sB}><div style={{fontSize:"14px",fontWeight:"500",color:"#151c28"}}>{evento.nombre_evento}</div>{evento.nro_oc&&<div style={{fontSize:"13px",color:"#484f56",marginTop:"3px"}}>N° OC: {evento.nro_oc}</div>}</div></>}
                     </td>
                     {hasDerecha&&<td style={{padding:0,verticalAlign:"top"}}>
                       {interpsEl&&<><div style={{...sH,textAlign:"center"}}>Intérpretes</div><div style={{...sB,borderBottom:"none"}}>{interpsEl}</div></>}
-                    </td>}
-                  </tr>}
-                  {/* Fila 4: Jornada | Intérpretes por día */}
-                  {(campos.jornada&&evento.jornada||hasInterpsDia)&&<tr>
-                    <td style={{padding:0,verticalAlign:"top",borderRight:hasDerecha?"2px solid #D1D5DB":"none"}}>
-                      {campos.jornada&&evento.jornada&&<><div style={sH}>Jornada</div><div style={sB}><div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>⏱ {pluralizarJornada(evento.jornada)}{evento.jornada_personalizada?` — ${evento.jornada_personalizada}`:""}</div></div></>}
-                    </td>
-                    {hasDerecha&&<td style={{padding:0,verticalAlign:"top"}}>
                       {hasInterpsDia&&<><div style={{...sH,textAlign:"center"}}>Intérpretes por día</div><div style={{background:"#FFFFFF"}}>{dias.map((dia,dIdx)=>(<div key={dIdx} style={{borderBottom:dIdx<dias.length-1?"1px solid #E5E7EB":"none"}}><div style={{background:"#EBF4FF",padding:"4px 16px",fontSize:"11px",fontWeight:"600",color:"#1A6FD4",textTransform:"uppercase",letterSpacing:"0.04em"}}>Día {dIdx+1}/{dias.length} · {formatCorto(dia.fecha)} · {dia.hora_inicio?.slice(0,5)}–{dia.hora_termino?.slice(0,5)}</div><div style={{padding:"10px 16px"}}>{renderI(dia.asignaciones_dia||dia.asignaciones||[])}</div></div>))}</div></>}
                     </td>}
+                  </tr>}
+                  {/* Fila 3: Fecha/Horario */}
+                  {(campos.fecha||campos.horario)&&<tr>
+                    <td style={{padding:0,verticalAlign:"top",borderRight:hasDerecha?"2px solid #D1D5DB":"none"}}>
+                      {(campos.fecha||campos.horario)&&<><div style={sH}>Fecha / Horario</div><div style={sB}><div>{campos.fecha&&evento.fecha_inicio&&<div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>{esMultidia?`${formatCorto(evento.fecha_inicio)} → ${formatCorto(evento.fecha_termino)}`:formatLargo(evento.fecha_inicio)}</div>}{campos.horario&&evento.hora_inicio&&<div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d",marginTop:"4px"}}>🕐 {evento.hora_inicio.slice(0,5)} – {evento.hora_termino?.slice(0,5)} hrs</div>}</div></div></>}
+                    </td>
+                    {hasDerecha&&<td style={{padding:0}}></td>}
+                  </tr>}
+                  {/* Fila 4: Jornada */}
+                  {campos.jornada&&evento.jornada&&<tr>
+                    <td style={{padding:0,verticalAlign:"top",borderRight:hasDerecha?"2px solid #D1D5DB":"none"}}>
+                      <div style={sH}>Jornada</div><div style={sB}><div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>⏱ {pluralizarJornada(evento.jornada)}{evento.jornada_personalizada?` — ${evento.jornada_personalizada}`:""}</div></div>
+                    </td>
+                    {hasDerecha&&<td style={{padding:0}}></td>}
                   </tr>}
                   {/* Fila 5: Lugar / Plataforma | (vacío) */}
                   {(campos.lugar&&esPresencial&&evento.lugar||campos.plataforma&&!esPresencial&&evento.plataforma)&&<tr>
@@ -3165,20 +3106,19 @@ export default function App() {
     const renderCol=(d,i,esWeekend=false)=>{
       const iso=toISO(d),evs=evsDia(iso),esHoy=iso===hoy();
       const mesLargo=MESES_L[d.getMonth()].charAt(0).toUpperCase()+MESES_L[d.getMonth()].slice(1);
-      const opac=esWeekend?0.82:1;
-      const colBg=`rgba(255,255,255,${esWeekend?0.10:0.14})`;
-      const hdrBg=`rgba(255,255,255,${esWeekend?0.06:0.10})`;
-      return <div key={`${esWeekend?"fs":"lf"}-${i}`} style={{background:colBg,borderRadius:"12px",padding:"10px",minHeight:"calc(100vh - 260px)",opacity:opac}}>
+      const colBg="rgba(255,255,255,0.14)";
+      const hdrBg="rgba(255,255,255,0.10)";
+      return <div key={`${esWeekend?"fs":"lf"}-${i}`} style={{background:colBg,borderRadius:"12px",padding:"10px",minHeight:"calc(100vh - 260px)"}}>
         <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{padding:"8px 10px",borderRadius:"10px",marginBottom:"8px",background:hdrBg,cursor:"pointer",transition:"background 0.15s",border:esHoy?"3px solid #F97316":"none",textAlign:"center"}}
           onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"}
           onMouseLeave={e=>{e.currentTarget.style.background=hdrBg;}}>
           <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"7px",flexWrap:"nowrap"}}>
-            <span style={{fontSize:"16px",fontWeight:"700",color:esWeekend?"rgba(255,255,255,0.75)":"#fff",textTransform:"uppercase",letterSpacing:"0.04em",flexShrink:0}}>{nombresDia[i]}</span>
+            <span style={{fontSize:"16px",fontWeight:"700",color:"#fff",textTransform:"uppercase",letterSpacing:"0.04em",flexShrink:0}}>{nombresDia[i]}</span>
             {esHoy
               ?<div style={{width:"30px",height:"30px",borderRadius:"50%",background:"#F97316",color:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"16px",fontWeight:"700",flexShrink:0}}>{d.getDate()}</div>
-              :<span style={{fontSize:"16px",fontWeight:"700",color:esWeekend?"rgba(255,255,255,0.75)":"#fff",flexShrink:0}}>{d.getDate()}</span>
+              :<span style={{fontSize:"16px",fontWeight:"700",color:"#fff",flexShrink:0}}>{d.getDate()}</span>
             }
-            <span style={{fontSize:"16px",fontWeight:"500",color:esWeekend?"rgba(255,255,255,0.70)":"rgba(255,255,255,0.90)",whiteSpace:"nowrap"}}>{mesLargo}</span>
+            <span style={{fontSize:"16px",fontWeight:"500",color:"rgba(255,255,255,0.90)",whiteSpace:"nowrap"}}>{mesLargo}</span>
           </div>
           {evs.length>0&&<div style={{display:"inline-block",background:"rgba(255,255,255,0.20)",color:"#fff",fontSize:"13px",fontWeight:"500",padding:"2px 10px",borderRadius:"20px",marginTop:"5px"}}>{evs.length} evento{evs.length!==1?"s":""}</div>}
         </div>
@@ -3200,7 +3140,7 @@ export default function App() {
         {diasLF.map((d,i)=>{
           const iso=toISO(d),evs=evsDia(iso),esHoy=iso===hoy();
           const mesLargo=MESES_L[d.getMonth()].charAt(0).toUpperCase()+MESES_L[d.getMonth()].slice(1);
-          const colBg=evs.length>0?"rgba(255,255,255,0.25)":"rgba(255,255,255,0.14)";
+          const colBg="rgba(255,255,255,0.20)";
           return <div key={i} style={{marginBottom:"10px",background:colBg,borderRadius:"12px",overflow:"hidden"}}>
             <div style={{padding:"12px 14px",display:"flex",alignItems:"center",gap:"12px",cursor:"pointer"}} onClick={()=>{setDiaActual(iso);setVista("dia");}}>
               <div style={{textAlign:"center",minWidth:"54px"}}>
@@ -3218,13 +3158,13 @@ export default function App() {
         {hayFS&&diasFS.map((d,i)=>{
           const iso=toISO(d),evs=evsDia(iso),esHoy=iso===hoy();
           const mesLargo=MESES_L[d.getMonth()].charAt(0).toUpperCase()+MESES_L[d.getMonth()].slice(1);
-          const colBg=esHoy?"rgba(255,255,255,0.20)":evs.length>0?"rgba(255,255,255,0.10)":"rgba(255,255,255,0.05)";
-          return <div key={`fs-${i}`} style={{marginBottom:"10px",background:colBg,borderRadius:"12px",overflow:"hidden",opacity:0.88}}>
+          const colBg="rgba(255,255,255,0.20)";
+          return <div key={`fs-${i}`} style={{marginBottom:"10px",background:colBg,borderRadius:"12px",overflow:"hidden"}}>
             <div style={{padding:"12px 14px",display:"flex",alignItems:"center",gap:"12px",cursor:"pointer"}} onClick={()=>{setDiaActual(iso);setVista("dia");}}>
               <div style={{textAlign:"center",minWidth:"54px"}}>
-                <div style={{fontSize:"16px",fontWeight:"500",color:"rgba(255,255,255,0.75)",textTransform:"uppercase",letterSpacing:"0.05em"}}>{nombresDia[i+5]}</div>
-                <div style={{fontSize:"32px",fontWeight:"600",lineHeight:1,color:"rgba(255,255,255,0.80)"}}>{d.getDate()}</div>
-                <div style={{fontSize:"14px",color:"rgba(255,255,255,0.60)"}}>{mesLargo}</div>
+                <div style={{fontSize:"16px",fontWeight:"500",color:"#fff",textTransform:"uppercase",letterSpacing:"0.05em"}}>{nombresDia[i+5]}</div>
+                <div style={{fontSize:"32px",fontWeight:"600",lineHeight:1,color:"#fff"}}>{d.getDate()}</div>
+                <div style={{fontSize:"14px",color:"rgba(255,255,255,0.75)"}}>{mesLargo}</div>
               </div>
               <div style={{flex:1,color:"#fff",fontWeight:"500",fontSize:"17px"}}>{evs.length>0?`${evs.length} evento${evs.length!==1?"s":""}`:""}</div>
               <div style={{fontSize:"14px",color:"rgba(255,255,255,0.6)"}}>›</div>
@@ -3317,7 +3257,7 @@ export default function App() {
               </table>
             </div>
           </div>
-          <div style={{flex:1,display:"flex",flexDirection:"column",gap:"16px",padding:"16px 8px 0",alignItems:"center"}}>
+          <div style={{flex:1,display:"grid",gridTemplateColumns:"1fr 1fr",gap:"16px",padding:"16px 8px 0",alignItems:"start"}}>
             {dias.map(({iso,x})=>{const diaEspecifico={...evM,fecha_inicio:iso,_diaNum:x};return(
               <div key={iso} id={`multidia-card-${x}`} onClick={()=>abrirEvento(diaEspecifico)} style={{background:"#FFFFFF",borderLeft:`16px solid ${borderC}`,borderTop:`6px solid ${borderC}`,borderRadius:"0 12px 12px 0",padding:"20px 29px",boxShadow:"0 2px 12px rgba(0,0,0,0.10)",cursor:"pointer",width:"100%"}}>
                 <div onClick={(e)=>{e.stopPropagation();setDiaActual(iso);setModoMultidia(false);setEventoMultidiaId(null);setVista("dia");}} style={{fontSize:"15px",fontWeight:"700",color:"#C62828",marginBottom:"12px",cursor:"pointer",textDecoration:"underline",textDecorationColor:"rgba(198,40,40,0.35)"}} onMouseEnter={e=>e.currentTarget.style.color="#B71C1C"} onMouseLeave={e=>e.currentTarget.style.color="#C62828"}>📅 Día {x} de {totalDias} — {formatLargo(iso)}</div>
