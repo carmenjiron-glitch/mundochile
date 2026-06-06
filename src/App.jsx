@@ -570,6 +570,9 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
       setAlerta(null);
     };
     const rem=()=>{
+      const nombre=interpretes.find(x=>x.id===a.interprete_id);
+      const label=nombre?`${nombre.nombre||""}${nombre.apellido?" "+nombre.apellido:""}`.trim():`Intérprete ${idx+1}`;
+      if(!window.confirm(`¿Quitar a ${label} de la asignación?`))return;
       if(dIdx===null) setForm(f=>{const asigs=[...f.asignaciones];asigs.splice(idx,1);return{...f,asignaciones:asigs};});
       else setForm(f=>{const dias=[...f.dias],asigs=[...dias[dIdx].asignaciones];asigs.splice(idx,1);dias[dIdx]={...dias[dIdx],asignaciones:asigs};return{...f,dias};});
     };
@@ -823,11 +826,11 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           {tab==="interpretes"&&!esMultidia&&<>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"20px"}}>
               <div style={{fontWeight:"500",color:"#B82E38",fontSize:"17px",display:"flex",alignItems:"center",gap:"6px"}}><IconMic size={20}/> Intérpretes asignados</div>
-              <button onClick={()=>{const ni=form.asignaciones.length;addAsig();let t=0;const p=()=>{const el=document.getElementById(`asig-s-${ni}`);const sc=document.querySelector('[data-modal-scroll]');if(el&&sc&&el.getBoundingClientRect().height>0){sc.scrollTop+=el.getBoundingClientRect().top-sc.getBoundingClientRect().top-16;}else if(++t<20)setTimeout(p,30);};setTimeout(p,60);}} style={S.btnA}>+ Agregar intérprete</button>
+              <button onClick={()=>{addAsig();setTimeout(()=>{const sc=document.querySelector('[data-modal-scroll]');if(sc)sc.scrollTop=sc.scrollHeight;},50);}} style={S.btnA}>+ Agregar intérprete</button>
             </div>
             {form.asignaciones.length===0&&<div style={{textAlign:"center",color:C.textoSuave,padding:"40px 20px",border:`2px dashed ${C.grisBorde}`,borderRadius:"12px"}}>Sin intérpretes — Agrega uno arriba</div>}
             {form.asignaciones.map((a,idx)=><FilaAsig key={idx} a={a} idx={idx}/>)}
-            {form.asignaciones.length>0&&<button onClick={()=>{const ni=form.asignaciones.length;addAsig();let t=0;const p=()=>{const el=document.getElementById(`asig-s-${ni}`);const sc=document.querySelector('[data-modal-scroll]');if(el&&sc&&el.getBoundingClientRect().height>0){sc.scrollTop+=el.getBoundingClientRect().top-sc.getBoundingClientRect().top-16;}else if(++t<20)setTimeout(p,30);};setTimeout(p,60);}} style={{...S.btnP,width:"100%",padding:"9px"}}>+ Agregar otro intérprete</button>}
+            {form.asignaciones.length>0&&<button onClick={()=>{addAsig();setTimeout(()=>{const sc=document.querySelector('[data-modal-scroll]');if(sc)sc.scrollTop=sc.scrollHeight;},50);}} style={{...S.btnP,width:"100%",padding:"9px"}}>+ Agregar otro intérprete</button>}
           </>}
 
           {/* ── TAB EQUIPOS AV (un día) ── */}
@@ -841,7 +844,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
               <div key={eIdx} style={{border:`1px solid ${C.grisBorde}`,borderRadius:"10px",padding:"14px",marginBottom:"10px",background:"#fff"}}>
                 <div style={{display:"flex",justifyContent:"space-between",marginBottom:"10px"}}>
                   <div style={{fontWeight:"500",color:C.azul,fontSize:"13px"}}>Equipo #{eIdx+1}</div>
-                  <button onClick={()=>setForm(f=>{const eqs=[...(f.equipos||[])];eqs.splice(eIdx,1);return{...f,equipos:eqs};})} style={{background:"none",border:"none",cursor:"pointer",color:"#B82E38",fontWeight:"500"}}>✕</button>
+                  <button onClick={()=>{if(!window.confirm(`¿Eliminar equipo #${eIdx+1}?`))return;setForm(f=>{const eqs=[...(f.equipos||[])];eqs.splice(eIdx,1);return{...f,equipos:eqs};});}} style={{background:"none",border:"none",cursor:"pointer",color:"#B82E38",fontWeight:"500"}}>✕</button>
                 </div>
                 <div style={S.fila}>
                   <div style={S.camp}><label style={S.lbl}>Tipo de sistema</label>
@@ -923,7 +926,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
             {form.dias.map((dia,dIdx)=>{
               const modEfectiva=dia.modalidad||form.modalidad;
               return(
-            <div key={dia.fecha} data-dia-section={dIdx} style={{border:`2px solid ${C.grisBorde}`,borderRadius:"14px",marginBottom:"16px",overflow:"hidden"}}>
+            <div key={dia.fecha} data-dia-section={dIdx} style={{border:"2.5px solid #1D4ED8",borderRadius:"14px",marginBottom:"16px",overflow:"hidden"}}>
               {/* Header del día */}
               <div style={{background:C.grisMed,padding:"12px 16px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                 <div>
@@ -931,7 +934,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                   <div style={{fontSize:"13.91px",color:"#5A687D",marginTop:"2px"}}>{dia.hora_inicio?.slice(0,5)||"–"} – {dia.hora_termino?.slice(0,5)||"–"} hrs — {pluralizarJornada(dia.jornada)||""}</div>
                 </div>
                 <div style={{display:"flex",gap:"6px",alignItems:"center",flexWrap:"wrap",justifyContent:"flex-end"}}>
-                  {dIdx>0&&<button onClick={()=>copyFromPrev(dIdx)} style={{padding:"4px 10px",fontSize:"12px",background:"none",border:`1px solid ${C.grisBorde}`,borderRadius:"6px",cursor:"pointer",color:C.textoMed,fontFamily:"inherit"}}>↑ Copiar día anterior</button>}
+                  {dIdx>0&&<button onClick={()=>copyFromPrev(dIdx)} style={{padding:"5px 14px",fontSize:"12px",fontWeight:"600",background:"#EFF6FF",border:"2px solid #1D4ED8",borderRadius:"20px",cursor:"pointer",color:"#1D4ED8",fontFamily:"inherit"}}>↑ Copiar día anterior</button>}
                 </div>
               </div>
               <div style={{padding:"16px"}}>
@@ -953,7 +956,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                 <div style={{marginTop:"12px",border:"2px solid #E03131",borderRadius:"16px",padding:"16px",background:"rgba(224,49,49,0.06)",marginBottom:"16px"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
                     <div style={{fontWeight:"500",color:"#E03131",fontSize:"16px",display:"flex",alignItems:"center",gap:"5px"}}><IconMic size={16}/> Intérpretes de este día</div>
-                    <button onClick={()=>{const ni=(dia.asignaciones||[]).length;addAsig(dIdx);let t=0;const p=()=>{const el=document.getElementById(`asig-${dIdx}-${ni}`);const sc=document.querySelector('[data-modal-scroll]');if(el&&sc&&el.getBoundingClientRect().height>0){sc.scrollTop+=el.getBoundingClientRect().top-sc.getBoundingClientRect().top-16;}else if(++t<20)setTimeout(p,30);};setTimeout(p,60);}} style={{...S.btnP,fontSize:"13px",color:"#2C5CA0",border:"1px solid #869CB8"}}>+ Agregar intérprete</button>
+                    <button onClick={()=>{addAsig(dIdx);setTimeout(()=>{const sc=document.querySelector('[data-modal-scroll]');if(sc)sc.scrollTop=sc.scrollHeight;},50);}} style={{...S.btnP,fontSize:"13px",color:"#2C5CA0",border:"1px solid #869CB8"}}>+ Agregar intérprete</button>
                   </div>
                   {(dia.asignaciones||[]).length===0&&<div style={{color:C.textoSuave,fontSize:"15px",textAlign:"center",padding:"12px",border:`1.5px dashed ${C.grisBorde}`,borderRadius:"8px"}}>Sin intérpretes para este día</div>}
                   {(dia.asignaciones||[]).map((a,aIdx)=><FilaAsig key={aIdx} a={a} idx={aIdx} dIdx={dIdx}/>)}
@@ -968,7 +971,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                     <div key={eIdx} style={{border:`1px solid ${C.grisBorde}`,borderRadius:"10px",padding:"14px",marginBottom:"10px",background:"#fff"}}>
                       <div style={{display:"flex",justifyContent:"space-between",marginBottom:"10px"}}>
                         <div style={{fontWeight:"500",color:C.azul,fontSize:"13px"}}>Equipo #{eIdx+1}</div>
-                        <button onClick={()=>setForm(f=>{const ds=[...f.dias],eqs=[...(ds[dIdx].equipos||[])];eqs.splice(eIdx,1);ds[dIdx]={...ds[dIdx],equipos:eqs};return{...f,dias:ds};})} style={{background:"none",border:"none",cursor:"pointer",color:"#B82E38",fontWeight:"500"}}>✕</button>
+                        <button onClick={()=>{if(!window.confirm(`¿Eliminar equipo #${eIdx+1}?`))return;setForm(f=>{const ds=[...f.dias],eqs=[...(ds[dIdx].equipos||[])];eqs.splice(eIdx,1);ds[dIdx]={...ds[dIdx],equipos:eqs};return{...f,dias:ds};});}} style={{background:"none",border:"none",cursor:"pointer",color:"#B82E38",fontWeight:"500"}}>✕</button>
                       </div>
                       <div style={S.fila}>
                         <div style={S.camp}><label style={S.lbl}>Tipo de sistema</label>
@@ -1841,9 +1844,14 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
     }
   },[tab]);
 
+  const [errorGuardar,setErrorGuardar]=useState(null);
   const guardar=async(tabla,payload,id)=>{
-    if(id==="nuevo") await sb.from(tabla).insert(payload);
-    else await sb.from(tabla).update(payload).eq("id",id);
+    setErrorGuardar(null);
+    const {id:_,created_at:__,...clean}=payload;
+    let err;
+    if(id==="nuevo"){const r=await sb.from(tabla).insert(clean);err=r.error;}
+    else{const r=await sb.from(tabla).update(clean).eq("id",id);err=r.error;}
+    if(err){setErrorGuardar(err.message||"Error al guardar");return;}
     setEditando(null);setFormEdit({});onActualizar();
   };
 
@@ -1930,9 +1938,10 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
           <label style={{display:"flex",gap:"8px",alignItems:"center",cursor:"pointer",fontSize:"17px",color:C.rojo,fontWeight:"500",marginBottom:"16px"}}>
             <input type="checkbox" checked={!!formEdit.es_host_zoom} onChange={e=>setFormEdit(f=>({...f,es_host_zoom:e.target.checked}))}/> 🔑 Host Zoom MundoChile
           </label>
+          {errorGuardar&&<div style={{background:"#FEF2F2",border:"1px solid #FECACA",borderRadius:"8px",padding:"8px 12px",marginBottom:"12px",color:"#DC2626",fontSize:"13px"}}>⚠️ {errorGuardar}</div>}
           <div style={{display:"flex",gap:"8px"}}>
             <button onClick={()=>guardar("interpretes",formEdit,editando)} style={S.btnA}>💾 Guardar</button>
-            <button onClick={()=>{setEditando(null);setFormEdit({});}} style={S.btnG}>Cancelar</button>
+            <button onClick={()=>{setEditando(null);setFormEdit({});setErrorGuardar(null);}} style={S.btnG}>Cancelar</button>
           </div>
         </div>}
 
@@ -3356,7 +3365,7 @@ export default function App() {
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"20px",alignItems:"start"}}>
                     {/* Columna izquierda */}
                     <div>
-                      <div style={{fontSize:"17px",fontWeight:"500",color:"#1E293B",marginBottom:"4px"}}>📅 {esMultidiaD?formatRangoCompacto(ev.fecha_inicio,ev.fecha_termino):formatLargo(ev.fecha_inicio)}</div>
+                      <div style={{fontSize:"17px",fontWeight:"500",color:"#1E293B",marginBottom:"4px"}}>📅 {esMultidiaD?formatLargo(diaActual):formatLargo(ev.fecha_inicio)}</div>
                       <div style={{fontSize:"16px",fontWeight:"500",color:"#0F172A",marginBottom:"6px"}}>🕐 {ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)} hrs{ev.jornada&&<span style={{fontWeight:"400",color:"#6B7280",fontSize:"14px"}}> · {pluralizarJornada(ev.jornada)}</span>}</div>
                       {cli?.nombre_contacto&&<div style={{fontSize:"15px",fontWeight:"500",color:"#6B7280",fontStyle:"italic",marginBottom:4}}>Contacto: {cli.nombre_contacto}</div>}
                       {ev.nombre_evento&&<div style={{fontSize:"14px",fontWeight:"500",color:"#374151",marginBottom:4}}>{ev.nombre_evento}</div>}
