@@ -633,12 +633,6 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
   const addAsig=(dIdx=null)=>{
     if(dIdx===null) setForm(f=>({...f,asignaciones:[...f.asignaciones,asigVacia()]}));
     else setForm(f=>{const dias=[...f.dias];dias[dIdx]={...dias[dIdx],asignaciones:[...dias[dIdx].asignaciones,asigVacia()]};return{...f,dias};});
-    setTimeout(()=>{
-      const target=dIdx!=null?document.querySelector(`[data-dia-section="${dIdx}"]`):null;
-      const m=document.querySelector("[data-modal-scroll]");
-      if(target&&m){const top=target.offsetTop-m.offsetTop;m.scrollTop=top;}
-      else if(m){m.scrollTop=m.scrollHeight;}
-    },80);
   };
 
   const addEq=(dIdx)=>{setForm(f=>{const dias=[...f.dias];dias[dIdx]={...dias[dIdx],equipos:[...(dias[dIdx].equipos||[]),eqVacio()]};return{...f,dias};});setTimeout(()=>{const t=document.querySelector(`[data-dia-section="${dIdx}"]`);const m=document.querySelector("[data-modal-scroll]");if(t&&m)m.scrollTop=t.offsetTop-m.offsetTop;},80);};
@@ -829,11 +823,11 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           {tab==="interpretes"&&!esMultidia&&<>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"20px"}}>
               <div style={{fontWeight:"500",color:"#B82E38",fontSize:"17px",display:"flex",alignItems:"center",gap:"6px"}}><IconMic size={20}/> Intérpretes asignados</div>
-              <button onClick={()=>{const ni=form.asignaciones.length;addAsig();let t=0;const p=()=>{const el=document.getElementById(`asig-s-${ni}`);const sc=document.querySelector('[data-modal-scroll]');if(el&&sc){sc.scrollTop+=el.getBoundingClientRect().top-sc.getBoundingClientRect().top-16;}else if(++t<15)setTimeout(p,30);};setTimeout(p,50);}} style={S.btnA}>+ Agregar intérprete</button>
+              <button onClick={()=>{const ni=form.asignaciones.length;addAsig();let t=0;const p=()=>{const el=document.getElementById(`asig-s-${ni}`);const sc=document.querySelector('[data-modal-scroll]');if(el&&sc&&el.getBoundingClientRect().height>0){sc.scrollTop+=el.getBoundingClientRect().top-sc.getBoundingClientRect().top-16;}else if(++t<20)setTimeout(p,30);};setTimeout(p,60);}} style={S.btnA}>+ Agregar intérprete</button>
             </div>
             {form.asignaciones.length===0&&<div style={{textAlign:"center",color:C.textoSuave,padding:"40px 20px",border:`2px dashed ${C.grisBorde}`,borderRadius:"12px"}}>Sin intérpretes — Agrega uno arriba</div>}
             {form.asignaciones.map((a,idx)=><FilaAsig key={idx} a={a} idx={idx}/>)}
-            {form.asignaciones.length>0&&<button onClick={()=>{const ni=form.asignaciones.length;addAsig();let t=0;const p=()=>{const el=document.getElementById(`asig-s-${ni}`);const sc=document.querySelector('[data-modal-scroll]');if(el&&sc){sc.scrollTop+=el.getBoundingClientRect().top-sc.getBoundingClientRect().top-16;}else if(++t<15)setTimeout(p,30);};setTimeout(p,50);}} style={{...S.btnP,width:"100%",padding:"9px"}}>+ Agregar otro intérprete</button>}
+            {form.asignaciones.length>0&&<button onClick={()=>{const ni=form.asignaciones.length;addAsig();let t=0;const p=()=>{const el=document.getElementById(`asig-s-${ni}`);const sc=document.querySelector('[data-modal-scroll]');if(el&&sc&&el.getBoundingClientRect().height>0){sc.scrollTop+=el.getBoundingClientRect().top-sc.getBoundingClientRect().top-16;}else if(++t<20)setTimeout(p,30);};setTimeout(p,60);}} style={{...S.btnP,width:"100%",padding:"9px"}}>+ Agregar otro intérprete</button>}
           </>}
 
           {/* ── TAB EQUIPOS AV (un día) ── */}
@@ -959,7 +953,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                 <div style={{marginTop:"12px",border:"2px solid #E03131",borderRadius:"16px",padding:"16px",background:"rgba(224,49,49,0.06)",marginBottom:"16px"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
                     <div style={{fontWeight:"500",color:"#E03131",fontSize:"16px",display:"flex",alignItems:"center",gap:"5px"}}><IconMic size={16}/> Intérpretes de este día</div>
-                    <button onClick={()=>{const ni=(dia.asignaciones||[]).length;addAsig(dIdx);let t=0;const p=()=>{const el=document.getElementById(`asig-${dIdx}-${ni}`);const sc=document.querySelector('[data-modal-scroll]');if(el&&sc){sc.scrollTop+=el.getBoundingClientRect().top-sc.getBoundingClientRect().top-16;}else if(++t<15)setTimeout(p,30);};setTimeout(p,50);}} style={{...S.btnP,fontSize:"13px",color:"#2C5CA0",border:"1px solid #869CB8"}}>+ Agregar intérprete</button>
+                    <button onClick={()=>{const ni=(dia.asignaciones||[]).length;addAsig(dIdx);let t=0;const p=()=>{const el=document.getElementById(`asig-${dIdx}-${ni}`);const sc=document.querySelector('[data-modal-scroll]');if(el&&sc&&el.getBoundingClientRect().height>0){sc.scrollTop+=el.getBoundingClientRect().top-sc.getBoundingClientRect().top-16;}else if(++t<20)setTimeout(p,30);};setTimeout(p,60);}} style={{...S.btnP,fontSize:"13px",color:"#2C5CA0",border:"1px solid #869CB8"}}>+ Agregar intérprete</button>
                   </div>
                   {(dia.asignaciones||[]).length===0&&<div style={{color:C.textoSuave,fontSize:"15px",textAlign:"center",padding:"12px",border:`1.5px dashed ${C.grisBorde}`,borderRadius:"8px"}}>Sin intérpretes para este día</div>}
                   {(dia.asignaciones||[]).map((a,aIdx)=><FilaAsig key={aIdx} a={a} idx={aIdx} dIdx={dIdx}/>)}
