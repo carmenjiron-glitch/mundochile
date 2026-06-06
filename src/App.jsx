@@ -1278,6 +1278,18 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                       </div>
                     </div>
                   </div>}
+                  {((esPresencial&&evento.lugar)||(!esPresencial&&evento.plataforma))&&(
+                    <div style={{border:"2px solid #7C3AED",borderRadius:"12px",background:"#F5F3FF",overflow:"hidden"}}>
+                      <div style={{background:"#FEF9C3",padding:"8px 14px",fontWeight:"700",fontSize:"13px",color:"#111827",textTransform:"uppercase",letterSpacing:"0.06em"}}>{esPresencial?"📍 Lugar":"💻 Plataforma"}</div>
+                      <div style={{padding:"12px 14px"}}>
+                        {esPresencial&&evento.lugar&&<>
+                          <span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 20px",borderRadius:"6px",fontSize:"13.5px",fontWeight:"700",color:"#9F4444",background:"#FEF2F2",border:"2px solid #D55252",whiteSpace:"nowrap"}}>📍 {evento.lugar}</span>
+                          {evento.lugar_detalle&&<div style={{marginTop:"6px"}}><span style={{display:"inline-flex",alignItems:"center",padding:"3px 12px",borderRadius:"6px",fontSize:"12px",fontWeight:"600",color:"#9F4444",background:"#FEF2F2",border:"1.5px solid #D55252",whiteSpace:"nowrap"}}>{evento.lugar_detalle}</span></div>}
+                        </>}
+                        {!esPresencial&&evento.plataforma&&<PlatformChip platform={evento.plataforma} isMundoChile={esZoomMC} extra={esZoomMC?evento.zoom_administrador:""}/>}
+                      </div>
+                    </div>
+                  )}
                   {evento.comentarios&&<div style={{border:"2px solid #F472B6",borderRadius:"12px",background:"#FFF0F6",overflow:"hidden"}}>
                     <div style={{background:"#FEF9C3",padding:"8px 14px",fontWeight:"700",fontSize:"13px",color:"#111827",textTransform:"uppercase",letterSpacing:"0.06em",display:"flex",alignItems:"center",justifyContent:"space-between"}}>💬 Comentarios<div style={{width:"11px",height:"11px",borderRadius:"50%",background:"#F472B6",boxShadow:"0 0 6px #F472B6",animation:"flash 2.4s ease-in-out infinite",flexShrink:0}}/></div>
                     <div style={{padding:"12px 14px",color:"#0F172A",fontSize:"16px"}}>{evento.comentarios}</div>
@@ -3157,6 +3169,14 @@ export default function App() {
 
     if(esMobile) return (
       <div style={{padding:"10px 12px 80px"}}>
+        <div style={{display:"flex",gap:"8px",padding:"4px 4px 8px",alignItems:"center",position:"sticky",top:"136px",zIndex:40,background:"rgba(30,58,110,0.95)",backdropFilter:"blur(8px)",borderRadius:"10px",marginBottom:"4px"}}>
+          <button onClick={()=>setPantalla("disponibilidad")} style={{flexShrink:0,display:"flex",alignItems:"center",gap:"6px",padding:"5.5px 12px",borderRadius:"10px",background:"rgba(253,230,138,0.12)",color:"#FDE68A",fontSize:"13px",fontWeight:"500",border:"1.5px solid #FCD34D",height:"29px",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit",letterSpacing:"0.02em",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#86EFAC" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}><polyline points="20 6 9 17 4 12"/></svg>
+            Disponibilidad
+          </button>
+          <div style={{flex:1}}/>
+          {hayFS?<div style={{color:"rgba(255,255,255,0.70)",fontSize:"13px",fontStyle:"italic"}}>📅 {evsFinSemana.length} evento{evsFinSemana.length!==1?"s":""} este fin de semana</div>:<div style={{color:"rgba(255,255,255,0.65)",fontSize:"13px",fontStyle:"italic"}}>📅 Sin eventos este fin de semana</div>}
+        </div>
         {diasLF.map((d,i)=>{
           const iso=toISO(d),evs=evsDia(iso),esHoy=iso===hoy();
           const mesLargo=MESES_L[d.getMonth()].charAt(0).toUpperCase()+MESES_L[d.getMonth()].slice(1);
@@ -3192,20 +3212,19 @@ export default function App() {
             {evs.length>0&&<div style={{padding:"0 10px 10px"}}>{evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} onNavegar={d=>{setDiaActual(d);setVista("dia");}} onVerMultidia={verTodosLosDias} solidPill/>)}</div>}
           </div>;
         })}
-        {!hayFS&&<div style={{textAlign:"center",color:"#FFFFFF",fontSize:"14px",fontStyle:"italic",opacity:0.7,padding:"6px 4px"}}>📅 Sin eventos este fin de semana</div>}
       </div>
     );
 
     return (
       <div style={{padding:"16px 24px 80px"}}>
-        {!hayFS&&<div style={{display:"flex",gap:"8px",padding:"0 8px 4px",alignItems:"center"}}>
+        <div style={{display:"flex",gap:"8px",padding:"6px 8px 6px",alignItems:"center",position:"sticky",top:"136px",zIndex:40,background:"rgba(30,58,110,0.95)",backdropFilter:"blur(8px)",borderRadius:"10px",marginBottom:"8px"}}>
           <button onClick={()=>setPantalla("disponibilidad")} style={{flexShrink:0,display:"flex",alignItems:"center",gap:"6px",padding:"5.5px 12px",borderRadius:"10px",background:"rgba(253,230,138,0.12)",color:"#FDE68A",fontSize:"13px",fontWeight:"500",border:"1.5px solid #FCD34D",height:"29px",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit",letterSpacing:"0.02em",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#86EFAC" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}><polyline points="20 6 9 17 4 12"/></svg>
             Disponibilidad
           </button>
-          <div style={{flex:1}}/><div style={{flex:1}}/><div style={{flex:1}}/>
-          <div style={{flex:1,textAlign:"center",color:"#FFFFFF",fontSize:"14px",fontStyle:"italic",opacity:0.7}}>📅 Sin eventos este fin de semana</div>
-        </div>}
+          <div style={{flex:1}}/>
+          {hayFS?<div style={{color:"rgba(255,255,255,0.70)",fontSize:"13px",fontStyle:"italic"}}>📅 {evsFinSemana.length} evento{evsFinSemana.length!==1?"s":""} este fin de semana</div>:<div style={{color:"rgba(255,255,255,0.65)",fontSize:"13px",fontStyle:"italic"}}>📅 Sin eventos este fin de semana</div>}
+        </div>
         <div style={{display:"grid",gridTemplateColumns:hayFS?"repeat(5,1fr) 2px repeat(2,1fr)":"repeat(5,1fr)",gap:"8px",padding:"8px",alignItems:"stretch"}}>
           {diasLF.map((d,i)=>renderCol(d,i,false))}
           {hayFS&&<div style={{background:"rgba(255,255,255,0.14)",borderRadius:"2px",alignSelf:"stretch"}}/>}
@@ -3253,7 +3272,7 @@ export default function App() {
             {/* Título + Volver inline */}
             <div style={{padding:"10px 12px 7px 17px",display:"flex",alignItems:"center",gap:"7px",flexWrap:"wrap"}}>
               <span style={{fontSize:"16px",fontWeight:"700",color:"#FFFFFF",whiteSpace:"normal",wordBreak:"break-word",overflow:"hidden",minWidth:0}}>🗓️ Evento Multidía</span>
-              <span style={{fontSize:"16px",fontWeight:"600",color:"rgba(255,255,255,0.9)",whiteSpace:"normal",wordBreak:"break-word",overflow:"hidden",minWidth:0}}>— {cli?.nombre_empresa||"—"}</span>
+              <span style={{fontSize:"16px",fontWeight:"600",color:"rgba(255,255,255,0.9)",whiteSpace:"normal",wordBreak:"break-word",overflow:"hidden",minWidth:0}}>{cli?.nombre_empresa||"—"}</span>
               <span style={{fontSize:"14px",color:"rgba(255,255,255,0.70)",whiteSpace:"normal",wordBreak:"break-word"}}>· {totalDias} días</span>
               <button onClick={()=>{setModoMultidia(false);setEventoMultidiaId(null);setVista(vistaAnterior);}} title="Volver" style={{marginLeft:"auto",display:"flex",alignItems:"center",justifyContent:"center",width:"31px",height:"31px",borderRadius:"50%",background:"rgba(255,255,255,0.15)",color:"#FFFFFF",border:"1px solid rgba(255,255,255,0.3)",cursor:"pointer",padding:0,flexShrink:0,fontFamily:"inherit"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.28)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg></button>
             </div>
@@ -3278,9 +3297,9 @@ export default function App() {
               </table>
             </div>
           </div>
-          <div style={{flex:1,display:"flex",flexDirection:"column",gap:"16px",padding:"16px 24px 0",alignItems:"center"}}>
+          <div style={{flex:1,display:"flex",flexDirection:"column",gap:"16px",padding:"16px 8px 0",alignItems:"center"}}>
             {dias.map(({iso,x})=>{const diaEspecifico={...evM,fecha_inicio:iso,_diaNum:x};return(
-              <div key={iso} id={`multidia-card-${x}`} onClick={()=>abrirEvento(diaEspecifico)} style={{background:"#FFFFFF",borderLeft:`16px solid ${borderC}`,borderTop:`6px solid ${borderC}`,borderRadius:"0 12px 12px 0",padding:"20px 24px",boxShadow:"0 2px 12px rgba(0,0,0,0.10)",cursor:"pointer"}}>
+              <div key={iso} id={`multidia-card-${x}`} onClick={()=>abrirEvento(diaEspecifico)} style={{background:"#FFFFFF",borderLeft:`16px solid ${borderC}`,borderTop:`6px solid ${borderC}`,borderRadius:"0 12px 12px 0",padding:"20px 29px",boxShadow:"0 2px 12px rgba(0,0,0,0.10)",cursor:"pointer",width:"100%"}}>
                 <div onClick={(e)=>{e.stopPropagation();setDiaActual(iso);setModoMultidia(false);setEventoMultidiaId(null);setVista("dia");}} style={{fontSize:"15px",fontWeight:"700",color:"#C62828",marginBottom:"12px",cursor:"pointer",textDecoration:"underline",textDecorationColor:"rgba(198,40,40,0.35)"}} onMouseEnter={e=>e.currentTarget.style.color="#B71C1C"} onMouseLeave={e=>e.currentTarget.style.color="#C62828"}>📅 Día {x} de {totalDias} — {formatLargo(iso)}</div>
                 <div style={{fontSize:"34px",fontWeight:"600",color:"#0F172A",lineHeight:1.2,marginBottom:4}}>{cli?.nombre_empresa||"—"}</div>
                 {cli?.nombre_contacto&&<div style={{fontSize:"16px",fontWeight:"500",color:"#6B7280",fontStyle:"italic",marginBottom:4}}>Contacto: {cli.nombre_contacto}</div>}

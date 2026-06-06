@@ -352,7 +352,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                 <div style={{ display:"flex", alignItems:"center", gap:"5px" }}>
                   {dotEsHoy && <div style={{ width:"12.5px", height:"12.5px", borderRadius:"50%", background:"#22C55E", boxShadow:"0 0 8px #22C55E", animation:"flash 1.2s ease-in-out infinite" }}/>}
                   {dotEsMan && !dotEsHoy && <div style={{ width:"12.5px", height:"12.5px", borderRadius:"50%", background:"#EAB308", boxShadow:"0 0 8px #EAB308", animation:"flashYellow 1.8s ease-in-out infinite" }}/>}
-                  {ev.comentarios && <div style={{ width:"10px", height:"10px", borderRadius:"50%", background:"#F472B6", boxShadow:"0 0 6px #F472B6", animation:"flashYellow 1.8s ease-in-out infinite" }}/>}
+                  {ev.comentarios && <div style={{ width:"10px", height:"10px", borderRadius:"50%", background:"#F472B6", boxShadow:"0 0 6px #F472B6" }}/>}
                 </div>
                 {pillMultidia}
               </div>
@@ -372,7 +372,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                 <div style={{ position:"absolute", top:"8px", right:"8px", zIndex:15, display:"flex", alignItems:"center", gap:"5px" }}>
                   {dotEsHoy && <div style={{ width:"12.5px", height:"12.5px", borderRadius:"50%", background:"#22C55E", boxShadow:"0 0 8px #22C55E", animation:"flash 1.2s ease-in-out infinite" }}/>}
                   {dotEsMan && !dotEsHoy && <div style={{ width:"12.5px", height:"12.5px", borderRadius:"50%", background:"#EAB308", boxShadow:"0 0 8px #EAB308", animation:"flashYellow 1.8s ease-in-out infinite" }}/>}
-                  {ev.comentarios && <div style={{ width:"10px", height:"10px", borderRadius:"50%", background:"#F472B6", boxShadow:"0 0 6px #F472B6", animation:"flashYellow 1.8s ease-in-out infinite" }}/>}
+                  {ev.comentarios && <div style={{ width:"10px", height:"10px", borderRadius:"50%", background:"#F472B6", boxShadow:"0 0 6px #F472B6" }}/>}
                 </div>
               )}
               <div style={{ marginBottom:4 }}>
@@ -467,7 +467,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
           {/* Estado — siempre al final */}
           <div style={{ marginTop:10 }}>
-            <Chip label={estadoLabel} emoji={estadoLabel==="Facturado"?<span style={{color:"#F97316",fontWeight:900}}>✔ </span>:"🟠 "} fontSize={10} padding="4px 10px" />
+            <Chip label={estadoLabel} emoji={estadoLabel==="Facturado"?<span style={{color:"#F97316",fontWeight:900}}>✔ </span>:"🟠 "} fontSize={12} padding="4.8px 12px" />
           </div>
         </>
       )}
