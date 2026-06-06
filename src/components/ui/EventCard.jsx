@@ -40,6 +40,35 @@ const IconAV = ({ size = 14 }) => (
   </svg>
 );
 
+const IconHeadphones = ({ size=13 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
+    <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/>
+    <path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+  </svg>
+);
+const IconMicOutline = ({ size=13 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+    <line x1="12" y1="19" x2="12" y2="23"/>
+    <line x1="8" y1="23" x2="16" y2="23"/>
+  </svg>
+);
+const IconChatBubble = ({ size=13 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+  </svg>
+);
+const IconArrowsExchange = ({ size=13 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M17 1l4 4-4 4"/>
+    <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+    <path d="M7 23l-4-4 4-4"/>
+    <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+  </svg>
+);
+
 // ── Bandera ───────────────────────────────────────────────────────────────────
 const Flag = ({ idioma, size = 20 }) => {
   const h = Math.round(size * 0.75);
@@ -60,12 +89,12 @@ const darken = (hex, f) => { const n = hex.replace("#",""); const r=Math.round(p
 
 // ── Badge rectangular estilo Trello ──────────────────────────────────────────
 const BADGE = {
-  "Simultánea":            { bg:"#FFFFFF", c:"#0057FF", b:"#0057FF" },
-  "Consecutiva":           { bg:"#FCE4EC", c:"#C2185B", b:"#C2185B" },
-  "Whispering":            { bg:"#F3E5F5", c:"#7B1FA2", b:"#7B1FA2" },
-  "Presencial":            { bg:"#E6FFF2", c:"#00AF57", b:"#00AF57" },
-  "Remoto":                { bg:"#E0F7FA", c:"#00838F", b:"#00838F" },
-  "Híbrido":               { bg:"#FBE9E7", c:"#BF360C", b:"#BF360C" },
+  "Simultánea":            { bg:"#1D4ED8", c:"#FFFFFF", b:"#1D4ED8" },
+  "Consecutiva":           { bg:"#9B1349", c:"#FFFFFF", b:"#9B1349" },
+  "Whispering":            { bg:"#6D28D9", c:"#FFFFFF", b:"#6D28D9" },
+  "Presencial":            { bg:"#00AF57", c:"#FFFFFF", b:"#00AF57" },
+  "Remoto":                { bg:"#0E7490", c:"#FFFFFF", b:"#0E7490" },
+  "Híbrido":               { bg:"#D97706", c:"#FFFFFF", b:"#D97706" },
   "Facturado":             { bg:"#FFFFFF", c:"#1A1A1A", b:"#E57373", bw:"2px", fw:400 },
   "Facturación Pendiente": { bg:"#FFFFFF", c:"#1A1A1A", b:"#E57373", bw:"2px", fw:400 },
 };
@@ -239,8 +268,8 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             </div>
 
             <div style={{ display:"flex", gap:8, flexWrap:"wrap", alignItems:"center" }}>
-              {(Array.isArray(ev.tipo)?ev.tipo:[ev.tipo||"Simultánea"]).map(t=><Chip key={t} label={t} emoji={t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤 ":"🤫 "} fontSize={14} padding="5px 12px" />)}
-              <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?<IconoPresencial/>:ev.modalidad==="hibrido"?"🔀 ":"💻 "} fontSize={14} padding="5px 12px" />
+              {(Array.isArray(ev.tipo)?ev.tipo:[ev.tipo||"Simultánea"]).map(t=><Chip key={t} label={t} emoji={t==="Simultánea"?<IconHeadphones size={14}/>:t==="Consecutiva"?<IconMicOutline size={14}/>:<IconChatBubble size={14}/>} fontSize={14} padding="5px 12px" />)}
+              <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?<IconoPresencial size={14}/>:ev.modalidad==="hibrido"?<IconArrowsExchange size={14}/>:<IconAV size={14}/>} fontSize={14} padding="5px 12px" />
             </div>
 
             {!esPresencial && ev.plataforma && (
@@ -403,8 +432,8 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
           {/* Badges tipo + modalidad */}
           <div style={{ display:"flex", gap:5, flexWrap:"nowrap", alignItems:"center" }}>
-            {(Array.isArray(ev.tipo)?ev.tipo:[ev.tipo||"Simultánea"]).map(t=><Chip key={t} label={t} emoji={t==="Simultánea"?<IconoSimultanea size={14}/>:t==="Consecutiva"?"🎤 ":"🤫 "} fontSize={13} padding="4px 11px" dark={false} />)}
-            <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?<IconoPresencial size={13}/>:ev.modalidad==="hibrido"?"🔀 ":"💻 "} fontSize={13} padding="4px 11px" dark={false} />
+            {(Array.isArray(ev.tipo)?ev.tipo:[ev.tipo||"Simultánea"]).map(t=><Chip key={t} label={t} emoji={t==="Simultánea"?<IconHeadphones size={13}/>:t==="Consecutiva"?<IconMicOutline size={13}/>:<IconChatBubble size={13}/>} fontSize={13} padding="4px 11px" dark={false} />)}
+            <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?<IconoPresencial size={13}/>:ev.modalidad==="hibrido"?<IconArrowsExchange size={13}/>:<IconAV size={13}/>} fontSize={13} padding="4px 11px" dark={false} />
           </div>
 
           {/* Plataforma / Lugar */}

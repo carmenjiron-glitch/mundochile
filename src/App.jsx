@@ -41,6 +41,26 @@ const IconPresencial = ({size=16,color="currentColor"}) => (
     <path d="M9 22v-7h6v7"/>
   </svg>
 )
+const IconHeadphones = ({size=13,color="currentColor"}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
+    <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/>
+    <path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+  </svg>
+)
+const IconChatBubble = ({size=13,color="currentColor"}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+  </svg>
+)
+const IconArrowsExchange = ({size=13,color="currentColor"}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M17 1l4 4-4 4"/>
+    <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+    <path d="M7 23l-4-4 4-4"/>
+    <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+  </svg>
+)
 
 // ─── SUPABASE ────────────────────────────────────────────────────────────────
 const SB_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -70,12 +90,12 @@ const idiomaBorde=(idioma)=>IDIOMA_BORDE[idioma]||"#3451d1";
 const idiomaFlag=(idioma)=>IDIOMA_FLAG[idioma]||"🌐";
 const IDIOMA_CDN={"Inglés":"gb","Francés":"fr","Portugués":"br","Español":"es","Alemán":"de","Italiano":"it","Chino":"cn","Japonés":"jp"};
 function FlagImg({idioma}){const c=IDIOMA_CDN[idioma];if(!c)return<span style={{fontSize:"14px"}}>🌐</span>;return<img src={`https://flagcdn.com/28x21/${c}.png`} style={{width:"25px",height:"18px",objectFit:"cover",borderRadius:"2px",verticalAlign:"middle",display:"inline-block",flexShrink:0}} alt={idioma}/>;}
-const B_TIPO={"Simultánea":{bg:"#FFFFFF",c:"#0057FF",ct:"#0057FF"},"Consecutiva":{bg:"#FCE4EC",c:"#C2185B",ct:"#881140"},"Whispering":{bg:"#F3E5F5",c:"#7B1FA2",ct:"#561671"}};
-const B_MOD={"presencial":{bg:"#E6FFF2",c:"#00AF57",ct:"#009E4E"},"remoto":{bg:"#E0F7FA",c:"#00838F",ct:"#005C64"},"hibrido":{bg:"#FBE9E7",c:"#BF360C",ct:"#862608"}};
+const B_TIPO={"Simultánea":{bg:"#1D4ED8",c:"#FFFFFF",ct:"#FFFFFF"},"Consecutiva":{bg:"#9B1349",c:"#FFFFFF",ct:"#FFFFFF"},"Whispering":{bg:"#6D28D9",c:"#FFFFFF",ct:"#FFFFFF"}};
+const B_MOD={"presencial":{bg:"#00AF57",c:"#FFFFFF",ct:"#FFFFFF"},"remoto":{bg:"#0E7490",c:"#FFFFFF",ct:"#FFFFFF"},"hibrido":{bg:"#D97706",c:"#FFFFFF",ct:"#FFFFFF"}};
 const B_EST=(e)=>e==="Facturado"?{bg:"#FFFFFF",c:"#1A1A1A",b:"#E57373"}:{bg:"#FFFFFF",c:"#1A1A1A",b:"#E57373"};
 const bS=(bg,c,b)=>({display:"inline-flex",alignItems:"center",gap:"4px",padding:"3px 8px",borderRadius:"20px",fontSize:"10px",fontWeight:"700",lineHeight:"1.4",color:c,background:bg,border:`2px solid ${b||c}`,whiteSpace:"nowrap"});
-const TIPO_ICON={"Simultánea":<IconoSimultanea/>,"Consecutiva":"🎤","Whispering":"🤫"};
-const MOD_ICON={"presencial":<IconPresencial size={14}/>,"remoto":"🖥️","hibrido":"🔀"};
+const TIPO_ICON={"Simultánea":<IconHeadphones size={13}/>,"Consecutiva":<IconMic size={13}/>,"Whispering":<IconChatBubble size={13}/>};
+const MOD_ICON={"presencial":<IconPresencial size={13}/>,"remoto":<IconAV size={13}/>,"hibrido":<IconArrowsExchange size={13}/>};
 const nombreCorto=(nombre,apellido)=>{if(!apellido)return nombre;const completo=`${nombre} ${apellido}`;if(completo.length<=12)return completo;return`${nombre} ${apellido.charAt(0)}.`;};
 
 
@@ -313,8 +333,8 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
       {cliente?.nombre_contacto&&<div style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",fontSize:"0.55em",fontStyle:"italic",color:"#6B7280",marginBottom:"6px"}}>{cliente.nombre_contacto}</div>}
       <div style={{fontSize:"17px",fontWeight:"500",color:"#1A1A1A",marginBottom:"8px"}}>{ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)} hrs</div>
       <div style={{display:"flex",gap:"4px",flexWrap:"wrap",alignItems:"center",marginBottom:"8px"}}>
-        {tiposArr(ev.tipo).map(t=><span key={t} style={bS((B_TIPO[t]||{bg:"#EEF2FF"}).bg,(B_TIPO[t]||{c:"#3B5BDB"}).c)}>{TIPO_ICON[t]}{t}</span>)}
-        <span style={bS(bm.bg,bm.c)}>{MOD_ICON[ev.modalidad]}{LBL_MODAL[ev.modalidad]||ev.modalidad}</span>
+        {tiposArr(ev.tipo).map(t=>{const btx=B_TIPO[t]||{bg:"#1D4ED8",c:"#FFFFFF"};return<span key={t} style={bS(btx.bg,btx.c,btx.bg)}>{TIPO_ICON[t]}{t}</span>;})}
+        <span style={bS(bm.bg,bm.c,bm.bg)}>{MOD_ICON[ev.modalidad]}{LBL_MODAL[ev.modalidad]||ev.modalidad}</span>
       </div>
       {esPresencial&&ev.lugar&&<div style={{fontSize:"15px",color:"#475569",marginBottom:"8px"}}>📌 {ev.lugar}</div>}
       {!esPresencial&&ev.plataforma&&<div style={{marginBottom:"8px"}}>
@@ -896,8 +916,8 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
             <div style={{background:"#EEF2FF",borderRadius:"10px",padding:"12px 16px",marginBottom:"16px",border:"1.5px solid #C7D2FE"}}>
               <div style={{fontSize:"12.84px",fontWeight:"700",color:"#4338CA",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:"10px"}}>🌐 Información General del evento — Aplica a todos los días salvo excepción</div>
               <div style={{display:"flex",gap:"9px",flexWrap:"wrap",alignItems:"center",marginBottom:"8px"}}>
-                {tiposArr(form.tipo).map(t=><span key={t} style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"4.28px 11.77px",borderRadius:"21.4px",fontSize:"13.91px",fontWeight:"600",color:(B_TIPO[t]||{ct:"#294099"}).ct,background:(B_TIPO[t]||{bg:"#EEF2FF"}).bg,border:`1.5px solid ${(B_TIPO[t]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>{TIPO_ICON[t]} {t}</span>)}
-                {form.modalidad&&<span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"4.28px 11.77px",borderRadius:"21.4px",fontSize:"13.91px",fontWeight:"600",color:(B_MOD[form.modalidad]||{ct:"#4B4B4B"}).ct,background:(B_MOD[form.modalidad]||{bg:"#F7F7F5"}).bg,border:`1.5px solid ${(B_MOD[form.modalidad]||{c:"#6B6B6B"}).c}`,whiteSpace:"nowrap"}}>{form.modalidad==="presencial"?<IconPresencial size={15} color={(B_MOD.presencial).ct}/>:form.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[form.modalidad]}</span>}
+                {tiposArr(form.tipo).map(t=>{const bt=B_TIPO[t]||{bg:"#1D4ED8",c:"#FFFFFF",ct:"#FFFFFF"};return<span key={t} style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"4.28px 11.77px",borderRadius:"21.4px",fontSize:"13.91px",fontWeight:"600",color:bt.ct,background:bt.bg,border:"none",whiteSpace:"nowrap"}}>{TIPO_ICON[t]} {t}</span>;})}
+                {form.modalidad&&<span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"4.28px 11.77px",borderRadius:"21.4px",fontSize:"13.91px",fontWeight:"600",color:(B_MOD[form.modalidad]||{ct:"#FFFFFF"}).ct,background:(B_MOD[form.modalidad]||{bg:"#0E7490"}).bg,border:"none",whiteSpace:"nowrap"}}>{MOD_ICON[form.modalidad]||"💻"} {LBL_MODAL[form.modalidad]}</span>}
                 {(form.modalidad==="presencial"||form.modalidad==="hibrido")&&form.lugar&&<span style={{display:"inline-flex",alignItems:"center",padding:"4.28px 11.77px",borderRadius:"21.4px",fontSize:"13.91px",fontWeight:"600",color:"#5B21B6",background:"#EDE9FE",border:"1.5px solid #7C3AED",whiteSpace:"nowrap"}}>📍 {form.lugar}</span>}
               </div>
               <div style={{display:"flex",alignItems:"center",gap:"6px",fontSize:"13.91px",fontWeight:"500",color:"#4338CA"}}>
@@ -918,8 +938,8 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                   <div style={{fontSize:"13.91px",color:"#5A687D",marginTop:"2px"}}>{dia.hora_inicio?.slice(0,5)||"–"} – {dia.hora_termino?.slice(0,5)||"–"} hrs — {pluralizarJornada(dia.jornada)||""}</div>
                 </div>
                 <div style={{display:"flex",gap:"6px",alignItems:"center",flexWrap:"wrap",justifyContent:"flex-end"}}>
-                  {dia.tipo&&tiposArr(dia.tipo).map(t=><span key={t} style={{display:"inline-flex",padding:"3px 9px",borderRadius:"20px",fontSize:"13px",fontWeight:"700",color:(B_TIPO[t]||{ct:"#294099"}).ct,background:(B_TIPO[t]||{bg:"#EEF2FF"}).bg,border:`1.5px solid ${(B_TIPO[t]||{c:"#3B5BDB"}).c}`}}>⚡ {t}</span>)}
-                  {dia.modalidad&&<span style={{display:"inline-flex",padding:"3px 9px",borderRadius:"20px",fontSize:"13px",fontWeight:"700",color:(B_MOD[dia.modalidad]||{ct:"#4B4B4B"}).ct,background:(B_MOD[dia.modalidad]||{bg:"#F7F7F5"}).bg,border:`1.5px solid ${(B_MOD[dia.modalidad]||{c:"#6B6B6B"}).c}`}}>⚡ {LBL_MODAL[dia.modalidad]}</span>}
+                  {dia.tipo&&tiposArr(dia.tipo).map(t=>{const bt=B_TIPO[t]||{bg:"#1D4ED8",c:"#FFFFFF",ct:"#FFFFFF"};return<span key={t} style={{display:"inline-flex",padding:"3px 9px",borderRadius:"20px",fontSize:"13px",fontWeight:"700",color:bt.ct,background:bt.bg,border:"none"}}>⚡ {t}</span>;})}
+                  {dia.modalidad&&<span style={{display:"inline-flex",padding:"3px 9px",borderRadius:"20px",fontSize:"13px",fontWeight:"700",color:(B_MOD[dia.modalidad]||{ct:"#FFFFFF"}).ct,background:(B_MOD[dia.modalidad]||{bg:"#0E7490"}).bg,border:"none"}}>⚡ {LBL_MODAL[dia.modalidad]}</span>}
                   {dia.lugar&&<span style={{display:"inline-flex",padding:"3px 9px",borderRadius:"20px",fontSize:"13px",fontWeight:"700",color:"#5B21B6",background:"#EDE9FE",border:"1.5px solid #7C3AED"}}>⚡ 📍 {dia.lugar}</span>}
                   {dIdx>0&&<button onClick={()=>copyFromPrev(dIdx)} style={{padding:"4px 10px",fontSize:"12px",background:"none",border:`1px solid ${C.grisBorde}`,borderRadius:"6px",cursor:"pointer",color:C.textoMed,fontFamily:"inherit"}}>↑ Copiar día anterior</button>}
                 </div>
@@ -1189,8 +1209,8 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
   })();
   const LBL={remoto:"Remoto",presencial:"Presencial",hibrido:"Híbrido"};
   const LBL_LARGA={txt:"13px",fw:"600",c:"#0F172A",tt:"uppercase",ls:"0.04em"};
-  const B_TIPO_D={"Simultánea":{bg:"#FFFFFF",c:"#0057FF"},"Consecutiva":{bg:"#FCE4EC",c:"#9B1349"},"Whispering":{bg:"#F3E5F5",c:"#621982"}};
-  const B_MOD_D={"presencial":{bg:"#E6FFF2",c:"#00AF57"},"remoto":{bg:"#E0F7FA",c:"#006972"},"hibrido":{bg:"#FBE9E7",c:"#992B0A"}};
+  const B_TIPO_D={"Simultánea":{bg:"#1D4ED8",c:"#FFFFFF"},"Consecutiva":{bg:"#9B1349",c:"#FFFFFF"},"Whispering":{bg:"#6D28D9",c:"#FFFFFF"}};
+  const B_MOD_D={"presencial":{bg:"#00AF57",c:"#FFFFFF"},"remoto":{bg:"#0E7490",c:"#FFFFFF"},"hibrido":{bg:"#D97706",c:"#FFFFFF"}};
   const B_EST_D=(e)=>e==="Facturado"?{bg:"#FFFFFF",c:"#1A1A1A",b:"#E57373"}:{bg:"#FFFFFF",c:"#1A1A1A",b:"#E57373"};
   const SL=({t})=><div style={{fontSize:"13px",fontWeight:"700",color:"#111827",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:"10px",display:"flex",alignItems:"center",gap:"8px",WebkitFontSmoothing:"antialiased"}}>{t}</div>;
   const HR=()=><hr style={{border:"none",borderTop:"1px solid #E5E7EB",margin:"16px 0"}}/>;
@@ -1245,8 +1265,8 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
           {esMultidia&&<div style={{background:`${colorCliente(evento.cliente_id)}18`,border:`2px solid ${colorCliente(evento.cliente_id)}`,borderRadius:"10px",padding:"8px 14px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:"12px",marginTop:"4px"}}>
             <div style={{fontSize:"15px",fontWeight:"600",color:"#1E293B",whiteSpace:"nowrap"}}>📅 {formatMedioES(evento.fecha_inicio)} → {formatMedioES(evento.fecha_termino)}</div>
             <div style={{display:"flex",gap:"8px",flexShrink:0,alignItems:"center"}}>
-              {tiposArr(evento.tipo).map(t=><span key={t} style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"16px",fontWeight:"500",lineHeight:"1.4",color:(B_TIPO_D[t]||{c:"#2F49AF"}).c,background:(B_TIPO_D[t]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO_D[t]||{c:"#2F49AF"}).c}`,whiteSpace:"nowrap"}}>{t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤":"🤫"} {t}</span>)}
-              <span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"5px 12px",borderRadius:"20px",fontSize:"16px",fontWeight:"500",lineHeight:"1.4",color:(B_MOD_D[evento.modalidad]||{c:"#565656"}).c,background:(B_MOD_D[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD_D[evento.modalidad]||{c:"#565656"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?<IconPresencial size={15} color={(B_MOD_D[evento.modalidad]||{c:"#565656"}).c}/>:evento.modalidad==="hibrido"?"🔀":"💻"} {LBL[evento.modalidad]||evento.modalidad}</span>
+              {tiposArr(evento.tipo).map(t=>{const bt=B_TIPO_D[t]||{bg:"#1D4ED8",c:"#FFFFFF"};return<span key={t} style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"16px",fontWeight:"500",lineHeight:"1.4",color:bt.c,background:bt.bg,border:"none",whiteSpace:"nowrap"}}>{TIPO_ICON[t]} {t}</span>;})}
+              {(()=>{const bm=B_MOD_D[evento.modalidad]||{bg:"#0E7490",c:"#FFFFFF"};return<span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"5px 12px",borderRadius:"20px",fontSize:"16px",fontWeight:"500",lineHeight:"1.4",color:bm.c,background:bm.bg,border:"none",whiteSpace:"nowrap"}}>{MOD_ICON[evento.modalidad]||"💻"} {LBL[evento.modalidad]||evento.modalidad}</span>;})()}
             </div>
           </div>}
         </div>
@@ -1400,8 +1420,8 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                       <div style={{fontSize:"15px",fontWeight:"500",color:"#1E293B",marginBottom:"6px"}}>📅 {formatLargo(evento.fecha_inicio)}</div>
                       <div style={{fontSize:"15px",fontWeight:"500",color:"#0F172A",marginBottom:"10px"}}>🕐 {evento.hora_inicio?.slice(0,5)} – {evento.hora_termino?.slice(0,5)} hrs{evento.jornada&&<span style={{fontWeight:"400",color:"#29313D",fontSize:"15px"}}> · {pluralizarJornada(evento.jornada)}</span>}</div>
                       <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center"}}>
-                        {tiposArr(evento.tipo).map(t=><span key={t} style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:(B_TIPO_D[t]||{c:"#2F49AF"}).c,background:(B_TIPO_D[t]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO_D[t]||{c:"#2F49AF"}).c}`,whiteSpace:"nowrap"}}>{t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤":"🤫"} {t}</span>)}
-                        <span style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:(B_MOD_D[evento.modalidad]||{c:"#565656"}).c,background:(B_MOD_D[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD_D[evento.modalidad]||{c:"#565656"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?<IconPresencial size={14} color={(B_MOD_D[evento.modalidad]||{c:"#565656"}).c}/>:evento.modalidad==="hibrido"?"🔀":"💻"} {LBL[evento.modalidad]||evento.modalidad}</span>
+                        {tiposArr(evento.tipo).map(t=>{const bt=B_TIPO_D[t]||{bg:"#1D4ED8",c:"#FFFFFF"};return<span key={t} style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:bt.c,background:bt.bg,border:"none",whiteSpace:"nowrap"}}>{TIPO_ICON[t]} {t}</span>;})}
+                        {(()=>{const bm=B_MOD_D[evento.modalidad]||{bg:"#0E7490",c:"#FFFFFF"};return<span style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:bm.c,background:bm.bg,border:"none",whiteSpace:"nowrap"}}>{MOD_ICON[evento.modalidad]||"💻"} {LBL[evento.modalidad]||evento.modalidad}</span>;})()}
                       </div>
                     </div>
                   </div>
@@ -3309,8 +3329,8 @@ export default function App() {
                 <div style={{fontSize:"16px",fontWeight:"500",color:"#0F172A",marginBottom:"6px"}}>🕐 {evM.hora_inicio?.slice(0,5)} – {evM.hora_termino?.slice(0,5)} hrs{evM.jornada&&<span style={{fontWeight:"400",color:"#6B7280",fontSize:"14px"}}> · {pluralizarJornada(evM.jornada)}</span>}</div>
                 <HRD/>
                 <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center",marginBottom:"4px"}}>
-                  {tiposArr(evM.tipo).map(t=>{const bt=B_TIPO[t]||{bg:"#EEF2FF",c:"#3B5BDB"};return(<span key={t} style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:dk10(bt.c),background:bt.bg,border:`2px solid ${bt.c}`,whiteSpace:"nowrap"}}>{t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤":"🤫"} {t}</span>);})}
-                  <span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:dk10(bMod.c),background:bMod.bg,border:`2px solid ${bMod.c}`,whiteSpace:"nowrap"}}>{evM.modalidad==="presencial"?<IconPresencial size={14} color={dk10(bMod.c)}/>:evM.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evM.modalidad]||evM.modalidad}</span>
+                  {tiposArr(evM.tipo).map(t=>{const bt=B_TIPO[t]||{bg:"#1D4ED8",c:"#FFFFFF"};return(<span key={t} style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:bt.c,background:bt.bg,border:"none",whiteSpace:"nowrap"}}>{TIPO_ICON[t]} {t}</span>);})}
+                  <span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:bMod.c,background:bMod.bg,border:"none",whiteSpace:"nowrap"}}>{MOD_ICON[evM.modalidad]||"💻"} {LBL_MODAL[evM.modalidad]||evM.modalidad}</span>
                 </div>
                 <HRD/>
                 {esPresD&&evM.lugar&&<div style={{marginBottom:"12px"}}><SLD t="📍 Lugar"/><div style={{display:"flex",gap:6,flexWrap:"wrap"}}><span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"4px 9px",borderRadius:6,fontSize:11,fontWeight:700,color:"#9A3A3A",background:"#FEF2F2",border:"2px solid #D34848",whiteSpace:"nowrap"}}>📍 {evM.lugar}</span>{evM.lugar_detalle&&<span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"4px 9px",borderRadius:6,fontSize:11,fontWeight:700,color:"#9A3A3A",background:"#FEF2F2",border:"2px solid #D34848",whiteSpace:"nowrap"}}>📍 {evM.lugar_detalle}</span>}</div></div>}
@@ -3401,8 +3421,8 @@ export default function App() {
                   <HRD/>
                   {/* Pills tipo + modalidad */}
                   <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center",marginBottom:"4px"}}>
-                    {tiposArr(ev.tipo).map(t=>{const bt=B_TIPO[t]||{bg:"#EEF2FF",c:"#3B5BDB"};return(<span key={t} style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:dk10(bt.c),background:bt.bg,border:`2px solid ${bt.c}`,whiteSpace:"nowrap"}}>{t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤":"🤫"} {t}</span>);})}
-                    <span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:dk10(bMod.c),background:bMod.bg,border:`2px solid ${bMod.c}`,whiteSpace:"nowrap"}}>{ev.modalidad==="presencial"?<IconPresencial size={14} color={dk10(bMod.c)}/>:ev.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[ev.modalidad]||ev.modalidad}</span>
+                    {tiposArr(ev.tipo).map(t=>{const bt=B_TIPO[t]||{bg:"#1D4ED8",c:"#FFFFFF"};return(<span key={t} style={{display:"inline-flex",alignItems:"center",gap:"6px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:bt.c,background:bt.bg,border:"none",whiteSpace:"nowrap"}}>{TIPO_ICON[t]} {t}</span>);})}
+                    <span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:bMod.c,background:bMod.bg,border:"none",whiteSpace:"nowrap"}}>{MOD_ICON[ev.modalidad]||"💻"} {LBL_MODAL[ev.modalidad]||ev.modalidad}</span>
                   </div>
                   <HRD/>
                   {/* Lugar / Plataforma */}
