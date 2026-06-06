@@ -325,42 +325,37 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
           {/* COLUMNA DERECHA — intérpretes */}
           <div>
-            <div style={{ textAlign:"center", fontSize:18, fontWeight:"500", marginBottom:"8px", textTransform:"uppercase", color:"#0F172A", WebkitFontSmoothing:"antialiased", MozOsxFontSmoothing:"grayscale", letterSpacing:"0.05em" }}>
+            <div style={{ textAlign:"center", fontSize:11, fontWeight:"600", marginBottom:"6px", textTransform:"uppercase", color:"#0F172A", WebkitFontSmoothing:"antialiased", letterSpacing:"0.05em" }}>
               INTÉRPRETES
             </div>
             {Object.keys(grupos).length === 0 ? (
-              <div style={{ color:"#848B95", fontSize:14, textAlign:"center" }}>Sin intérpretes asignados</div>
+              <div style={{ color:"#848B95", fontSize:11, textAlign:"center", fontStyle:"italic" }}>Sin intérpretes asignados</div>
             ) : (
               Object.entries(grupos).map(([key, grupo]) => {
-                const pillClr  = IDIOMA_PILL_CLR[grupo.idioma] || "#4C6EF5";
-                const hp       = grupo.items.find(i => i.hora)?.hora;
-                const soloUno  = grupo.items.length === 1;
+                const pillClr = IDIOMA_PILL_CLR[grupo.idioma] || "#4C6EF5";
+                const soloUno = grupo.items.length === 1;
                 return (
-                  <div key={key} style={{ marginTop:10 }}>
-                    <div style={{ position:"relative", marginBottom:5 }}>
-                      <div style={{ fontSize:17.5, fontWeight:600, color:"#1256A3", textTransform:"uppercase", letterSpacing:"0.07em", WebkitFontSmoothing:"antialiased", MozOsxFontSmoothing:"grayscale", opacity:0.9, whiteSpace:"nowrap", textAlign:"center", width:"100%", display:"block" }}>
-                        {key}
-                      </div>
-                      {hp && (
-                        <div style={{ position:"absolute", right:0, top:"50%", transform:"translateY(-50%)", fontSize:13, color:"#4A5768", display:"inline-flex", alignItems:"center", gap:4 }}>
-                          🕐 {hp.slice(0,5)} hrs
-                        </div>
-                      )}
+                  <div key={key} style={{ marginTop:7 }}>
+                    <div style={{ fontSize:9, fontWeight:700, color:"#1256A3", textTransform:"uppercase", letterSpacing:"0.07em", textAlign:"center", marginBottom:3 }}>
+                      {key}
                     </div>
-                    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:5 }}>
+                    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:3 }}>
                       {grupo.items.map((interp, i) => (
-                        <span key={i}
-                          title={`${interp.nombre}${interp.apellido ? " " + interp.apellido : ""}`}
-                          style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:5, padding:"5px 5px", borderRadius:20, fontSize:17.5, fontWeight:500, lineHeight:1.4, color:"#1A1A1A", background:"#FFFFFF", border:`2px solid ${pillClr}`, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"default", WebkitFontSmoothing:"antialiased" }}>
-                          {interp.isHost && <span style={{ fontSize:11 }}>🔑</span>}
-                          <Flag idioma={grupo.idioma} size={16} />
-                          <span style={{ overflow:"hidden", textOverflow:"ellipsis", color:"#1A1A1A" }}>
-                            {nombreCorto(interp.nombre, interp.apellido)}
+                        <div key={i} style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:1 }}>
+                          <span
+                            title={`${interp.nombre}${interp.apellido ? " " + interp.apellido : ""}`}
+                            style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:3, padding:"2px 4px", borderRadius:20, fontSize:9, fontWeight:500, lineHeight:1.4, color:"#1A1A1A", background:"#FFFFFF", border:`2px solid ${pillClr}`, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"default", WebkitFontSmoothing:"antialiased", width:"100%", boxSizing:"border-box" }}>
+                            {interp.isHost && <span style={{ fontSize:7 }}>🔑</span>}
+                            <Flag idioma={grupo.idioma} size={8} />
+                            <span style={{ overflow:"hidden", textOverflow:"ellipsis", color:"#1A1A1A" }}>
+                              {nombreCorto(interp.nombre, interp.apellido)}
+                            </span>
                           </span>
-                        </span>
+                          {interp.hora && <div style={{ fontSize:8, color:"#4A5768", textAlign:"center" }}>🕐 {interp.hora.slice(0,5)}</div>}
+                        </div>
                       ))}
                       {soloUno && (
-                        <span style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:5, padding:"5px 5px", borderRadius:20, fontSize:17.5, fontWeight:500, lineHeight:1.4, color:"#3E444F", background:"#C8CACC", border:"2px dashed #7A818C", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"default", fontStyle:"italic", WebkitFontSmoothing:"antialiased" }}>
+                        <span style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:3, padding:"2px 4px", borderRadius:20, fontSize:9, fontWeight:500, lineHeight:1.4, color:"#3E444F", background:"#C8CACC", border:"2px dashed #7A818C", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"default", fontStyle:"italic", WebkitFontSmoothing:"antialiased" }}>
                           SIN PARTNER
                         </span>
                       )}
