@@ -214,10 +214,10 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
         background:   "#FFFFFF",
         borderLeft:   `16px solid ${borderColor}`,
         borderTop:    `6px solid ${borderColor}`,
-        borderRadius: "0 8px 8px 0",
-        padding:      "16px",
+        borderRadius: agendaSmall ? "0 12px 12px 0" : "0 8px 8px 0",
+        padding:      agendaSmall ? "20px 29px" : "16px",
         marginBottom: "10px",
-        boxShadow:    "0 1px 4px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)",
+        boxShadow:    agendaSmall ? "0 2px 12px rgba(0,0,0,0.10)" : "0 1px 4px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)",
         cursor:       "pointer",
         width:        "100%",
         boxSizing:    "border-box",
@@ -230,90 +230,78 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
         e.currentTarget.style.transform = "translateY(-2px)";
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)";
+        e.currentTarget.style.boxShadow = agendaSmall ? "0 2px 12px rgba(0,0,0,0.10)" : "0 1px 4px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)";
         e.currentTarget.style.transform = "translateY(0)";
       }}
     >
 
       {agendaSmall ? (
-        /* ── AGENDA: layout dos columnas ─────────────────────────────────── */
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"16px", alignItems:"start" }}>
-
-          {/* COLUMNA IZQUIERDA — info del evento */}
-          <div style={{ display:"flex", flexDirection:"column", gap:"10px" }}>
-            <div style={{ display:"flex", alignItems:"flex-start", flexWrap:"nowrap", gap:8, marginBottom:4 }}>
-              <div style={{ fontSize:25, fontWeight:600, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em" }}>
-                {cliente?.nombre_empresa || "—"}
-              </div>
-              {dotVisible && <div style={{ width:"13px", height:"13px", borderRadius:"50%", background:dotEsHoy?"#22C55E":"#EAB308", boxShadow:dotEsHoy?"0 0 6px #22C55E":"0 0 6px #EAB308", flexShrink:0, marginLeft:"16px", animation:dotEsHoy?"flash 1.2s ease-in-out infinite":"flashYellow 1.8s ease-in-out infinite" }}/>}
-              {ev.comentarios && <div style={{ width:"10px", height:"10px", borderRadius:"50%", background:"#F472B6", boxShadow:"0 0 6px #F472B6", flexShrink:0 }}/>}
-              {pillMultidia}
+        /* ── AGENDA: layout dos columnas (idéntico a modoMultidia) ──────── */
+        <>
+          {/* HEADER FULL-WIDTH solo para eventos multidía */}
+          {diaXdeY && (
+            <div style={{ display:"flex", alignItems:"center", flexWrap:"nowrap", marginBottom:"12px" }}>
+              <div style={{ fontSize:"34px", fontWeight:"600", color:"#0F172A", lineHeight:1.2 }}>{cliente?.nombre_empresa || "—"}</div>
+              {dotVisible && <div style={{ width:"12px", height:"12px", borderRadius:"50%", background:dotEsHoy?"#22C55E":"#EAB308", boxShadow:dotEsHoy?"0 0 8px #22C55E":"0 0 8px #EAB308", marginLeft:"16px", flexShrink:0 }}/>}
+              {ev.comentarios && <div style={{ width:"10px", height:"10px", borderRadius:"50%", background:"#F472B6", boxShadow:"0 0 6px #F472B6", marginLeft:"8px", flexShrink:0 }}/>}
+              <div style={{ marginLeft:"8px", flexShrink:0 }}>{pillMultidia}</div>
             </div>
+          )}
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"20px", alignItems:"start" }}>
 
-            {cliente?.nombre_contacto && (
-              <div style={{ fontSize:16, color:"#3E4349", fontStyle:"italic", marginTop:2 }}>
-                Contacto: {cliente.nombre_contacto}
-              </div>
+          {/* COLUMNA IZQUIERDA */}
+          <div>
+            {!diaXdeY && (
+            <div style={{ display:"flex", alignItems:"center", flexWrap:"nowrap" }}>
+              <div style={{ fontSize:"34px", fontWeight:"600", color:"#0F172A", lineHeight:1.2 }}>{cliente?.nombre_empresa || "—"}</div>
+              {dotVisible && <div style={{ width:"12px", height:"12px", borderRadius:"50%", background:dotEsHoy?"#22C55E":"#EAB308", boxShadow:dotEsHoy?"0 0 8px #22C55E":"0 0 8px #EAB308", marginLeft:"16px", flexShrink:0 }}/>}
+              {ev.comentarios && <div style={{ width:"10px", height:"10px", borderRadius:"50%", background:"#F472B6", boxShadow:"0 0 6px #F472B6", marginLeft:"8px", flexShrink:0 }}/>}
+            </div>
             )}
+            {cliente?.nombre_contacto && <div style={{ fontSize:"16px", fontWeight:"500", color:"#6B7280", fontStyle:"italic", marginBottom:4, marginTop:4 }}>Contacto: {cliente.nombre_contacto}</div>}
+            {ev.nombre_evento && <div style={{ fontSize:"16px", fontWeight:"500", color:"#111827", marginTop:2 }}><span style={{ fontWeight:"600", color:"#6B7280" }}>Nombre del evento: </span>{ev.nombre_evento}</div>}
 
-            {ev.nombre_evento && (
-              <div style={{ fontSize:14, color:"#565B66", marginTop:2 }}>
-                <span style={{ fontWeight:600 }}>Nombre del evento:</span>{" "}
-                <span style={{ fontWeight:400 }}>{ev.nombre_evento}</span>
-              </div>
-            )}
+            <hr style={{ border:"none", borderTop:"1px solid #E5E7EB", margin:"14px 0" }}/>
 
-            <div style={{ fontSize:14, fontWeight:600, color:"#0F172A", marginTop:10, marginBottom:8, display:"flex", alignItems:"center", gap:6 }}>
+            <div style={{ fontSize:"16px", fontWeight:"500", color:"#0F172A", marginBottom:"6px" }}>
               🕐 {ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)} hrs
+              {ev.jornada && <span style={{ fontWeight:"400", color:"#6B7280", fontSize:"14px" }}> · {ev.jornada}</span>}
             </div>
 
-            <div style={{ display:"flex", gap:8, flexWrap:"wrap", alignItems:"center" }}>
+            <hr style={{ border:"none", borderTop:"1px solid #E5E7EB", margin:"14px 0" }}/>
+
+            <div style={{ display:"flex", gap:"8px", flexWrap:"wrap", alignItems:"center", marginBottom:"4px" }}>
               {(Array.isArray(ev.tipo)?ev.tipo:[ev.tipo||"Simultánea"]).map(t=><Chip key={t} label={t} emoji={t==="Simultánea"?<IconHeadphones size={14}/>:t==="Consecutiva"?<IconMicOutline size={14}/>:<IconChatBubble size={14}/>} fontSize={14} padding="5px 12px" />)}
               <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?<IconoPresencial size={14}/>:ev.modalidad==="hibrido"?<IconArrowsExchange size={14}/>:<IconAV size={14}/>} fontSize={14} padding="5px 12px" />
             </div>
 
-            {!esPresencial && ev.plataforma && (
-              <div style={{ marginTop:6 }}>
-                <PlatformChip
-                  platform={ev.plataforma === "Zoom" ? "Zoom MundoChile" : ev.plataforma}
-                  isMundoChile={esZoomMC}
-                  extra={esZoomMC ? ev.zoom_administrador : ""}
-                  agendaScale={true}
-                />
-              </div>
-            )}
+            {((esPresencial && ev.lugar) || (!esPresencial && ev.plataforma)) && <hr style={{ border:"none", borderTop:"1px solid #E5E7EB", margin:"14px 0" }}/>}
+
             {esPresencial && ev.lugar && (
-              <div>
-                <div style={{ display:"flex", gap:6, flexWrap:"wrap", alignItems:"center" }}>
-                  <span style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"5px 12px", borderRadius:6, fontSize:14, fontWeight:700, lineHeight:1.4, color:"#8F2424", background:"#FEF2F2", border:"2px solid #CE3434", whiteSpace:"nowrap" }}>📍 {ev.lugar}</span>
-                  {ev.lugar_detalle && <span style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"4px 10px", borderRadius:6, fontSize:13, fontWeight:700, lineHeight:1.4, color:"#8F2424", background:"#FEF2F2", border:"1px solid #CE3434", whiteSpace:"nowrap" }}>📍 {ev.lugar_detalle}</span>}
+              <div style={{ marginBottom:"8px" }}>
+                <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+                  <span style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"5px 11px", borderRadius:6, fontSize:13, fontWeight:700, color:"#9A3A3A", background:"#FEF2F2", border:"2px solid #D34848", whiteSpace:"nowrap" }}>📍 {ev.lugar}</span>
+                  {ev.lugar_detalle && <span style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"5px 11px", borderRadius:6, fontSize:13, fontWeight:700, color:"#9A3A3A", background:"#FEF2F2", border:"2px solid #D34848", whiteSpace:"nowrap" }}>📍 {ev.lugar_detalle}</span>}
                 </div>
                 <div style={{ display:"flex", alignItems:"center", gap:"8px", marginTop:"6px", flexWrap:"wrap" }}>
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.lugar)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={e=>e.stopPropagation()}
-                    style={{ display:"inline-flex", alignItems:"center", gap:"4px", fontSize:"13px", fontWeight:"500", color:"#1566AE", padding:"5px 11px", borderRadius:"8px", border:"1px solid #84B1E4", background:"#EFF6FF", textDecoration:"none", cursor:"pointer" }}
-                  >
-                    📍 Ver en Maps
-                  </a>
-                  <button
-                    onClick={e=>{e.stopPropagation();const u=ev.lugar;if(navigator.clipboard){navigator.clipboard.writeText(u).catch(()=>{const t=document.createElement("textarea");t.value=u;document.body.appendChild(t);t.select();document.execCommand("copy");document.body.removeChild(t);});}else{const t=document.createElement("textarea");t.value=u;document.body.appendChild(t);t.select();document.execCommand("copy");document.body.removeChild(t);}}}
-                    title="Copiar dirección"
-                    style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", padding:"5px 11px", borderRadius:"8px", border:"1px solid #84B1E4", background:"#EFF6FF", cursor:"pointer", color:"#1566AE", fontFamily:"inherit" }}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                    </svg>
+                  <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.lugar)}`} target="_blank" rel="noopener noreferrer" onClick={e=>e.stopPropagation()} style={{ display:"inline-flex", alignItems:"center", gap:"4px", fontSize:"13px", fontWeight:"500", color:"#1566AE", padding:"5px 11px", borderRadius:"8px", border:"1px solid #84B1E4", background:"#EFF6FF", textDecoration:"none", cursor:"pointer" }}>📍 Ver en Maps</a>
+                  <button onClick={e=>{e.stopPropagation();const u=ev.lugar;if(navigator.clipboard){navigator.clipboard.writeText(u).catch(()=>{const ta=document.createElement("textarea");ta.value=u;document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta);});}else{const ta=document.createElement("textarea");ta.value=u;document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta);}}} title="Copiar dirección" style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", padding:"5px 11px", borderRadius:"8px", border:"1px solid #84B1E4", background:"#EFF6FF", cursor:"pointer", color:"#1566AE", fontFamily:"inherit" }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                   </button>
                 </div>
               </div>
             )}
+            {!esPresencial && ev.plataforma && (
+              <div style={{ marginBottom:"8px" }}>
+                <PlatformChip platform={ev.plataforma==="Zoom"?"Zoom MundoChile":ev.plataforma} isMundoChile={esZoomMC} extra={esZoomMC?ev.zoom_administrador:""} agendaScale={true}/>
+              </div>
+            )}
+
+            <hr style={{ border:"none", borderTop:"1px solid #E5E7EB", margin:"14px 0" }}/>
 
             <div>
-              <Chip label={estadoLabel} emoji={estadoLabel==="Facturado"?"✓ ":"🟠 "} fontSize={14} padding="5px 12px" />
+              <div style={{ fontSize:"13px", fontWeight:"600", color:"#0F172A", textTransform:"uppercase", letterSpacing:"0.04em", marginBottom:"6px" }}>Información Contable</div>
+              <Chip label={estadoLabel} emoji={estadoLabel==="Facturado"?"✓ ":"🟠 "} fontSize={12} padding="4px 10px" />
             </div>
 
             {tieneEquipos && (
@@ -325,40 +313,27 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
           {/* COLUMNA DERECHA — intérpretes */}
           <div>
-            <div style={{ textAlign:"center", fontSize:11, fontWeight:"600", marginBottom:"6px", textTransform:"uppercase", color:"#0F172A", WebkitFontSmoothing:"antialiased", letterSpacing:"0.05em" }}>
-              INTÉRPRETES
-            </div>
+            <div style={{ fontSize:"13px", fontWeight:"600", color:"#0F172A", textTransform:"uppercase", letterSpacing:"0.04em", marginBottom:"6px" }}>🎙 Intérpretes</div>
             {Object.keys(grupos).length === 0 ? (
-              <div style={{ color:"#848B95", fontSize:11, textAlign:"center", fontStyle:"italic" }}>Sin intérpretes asignados</div>
+              <div style={{ color:"#374151", fontSize:13, fontStyle:"italic" }}>Sin intérpretes asignados</div>
             ) : (
               Object.entries(grupos).map(([key, grupo]) => {
                 const pillClr = IDIOMA_PILL_CLR[grupo.idioma] || "#4C6EF5";
-                const soloUno = grupo.items.length === 1;
+                const hp = grupo.items.find(i => i.hora)?.hora;
                 return (
-                  <div key={key} style={{ marginTop:7 }}>
-                    <div style={{ fontSize:9, fontWeight:700, color:"#1256A3", textTransform:"uppercase", letterSpacing:"0.07em", textAlign:"center", marginBottom:3 }}>
-                      {key}
+                  <div key={key} style={{ marginBottom:"12px" }}>
+                    <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"6px" }}>
+                      <span style={{ fontSize:"12px", fontWeight:"600", color:pillClr, textTransform:"uppercase", letterSpacing:"0.06em" }}>{key}</span>
+                      {hp && <span style={{ fontSize:"14px", color:"#4F5663", display:"flex", alignItems:"center", gap:"4px" }}>🕐 {hp.slice(0,5)} hrs</span>}
                     </div>
-                    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:3 }}>
+                    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"5px" }}>
                       {grupo.items.map((interp, i) => (
-                        <div key={i} style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:1 }}>
-                          <span
-                            title={`${interp.nombre}${interp.apellido ? " " + interp.apellido : ""}`}
-                            style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:3, padding:"2px 4px", borderRadius:20, fontSize:9, fontWeight:500, lineHeight:1.4, color:"#1A1A1A", background:"#FFFFFF", border:`2px solid ${pillClr}`, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"default", WebkitFontSmoothing:"antialiased", width:"100%", boxSizing:"border-box" }}>
-                            {interp.isHost && <span style={{ fontSize:7 }}>🔑</span>}
-                            <Flag idioma={grupo.idioma} size={8} />
-                            <span style={{ overflow:"hidden", textOverflow:"ellipsis", color:"#1A1A1A" }}>
-                              {nombreCorto(interp.nombre, interp.apellido)}
-                            </span>
-                          </span>
-                          {interp.hora && <div style={{ fontSize:8, color:"#4A5768", textAlign:"center" }}>🕐 {interp.hora.slice(0,5)}</div>}
-                        </div>
-                      ))}
-                      {soloUno && (
-                        <span style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:3, padding:"2px 4px", borderRadius:20, fontSize:9, fontWeight:500, lineHeight:1.4, color:"#3E444F", background:"#C8CACC", border:"2px dashed #7A818C", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"default", fontStyle:"italic", WebkitFontSmoothing:"antialiased" }}>
-                          SIN PARTNER
+                        <span key={i} style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:"5px", padding:"3px 8px", borderRadius:"20px", fontSize:"13px", fontWeight:"600", lineHeight:"1.4", color:"#1A1A1A", background:"#FFFFFF", border:`3px solid ${pillClr}`, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+                          {interp.isHost && <span style={{ fontSize:"11px" }}>🔑</span>}
+                          <Flag idioma={grupo.idioma} size={14} />
+                          <span style={{ overflow:"hidden", textOverflow:"ellipsis" }}>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span>
                         </span>
-                      )}
+                      ))}
                     </div>
                   </div>
                 );
@@ -366,6 +341,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             )}
           </div>
         </div>
+        </>
       ) : (
         /* ── SEMANA / DÍA: layout original ──────────────────────────────── */
         <>
