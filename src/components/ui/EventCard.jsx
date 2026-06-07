@@ -99,14 +99,14 @@ const BADGE = {
   "Facturación Pendiente": { bg:"#FFFFFF", c:"#1A1A1A", b:"#E57373", bw:"2px", fw:400 },
 };
 
-const Chip = ({ label, emoji, fontSize=12, padding="4px 10px", dark=false }) => {
+const Chip = ({ label, emoji, fontSize=12, padding="4px 10px", dark=false, fw:fwOverride }) => {
   const s0 = BADGE[label] || { bg:"#F1F5F9", c:"#475569", b:"#CBD5E1" };
   const s = dark ? { ...s0, bg:darken(s0.bg,0.9), c:darken(s0.c,0.9), b:darken(s0.b,0.9) } : s0;
   return (
     <span style={{
       display:"inline-flex", alignItems:"center", gap:4,
       padding, borderRadius:20,
-      fontSize, fontWeight:s.fw||700,
+      fontSize, fontWeight:fwOverride||s.fw||700,
       color:s.c, background:s.bg, border:`${s.bw||"1.5px"} solid ${s.b}`,
       whiteSpace:"nowrap", lineHeight:1.4,
     }}>
@@ -403,8 +403,8 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
           {/* Badges tipo + modalidad */}
           <div style={{ display:"flex", gap:5, flexWrap:"nowrap", alignItems:"center" }}>
-            {(Array.isArray(ev.tipo)?ev.tipo:[ev.tipo||"Simultánea"]).map(t=><Chip key={t} label={t} emoji={t==="Simultánea"?<IconHeadphones size={13}/>:t==="Consecutiva"?<IconMicOutline size={13}/>:<IconChatBubble size={13}/>} fontSize={13} padding="4px 11px" dark={false} />)}
-            <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?<IconoPresencial size={13}/>:ev.modalidad==="hibrido"?<IconArrowsExchange size={13}/>:<IconAV size={13}/>} fontSize={13} padding="4px 11px" dark={false} />
+            {(Array.isArray(ev.tipo)?ev.tipo:[ev.tipo||"Simultánea"]).map(t=><Chip key={t} label={t} emoji={t==="Simultánea"?<IconHeadphones size={13}/>:t==="Consecutiva"?<IconMicOutline size={13}/>:<IconChatBubble size={13}/>} fontSize={13} padding="4px 11px" dark={false} fw={600} />)}
+            <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?<IconoPresencial size={13}/>:ev.modalidad==="hibrido"?<IconArrowsExchange size={13}/>:<IconAV size={13}/>} fontSize={13} padding="4px 11px" dark={false} fw={600} />
           </div>
 
           {/* Plataforma / Lugar */}
