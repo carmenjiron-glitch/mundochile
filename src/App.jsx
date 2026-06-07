@@ -232,7 +232,7 @@ function CampoCopia({valor, mostrarValor=true, wrapStyle={}, btnColor=null, btnF
   return (
     <span style={{display:"inline-flex",alignItems:"center",gap:"6px",...wrapStyle}}>
       {mostrarValor&&<span>{valor}</span>}
-      <button onClick={()=>{navigator.clipboard.writeText(valor);setOk(true);setTimeout(()=>setOk(false),1500);}}
+      <button onClick={async()=>{try{await navigator.clipboard.writeText(valor);}catch{const t=document.createElement("textarea");t.value=valor;document.body.appendChild(t);t.select();document.execCommand("copy");document.body.removeChild(t);}setOk(true);setTimeout(()=>setOk(false),1500);}}
         title={btnTitle||undefined}
         style={{background:"none",border:"none",cursor:"pointer",color:ok?C.verde:(btnColor||C.textoSuave),fontSize:btnFontSize,padding:0}}>
         {ok?"✓":"⧉"}
