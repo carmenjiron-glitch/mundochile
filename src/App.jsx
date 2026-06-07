@@ -558,6 +558,16 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
   // Fila de asignación
   const FilaAsig=({a,idx,dIdx=null})=>{
     const [alerta,setAlerta]=useState(null);
+    const divRef=useRef(null);
+    useEffect(()=>{
+      if(!scrollToNewAsigRef.current||!divRef.current)return;
+      scrollToNewAsigRef.current=false;
+      const m=document.querySelector('[data-modal-scroll]');
+      if(!m)return;
+      const el=divRef.current.getBoundingClientRect();
+      const mr=m.getBoundingClientRect();
+      m.scrollTo({top:m.scrollTop+el.top-mr.top-16,behavior:'smooth'});
+    },[]);
     const edit=(k,v)=>{
       const extra=k==="interprete_id"?{conflicto_ok:false}:{};
       if(dIdx===null) setForm(f=>{const asigs=[...f.asignaciones];asigs[idx]={...asigs[idx],[k]:v,...extra};return{...f,asignaciones:asigs};});
@@ -578,7 +588,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
     };
     const interp=interpretes.find(x=>x.id===a.interprete_id);
     return (
-      <div id={`asig-${dIdx??'s'}-${idx}`} style={{border:`1.5px solid ${a.es_host_zoom?"#E03131":C.grisBorde}`,borderRadius:"10px",padding:"14px",marginBottom:"10px",background:C.gris,boxShadow:a.es_host_zoom?"0 0 0 2px #fecaca":undefined}}>
+      <div ref={divRef} id={`asig-${dIdx??'s'}-${idx}`} data-fila-asig="" style={{border:`1.5px solid ${a.es_host_zoom?"#E03131":C.grisBorde}`,borderRadius:"10px",padding:"14px",marginBottom:"10px",background:C.gris,boxShadow:a.es_host_zoom?"0 0 0 2px #fecaca":undefined}}>
         <div style={{fontWeight:"600",color:"#374151",fontSize:"13px",marginBottom:"10px",paddingBottom:"8px",borderBottom:`1px solid ${C.grisBorde}`}}>Intérprete {idx+1}</div>
         {alerta&&<div style={{background:"#FEF2F2",border:"2px solid #DC2626",borderRadius:"10px",padding:"14px 16px",marginBottom:"12px",boxShadow:"0 0 0 4px rgba(220,38,38,0.12)"}}>
           <div style={{display:"flex",alignItems:"flex-start",gap:"10px"}}>
@@ -633,7 +643,9 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
     );
   };
 
+  const scrollToNewAsigRef=useRef(false);
   const addAsig=(dIdx=null)=>{
+    scrollToNewAsigRef.current=true;
     if(dIdx===null) setForm(f=>({...f,asignaciones:[...f.asignaciones,asigVacia()]}));
     else setForm(f=>{const dias=[...f.dias];dias[dIdx]={...dias[dIdx],asignaciones:[...dias[dIdx].asignaciones,asigVacia()]};return{...f,dias};});
   };
@@ -826,11 +838,11 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           {tab==="interpretes"&&!esMultidia&&<>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"20px"}}>
               <div style={{fontWeight:"500",color:"#B82E38",fontSize:"17px",display:"flex",alignItems:"center",gap:"6px"}}><IconMic size={20}/> Intérpretes asignados</div>
-              <button onClick={()=>{addAsig();setTimeout(()=>{const sc=document.querySelector('[data-modal-scroll]');if(sc)sc.scrollTop=sc.scrollHeight;},50);}} style={S.btnA}>+ Agregar intérprete</button>
+              <button onClick={()=>addAsig()} style={S.btnA}>+ Agregar intérprete</button>
             </div>
             {form.asignaciones.length===0&&<div style={{textAlign:"center",color:C.textoSuave,padding:"40px 20px",border:`2px dashed ${C.grisBorde}`,borderRadius:"12px"}}>Sin intérpretes — Agrega uno arriba</div>}
             {form.asignaciones.map((a,idx)=><FilaAsig key={idx} a={a} idx={idx}/>)}
-            {form.asignaciones.length>0&&<button onClick={()=>{addAsig();setTimeout(()=>{const sc=document.querySelector('[data-modal-scroll]');if(sc)sc.scrollTop=sc.scrollHeight;},50);}} style={{...S.btnP,width:"100%",padding:"9px"}}>+ Agregar otro intérprete</button>}
+            {form.asignaciones.length>0&&<button onClick={()=>addAsig()} style={{...S.btnP,width:"100%",padding:"9px"}}>+ Agregar otro intérprete</button>}
           </>}
 
           {/* ── TAB EQUIPOS AV (un día) ── */}
@@ -956,7 +968,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                 <div style={{marginTop:"12px",border:"2px solid #E03131",borderRadius:"16px",padding:"16px",background:"rgba(224,49,49,0.06)",marginBottom:"16px"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
                     <div style={{fontWeight:"500",color:"#E03131",fontSize:"16px",display:"flex",alignItems:"center",gap:"5px"}}><IconMic size={16}/> Intérpretes de este día</div>
-                    <button onClick={()=>{addAsig(dIdx);setTimeout(()=>{const sc=document.querySelector('[data-modal-scroll]');if(sc)sc.scrollTop=sc.scrollHeight;},50);}} style={{...S.btnP,fontSize:"13px",color:"#2C5CA0",border:"1px solid #869CB8"}}>+ Agregar intérprete</button>
+                    <button onClick={()=>addAsig(dIdx)} style={{...S.btnP,fontSize:"13px",color:"#2C5CA0",border:"1px solid #869CB8"}}>+ Agregar intérprete</button>
                   </div>
                   {(dia.asignaciones||[]).length===0&&<div style={{color:C.textoSuave,fontSize:"15px",textAlign:"center",padding:"12px",border:`1.5px dashed ${C.grisBorde}`,borderRadius:"8px"}}>Sin intérpretes para este día</div>}
                   {(dia.asignaciones||[]).map((a,aIdx)=><FilaAsig key={aIdx} a={a} idx={aIdx} dIdx={dIdx}/>)}
@@ -1131,8 +1143,9 @@ function ModalNuevoProveedor({onCerrar,onGuardado}) {
 
 // ─── MODAL DETALLE ────────────────────────────────────────────────────────────
 function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onEliminar,onCerrar,onVerFicha,onNavDia,addToast}) {
-  const [asignaciones,setAsignaciones]=useState(evento?.asignaciones||[]);
-  useEffect(()=>setAsignaciones(evento?.asignaciones||[]),[evento]);
+  const _combinarAsigs=(ev)=>{const all=[...(ev?.asignaciones||[]),...(ev?.evento_dias||[]).flatMap(d=>d.asignaciones_dia||[])];const seen=new Set();return all.filter(a=>{const uid=`${a.interprete_id}-${a.par_id}`;if(seen.has(uid))return false;seen.add(uid);return true;});};
+  const [asignaciones,setAsignaciones]=useState(()=>_combinarAsigs(evento));
+  useEffect(()=>setAsignaciones(_combinarAsigs(evento)),[evento]);
   const [geoOk,setGeoOk]=useState(false);
   const [geoLoading,setGeoLoading]=useState(false);
   if(!evento) return null;
@@ -1848,9 +1861,16 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
   const guardar=async(tabla,payload,id)=>{
     setErrorGuardar(null);
     const {id:_,created_at:__,...clean}=payload;
-    let err;
-    if(id==="nuevo"){const r=await sb.from(tabla).insert(clean);err=r.error;}
-    else{const r=await sb.from(tabla).update(clean).eq("id",id);err=r.error;}
+    let err,savedId=id;
+    if(tabla==="interpretes"){
+      const {notas,...cleanSinNotas}=clean;
+      if(id==="nuevo"){const r=await sb.from(tabla).insert(cleanSinNotas).select("id").single();err=r.error;savedId=r.data?.id;}
+      else{const r=await sb.from(tabla).update(cleanSinNotas).eq("id",id);err=r.error;}
+      if(!err&&savedId&&notas!==undefined)await sb.from(tabla).update({notas}).eq("id",savedId);
+    } else {
+      if(id==="nuevo"){const r=await sb.from(tabla).insert(clean);err=r.error;}
+      else{const r=await sb.from(tabla).update(clean).eq("id",id);err=r.error;}
+    }
     if(err){setErrorGuardar(err.message||"Error al guardar");return;}
     setEditando(null);setFormEdit({});onActualizar();
   };
@@ -3220,7 +3240,12 @@ export default function App() {
       const bMod=B_MOD[evM.modalidad]||{bg:"#F7F7F5",c:"#565656"};
       const bEst=B_EST(evM.estado);
       const grupos={};
-      (evM.asignaciones||[]).forEach(a=>{
+      const todasAsigsMD=[...(evM.asignaciones||[]),...(evM.evento_dias||[]).flatMap(d=>d.asignaciones_dia||[])];
+      const seenMD=new Set();
+      todasAsigsMD.forEach(a=>{
+        const uid=`${a.interprete_id}-${a.par_id}`;
+        if(seenMD.has(uid))return;
+        seenMD.add(uid);
         const par=pares.find(p=>p.id===a.par_id);
         const interp=interpretes.find(x=>x.id===a.interprete_id);
         if(!interp)return;
@@ -3281,7 +3306,7 @@ export default function App() {
                   <span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:bMod.c,background:bMod.bg,border:"none",whiteSpace:"nowrap"}}>{MOD_ICON[evM.modalidad]||"💻"} {LBL_MODAL[evM.modalidad]||evM.modalidad}</span>
                 </div>
                 <HRD/>
-                {esPresD&&evM.lugar&&<div style={{marginBottom:"12px"}}><SLD t="📍 Lugar"/><div style={{display:"flex",gap:6,flexWrap:"wrap"}}><span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"4px 9px",borderRadius:6,fontSize:11,fontWeight:700,color:"#9A3A3A",background:"#FEF2F2",border:"2px solid #D34848",whiteSpace:"nowrap"}}>📍 {evM.lugar}</span>{evM.lugar_detalle&&<span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"4px 9px",borderRadius:6,fontSize:11,fontWeight:700,color:"#9A3A3A",background:"#FEF2F2",border:"2px solid #D34848",whiteSpace:"nowrap"}}>📍 {evM.lugar_detalle}</span>}</div></div>}
+                {esPresD&&evM.lugar&&<div style={{marginBottom:"12px"}}><SLD t="📍 Lugar"/><div style={{display:"flex",gap:6,flexWrap:"wrap"}}><span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"5px 11px",borderRadius:6,fontSize:13,fontWeight:700,color:"#9A3A3A",background:"#FEF2F2",border:"2px solid #D34848",whiteSpace:"nowrap"}}>📍 {evM.lugar}</span>{evM.lugar_detalle&&<span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"5px 11px",borderRadius:6,fontSize:13,fontWeight:700,color:"#9A3A3A",background:"#FEF2F2",border:"2px solid #D34848",whiteSpace:"nowrap"}}>📍 {evM.lugar_detalle}</span>}</div></div>}
                 {!esPresD&&evM.plataforma&&<div style={{marginBottom:"12px"}}><SLD t="💻 Plataforma"/><PlatformChip platform={evM.plataforma==="Zoom"?"Zoom MundoChile":evM.plataforma} isMundoChile={esZoomMCD} extra={esZoomMCD?evM.zoom_administrador:""}/></div>}
                 {grupoEntries.length>0&&<div style={{marginBottom:"4px"}}>
                   <SLD t="🎙 Intérpretes"/>
@@ -3341,7 +3366,12 @@ export default function App() {
               let diaXdeY=null;
               if(esMultidiaD){const ini=desdeISO(ev.fecha_inicio);const col=desdeISO(diaActual);diaXdeY={x:Math.round((col-ini)/86400000)+1,y:Math.round((desdeISO(ev.fecha_termino)-ini)/86400000)+1};}
               const grupos={};
-              (ev.asignaciones||[]).forEach(a=>{
+              const todasAsigsDia=[...(ev.asignaciones||[]),...(esMultidiaD?(ev.evento_dias||[]).flatMap(d=>d.asignaciones_dia||[]):[])];
+              const seenDia=new Set();
+              todasAsigsDia.forEach(a=>{
+                const uid=`${a.interprete_id}-${a.par_id}`;
+                if(seenDia.has(uid))return;
+                seenDia.add(uid);
                 const par=pares.find(p=>p.id===a.par_id);
                 const interp=interpretes.find(x=>x.id===a.interprete_id);
                 if(!interp) return;
@@ -3375,7 +3405,7 @@ export default function App() {
                         <span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:bMod.c,background:bMod.bg,border:"none",whiteSpace:"nowrap"}}>{MOD_ICON[ev.modalidad]||"💻"} {LBL_MODAL[ev.modalidad]||ev.modalidad}</span>
                       </div>
                       {(esPresD&&ev.lugar)||(!esPresD&&ev.plataforma)?<HRD/>:null}
-                      {esPresD&&ev.lugar&&<div style={{marginBottom:"8px"}}><div style={{display:"flex",gap:6,flexWrap:"wrap"}}><span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"4px 9px",borderRadius:6,fontSize:11,fontWeight:700,color:"#9A3A3A",background:"#FEF2F2",border:"2px solid #D34848",whiteSpace:"nowrap"}}>📍 {ev.lugar}</span>{ev.lugar_detalle&&<span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"4px 9px",borderRadius:6,fontSize:11,fontWeight:700,color:"#9A3A3A",background:"#FEF2F2",border:"2px solid #D34848",whiteSpace:"nowrap"}}>📍 {ev.lugar_detalle}</span>}</div></div>}
+                      {esPresD&&ev.lugar&&<div style={{marginBottom:"8px"}}><div style={{display:"flex",gap:6,flexWrap:"wrap"}}><span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"5px 11px",borderRadius:6,fontSize:13,fontWeight:700,color:"#9A3A3A",background:"#FEF2F2",border:"2px solid #D34848",whiteSpace:"nowrap"}}>📍 {ev.lugar}</span>{ev.lugar_detalle&&<span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"5px 11px",borderRadius:6,fontSize:13,fontWeight:700,color:"#9A3A3A",background:"#FEF2F2",border:"2px solid #D34848",whiteSpace:"nowrap"}}>📍 {ev.lugar_detalle}</span>}</div></div>}
                       {!esPresD&&ev.plataforma&&<div style={{marginBottom:"8px"}}><PlatformChip platform={ev.plataforma==="Zoom"?"Zoom MundoChile":ev.plataforma} isMundoChile={esZoomMCD} extra={esZoomMCD?ev.zoom_administrador:""}/></div>}
                       <HRD/>
                       <span style={{display:"inline-flex",alignItems:"center",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:bEst.c,background:bEst.bg,border:`2px solid ${bEst.b||bEst.c}`,whiteSpace:"nowrap"}}>{ev.estado==="Facturado"?"✓ Facturado":"🟠 Facturación Pendiente"}</span>
