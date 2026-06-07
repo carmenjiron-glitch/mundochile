@@ -1989,8 +1989,8 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
                     </div>
                     <div style={{display:"flex",gap:"14px",marginTop:"4px",flexWrap:"wrap",alignItems:"center"}}>
                       {i.ciudad&&<span style={{fontSize:"15px",color:C.textoMed}}>📍 {i.ciudad}</span>}
-                      {i.email&&<CampoCopia valor={i.email}/>}
-                      {i.telefono&&<CampoCopia valor={i.telefono}/>}
+                      {i.email&&<CampoCopia valor={i.email} wrapStyle={{fontSize:"12px",color:C.textoMed}}/>}
+                      {i.telefono&&<CampoCopia valor={i.telefono} wrapStyle={{fontSize:"12px",color:C.textoMed}}/>}
                     </div>
                     {parsDelInterp.length>0&&<div style={{display:"flex",flexWrap:"wrap",gap:"4px",marginTop:"6px"}}>
                       {parsDelInterp.map(p=>{const clr=IDIOMA_PILL_CLR[p.idioma_origen]||"#4C6EF5";return(<span key={p.id} style={{display:"inline-flex",alignItems:"center",padding:"2px 9px",borderRadius:"20px",background:"#FFFFFF",border:`2px solid ${clr}`,color:"#1A1A1A",fontSize:"13px",fontWeight:"500",whiteSpace:"nowrap",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>{p.idioma_origen} — {p.idioma_destino}</span>);})}
