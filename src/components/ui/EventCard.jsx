@@ -409,7 +409,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
           {/* Plataforma / Lugar */}
           {!esPresencial && ev.plataforma && (
-            <div style={{ marginTop:10 }}>
+            <div style={{ marginTop:14 }}>
               <PlatformChip
                 platform={ev.plataforma === "Zoom" ? "Zoom MundoChile" : ev.plataforma}
                 isMundoChile={esZoomMC}
@@ -466,8 +466,8 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
           )}
 
           {/* Estado — siempre al final */}
-          <div style={{ marginTop:2 }}>
-            <Chip label={estadoLabel} emoji={estadoLabel==="Facturado"?<span style={{color:"#F97316",fontWeight:900}}>✔ </span>:"🟠 "} fontSize={12} padding="4.8px 12px" />
+          <div style={{ marginTop:10 }}>
+            <Chip label={estadoLabel} emoji={estadoLabel==="Facturado"?<span style={{color:"#F97316",fontWeight:900}}>✔ </span>:"🟠 "} fontSize={11} padding="4px 11px" />
           </div>
         </>
       )}
