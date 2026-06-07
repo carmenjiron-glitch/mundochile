@@ -431,7 +431,9 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
   );
   useEffect(()=>{
     if(!form.cliente_id){setContactosLocal([]);return;}
-    setContactosLocal(contactos.filter(c=>Number(c.cliente_id)===Number(form.cliente_id)&&c.activo!==false));
+    const filtrados=contactos.filter(c=>Number(c.cliente_id)===Number(form.cliente_id)&&c.activo!==false);
+    setContactosLocal(filtrados);
+    if(filtrados.length>0)setF("contacto_id",filtrados[0].id);
   },[contactos,form.cliente_id]);
 
   const esMultidia=form.dias.length>1;
