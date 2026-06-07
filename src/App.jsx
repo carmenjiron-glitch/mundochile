@@ -2855,7 +2855,7 @@ export default function App() {
   const [contactos,setContactos]=useState([]);
   const [cargando,setCargando]=useState(false);
   const [vista,setVista]=useState("semana");
-  const [semanaOff,setSemanaOff]=useState(0);
+  const [semanaOff,setSemanaOff]=useState(()=>{const d=new Date().getDay();return(d===0||d===6)?1:0;});
   const [mesOff,setMesOff]=useState(0);
   const [diaActual,setDiaActual]=useState(hoy());
   const [modoMultidia,setModoMultidia]=useState(false);
