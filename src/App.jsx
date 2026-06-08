@@ -760,12 +760,8 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
               <div style={{marginBottom:"10px"}}>
                 <label style={S.lbl}>📍 Lugar</label>
                 <div style={{display:"flex",gap:"6px"}}>
-                  <select style={S.sel} value={form.lugar||""} onChange={e=>setF("lugar",e.target.value)}>
-                    <option value="">Seleccionar lugar…</option>
-                    {lugares.filter(l=>l.activo!==false).map(l=><option key={l.id} value={l.nombre}>{l.nombre}</option>)}
-                    {form.lugar&&!lugares.find(l=>l.nombre===form.lugar)&&<option value={form.lugar}>{form.lugar}</option>}
-                  </select>
-                  <button onClick={()=>onNuevoLugar&&onNuevoLugar(l=>{setF("lugar",l.nombre);if(onLugarCreado)onLugarCreado();})} style={{padding:"0",width:"42px",height:"42px",background:"#3B82F6",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"20px",fontWeight:"300",fontFamily:"inherit",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,lineHeight:1}}>+</button>
+                  {(()=>{const TL={hotel:"Hotel",centro_eventos:"Centro de eventos",universidad:"Universidad",edificio_corporativo:"Edificio corporativo",oficina_cliente:"Oficina del cliente",planta_produccion:"Planta de producción",faena_minera:"Faena minera",ministerio:"Ministerio",edificio_gobierno:"Edificio de gobierno",otro:"Otro"};const fn=l=>l.tipo&&TL[l.tipo]?`${TL[l.tipo]} – ${l.nombre}`:l.nombre;return(<select style={S.sel} value={form.lugar||""} onChange={e=>setF("lugar",e.target.value)}><option value="">Seleccionar lugar…</option>{lugares.filter(l=>l.activo!==false).map(l=><option key={l.id} value={fn(l)}>{fn(l)}</option>)}{form.lugar&&!lugares.filter(l=>l.activo!==false).find(l=>fn(l)===form.lugar)&&<option value={form.lugar}>{form.lugar}</option>}</select>);})()}
+                  <button onClick={()=>onNuevoLugar&&onNuevoLugar(l=>{const TL={hotel:"Hotel",centro_eventos:"Centro de eventos",universidad:"Universidad",edificio_corporativo:"Edificio corporativo",oficina_cliente:"Oficina del cliente",planta_produccion:"Planta de producción",faena_minera:"Faena minera",ministerio:"Ministerio",edificio_gobierno:"Edificio de gobierno",otro:"Otro"};const fn=l.tipo&&TL[l.tipo]?`${TL[l.tipo]} – ${l.nombre}`:l.nombre;setF("lugar",fn);if(onLugarCreado)onLugarCreado();})} style={{padding:"0",width:"42px",height:"42px",background:"#3B82F6",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"20px",fontWeight:"300",fontFamily:"inherit",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,lineHeight:1}}>+</button>
                 </div>
               </div>
               <div style={{marginBottom:"20px"}}><label style={S.lbl}>Detalles del lugar</label><input style={S.inp} value={form.lugar_detalle} onChange={e=>setF("lugar_detalle",e.target.value)} placeholder="Sala Andes, piso 3…"/></div>
@@ -2142,11 +2138,14 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
       {/* ── LUGARES ── */}
       {tab==="lugares"&&<>
         <div style={{display:"flex",justifyContent:"flex-end",marginBottom:"20px"}}>
-          <button onClick={()=>{setEditando("nuevo");setFormEdit({nombre:"",direccion:"",activo:true});}} style={S.btnA}>+ Nuevo lugar</button>
+          <button onClick={()=>{setEditando("nuevo");setFormEdit({nombre:"",tipo:"",direccion:"",activo:true});}} style={S.btnA}>+ Nuevo lugar</button>
         </div>
         {editando&&<div style={{background:C.azulClaro,border:`1.5px solid ${C.azulBorde}`,borderRadius:"12px",padding:"20px",marginBottom:"20px"}}>
           <div style={{fontWeight:"500",color:C.azul,marginBottom:"16px"}}>{editando==="nuevo"?"Nuevo lugar":"Editar lugar"}</div>
-          <div style={{marginBottom:"12px"}}><label style={S.lbl}>Nombre *</label>{EF("nombre")}</div>
+          <div style={{...S.fila,marginBottom:"12px"}}>
+            <div style={S.camp}><label style={S.lbl}>Tipo de lugar</label><select style={S.sel} value={formEdit.tipo||""} onChange={e=>setFormEdit(f=>({...f,tipo:e.target.value}))}><option value="">Sin tipo</option><option value="hotel">Hotel</option><option value="centro_eventos">Centro de eventos</option><option value="universidad">Universidad</option><option value="edificio_corporativo">Edificio corporativo</option><option value="oficina_cliente">Oficina del cliente</option><option value="planta_produccion">Planta de producción</option><option value="faena_minera">Faena minera</option><option value="ministerio">Ministerio</option><option value="edificio_gobierno">Edificio de gobierno</option><option value="otro">Otro</option></select></div>
+            <div style={S.camp}><label style={S.lbl}>Nombre *</label>{EF("nombre")}</div>
+          </div>
           <div style={{marginBottom:"16px"}}><label style={S.lbl}>Dirección</label>{EF("direccion")}</div>
           <div style={{display:"flex",gap:"8px"}}>
             <button onClick={()=>guardar("lugares",formEdit,editando)} style={S.btnA}>💾 Guardar</button>
@@ -2591,6 +2590,7 @@ function ModalNuevoLugar({onGuardado,onCerrar}) {
     if(!nombre){setError("El nombre del lugar es obligatorio.");return;}
     setGuardando(true);setError("");
     const payload={nombre,activo:true};
+    if(f.tipo)payload.tipo=f.tipo;
     const dir=computeDireccion();if(dir)payload.direccion=dir;
     const{data,error:err}=await sb.from("lugares").insert(payload).select().single();
     setGuardando(false);
