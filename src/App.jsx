@@ -564,13 +564,9 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
     useEffect(()=>{
       if(!scrollToNewAsigRef.current||!divRef.current)return;
       scrollToNewAsigRef.current=false;
-      requestAnimationFrame(()=>{
-        const m=document.querySelector('[data-modal-scroll]');
-        if(!m||!divRef.current)return;
-        const el=divRef.current.getBoundingClientRect();
-        const mr=m.getBoundingClientRect();
-        m.scrollTop=m.scrollTop+el.top-mr.top-16;
-      });
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        divRef.current?.scrollIntoView({block:'start'});
+      }));
     },[]);
     const edit=(k,v)=>{
       const extra=k==="interprete_id"?{conflicto_ok:false}:{};
@@ -628,7 +624,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
             <label style={S.lbl}>🌐 Par de idiomas</label>
             <select style={{...S.sel,fontWeight:"400",color:C.textoMed}} value={a.par_id||""} onChange={e=>edit("par_id",e.target.value?Number(e.target.value):"")}>
               <option value="">Seleccionar par de idiomas…</option>
-              {(pares||[]).filter(p=>p.activo!==false).sort((a,b)=>(a.descripcion||"").localeCompare(b.descripcion||"")).map(p=><option key={p.id} value={p.id}>{p.descripcion}</option>)}
+              {(pares||[]).filter(p=>p.activo!==false).sort((a,b)=>(a.descripcion||"").localeCompare(b.descripcion||"")).map(p=><option key={p.id} value={p.id}>{p.descripcion||(p.idioma_origen&&p.idioma_destino?`${p.idioma_origen} – ${p.idioma_destino}`:"Par sin nombre")}</option>)}
             </select>
           </div>
         </div>
@@ -1872,6 +1868,8 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
       else{const r=await sb.from(tabla).update(cleanSinNotas).eq("id",id);err=r.error;}
       if(!err&&savedId&&notas!==undefined)await sb.from(tabla).update({notas}).eq("id",savedId);
     } else {
+      if(tabla==="pares_idiomas"&&clean.idioma_origen&&clean.idioma_destino)
+        clean.descripcion=`${clean.idioma_origen} – ${clean.idioma_destino}`;
       if(id==="nuevo"){const r=await sb.from(tabla).insert(clean);err=r.error;}
       else{const r=await sb.from(tabla).update(clean).eq("id",id);err=r.error;}
     }
