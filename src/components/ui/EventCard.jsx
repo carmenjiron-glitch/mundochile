@@ -116,12 +116,11 @@ const Chip = ({ label, emoji, fontSize=12, padding="4px 10px", dark=false, fw:fw
 };
 
 // ── Componente principal ──────────────────────────────────────────────────────
-export default function EventCard({ ev, diaDe, clientes, interpretes, pares, proveedores=[], lugares=[], onClick, onNavegar, onVerMultidia=null, solidPill=false, pillsHalf=false, agendaSmall=false }) {
+export default function EventCard({ ev, diaDe, clientes, interpretes, pares, proveedores=[], onClick, onNavegar, onVerMultidia=null, solidPill=false, pillsHalf=false, agendaSmall=false }) {
   const cliente     = clientes.find(c => c.id === ev.cliente_id);
   const borderColor = colorCliente(ev.cliente_id);
   const esPresencial = ev.modalidad === "presencial" || ev.modalidad === "hibrido";
   const esZoomMC    = ev.plataforma === "Zoom MundoChile" || ev.plataforma === "Zoom";
-  const lugarDir    = esPresencial && ev.lugar ? (lugares.find(l => ev.lugar === l.nombre || ev.lugar.endsWith(" – " + l.nombre))?.direccion || "") : "";
   const modalLabel  = LBL_MODAL[ev.modalidad] || ev.modalidad;
   const estadoLabel = ev.estado === "Facturado" ? "Facturado" : "Facturación Pendiente";
 
@@ -281,10 +280,9 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             {esPresencial && ev.lugar && (
               <div style={{ marginBottom:"8px" }}>
                 <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
-                  <span style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"5px 11px", borderRadius:6, fontSize:13, fontWeight:700, color:"#9A3A3A", background:"#FEF2F2", border:"2px solid #D34848", whiteSpace:"nowrap" }}>📍 {ev.lugar.replace(" – ", " ")}</span>
+                  <span style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"5px 11px", borderRadius:6, fontSize:13, fontWeight:700, color:"#9A3A3A", background:"#FEF2F2", border:"2px solid #D34848", whiteSpace:"nowrap" }}>📍 {ev.lugar}</span>
                   {ev.lugar_detalle && <span style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"5px 11px", borderRadius:6, fontSize:13, fontWeight:700, color:"#9A3A3A", background:"#FEF2F2", border:"2px solid #D34848", whiteSpace:"nowrap" }}>📍 {ev.lugar_detalle}</span>}
                 </div>
-                {lugarDir && <div style={{ marginTop:"5px", fontSize:"12px", fontWeight:"500", color:"#7A2929" }}>📌 {lugarDir}</div>}
                 <div style={{ display:"flex", alignItems:"center", gap:"8px", marginTop:"6px", flexWrap:"wrap" }}>
                   <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.lugar)}`} target="_blank" rel="noopener noreferrer" onClick={e=>e.stopPropagation()} style={{ display:"inline-flex", alignItems:"center", gap:"4px", fontSize:"13px", fontWeight:"500", color:"#1566AE", padding:"5px 11px", borderRadius:"8px", border:"1px solid #84B1E4", background:"#EFF6FF", textDecoration:"none", cursor:"pointer" }}>📍 Ver en Maps</a>
                   <button onClick={e=>{e.stopPropagation();const u=ev.lugar;if(navigator.clipboard){navigator.clipboard.writeText(u).catch(()=>{const ta=document.createElement("textarea");ta.value=u;document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta);});}else{const ta=document.createElement("textarea");ta.value=u;document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta);}}} title="Copiar dirección" style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", padding:"5px 11px", borderRadius:"8px", border:"1px solid #84B1E4", background:"#EFF6FF", cursor:"pointer", color:"#1566AE", fontFamily:"inherit" }}>
