@@ -156,7 +156,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
     const par    = pares.find(p => p.id === a.par_id);
     const interp = interpretes.find(x => x.id === a.interprete_id);
     if (!interp) return;
-    const key    = par?.descripcion || "Sin par";
+    const key    = par?.descripcion || (par?.idioma_origen&&par?.idioma_destino?`${par.idioma_origen} – ${par.idioma_destino}`:"Sin par");
     const idioma = par?.idioma_origen || "";
     if (!grupos[key]) grupos[key] = { idioma, items: [] };
     grupos[key].items.push({

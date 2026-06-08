@@ -613,7 +613,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                 <option value="">Seleccionar…</option>
                 {interpretes.filter(i=>i.activo).map(i=><option key={i.id} value={i.id}>{i.nombre}{i.apellido?" "+i.apellido:""}{i.es_host_zoom?" 🔑":""}{i.ciudad?` · ${i.ciudad}`:""}</option>)}
               </select>
-              <button onClick={()=>onNuevoInterprete(idx,dIdx)} style={{...S.btnP,fontSize:"19px",fontWeight:"500",width:"48px",height:"48px",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>+</button>
+              <button onClick={()=>onNuevoInterprete(idx,dIdx,(interpId,parId)=>{edit("interprete_id",interpId);if(parId)edit("par_id",parId);})} style={{...S.btnP,fontSize:"19px",fontWeight:"500",width:"48px",height:"48px",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>+</button>
             </div>
             {interp&&<div style={{fontSize:"14px",color:C.textoSuave,marginTop:"4px",display:"flex",gap:"8px",flexWrap:"wrap"}}>
               {interp.ciudad&&<span>📍 {interp.ciudad}</span>}
@@ -1780,8 +1780,8 @@ function ModalNuevoCliente({onGuardar,onCerrar}) {
 }
 
 // ─── MODAL NUEVO INTÉRPRETE RÁPIDO ───────────────────────────────────────────
-function ModalNuevoInterprete({onGuardar,onCerrar}) {
-  const [f,setF]=useState({nombre:"",apellido:"",email:"",telefono:"",ciudad:"",modalidad_trabajo:"ambas",es_host_zoom:false,notas:""});
+function ModalNuevoInterprete({onGuardar,onCerrar,pares=[]}) {
+  const [f,setF]=useState({nombre:"",apellido:"",email:"",telefono:"",ciudad:"",modalidad_trabajo:"ambas",es_host_zoom:false,notas:"",par_id:""});
   const u=(k,v)=>setF(x=>({...x,[k]:v}));
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,0.7)",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px"}}>
@@ -1820,13 +1820,21 @@ function ModalNuevoInterprete({onGuardar,onCerrar}) {
               <option value="presencial">📍 Solo Presencial</option>
             </select></div>
         </div>
+        <div style={{...S.fila,marginBottom:"20px"}}>
+          <div style={S.camp}><label style={S.lbl}>🌐 Par de idiomas (opcional)</label>
+            <select style={S.sel} value={f.par_id||""} onChange={e=>u("par_id",e.target.value)}>
+              <option value="">Sin asignar</option>
+              {pares.filter(p=>p.activo!==false).sort((a,b)=>(a.descripcion||"").localeCompare(b.descripcion||"")).map(p=><option key={p.id} value={p.id}>{p.descripcion||(p.idioma_origen&&p.idioma_destino?`${p.idioma_origen} – ${p.idioma_destino}`:"Par sin nombre")}</option>)}
+            </select>
+          </div>
+        </div>
         <div style={{marginBottom:"16px"}}><label style={{display:"flex",gap:"8px",alignItems:"center",cursor:"pointer",fontSize:"17px",color:C.rojo,fontWeight:"500"}}>
           <input type="checkbox" checked={f.es_host_zoom} onChange={e=>u("es_host_zoom",e.target.checked)}/> 🔑 Host Zoom MundoChile
         </label></div>
         <div style={{marginBottom:"20px"}}><label style={S.lbl}>Notas</label><textarea style={{...S.inp,minHeight:"60px"}} value={f.notas} onChange={e=>u("notas",e.target.value)}/></div>
         <div style={{display:"flex",gap:"10px",justifyContent:"flex-end"}}>
           <button onClick={onCerrar} style={S.btnG}>Cancelar</button>
-          <button onClick={()=>f.nombre&&onGuardar({...f,activo:true})} style={S.btnA}>💾 Guardar</button>
+          <button onClick={()=>{if(!f.nombre)return;const{par_id,...fData}=f;onGuardar({...fData,activo:true},Number(par_id)||null);}} style={S.btnA}>💾 Guardar</button>
         </div>
       </div>
     </div>
@@ -3557,12 +3565,12 @@ export default function App() {
       {pantalla==="config"&&esAdmin&&<PantallaConfig clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} onActualizar={cargarDatos} perfil={perfil}/>}
 
       {/* ── MODALES ── */}
-      {modalEvento&&<ModalEvento eventoInicial={modalEvento.data} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} contactos={contactos} todos_eventos={eventos} perfil={perfil} onGuardar={()=>{setModalEvento(null);cargarDatos();addToast("Evento guardado correctamente","success");}} onCerrar={()=>setModalEvento(null)} onNuevoCliente={(cb)=>setModalNuevoCli({cb})} onNuevoContacto={setModalNuevoContacto} onNuevoInterprete={(ai,di)=>setModalNuevoInt({ai,di})} onLugarCreado={cargarDatos} onNuevoLugar={(cb)=>setModalNuevoLugar({cb})} onNuevoProveedor={prov=>setProveedores(prev=>[...prev,prov])}/>}
+      {modalEvento&&<ModalEvento eventoInicial={modalEvento.data} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} contactos={contactos} todos_eventos={eventos} perfil={perfil} onGuardar={()=>{setModalEvento(null);cargarDatos();addToast("Evento guardado correctamente","success");}} onCerrar={()=>setModalEvento(null)} onNuevoCliente={(cb)=>setModalNuevoCli({cb})} onNuevoContacto={setModalNuevoContacto} onNuevoInterprete={(ai,di,cb)=>setModalNuevoInt({ai,di,cb})} onLugarCreado={cargarDatos} onNuevoLugar={(cb)=>setModalNuevoLugar({cb})} onNuevoProveedor={prov=>setProveedores(prev=>[...prev,prov])}/>}
       {modalDetalle&&<ModalDetalle evento={modalDetalle} clientes={clientes} interpretes={interpretes} pares={pares} perfil={perfil} onEditar={()=>editarEvento(modalDetalle)} onEliminar={()=>eliminarEvento(modalDetalle.id)} onCerrar={()=>setModalDetalle(null)} onVerFicha={()=>{setModalFicha(modalDetalle);setModalDetalle(null);}} onNavDia={(dIdx)=>{setVistaAnterior(vista);setEventoMultidiaId(modalDetalle.id);setDiaMultidiaSeleccionado(dIdx+1);setModoMultidia(true);setVista("dia");setModalDetalle(null);}} addToast={addToast}/>}
       {modalFicha&&<ModalFicha evento={modalFicha} clientes={clientes} interpretes={interpretes} pares={pares} onCerrar={()=>setModalFicha(null)}/>}
       {modalFichasMultiples&&<ModalFichasMultiples eventosLista={modalFichasMultiples} clientes={clientes} interpretes={interpretes} pares={pares} onCerrar={()=>setModalFichasMultiples(null)}/>}
       {modalNuevoCli&&<ModalNuevoCliente onGuardar={async(d)=>{const{notas,...dSinNotas}=d;console.log("[NuevoCliente] payload insert:",dSinNotas,"notas:",notas);const{data,error}=await sb.from("clientes").insert(dSinNotas).select().single();console.log("[NuevoCliente] result:",{data,error});if(data&&notas!==undefined)await sb.from("clientes").update({notas}).eq("id",data.id);if(data)setClientes(prev=>[...prev,data]);const cb=modalNuevoCli?.cb;setModalNuevoCli(false);if(data){cb?.(data.id);addToast("Cliente creado","success");}cargarDatos();}} onCerrar={()=>setModalNuevoCli(false)}/>}
-      {modalNuevoInt&&<ModalNuevoInterprete onGuardar={async(d)=>{await sb.from("interpretes").insert(d);await cargarDatos();setModalNuevoInt(null);addToast("Intérprete creado","success");}} onCerrar={()=>setModalNuevoInt(null)}/>}
+      {modalNuevoInt&&<ModalNuevoInterprete pares={pares} onGuardar={async(d,parId)=>{const{notas,...dSinNotas}=d;const{data}=await sb.from("interpretes").insert(dSinNotas).select().single();if(data?.id&&notas!==undefined)await sb.from("interpretes").update({notas}).eq("id",data.id);await cargarDatos();if(data?.id&&modalNuevoInt?.cb)modalNuevoInt.cb(data.id,parId);setModalNuevoInt(null);addToast("Intérprete creado","success");}} onCerrar={()=>setModalNuevoInt(null)}/>}
       {modalNuevoContacto&&<ModalNuevoContacto clienteId={modalNuevoContacto.cliente_id} onGuardar={async(d)=>{const{data:nc}=await sb.from("contactos").insert({...d,cliente_id:Number(modalNuevoContacto.cliente_id),activo:true}).select().single();if(nc&&modalNuevoContacto.cb)modalNuevoContacto.cb(nc);await cargarDatos();setModalNuevoContacto(null);addToast("Contacto creado","success");}} onCerrar={()=>setModalNuevoContacto(null)}/>}
       {modalNuevoLugar&&<ModalNuevoLugar onGuardado={async(data)=>{if(modalNuevoLugar.cb)modalNuevoLugar.cb(data);await cargarDatos();setModalNuevoLugar(null);addToast("Lugar creado","success");}} onCerrar={()=>setModalNuevoLugar(null)}/>}
       <ToastContainer toasts={toasts} onRemove={removeToast}/>
