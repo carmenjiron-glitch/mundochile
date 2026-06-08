@@ -403,8 +403,8 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
 
           {/* Badges tipo + modalidad */}
           <div style={{ display:"flex", gap:5, flexWrap:"nowrap", alignItems:"center" }}>
-            {(Array.isArray(ev.tipo)?ev.tipo:[ev.tipo||"Simultánea"]).map(t=><Chip key={t} label={t} emoji={t==="Simultánea"?<IconHeadphones size={13}/>:t==="Consecutiva"?<IconMicOutline size={13}/>:<IconChatBubble size={13}/>} fontSize={13} padding="4px 11px" dark={false} fw={600} />)}
-            <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?<IconoPresencial size={13}/>:ev.modalidad==="hibrido"?<IconArrowsExchange size={13}/>:<IconAV size={13}/>} fontSize={13} padding="4px 11px" dark={false} fw={600} />
+            {(Array.isArray(ev.tipo)?ev.tipo:[ev.tipo||"Simultánea"]).map(t=><Chip key={t} label={t} emoji={t==="Simultánea"?<IconHeadphones size={13}/>:t==="Consecutiva"?<IconMicOutline size={13}/>:<IconChatBubble size={13}/>} fontSize={13} padding="4px 11px" dark={false} fw={500} />)}
+            <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?<IconoPresencial size={13}/>:ev.modalidad==="hibrido"?<IconArrowsExchange size={13}/>:<IconAV size={13}/>} fontSize={13} padding="4px 11px" dark={false} fw={500} />
           </div>
 
           {/* Plataforma / Lugar */}
@@ -429,13 +429,13 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             const hp      = grupo.items.find(i => i.hora)?.hora;
             const pillPad = solidPill ? "1px 4px" : "4px 10px";
             const pillFs  = solidPill ? 12 : 12;
-            const flagSz  = solidPill ? 19 : 14;
+            const flagSz  = solidPill ? 13 : 14;
             return (
               <div key={key} style={{ marginTop:14 }}>
                 <div style={{ fontSize:solidPill?12:14, fontWeight:600, color:"#0E4582", textTransform:"uppercase", letterSpacing:"0.07em", marginBottom:5, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", textAlign:"center", width:"100%", display:"block" }}>
                   {key}
                 </div>
-                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6, ...(pillsHalf?{maxWidth:"50%"}:{}) }}>
+                <div style={{ display:"grid", gridTemplateColumns:solidPill?"1fr":"1fr 1fr", gap:6, ...(pillsHalf?{maxWidth:"50%"}:{}) }}>
                   {grupo.items.map((interp, i) => (
                     <span key={i}
                       title={`${interp.nombre}${interp.apellido ? " " + interp.apellido : ""}`}
