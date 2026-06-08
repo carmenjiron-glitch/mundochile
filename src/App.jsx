@@ -1252,7 +1252,8 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                       <div style={{background:"#FEF9C3",padding:"8px 14px",fontWeight:"700",fontSize:"13px",color:"#111827",textTransform:"uppercase",letterSpacing:"0.06em"}}>{esPresencial?"📍 Lugar":"💻 Plataforma"}</div>
                       <div style={{padding:"12px 14px"}}>
                         {esPresencial&&evento.lugar&&<>
-                          <span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 20px",borderRadius:"6px",fontSize:"13.5px",fontWeight:"700",color:"#9F4444",background:"#FEF2F2",border:"2px solid #D55252",whiteSpace:"nowrap"}}>📍 {evento.lugar}</span>
+                          <span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 20px",borderRadius:"6px",fontSize:"13.5px",fontWeight:"700",color:"#9F4444",background:"#FEF2F2",border:"2px solid #D55252",whiteSpace:"nowrap"}}>📍 {evento.lugar.replace(" – "," ")}</span>
+                          {lugares.find(l=>evento.lugar===l.nombre||evento.lugar.endsWith(" – "+l.nombre))?.direccion&&<div style={{marginTop:"6px"}}><span style={{display:"inline-flex",alignItems:"center",padding:"3px 12px",borderRadius:"6px",fontSize:"12px",fontWeight:"600",color:"#9F4444",background:"#FEF2F2",border:"1.5px solid #D55252",whiteSpace:"nowrap"}}>📌 {lugares.find(l=>evento.lugar===l.nombre||evento.lugar.endsWith(" – "+l.nombre))?.direccion}</span></div>}
                           {evento.lugar_detalle&&<div style={{marginTop:"6px"}}><span style={{display:"inline-flex",alignItems:"center",padding:"3px 12px",borderRadius:"6px",fontSize:"12px",fontWeight:"600",color:"#9F4444",background:"#FEF2F2",border:"1.5px solid #D55252",whiteSpace:"nowrap"}}>{evento.lugar_detalle}</span></div>}
                           <div style={{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap",marginTop:"10px"}}>
                             <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((evento.lugar||"")+" "+(evento.lugar_detalle||""))}`} target="_blank" rel="noreferrer" style={{display:"inline-flex",alignItems:"center",gap:"5px",fontSize:"14px",fontWeight:"500",color:"#0F4577",textDecoration:"none",padding:"8px 16px",border:"1px solid #84B1E4",borderRadius:"8px",background:"#EFF6FF"}}>📍 Ver en Maps</a>
@@ -1384,7 +1385,8 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,onEditar,onElimi
                       <div style={{background:"#FEF9C3",padding:"8px 14px",fontWeight:"700",fontSize:"13px",color:"#111827",textTransform:"uppercase",letterSpacing:"0.06em"}}>{esPresencial?"📍 Lugar":"💻 Plataforma"}</div>
                       <div style={{padding:"12px 14px"}}>
                         {esPresencial&&evento.lugar&&<>
-                          <span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 20px",borderRadius:"6px",fontSize:"13.5px",fontWeight:"700",color:"#9F4444",background:"#FEF2F2",border:"2px solid #D55252",whiteSpace:"nowrap"}}>📍 {evento.lugar}</span>
+                          <span style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 20px",borderRadius:"6px",fontSize:"13.5px",fontWeight:"700",color:"#9F4444",background:"#FEF2F2",border:"2px solid #D55252",whiteSpace:"nowrap"}}>📍 {evento.lugar.replace(" – "," ")}</span>
+                          {lugares.find(l=>evento.lugar===l.nombre||evento.lugar.endsWith(" – "+l.nombre))?.direccion&&<div style={{marginTop:"6px"}}><span style={{display:"inline-flex",alignItems:"center",padding:"3px 12px",borderRadius:"6px",fontSize:"12px",fontWeight:"600",color:"#9F4444",background:"#FEF2F2",border:"1.5px solid #D55252",whiteSpace:"nowrap"}}>📌 {lugares.find(l=>evento.lugar===l.nombre||evento.lugar.endsWith(" – "+l.nombre))?.direccion}</span></div>}
                           {evento.lugar_detalle&&<div style={{marginTop:"6px"}}><span style={{display:"inline-flex",alignItems:"center",padding:"3px 12px",borderRadius:"6px",fontSize:"12px",fontWeight:"600",color:"#9F4444",background:"#FEF2F2",border:"1.5px solid #D55252",whiteSpace:"nowrap"}}>{evento.lugar_detalle}</span></div>}
                           <div style={{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap",marginTop:"10px"}}>
                             <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((evento.lugar||"")+" "+(evento.lugar_detalle||""))}`} target="_blank" rel="noreferrer" style={{display:"inline-flex",alignItems:"center",gap:"5px",fontSize:"14px",fontWeight:"500",color:"#0F4577",textDecoration:"none",padding:"8px 16px",border:"1px solid #84B1E4",borderRadius:"8px",background:"#EFF6FF"}}>📍 Ver en Maps</a>
@@ -1699,7 +1701,7 @@ function ModalFicha({evento,clientes,interpretes,pares,onCerrar,paginacion=null}
                   {/* Fila 5: Lugar / Plataforma | (vacío) */}
                   {(campos.lugar&&esPresencial&&evento.lugar||campos.plataforma&&!esPresencial&&evento.plataforma)&&<tr>
                     <td style={{padding:0,verticalAlign:"top",borderRight:hasDerecha?"2px solid #D1D5DB":"none"}}>
-                      {campos.lugar&&esPresencial&&evento.lugar&&<><div style={sH}>Lugar</div><div style={sB}><div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>📍 {evento.lugar}</div>{evento.lugar_detalle&&<div style={{fontSize:"13px",color:"#303a47",marginTop:"3px"}}>{evento.lugar_detalle}</div>}</div></>}
+                      {campos.lugar&&esPresencial&&evento.lugar&&<><div style={sH}>Lugar</div><div style={sB}><div style={{fontSize:"14px",fontWeight:"500",color:"#0a0f1d"}}>📍 {evento.lugar.replace(" – "," ")}</div>{lugares.find(l=>evento.lugar===l.nombre||evento.lugar.endsWith(" – "+l.nombre))?.direccion&&<div style={{fontSize:"13px",color:"#303a47",marginTop:"3px"}}>📌 {lugares.find(l=>evento.lugar===l.nombre||evento.lugar.endsWith(" – "+l.nombre))?.direccion}</div>}{evento.lugar_detalle&&<div style={{fontSize:"13px",color:"#303a47",marginTop:"3px"}}>{evento.lugar_detalle}</div>}</div></>}
                       {campos.plataforma&&!esPresencial&&evento.plataforma&&<><div style={sH}>Plataforma</div><div style={sB}><PlatformChip platform={evento.plataforma==="Zoom"?"Zoom MundoChile":evento.plataforma} isMundoChile={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")} extra={(evento.plataforma==="Zoom MundoChile"||evento.plataforma==="Zoom")?evento.zoom_administrador:""}/></div></>}
                     </td>
                     {hasDerecha&&<td style={{padding:0}}></td>}
@@ -2509,7 +2511,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
 }
 
 // ─── VISTA AGENDA (F8) ───────────────────────────────────────────────────────
-function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,setFiltros,onAbrir,onVerMultidia,vista}) {
+function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],lugares=[],filtros,setFiltros,onAbrir,onVerMultidia,vista}) {
   const hoyISO=hoy();
   const sorted=[...eventos].sort((a,b)=>a.fecha_inicio.localeCompare(b.fecha_inicio));
   const byDay={};
@@ -2547,7 +2549,7 @@ function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],filtros,
               ?<div style={{padding:"16px 20px",color:"#646870",fontSize:"14px",fontStyle:"normal",display:"flex",alignItems:"center",gap:"8px",background:"#FAFAFA",borderRadius:"8px",border:"1px dashed #E5E7EB",marginBottom:"8px"}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1B9E4B" strokeWidth="2.9"><circle cx="12" cy="12" r="10"/></svg>Sin eventos este día</div>
               :<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginTop:"12px"}}>
                 {evs.map(ev=>(
-                  <EventCard key={ev.id} ev={ev} diaDe={fecha} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} onClick={()=>onAbrir(ev)} onVerMultidia={onVerMultidia} pillsHalf={true} agendaSmall={true}/>
+                  <EventCard key={ev.id} ev={ev} diaDe={fecha} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} onClick={()=>onAbrir(ev)} onVerMultidia={onVerMultidia} pillsHalf={true} agendaSmall={true}/>
                 ))}
               </div>
             }
@@ -3442,7 +3444,7 @@ export default function App() {
                         <span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",lineHeight:"1.4",color:bMod.c,background:bMod.bg,border:"none",whiteSpace:"nowrap"}}>{MOD_ICON[ev.modalidad]||"💻"} {LBL_MODAL[ev.modalidad]||ev.modalidad}</span>
                       </div>
                       {(esPresD&&ev.lugar)||(!esPresD&&ev.plataforma)?<HRD/>:null}
-                      {esPresD&&ev.lugar&&<div style={{marginBottom:"8px"}}><div style={{display:"flex",gap:6,flexWrap:"wrap"}}><span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"5px 11px",borderRadius:6,fontSize:13,fontWeight:700,color:"#9A3A3A",background:"#FEF2F2",border:"2px solid #D34848",whiteSpace:"nowrap"}}>📍 {ev.lugar}</span>{ev.lugar_detalle&&<span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"5px 11px",borderRadius:6,fontSize:13,fontWeight:700,color:"#9A3A3A",background:"#FEF2F2",border:"2px solid #D34848",whiteSpace:"nowrap"}}>📍 {ev.lugar_detalle}</span>}</div></div>}
+                      {esPresD&&ev.lugar&&<div style={{marginBottom:"8px"}}><div style={{display:"flex",gap:6,flexWrap:"wrap"}}><span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"5px 11px",borderRadius:6,fontSize:13,fontWeight:700,color:"#9A3A3A",background:"#FEF2F2",border:"2px solid #D34848",whiteSpace:"nowrap"}}>📍 {ev.lugar.replace(" – "," ")}</span>{ev.lugar_detalle&&<span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"5px 11px",borderRadius:6,fontSize:13,fontWeight:700,color:"#9A3A3A",background:"#FEF2F2",border:"2px solid #D34848",whiteSpace:"nowrap"}}>📍 {ev.lugar_detalle}</span>}</div>{lugares.find(l=>ev.lugar===l.nombre||ev.lugar.endsWith(" – "+l.nombre))?.direccion&&<div style={{marginTop:"5px",fontSize:"12px",fontWeight:"500",color:"#7A2929"}}>📌 {lugares.find(l=>ev.lugar===l.nombre||ev.lugar.endsWith(" – "+l.nombre))?.direccion}</div>}</div>}
                       {!esPresD&&ev.plataforma&&<div style={{marginBottom:"8px"}}><PlatformChip platform={ev.plataforma==="Zoom"?"Zoom MundoChile":ev.plataforma} isMundoChile={esZoomMCD} extra={esZoomMCD?ev.zoom_administrador:""}/></div>}
                       <HRD/>
                       <span style={{display:"inline-flex",alignItems:"center",padding:"4px 10px",borderRadius:"20px",fontSize:"12px",fontWeight:"500",lineHeight:"1.4",color:bEst.c,background:bEst.bg,border:`2px solid ${bEst.b||bEst.c}`,whiteSpace:"nowrap"}}>{ev.estado==="Facturado"?"✓ Facturado":"🟠 Facturación Pendiente"}</span>
@@ -3585,7 +3587,7 @@ export default function App() {
         {vista==="semana"&&renderSemana()}
         {vista==="dia"&&renderDia()}
         {vista==="mes"&&renderMes()}
-        {vista==="agenda"&&<VistaAgenda vista={vista} eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} filtros={filtros} setFiltros={setFiltros} onAbrir={abrirEvento} onVerMultidia={verTodosLosDias}/>}
+        {vista==="agenda"&&<VistaAgenda vista={vista} eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} filtros={filtros} setFiltros={setFiltros} onAbrir={abrirEvento} onVerMultidia={verTodosLosDias}/>}
         {vista==="grilla"&&<VistaGrilla eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} contactos={contactos} onAbrir={abrirEvento} onVerMultidia={verTodosLosDias} vista={vista}/>}
       </>}
       {pantalla==="disponibilidad"&&<VistaDisponibilidad eventos={eventos} interpretes={interpretes} pares={pares} clientes={clientes} onAbrir={abrirEvento} busqueda={busqueda}/>}
