@@ -488,8 +488,8 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
       await sb.from("evento_dias").delete().eq("evento_id",eventoId);
       // Insertar asignaciones (un día)
       if(!esMultidia&&form.asignaciones.length>0){
-        const asigs=form.asignaciones.filter(a=>a.interprete_id&&a.par_id).map(a=>({
-          evento_id:eventoId, interprete_id:a.interprete_id, par_id:a.par_id,
+        const asigs=form.asignaciones.filter(a=>a.interprete_id).map(a=>({
+          evento_id:eventoId, interprete_id:a.interprete_id, par_id:a.par_id||null,
           nro_ot:a.nro_ot||"", nro_boleta:a.nro_boleta||"",
           es_boleta_adicional:!!a.es_boleta_adicional, es_host_zoom:!!a.es_host_zoom,
           rol:a.rol||"Principal", hora_presentacion:a.hora_presentacion||null, estado_pago:a.estado_pago||"Pendiente",
@@ -528,8 +528,8 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           if(dia.lugar_detalle!==null&&dia.lugar_detalle!==undefined)diaPayload.lugar_detalle=dia.lugar_detalle;
           const{data:dD,error:eD}=await sb.from("evento_dias").insert(diaPayload).select().single();
           if(eD)throw eD;
-          const asigsDia=(dia.asignaciones||[]).filter(a=>a.interprete_id&&a.par_id).map(a=>({
-            evento_dia_id:dD.id, interprete_id:a.interprete_id, par_id:a.par_id,
+          const asigsDia=(dia.asignaciones||[]).filter(a=>a.interprete_id).map(a=>({
+            evento_dia_id:dD.id, interprete_id:a.interprete_id, par_id:a.par_id||null,
             es_host_zoom:!!a.es_host_zoom, hora_presentacion:a.hora_presentacion||null,
           }));
           if(asigsDia.length>0){const{error:eA}=await sb.from("asignaciones_dia").insert(asigsDia);if(eA)throw eA;}
@@ -564,11 +564,13 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
     useEffect(()=>{
       if(!scrollToNewAsigRef.current||!divRef.current)return;
       scrollToNewAsigRef.current=false;
-      const m=document.querySelector('[data-modal-scroll]');
-      if(!m)return;
-      const el=divRef.current.getBoundingClientRect();
-      const mr=m.getBoundingClientRect();
-      m.scrollTo({top:m.scrollTop+el.top-mr.top-16,behavior:'smooth'});
+      requestAnimationFrame(()=>{
+        const m=document.querySelector('[data-modal-scroll]');
+        if(!m||!divRef.current)return;
+        const el=divRef.current.getBoundingClientRect();
+        const mr=m.getBoundingClientRect();
+        m.scrollTop=m.scrollTop+el.top-mr.top-16;
+      });
     },[]);
     const edit=(k,v)=>{
       const extra=k==="interprete_id"?{conflicto_ok:false}:{};
