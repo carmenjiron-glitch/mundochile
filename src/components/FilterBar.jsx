@@ -1,8 +1,8 @@
 // FilterBar.jsx — MundoChile v3.0 — Una línea, todos dropdowns
 
 export default function FilterBar({ filters, onChange, interpreters = [], clientes = [], pares = [], proveedores = [] }) {
-  const hayFiltro = filters.estado || filters.modalidad || filters.tipo || filters.interprete_id || filters.cliente_id || filters.par_id || filters.proveedor_av;
-  const limpiar = { estado:"", modalidad:"", tipo:"", interprete_id:"", cliente_id:"", par_id:"", proveedor_av:"" };
+  const hayFiltro = filters.estado || filters.modalidad || filters.tipo || filters.interprete_id || filters.cliente_id || filters.par_id || filters.proveedor_av || filters.mes;
+  const limpiar = { estado:"", modalidad:"", tipo:"", interprete_id:"", cliente_id:"", par_id:"", proveedor_av:"", mes:"" };
 
   const lbl = {
     fontSize: "11px",
@@ -38,6 +38,26 @@ export default function FilterBar({ filters, onChange, interpreters = [], client
 
   return (
     <div style={{ display:"flex", alignItems:"center", justifyContent:"flex-end", gap:"8px", flexWrap:"nowrap", width:"100%", overflow:"hidden" }}>
+
+      <div style={grp}>
+        <span style={lbl}>Mes</span>
+        <select value={filters.mes || ""} onChange={e => onChange({ ...filters, mes: e.target.value })} style={sel}>
+          <option value="" style={{ color:"#000" }}>Vista actual</option>
+          <option value="todos" style={{ color:"#000" }}>Todos</option>
+          <option value="1" style={{ color:"#000" }}>Enero</option>
+          <option value="2" style={{ color:"#000" }}>Febrero</option>
+          <option value="3" style={{ color:"#000" }}>Marzo</option>
+          <option value="4" style={{ color:"#000" }}>Abril</option>
+          <option value="5" style={{ color:"#000" }}>Mayo</option>
+          <option value="6" style={{ color:"#000" }}>Junio</option>
+          <option value="7" style={{ color:"#000" }}>Julio</option>
+          <option value="8" style={{ color:"#000" }}>Agosto</option>
+          <option value="9" style={{ color:"#000" }}>Septiembre</option>
+          <option value="10" style={{ color:"#000" }}>Octubre</option>
+          <option value="11" style={{ color:"#000" }}>Noviembre</option>
+          <option value="12" style={{ color:"#000" }}>Diciembre</option>
+        </select>
+      </div>
 
       <div style={grp}>
         <span style={lbl}>Estado</span>

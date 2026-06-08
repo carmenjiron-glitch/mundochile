@@ -1845,6 +1845,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
   const [perfiles,setPerfiles]=useState([]);
   const [interpPares,setInterpPares]=useState({});
   const [busquedaInterp,setBusquedaInterp]=useState("");
+  const [filtroParConfig,setFiltroParConfig]=useState("");
   const [confirmarEliminar,setConfirmarEliminar]=useState(null);
   const tabs=[{id:"interpretes",l:"👤 Intérpretes"},{id:"clientes",l:"🏢 Clientes"},{id:"idiomas",l:"🌐 Idiomas"},{id:"proveedores",l:"🔧 Proveedores"},{id:"lugares",l:"📍 Lugares"},{id:"usuarios",l:"👥 Usuarios"}];
 
@@ -1867,10 +1868,15 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
     const {id:_,created_at:__,...clean}=payload;
     let err,savedId=id;
     if(tabla==="interpretes"){
-      const {notas,...cleanSinNotas}=clean;
+      const {notas,par_ids,...cleanSinNotas}=clean;
       if(id==="nuevo"){const r=await sb.from(tabla).insert(cleanSinNotas).select("id").single();err=r.error;savedId=r.data?.id;}
       else{const r=await sb.from(tabla).update(cleanSinNotas).eq("id",id);err=r.error;}
-      if(!err&&savedId&&notas!==undefined)await sb.from(tabla).update({notas}).eq("id",savedId);
+      if(!err&&savedId){const upd={};if(notas!==undefined)upd.notas=notas;if(par_ids!==undefined)upd.par_ids=par_ids;if(Object.keys(upd).length)await sb.from(tabla).update(upd).eq("id",savedId);}
+    } else if(tabla==="lugares"){
+      const {tipo,direccion,...cleanBase}=clean;
+      if(id==="nuevo"){const r=await sb.from(tabla).insert(cleanBase).select("id").single();err=r.error;savedId=r.data?.id;}
+      else{const r=await sb.from(tabla).update(cleanBase).eq("id",id);err=r.error;}
+      if(!err&&savedId){const upd={};if(tipo!==undefined)upd.tipo=tipo;if(direccion!==undefined)upd.direccion=direccion;if(Object.keys(upd).length)await sb.from(tabla).update(upd).eq("id",savedId);}
     } else {
       if(tabla==="pares_idiomas"&&clean.idioma_origen&&clean.idioma_destino)
         clean.descripcion=`${clean.idioma_origen} – ${clean.idioma_destino}`;
@@ -1891,37 +1897,48 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
   const SE=(k,opts,lab)=><select style={S.sel} value={formEdit[k]||""} onChange={e=>setFormEdit(f=>({...f,[k]:e.target.value}))}>{opts.map(o=><option key={o.v||o} value={o.v||o}>{o.l||o}</option>)}</select>;
 
   return (
-    <div style={{padding:"20px 16px 80px",maxWidth:"900px",margin:"0 auto"}}>
-      {/* Tabs */}
-      <div style={{display:"flex",flexWrap:"nowrap",gap:"8px",marginBottom:"20px",alignItems:"center",overflowX:"auto",justifyContent:"center",width:"100%",padding:"12px 0"}}>
-        {tabs.map(t=><button key={t.id} onClick={()=>{setTab(t.id);setEditando(null);setFormEdit({});}}
-          style={{
-            padding:"8px 20px",borderRadius:"10px",cursor:"pointer",fontFamily:"inherit",fontSize:"13px",
-            height:"36px",whiteSpace:"nowrap",textAlign:"center",
-            background:tab===t.id?"#FFFBEB":"#fff",
-            color:tab===t.id?C.azul:C.textoMed,
-            fontWeight:"500",
-            border:tab===t.id?"2px solid #F59E0B":`2px solid ${C.grisBorde}`,
-            borderBottom:tab===t.id?"4px solid #F59E0B":`2px solid ${C.grisBorde}`,
-            boxShadow:tab===t.id?"0 2px 8px rgba(245,158,11,0.25)":"none"
-          }}>
-          {t.l}</button>)}
+    <>
+      <div style={{position:"sticky",top:"96px",zIndex:80,background:"rgba(22,38,84,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)"}}>
+        <div style={{maxWidth:"900px",margin:"0 auto",padding:"0 16px"}}>
+          <div style={{display:"flex",flexWrap:"nowrap",gap:"8px",alignItems:"center",overflowX:"auto",justifyContent:"center",width:"100%",padding:"12px 0"}}>
+            {tabs.map(t=><button key={t.id} onClick={()=>{setTab(t.id);setEditando(null);setFormEdit({});}}
+              style={{
+                padding:"8px 20px",borderRadius:"10px",cursor:"pointer",fontFamily:"inherit",fontSize:"13px",
+                height:"36px",whiteSpace:"nowrap",textAlign:"center",
+                background:tab===t.id?"#FFFBEB":"rgba(255,255,255,0.12)",
+                color:tab===t.id?C.azul:"#FFFFFF",
+                fontWeight:"500",
+                border:tab===t.id?"2px solid #F59E0B":"2px solid rgba(255,255,255,0.2)",
+                borderBottom:tab===t.id?"4px solid #F59E0B":"2px solid rgba(255,255,255,0.2)",
+                boxShadow:tab===t.id?"0 2px 8px rgba(245,158,11,0.25)":"none"
+              }}>
+              {t.l}</button>)}
+          </div>
+        </div>
       </div>
+      <div style={{padding:"20px 16px 80px",maxWidth:"900px",margin:"0 auto"}}>
 
       {/* ── INTÉRPRETES ── */}
       {tab==="interpretes"&&<>
-        {/* Header: buscador + botón nuevo */}
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"20px",gap:"12px"}}>
-          <div style={{position:"relative",display:"inline-flex",alignItems:"center"}}>
-            <input
-              style={{padding:"8px 12px",paddingRight:busquedaInterp?"32px":"12px",border:"1px solid #D1D5DB",borderRadius:"8px",fontSize:"13px",color:"#1A1A1A",background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",width:"240px"}}
-              placeholder="Buscar intérprete..."
-              value={busquedaInterp}
-              onChange={e=>setBusquedaInterp(e.target.value)}
-            />
-            {busquedaInterp&&<button onClick={()=>setBusquedaInterp("")} style={{position:"absolute",right:"8px",background:"#EF4444",color:"#FFFFFF",border:"none",borderRadius:"50%",width:"18px",height:"18px",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:"11px",fontWeight:"700",lineHeight:1,padding:0,flexShrink:0}}>×</button>}
+        {/* Header: buscador + filtro idioma + botón nuevo */}
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"20px",gap:"12px",flexWrap:"wrap"}}>
+          <div style={{display:"flex",gap:"8px",alignItems:"center",flex:1}}>
+            <div style={{position:"relative",display:"inline-flex",alignItems:"center"}}>
+              <input
+                style={{padding:"8px 12px",paddingRight:busquedaInterp?"32px":"12px",border:"1px solid #D1D5DB",borderRadius:"8px",fontSize:"13px",color:"#1A1A1A",background:"#fff",outline:"none",boxSizing:"border-box",fontFamily:"inherit",width:"220px"}}
+                placeholder="Buscar intérprete..."
+                value={busquedaInterp}
+                onChange={e=>setBusquedaInterp(e.target.value)}
+              />
+              {busquedaInterp&&<button onClick={()=>setBusquedaInterp("")} style={{position:"absolute",right:"8px",background:"#EF4444",color:"#FFFFFF",border:"none",borderRadius:"50%",width:"18px",height:"18px",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:"11px",fontWeight:"700",lineHeight:1,padding:0,flexShrink:0}}>×</button>}
+            </div>
+            <select value={filtroParConfig} onChange={e=>setFiltroParConfig(e.target.value)} style={{padding:"8px 12px",border:"1px solid #D1D5DB",borderRadius:"8px",fontSize:"13px",color:"#1A1A1A",background:"#fff",outline:"none",fontFamily:"inherit",cursor:"pointer",height:"36px"}}>
+              <option value="">Todos los idiomas</option>
+              {pares.filter(p=>p.activo!==false).sort((a,b)=>(a.descripcion||"").localeCompare(b.descripcion||"")).map(p=><option key={p.id} value={p.id}>{p.descripcion||(p.idioma_origen&&p.idioma_destino?`${p.idioma_origen} – ${p.idioma_destino}`:"Par sin nombre")}</option>)}
+            </select>
+            {filtroParConfig&&<button onClick={()=>setFiltroParConfig("")} style={{background:"#EF4444",color:"#FFFFFF",border:"none",borderRadius:"50%",width:"20px",height:"20px",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:"12px",fontWeight:"700",lineHeight:1,padding:0,flexShrink:0}}>×</button>}
           </div>
-          <button onClick={()=>{setEditando("nuevo");setFormEdit({nombre:"",apellido:"",email:"",telefono:"",ciudad:"",modalidad_trabajo:"ambas",es_host_zoom:false,notas:"",activo:true});}} style={S.btnA}>+ Nuevo intérprete</button>
+          <button onClick={()=>{setEditando("nuevo");setFormEdit({nombre:"",apellido:"",email:"",telefono:"",ciudad:"",modalidad_trabajo:"ambas",es_host_zoom:false,notas:"",par_ids:[],activo:true});}} style={S.btnA}>+ Nuevo intérprete</button>
         </div>
 
         {/* Form edición */}
@@ -1961,6 +1978,14 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
               </select></div>
           </div>
           <div style={{marginBottom:"12px"}}><label style={S.lbl}>Notas</label><textarea style={{...S.inp,minHeight:"60px"}} value={formEdit.notas||""} onChange={e=>setFormEdit(f=>({...f,notas:e.target.value}))}/></div>
+          <div style={{...S.fila,marginBottom:"12px"}}>
+            <div style={S.camp}><label style={S.lbl}>Par de idiomas</label>
+              <select style={S.sel} value={(formEdit.par_ids||[])[0]||""} onChange={e=>setFormEdit(f=>({...f,par_ids:e.target.value?[Number(e.target.value)]:[]}))}>
+                <option value="">Seleccionar…</option>
+                {pares.filter(p=>p.activo!==false).sort((a,b)=>(a.descripcion||"").localeCompare(b.descripcion||"")).map(p=><option key={p.id} value={p.id}>{p.descripcion||(p.idioma_origen&&p.idioma_destino?`${p.idioma_origen} – ${p.idioma_destino}`:"Par sin nombre")}</option>)}
+              </select>
+            </div>
+          </div>
           <label style={{display:"flex",gap:"8px",alignItems:"center",cursor:"pointer",fontSize:"17px",color:C.rojo,fontWeight:"500",marginBottom:"16px"}}>
             <input type="checkbox" checked={!!formEdit.es_host_zoom} onChange={e=>setFormEdit(f=>({...f,es_host_zoom:e.target.checked}))}/> 🔑 Host Zoom MundoChile
           </label>
@@ -1973,10 +1998,11 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
 
         {interpretes
           .filter(i=>!busquedaInterp.trim()||(`${i.nombre||""} ${i.apellido||""}`).toLowerCase().includes(busquedaInterp.toLowerCase().trim()))
+          .filter(i=>!filtroParConfig||(i.par_ids||[]).includes(Number(filtroParConfig))||(interpPares[i.id]||[]).includes(Number(filtroParConfig)))
           .map(i=>{
             const nombreCompleto=`${i.nombre||""}${i.apellido?" "+i.apellido:""}`;
             const aColor=avatarColor(nombreCompleto);
-            const parsDelInterp=pares.filter(p=>(interpPares[i.id]||[]).includes(p.id));
+            const parsDelInterp=pares.filter(p=>(interpPares[i.id]||[]).includes(p.id)||(i.par_ids||[]).includes(p.id));
             return(
               <div key={i.id}
                 style={{border:`1.5px solid ${C.grisBorde}`,borderRadius:"12px",padding:"14px 20px",marginBottom:"10px",background:"#fff",display:"flex",justifyContent:"space-between",alignItems:"center",gap:"12px",transition:"background 0.1s",opacity:i.activo===false?0.55:1}}
@@ -1987,19 +2013,16 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
                     {(i.nombre||"?").slice(0,1).toUpperCase()}
                   </div>
                   <div style={{flex:1,minWidth:0}}>
-                    <div style={{fontWeight:"500",fontSize:"16px",color:C.texto,display:"flex",alignItems:"center",gap:"6px",flexWrap:"nowrap"}}>
-                      {nombreCompleto}
+                    <div style={{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap"}}>
+                      <span style={{fontWeight:"500",fontSize:"16px",color:C.texto,whiteSpace:"nowrap"}}>{nombreCompleto}</span>
                       {i.es_host_zoom&&<span title="Host Zoom MundoChile" style={{fontSize:"13px",cursor:"help"}}>🔑</span>}
                       {(i.modalidad_trabajo==="ambas"||i.modalidad_trabajo==="online")&&<span title="Maneja plataforma Zoom" style={{fontSize:"13px",cursor:"help"}}>💻</span>}
                       {(i.modalidad_trabajo==="ambas"||i.modalidad_trabajo==="presencial")&&<span title="Disponible presencial" style={{fontSize:"13px",cursor:"help"}}>📍</span>}
+                      {parsDelInterp.map(p=>{const clr=IDIOMA_PILL_CLR[p.idioma_origen]||"#4C6EF5";const desc=p.descripcion||(p.idioma_origen&&p.idioma_destino?`${p.idioma_origen} – ${p.idioma_destino}`:"");return(<span key={p.id} style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"2px 9px",borderRadius:"20px",background:"#FFFFFF",border:`2px solid ${clr}`,color:"#1A1A1A",fontSize:"13px",fontWeight:"500",whiteSpace:"nowrap",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}><FlagImg idioma={p.idioma_origen}/>{desc}</span>);})}
                     </div>
-                    <div style={{display:"flex",gap:"14px",marginTop:"4px",flexWrap:"wrap",alignItems:"center"}}>
-                      {i.ciudad&&<span style={{fontSize:"15px",color:C.textoMed}}>📍 {i.ciudad}</span>}
-                      {i.email&&<CampoCopia valor={i.email} wrapStyle={{fontSize:"14px",color:"#5B5B5B"}}/>}
-                      {i.telefono&&<CampoCopia valor={i.telefono} wrapStyle={{fontSize:"14px",color:"#5B5B5B"}}/>}
-                    </div>
-                    {parsDelInterp.length>0&&<div style={{display:"flex",flexWrap:"wrap",gap:"4px",marginTop:"6px"}}>
-                      {parsDelInterp.map(p=>{const clr=IDIOMA_PILL_CLR[p.idioma_origen]||"#4C6EF5";return(<span key={p.id} style={{display:"inline-flex",alignItems:"center",padding:"2px 9px",borderRadius:"20px",background:"#FFFFFF",border:`2px solid ${clr}`,color:"#1A1A1A",fontSize:"13px",fontWeight:"500",whiteSpace:"nowrap",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>{p.idioma_origen} — {p.idioma_destino}</span>);})}
+                    {(i.email||i.telefono)&&<div style={{display:"flex",gap:"14px",marginTop:"5px",flexWrap:"wrap",alignItems:"center"}}>
+                      {i.email&&<CampoCopia valor={i.email} wrapStyle={{fontSize:"13px",color:"#5B5B5B"}}/>}
+                      {i.telefono&&<CampoCopia valor={i.telefono} wrapStyle={{fontSize:"13px",color:"#5B5B5B"}}/>}
                     </div>}
                   </div>
                 </div>
@@ -2147,9 +2170,10 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
             <div style={S.camp}><label style={S.lbl}>Nombre *</label>{EF("nombre")}</div>
           </div>
           <div style={{marginBottom:"16px"}}><label style={S.lbl}>Dirección</label>{EF("direccion")}</div>
+          {errorGuardar&&<div style={{background:"#FEF2F2",border:"1px solid #FECACA",borderRadius:"8px",padding:"8px 12px",marginBottom:"12px",color:"#DC2626",fontSize:"13px"}}>⚠️ {errorGuardar}</div>}
           <div style={{display:"flex",gap:"8px"}}>
             <button onClick={()=>guardar("lugares",formEdit,editando)} style={S.btnA}>💾 Guardar</button>
-            <button onClick={()=>{setEditando(null);setFormEdit({});}} style={S.btnG}>Cancelar</button>
+            <button onClick={()=>{setEditando(null);setFormEdit({});setErrorGuardar(null);}} style={S.btnG}>Cancelar</button>
           </div>
         </div>}
         {lugares.map(l=>(
@@ -2217,7 +2241,8 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }
 
@@ -2225,7 +2250,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
 function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contactos=[],onAbrir,onVerMultidia,vista}) {
   const [colFiltros,setColFiltros]=useState({});
   const [openCol,setOpenCol]=useState(null);
-  const [mesFiltro,setMesFiltro]=useState("");
+  const [mesesFiltro,setMesesFiltro]=useState(new Set());
   const [celdaActiva,setCeldaActiva]=useState(null);
   const tablaRef=useRef(null);
   const filteredRef=useRef([]);
@@ -2287,7 +2312,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
     "Nro Boleta Intérprete 2":[...new Set(allRows.map(r=>r.ev.nro_boleta_2||""))].filter(Boolean),
   }),[allRows]);
   const filtered=useMemo(()=>allRows.filter(r=>{
-    if(mesFiltro&&r.mesLargo!==mesFiltro)return false;
+    if(mesesFiltro.size>0&&!mesesFiltro.has(r.mesLargo))return false;
     if(colFiltros["Mes"]&&r.mesStr!==colFiltros["Mes"])return false;
     if(colFiltros["Orden de Compra"]&&(r.ev.nro_oc||"")!==colFiltros["Orden de Compra"])return false;
     if(colFiltros["Cliente"]&&(r.cli?.nombre_empresa||"")!==colFiltros["Cliente"])return false;
@@ -2312,7 +2337,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
     if(colFiltros["Nro OT 2"]&&(r.a2?.nro_ot||"")!==colFiltros["Nro OT 2"])return false;
     if(colFiltros["Nro Boleta Intérprete 2"]&&(r.ev.nro_boleta_2||"")!==colFiltros["Nro Boleta Intérprete 2"])return false;
     return true;
-  }),[allRows,mesFiltro,colFiltros]);
+  }),[allRows,mesesFiltro,colFiltros]);
   useEffect(()=>{filteredRef.current=filtered;},[filtered]);
   useEffect(()=>{
     const el=tablaRef.current;
@@ -2365,30 +2390,31 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
   const hoyISO=toISO(new Date());
   const byMonth={};let rowIdx=0;
   filtered.forEach(r=>{if(!byMonth[r.mesKey])byMonth[r.mesKey]={label:r.mesLargo,rows:[]};byMonth[r.mesKey].rows.push(r);});
-  const hayFiltros=mesFiltro||Object.values(colFiltros).some(Boolean);
-  const mesIdx=mesFiltro?mesesDisponibles.indexOf(mesFiltro):-1;
-  const navGrilla=(dir)=>{
-    if(!mesesDisponibles.length)return;
-    if(mesIdx===-1){setMesFiltro(dir>0?mesesDisponibles[0]:mesesDisponibles[mesesDisponibles.length-1]);}
-    else{const ni=mesIdx+dir;if(ni>=0&&ni<mesesDisponibles.length)setMesFiltro(mesesDisponibles[ni]);}
-  };
+  const hayFiltros=mesesFiltro.size>0||Object.values(colFiltros).some(Boolean);
   const countMes=filtered.length;
-  const mesLabel=mesFiltro||"Todos los meses";
-  const btnGrilla={background:"rgba(255,255,255,0.15)",color:"#FFFFFF",border:"none",borderRadius:"8px",padding:"6px 14px",fontSize:"14px",cursor:mesesDisponibles.length?"pointer":"default",fontFamily:"inherit",opacity:mesesDisponibles.length?1:0.4};
+  const toggleMes=(mes)=>setMesesFiltro(prev=>{const n=new Set(prev);n.has(mes)?n.delete(mes):n.add(mes);return n;});
   return (
     <div style={{paddingBottom:"80px",width:"100%"}}>
-      <div style={{padding:"8px 16px",display:"grid",gridTemplateColumns:"1fr auto 1fr",alignItems:"center",background:"rgba(26,47,90,0.97)",position:"relative"}}>
-        <div style={{display:"flex",justifyContent:"flex-end",paddingRight:"12px"}}>
-          <button onClick={()=>navGrilla(-1)} style={btnGrilla} onMouseEnter={e=>{if(mesesDisponibles.length)e.currentTarget.style.background="rgba(255,255,255,0.25)";}} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>← Ant</button>
-        </div>
-        <div style={{display:"flex",alignItems:"center",gap:"0",background:"transparent",borderRadius:"8px",overflow:"hidden",border:"2px solid rgba(255,255,255,0.85)"}}>
-          <span style={{padding:"6px 18px",color:"#FFFFFF",fontSize:"14px",fontWeight:"700",whiteSpace:"nowrap"}}>{mesLabel}</span>
-          <span style={{padding:"6px 14px",background:"rgba(255,255,255,0.12)",color:"rgba(255,255,255,0.85)",fontSize:"12px",fontWeight:"600",whiteSpace:"nowrap",borderLeft:"1px solid rgba(255,255,255,0.4)"}}>{countMes} evento{countMes!==1?"s":""}</span>
-        </div>
-        <div style={{display:"flex",justifyContent:"flex-start",paddingLeft:"12px"}}>
-          <button onClick={()=>navGrilla(1)} style={btnGrilla} onMouseEnter={e=>{if(mesesDisponibles.length)e.currentTarget.style.background="rgba(255,255,255,0.25)";}} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>Sig →</button>
-        </div>
-        {Object.values(colFiltros).some(Boolean)&&<button onClick={()=>setColFiltros({})} style={{position:"absolute",right:"16px",padding:"5px 10px",background:"#EF4444",color:"#FFFFFF",border:"none",borderRadius:"6px",cursor:"pointer",fontSize:"11px",fontFamily:"inherit"}}>✕ Filtros</button>}
+      <div style={{padding:"8px 16px",display:"flex",alignItems:"center",gap:"6px",flexWrap:"wrap",background:"rgba(26,47,90,0.97)",borderBottom:"1px solid rgba(255,255,255,0.10)"}}>
+        <button onClick={()=>setMesesFiltro(new Set())}
+          style={{padding:"4px 14px",borderRadius:"20px",fontSize:"12px",fontWeight:"600",cursor:"pointer",fontFamily:"inherit",border:"none",flexShrink:0,
+            background:mesesFiltro.size===0?"#FFFFFF":"rgba(255,255,255,0.15)",
+            color:mesesFiltro.size===0?"#1E3A5F":"#FFFFFF"}}>
+          Todos
+        </button>
+        {mesesDisponibles.map(mes=>{
+          const sel=mesesFiltro.has(mes);
+          return(<button key={mes} onClick={()=>toggleMes(mes)}
+            style={{padding:"4px 14px",borderRadius:"20px",fontSize:"12px",fontWeight:"600",cursor:"pointer",fontFamily:"inherit",border:"none",flexShrink:0,
+              background:sel?"#FFFFFF":"rgba(255,255,255,0.15)",
+              color:sel?"#1E3A5F":"#FFFFFF"}}>
+            {mes}
+          </button>);
+        })}
+        <span style={{marginLeft:"auto",padding:"4px 12px",background:"rgba(255,255,255,0.12)",color:"rgba(255,255,255,0.85)",fontSize:"12px",fontWeight:"600",borderRadius:"20px",whiteSpace:"nowrap",flexShrink:0}}>
+          {countMes} evento{countMes!==1?"s":""}
+        </span>
+        {Object.values(colFiltros).some(Boolean)&&<button onClick={()=>setColFiltros({})} style={{padding:"4px 10px",background:"#EF4444",color:"#FFFFFF",border:"none",borderRadius:"20px",cursor:"pointer",fontSize:"11px",fontFamily:"inherit",flexShrink:0}}>✕ Col</button>}
       </div>
       <div ref={tablaRef} style={{overflowX:"auto",overflowY:"auto",width:"100%",height:"calc(100vh - 200px)",outline:"none",background:"#F1F5F9"}} tabIndex={0}>
       <table style={{borderCollapse:"collapse",tableLayout:"fixed",minWidth:"2200px",width:"100%",fontSize:"13px",background:"#F1F5F9"}}>
@@ -2454,7 +2480,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
             })}
           </tbody>
         ))}
-        {mesFiltro&&(()=>{
+        {mesesFiltro.size>0&&(()=>{
           const totalBoleta1=filtered.reduce((sum,r)=>sum+(Number(r.a1?.nro_boleta)||0),0);
           const totalBoleta2=filtered.reduce((sum,r)=>sum+(Number(r.ev.nro_boleta_2)||0),0);
           const totalBoletas=totalBoleta1+totalBoleta2;
@@ -2882,7 +2908,7 @@ export default function App() {
   // Búsqueda, filtros y toasts
   const [busqueda,setBusqueda]=useState("");
   const [buscando,setBuscando]=useState(false);
-  const [filtros,setFiltros]=useState({estado:"",modalidad:"",tipo:"",interprete_id:"",cliente_id:"",par_id:"",proveedor_av:""});
+  const [filtros,setFiltros]=useState({estado:"",modalidad:"",tipo:"",interprete_id:"",cliente_id:"",par_id:"",proveedor_av:"",mes:""});
   const [mostrarFiltros,setMostrarFiltros]=useState(false);
   const [toasts,setToasts]=useState([]);
   const addToast=useCallback((msg,type="info",retry=null)=>{
@@ -2966,6 +2992,7 @@ export default function App() {
     if(filtros.cliente_id) evs=evs.filter(e=>String(e.cliente_id)===String(filtros.cliente_id));
     if(filtros.par_id) evs=evs.filter(e=>(e.asignaciones||[]).some(a=>String(a.par_id)===String(filtros.par_id)));
     if(filtros.proveedor_av) evs=evs.filter(e=>{const eqs=(e.evento_dias||[]).flatMap(d=>d.equipos_dia||[]);if(filtros.proveedor_av==="sin_proveedor")return eqs.length>0&&eqs.every(eq=>!eq.proveedor_id);return eqs.some(eq=>String(eq.proveedor_id)===String(filtros.proveedor_av));});
+    if(filtros.mes&&filtros.mes!=="todos"){const m=Number(filtros.mes);evs=evs.filter(e=>new Date(e.fecha_inicio+"T12:00:00").getMonth()+1===m);}
     const seen=new Set();
     return evs.filter(e=>{if(seen.has(e.id))return false;seen.add(e.id);return true;});
   },[eventos,busqueda,filtros,clientes,interpretes]);
