@@ -104,7 +104,7 @@ const TIPOS      = ["Simultánea","Consecutiva","Whispering"];
 const tiposArr=(t)=>{if(Array.isArray(t))return t;if(!t)return["Simultánea"];if(typeof t==="string"&&t.startsWith("{")&&t.endsWith("}"))return t.slice(1,-1).split(",").map(s=>s.replace(/^"|"$/g,"").trim());return[t];};
 // Convierte array JS → literal PostgreSQL text[]: ["A","B"] → {A,B}
 const tiposPg    = (t) => `{${tiposArr(t).join(',')}}`;
-const MODALIDADES= ["remoto","presencial","hibrido"];
+const MODALIDADES= ["presencial","remoto","hibrido"];
 const LBL_MODAL  = {remoto:"Remoto",presencial:"Presencial",hibrido:"Híbrido"};
 const PLATAFORMAS= ["Zoom MundoChile","Zoom Cliente","Teams","Webex","Meet","Otro"];
 const ZOOM_ADMIN = ["Magix","RLA","El mismo cliente","Otro"];
@@ -185,7 +185,7 @@ const evVacio = () => ({
   id:null, cliente_id:"", nro_oc:"", nombre_evento:"", tipo:["Simultánea"],
   fecha_inicio:toISO(new Date(new Date().getTime()+86400000)), fecha_termino:toISO(new Date(new Date().getTime()+86400000)), hora_inicio:"09:00", hora_termino:"13:00",
   jornada:"Media Jornada", jornada_personalizada:"", lugar:"", lugar_detalle:"",
-  modalidad:"remoto", plataforma:"Zoom MundoChile", zoom_owner:"mundochile",
+  modalidad:"presencial", plataforma:"Zoom MundoChile", zoom_owner:"mundochile",
   zoom_administrador:"", zoom_link:"", estado:"Facturación Pendiente", numero_factura:"", comentarios:"",
   nro_hes:"", nro_otros:"", comentarios_av:"", contacto_id:"", fecha_emision:"",
   asignaciones:[], dias:[], equipos:[],
