@@ -648,6 +648,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
     scrollToNewAsigRef.current=true;
     if(dIdx===null) setForm(f=>({...f,asignaciones:[...f.asignaciones,asigVacia()]}));
     else setForm(f=>{const dias=[...f.dias];dias[dIdx]={...dias[dIdx],asignaciones:[...dias[dIdx].asignaciones,asigVacia()]};return{...f,dias};});
+    setTimeout(()=>{const filas=document.querySelectorAll("[data-fila-asig]");const ul=filas[filas.length-1];if(ul)ul.scrollIntoView({behavior:"smooth",block:"start"});},80);
   };
 
   const addEq=(dIdx)=>{setForm(f=>{const dias=[...f.dias];dias[dIdx]={...dias[dIdx],equipos:[...(dias[dIdx].equipos||[]),eqVacio()]};return{...f,dias};});setTimeout(()=>{const t=document.querySelector(`[data-dia-section="${dIdx}"]`);const m=document.querySelector("[data-modal-scroll]");if(t&&m)m.scrollTop=t.offsetTop-m.offsetTop;},80);};
