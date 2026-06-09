@@ -1,6 +1,6 @@
 // FilterBar.jsx — MundoChile v3.0 — Una línea, todos dropdowns
 
-export default function FilterBar({ filters, onChange, interpreters = [], clientes = [], pares = [], proveedores = [] }) {
+export default function FilterBar({ filters, onChange, interpreters = [], clientes = [], pares = [], proveedores = [], showClear = true }) {
   const hayFiltro = filters.estado || filters.modalidad || filters.tipo || filters.interprete_id || filters.cliente_id || filters.par_id || filters.proveedor_av || filters.mes;
   const limpiar = { estado:"", modalidad:"", tipo:"", interprete_id:"", cliente_id:"", par_id:"", proveedor_av:"", mes:"" };
 
@@ -130,7 +130,7 @@ export default function FilterBar({ filters, onChange, interpreters = [], client
         </div>
       )}
 
-      {hayFiltro && (
+      {showClear && hayFiltro && (
         <button
           onClick={() => onChange(limpiar)}
           title="Limpiar filtros"
