@@ -121,7 +121,10 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
   const borderColor = colorCliente(ev.cliente_id);
   const esPresencial = ev.modalidad === "presencial" || ev.modalidad === "hibrido";
   const esZoomMC    = ev.plataforma === "Zoom MundoChile" || ev.plataforma === "Zoom";
-  const lugarDir    = esPresencial && ev.lugar ? (lugares.find(l => ev.lugar === l.nombre || ev.lugar.endsWith(" – " + l.nombre))?.direccion || "") : "";
+  const _TL         = {hotel:"Hotel",centro_eventos:"Centro de eventos",universidad:"Universidad",edificio_corporativo:"Edificio corporativo",oficina_cliente:"Oficina del cliente",planta_produccion:"Planta de producción",faena_minera:"Faena minera",ministerio:"Ministerio",edificio_gobierno:"Edificio de gobierno",otro:"Otro"};
+  const _lr         = esPresencial && ev.lugar ? lugares.find(l => ev.lugar === l.nombre || (l.tipo && _TL[l.tipo] && ev.lugar === _TL[l.tipo] + " – " + l.nombre)) : null;
+  const lugarDisp   = _lr ? (_lr.tipo && _TL[_lr.tipo] ? _TL[_lr.tipo] + " " + _lr.nombre : _lr.nombre) : (ev.lugar || "");
+  const lugarDir    = _lr?.direccion || "";
   const modalLabel  = LBL_MODAL[ev.modalidad] || ev.modalidad;
   const estadoLabel = ev.estado === "Facturado" ? "Facturado" : "Facturación Pendiente";
 
@@ -281,7 +284,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             {esPresencial && ev.lugar && (
               <div style={{ marginBottom:"8px" }}>
                 <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
-                  <span style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"5px 11px", borderRadius:6, fontSize:13, fontWeight:700, color:"#9A3A3A", background:"#FEF2F2", border:"2px solid #D34848", whiteSpace:"nowrap" }}>📍 {ev.lugar.replace(" – ", " ")}</span>
+                  <span style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"5px 11px", borderRadius:6, fontSize:13, fontWeight:700, color:"#9A3A3A", background:"#FEF2F2", border:"2px solid #D34848", whiteSpace:"nowrap" }}>📍 {lugarDisp}</span>
                   {ev.lugar_detalle && <span style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"5px 11px", borderRadius:6, fontSize:13, fontWeight:700, color:"#9A3A3A", background:"#FEF2F2", border:"2px solid #D34848", whiteSpace:"nowrap" }}>📍 {ev.lugar_detalle}</span>}
                 </div>
                 {lugarDir && <div style={{ marginTop:"5px", fontSize:"12px", fontWeight:"500", color:"#7A2929" }}>📌 {lugarDir}</div>}
