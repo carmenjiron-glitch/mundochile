@@ -328,7 +328,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                 return (
                   <div key={key} style={{ marginBottom:"12px" }}>
                     <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"6px" }}>
-                      <span style={{ fontSize:"12px", fontWeight:"600", color:pillClr, textTransform:"uppercase", letterSpacing:"0.06em" }}>{key}</span>
+                      <span style={{ fontSize:"11px", fontWeight:700, color:"#92400E", textTransform:"uppercase", letterSpacing:"0.06em", background:"#FFFBEB", border:"1.5px solid #FCD34D", borderRadius:"7px", padding:"2px 8px" }}>{key}</span>
                       {hp && <span style={{ fontSize:"14px", color:"#4F5663", display:"flex", alignItems:"center", gap:"4px" }}>🕐 {hp.slice(0,5)} hrs</span>}
                     </div>
                     <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"5px" }}>
@@ -437,7 +437,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             const flagSz  = solidPill ? 13 : 14;
             return (
               <div key={key} style={{ marginTop:14 }}>
-                <div style={{ fontSize:solidPill?12:14, fontWeight:600, color:"#0E4582", textTransform:"uppercase", letterSpacing:"0.07em", marginBottom:5, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", textAlign:"center", width:"100%", display:"block" }}>
+                <div style={{ fontSize:solidPill?11:12, fontWeight:700, color:"#92400E", textTransform:"uppercase", letterSpacing:"0.07em", marginBottom:6, textAlign:"center", background:"#FFFBEB", border:"1.5px solid #FCD34D", borderRadius:"8px", padding:"3px 10px", display:"block", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
                   {key}
                 </div>
                 <div style={{ display:"grid", gridTemplateColumns:solidPill?"1fr":"1fr 1fr", gap:6, ...(pillsHalf?{maxWidth:"50%"}:{}) }}>
