@@ -424,7 +424,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
             </div>
           )}
           {esPresencial && ev.lugar && (
-            <span style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"4px 10px", borderRadius:6, fontSize:12, fontWeight:700, lineHeight:1.4, color:"#8F2424", background:"#FEF2F2", border:"2px solid #CE3434", whiteSpace:"nowrap", marginTop:10 }}>📍 {lugarDisp}</span>
+            <span style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"4px 10px", borderRadius:6, fontSize:12, fontWeight:700, lineHeight:1.4, color:"#8F2424", background:"#FEF2F2", border:"2px solid #CE3434", flexWrap:"wrap", maxWidth:"100%", wordBreak:"break-word", marginTop:10 }}>📍 {lugarDisp}</span>
           )}
 
           {/* Intérpretes agrupados */}
