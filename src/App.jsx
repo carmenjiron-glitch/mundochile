@@ -974,6 +974,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                   </div>
                   {(dia.asignaciones||[]).length===0&&<div style={{color:C.textoSuave,fontSize:"15px",textAlign:"center",padding:"12px",border:`1.5px dashed ${C.grisBorde}`,borderRadius:"8px"}}>Sin intérpretes para este día</div>}
                   {(dia.asignaciones||[]).map((a,aIdx)=><FilaAsig key={aIdx} a={a} idx={aIdx} dIdx={dIdx}/>)}
+                  {(dia.asignaciones||[]).length>0&&<button onClick={()=>addAsig(dIdx)} style={{...S.btnP,width:"100%",padding:"9px",marginTop:"8px"}}>+ Agregar otro intérprete</button>}
                 </div>
                 {/* Equipos AV */}
                 {modEfectiva!=="remoto"&&<div style={{marginTop:"14px",border:"2px solid #155724",borderRadius:"16px",padding:"16px",background:"rgba(21,87,36,0.06)",marginBottom:"16px"}}>
