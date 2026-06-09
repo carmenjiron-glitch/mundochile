@@ -407,7 +407,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
           </div>
 
           {/* Badges tipo + modalidad */}
-          <div style={{ display:"flex", gap:5, flexWrap:"nowrap", alignItems:"center" }}>
+          <div style={{ display:"flex", gap:5, flexWrap:"wrap", alignItems:"center" }}>
             {(Array.isArray(ev.tipo)?ev.tipo:[ev.tipo||"Simultánea"]).map(t=><Chip key={t} label={t} emoji={t==="Simultánea"?<IconHeadphones size={13}/>:t==="Consecutiva"?<IconMicOutline size={13}/>:<IconChatBubble size={13}/>} fontSize={13} padding="4px 11px" dark={false} fw={500} />)}
             <Chip label={modalLabel} emoji={ev.modalidad==="presencial"?<IconoPresencial size={13}/>:ev.modalidad==="hibrido"?<IconArrowsExchange size={13}/>:<IconAV size={13}/>} fontSize={13} padding="4px 11px" dark={false} fw={500} />
           </div>
