@@ -1,5 +1,5 @@
 // MundoChile v2.1 — Gestión de Interpretaciones
-import { useState, useEffect, useCallback, useRef, useMemo, Fragment } from "react";
+import { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo, Fragment } from "react";
 import { createClient } from "@supabase/supabase-js";
 import * as XLSX from "xlsx";
 import html2canvas from "html2canvas";
@@ -569,6 +569,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
       }));
     },[]);
     const edit=(k,v)=>{
+      if(modalScrollRef.current&&modalScrollRef.current.scrollTop>0)savedScrollPos.current=modalScrollRef.current.scrollTop;
       const extra=k==="interprete_id"?{conflicto_ok:false}:{};
       if(dIdx===null) setForm(f=>{const asigs=[...f.asignaciones];asigs[idx]={...asigs[idx],[k]:v,...extra};return{...f,asignaciones:asigs};});
       else setForm(f=>{const dias=[...f.dias],asigs=[...dias[dIdx].asignaciones];asigs[idx]={...asigs[idx],[k]:v,...extra};dias[dIdx]={...dias[dIdx],asignaciones:asigs};return{...f,dias};});
@@ -644,6 +645,9 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
   };
 
   const scrollToNewAsigRef=useRef(false);
+  const modalScrollRef=useRef(null);
+  const savedScrollPos=useRef(0);
+  useLayoutEffect(()=>{if(savedScrollPos.current>0&&modalScrollRef.current){modalScrollRef.current.scrollTop=savedScrollPos.current;savedScrollPos.current=0;}});
   const addAsig=(dIdx=null)=>{
     scrollToNewAsigRef.current=true;
     if(dIdx===null) setForm(f=>({...f,asignaciones:[...f.asignaciones,asigVacia()]}));
@@ -673,7 +677,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"9px 16px",background:tab===t.id?"#3a7bd5":"#AECBEF",border:"none",borderRadius:"8px",cursor:"pointer",color:tab===t.id?"#fff":"#173060",fontWeight:"500",fontSize:"15px",fontFamily:"inherit",margin:"6px 4px",opacity:1}}>{t.lbl}</button>)}
         </div>
         {/* Cuerpo */}
-        <div data-modal-scroll style={{overflowY:"auto",flex:1,padding:"20px 24px"}}>
+        <div ref={modalScrollRef} data-modal-scroll style={{overflowY:"auto",flex:1,padding:"20px 24px"}}>
           {error&&<div style={{background:C.rojoClaro,color:C.rojo,padding:"10px 14px",borderRadius:"8px",marginBottom:"20px",fontSize:"13px",fontWeight:"500"}}>{error}</div>}
 
           {/* ── TAB GENERAL ── */}
