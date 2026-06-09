@@ -3256,9 +3256,8 @@ export default function App() {
             <button onClick={exportarExcelFiltrado} style={{display:"flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"12px",background:"#059669",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",height:"26px",boxShadow:"0 2px 4px rgba(5,150,105,0.3)",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📊 Excel</button>
           </div>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:hayFS?"repeat(5,0.8fr) repeat(2,1fr)":"repeat(5,1fr)",gap:"8px",padding:"8px",alignItems:"stretch"}}>
+        <div style={{display:"grid",gridTemplateColumns:hayFS?"repeat(7,1fr)":"repeat(5,1fr)",gap:"8px",padding:"8px",alignItems:"stretch"}}>
           {diasLF.map((d,i)=>renderCol(d,i,false))}
-          {hayFS&&<div style={{background:"rgba(255,255,255,0.14)",borderRadius:"2px",alignSelf:"stretch"}}/>}
           {hayFS&&diasFS.map((d,i)=>renderCol(d,i+5,true))}
         </div>
       </div>
