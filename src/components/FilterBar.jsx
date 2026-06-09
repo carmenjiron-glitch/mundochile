@@ -37,7 +37,7 @@ export default function FilterBar({ filters, onChange, interpreters = [], client
   const grp = { display: "inline-flex", alignItems: "center", gap: "4px", flexShrink: 0 };
 
   return (
-    <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:"8px", flexWrap:"nowrap", width:"100%", overflow:"hidden" }}>
+    <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:"8px", flexWrap:"nowrap", width:"auto", overflow:"hidden" }}>
 
       <div style={grp}>
         <span style={lbl}>Mes</span>
