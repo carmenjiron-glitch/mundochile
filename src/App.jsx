@@ -401,6 +401,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
   const [guardando,setGuardando]=useState(false);
   const guardandoRef=useRef(false);
   const [error,setError]=useState("");
+  const [conflictoMsg,setConflictoMsg]=useState("");
   const [guardadoOk,setGuardadoOk]=useState(false);
   const setF=useCallback((k,v)=>{guardandoRef.current=false;setForm(f=>({...f,[k]:v}));},[ ]);
   const [zoomOtro,setZoomOtro]=useState(!ZOOM_ADMIN.includes(form.zoom_administrador)&&!!form.zoom_administrador);
@@ -455,7 +456,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
     if(!form.cliente_id){guardandoRef.current=false;setError("Selecciona un cliente");return;}
     const _asigsTodas=esMultidia?form.dias.flatMap(d=>d.asignaciones||[]):form.asignaciones;
     const _confPend=_asigsTodas.find(a=>a.interprete_id&&!a.conflicto_ok&&conflicto(a.interprete_id));
-    if(_confPend){const _ci=interpretes.find(x=>x.id===_confPend.interprete_id);setError(`⚠️ ${_ci?.nombre||"Un intérprete"} tiene un conflicto de agenda sin resolver. Resuélvelo en el tab Intérpretes antes de guardar.`);guardandoRef.current=false;return;}
+    if(_confPend){const _ci=interpretes.find(x=>x.id===_confPend.interprete_id);setConflictoMsg(`${_ci?.nombre||"Un intérprete"} tiene un conflicto de agenda sin resolver. Resuélvelo en el tab Intérpretes antes de guardar.`);guardandoRef.current=false;return;}
     setGuardando(true);setError("");
     try {
       const payload={
@@ -1066,6 +1067,14 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           setModalNuevoProveedor(null);
         }}
       />}
+      {conflictoMsg&&<div onClick={()=>setConflictoMsg("")} style={{position:"absolute",inset:0,background:"rgba(0,0,0,0.50)",zIndex:5,display:"flex",alignItems:"center",justifyContent:"center",borderRadius:"20px"}}>
+        <div onClick={e=>e.stopPropagation()} style={{background:"#FEF2F2",border:"3px solid #DC2626",borderRadius:"16px",padding:"32px 36px",maxWidth:"420px",width:"90%",boxShadow:"0 24px 64px rgba(0,0,0,0.40)",textAlign:"center"}}>
+          <div style={{fontSize:"48px",marginBottom:"14px"}}>🚫</div>
+          <div style={{fontSize:"18px",fontWeight:"700",color:"#991B1B",marginBottom:"10px"}}>Conflicto de agenda</div>
+          <div style={{fontSize:"14px",color:"#7F1D1D",lineHeight:"1.65",marginBottom:"24px"}}>{conflictoMsg}</div>
+          <button onClick={()=>{setConflictoMsg("");setTab("interpretes");}} style={{padding:"11px 28px",background:"#DC2626",color:"#fff",border:"none",borderRadius:"10px",fontWeight:"700",fontSize:"14px",cursor:"pointer",fontFamily:"inherit",boxShadow:"0 4px 12px rgba(220,38,38,0.35)"}}>Ir al tab Intérpretes →</button>
+        </div>
+      </div>}
     </div>
   );
 }
