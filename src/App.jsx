@@ -3250,7 +3250,7 @@ export default function App() {
           <div style={{flex:1}}/>
           {hayFS?<div style={{color:"rgba(255,255,255,0.70)",fontSize:"13px",fontStyle:"italic"}}>📅 {evsFinSemana.length} evento{evsFinSemana.length!==1?"s":""} este fin de semana</div>:<div style={{color:"rgba(255,255,255,0.65)",fontSize:"13px",fontStyle:"italic"}}>📅 Sin eventos este fin de semana</div>}
         </div>
-        <div style={{display:"grid",gridTemplateColumns:hayFS?"repeat(5,1fr) 2px repeat(2,1fr)":"repeat(5,1fr)",gap:"8px",padding:"8px",alignItems:"stretch"}}>
+        <div style={{display:"grid",gridTemplateColumns:hayFS?"repeat(5,0.8fr) repeat(2,1fr)":"repeat(5,1fr)",gap:"8px",padding:"8px",alignItems:"stretch"}}>
           {diasLF.map((d,i)=>renderCol(d,i,false))}
           {hayFS&&<div style={{background:"rgba(255,255,255,0.14)",borderRadius:"2px",alignSelf:"stretch"}}/>}
           {hayFS&&diasFS.map((d,i)=>renderCol(d,i+5,true))}
