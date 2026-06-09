@@ -573,7 +573,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
       if(modalScrollRef.current&&modalScrollRef.current.scrollTop>0)savedScrollPos.current=modalScrollRef.current.scrollTop;
       const extra=k==="interprete_id"?{conflicto_ok:false}:{};
       if(dIdx===null) setForm(f=>{const asigs=[...f.asignaciones];asigs[idx]={...asigs[idx],[k]:v,...extra};return{...f,asignaciones:asigs};});
-      else setForm(f=>{const dias=[...f.dias],asigs=[...dias[dIdx].asignaciones];asigs[idx]={...asigs[idx],[k]:v,...extra};dias[dIdx]={...dias[dIdx],asignaciones:asigs};return{...f,dias};});
+      else setForm(f=>{const dias=[...f.dias],asigs=[...dias[dIdx].asignaciones],oldVal=asigs[idx]?.[k];asigs[idx]={...asigs[idx],[k]:v,...extra};dias[dIdx]={...dias[dIdx],asignaciones:asigs};if(dIdx===0){for(let d=1;d<dias.length;d++){const dA=[...(dias[d].asignaciones||[])];if(dA[idx]!==undefined&&dA[idx][k]===oldVal){dA[idx]={...dA[idx],[k]:v,...extra};dias[d]={...dias[d],asignaciones:dA};}}}return{...f,dias};});
       if(k==="interprete_id") setAlerta(v?conflicto(v):null);
     };
     const aceptarConflicto=()=>{
@@ -652,12 +652,12 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
   const addAsig=(dIdx=null)=>{
     scrollToNewAsigRef.current=true;
     if(dIdx===null) setForm(f=>({...f,asignaciones:[...f.asignaciones,asigVacia()]}));
-    else setForm(f=>{const dias=[...f.dias];dias[dIdx]={...dias[dIdx],asignaciones:[...dias[dIdx].asignaciones,asigVacia()]};return{...f,dias};});
+    else setForm(f=>{const dias=[...f.dias],cnt=(dias[dIdx].asignaciones||[]).length;dias[dIdx]={...dias[dIdx],asignaciones:[...(dias[dIdx].asignaciones||[]),asigVacia()]};if(dIdx===0){for(let d=1;d<dias.length;d++){if((dias[d].asignaciones||[]).length===cnt)dias[d]={...dias[d],asignaciones:[...(dias[d].asignaciones||[]),asigVacia()]};}}return{...f,dias};});
     setTimeout(()=>{const filas=document.querySelectorAll("[data-fila-asig]");const ul=filas[filas.length-1];const m=document.querySelector("[data-modal-scroll]");if(ul&&m)m.scrollTop=ul.getBoundingClientRect().top-m.getBoundingClientRect().top+m.scrollTop;},80);
   };
 
-  const addEq=(dIdx)=>{setForm(f=>{const dias=[...f.dias];dias[dIdx]={...dias[dIdx],equipos:[...(dias[dIdx].equipos||[]),eqVacio()]};return{...f,dias};});setTimeout(()=>{const t=document.querySelector(`[data-dia-section="${dIdx}"]`);const m=document.querySelector("[data-modal-scroll]");if(t&&m)m.scrollTop=t.offsetTop-m.offsetTop;},80);};
-  const editEq=(dIdx,eIdx,k,v)=>setForm(f=>{const dias=[...f.dias],eqs=[...(dias[dIdx].equipos||[])];eqs[eIdx]={...eqs[eIdx],[k]:v};dias[dIdx]={...dias[dIdx],equipos:eqs};return{...f,dias};});
+  const addEq=(dIdx)=>{setForm(f=>{const dias=[...f.dias],cnt=(dias[dIdx].equipos||[]).length;dias[dIdx]={...dias[dIdx],equipos:[...(dias[dIdx].equipos||[]),eqVacio()]};if(dIdx===0){for(let d=1;d<dias.length;d++){if((dias[d].equipos||[]).length===cnt)dias[d]={...dias[d],equipos:[...(dias[d].equipos||[]),eqVacio()]};}}return{...f,dias};});setTimeout(()=>{const t=document.querySelector(`[data-dia-section="${dIdx}"]`);const m=document.querySelector("[data-modal-scroll]");if(t&&m)m.scrollTop=t.offsetTop-m.offsetTop;},80);};
+  const editEq=(dIdx,eIdx,k,v)=>setForm(f=>{const dias=[...f.dias],eqs=[...(dias[dIdx].equipos||[])],oldVal=eqs[eIdx]?.[k];eqs[eIdx]={...eqs[eIdx],[k]:v};dias[dIdx]={...dias[dIdx],equipos:eqs};if(dIdx===0){for(let d=1;d<dias.length;d++){const dE=[...(dias[d].equipos||[])];if(dE[eIdx]!==undefined&&dE[eIdx][k]===oldVal){dE[eIdx]={...dE[eIdx],[k]:v};dias[d]={...dias[d],equipos:dE};}}}return{...f,dias};});
   const setDiaField=(dIdx,k,v)=>setForm(f=>{const ds=[...f.dias];ds[dIdx]={...ds[dIdx],[k]:v};return{...f,dias:ds};});
   const copyFromPrev=(dIdx)=>setForm(f=>{const ds=[...f.dias],prev=ds[dIdx-1];ds[dIdx]={...ds[dIdx],hora_inicio:prev.hora_inicio,hora_termino:prev.hora_termino,jornada:prev.jornada,tipo:prev.tipo,modalidad:prev.modalidad,lugar:prev.lugar,lugar_detalle:prev.lugar_detalle};return{...f,dias:ds};});
 
