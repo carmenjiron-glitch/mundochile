@@ -3555,6 +3555,13 @@ export default function App() {
                   <div style={{color:"rgba(255,255,255,0.70)",fontSize:"14px",whiteSpace:"nowrap"}}>esta semana</div>
                 </div>);
               })()}
+              {pantalla==="calendario"&&vista==="grilla"&&(()=>{
+                const n=eventosFiltrados.length;
+                return(<div style={{padding:"4.5px 16px",border:"1px solid rgba(255,255,255,0.85)",borderRadius:"9px",background:"transparent",textAlign:"center",flexShrink:0}}>
+                  <div style={{color:"#FFFFFF",fontSize:"17px",fontWeight:"550",lineHeight:1.3,whiteSpace:"nowrap"}}>{n} evento{n!==1?"s":""}</div>
+                  <div style={{color:"rgba(255,255,255,0.70)",fontSize:"13.5px",whiteSpace:"nowrap"}}>{hayFiltros?"filtrado":"en grilla"}</div>
+                </div>);
+              })()}
               {pantalla==="calendario"&&vista!=="agenda"&&vista!=="grilla"&&(()=>{
                 const _t=tituloNav();
                 const _fs=_t.length>40?11:_t.length>30?13:_t.length>22?15:17;
@@ -3573,7 +3580,6 @@ export default function App() {
               <button onClick={()=>{setSemanaOff(0);setMesOff(0);setDiaActual(hoy());}} style={{background:"rgba(255,255,255,0.15)",color:"#FFFFFF",border:"none",borderRadius:"8px",padding:"7px 14px",fontSize:"15px",cursor:"pointer",fontFamily:"inherit"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>Hoy</button>
               <button onClick={navSiguiente} style={{background:"rgba(255,255,255,0.15)",color:"#FFFFFF",border:"none",borderRadius:"8px",padding:"7px 14px",fontSize:"15px",cursor:"pointer",fontFamily:"inherit"}} onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"} onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}>Sig →</button>
             </>}
-            {pantalla==="calendario"&&vista==="grilla"&&(()=>{const añoActual=new Date().getFullYear();const total=eventos.filter(ev=>ev.fecha_inicio&&new Date(ev.fecha_inicio).getFullYear()===añoActual).length;return(<div style={{textAlign:"right",marginRight:"6px"}}><span style={{fontSize:"13px",color:"rgba(255,255,255,0.75)",display:"block"}}>{total} evento{total!==1?"s":""} en {añoActual}</span></div>);})()}
             {buscando
               ?<input autoFocus style={{...S.inp,width:"160px",height:"34px",fontSize:"15px",background:"rgba(255,255,255,0.15)",color:"#fff",borderColor:"rgba(255,255,255,0.3)"}} value={busqueda} onChange={e=>setBusqueda(e.target.value)} onBlur={()=>{if(!busqueda)setBuscando(false);}} placeholder="Buscar…"/>
               :<button onClick={()=>setBuscando(true)} style={{padding:"7px 12px",fontSize:"17px",background:"rgba(255,255,255,0.15)",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}} title="Buscar">🔍</button>
