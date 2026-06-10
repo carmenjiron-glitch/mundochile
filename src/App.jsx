@@ -3691,7 +3691,7 @@ export default function App() {
         {vista!=="grilla"&&<div style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",width:"100%",display:"flex",alignItems:"center",justifyContent:"center",padding:"0 16px",boxSizing:"border-box",position:"sticky"}}>
           {/* CENTRO: FilterBar centrado */}
           <div style={{display:"flex",alignItems:"center",padding:"6px 0"}}>
-            <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes} clientes={clientesConEventos} pares={paresConEventos} proveedores={proveedoresConEventos} showClear={true} hayFinSemana={vista==="semana"&&diasSemana.slice(5,7).some(d=>evsDia(toISO(d)).length>0)}/>
+            <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes} clientes={clientesConEventos} pares={paresConEventos} proveedores={proveedoresConEventos} showClear={true} hayFinSemana={vista==="semana"&&diasSemana.slice(5,7).some(d=>evsDia(toISO(d)).length>0)} esSemana={vista==="semana"}/>
           </div>
           {/* DERECHA: Fichas (solo cuando filtrado) */}
           {vista!=="semana"&&hayFiltros&&<div style={{position:"absolute",right:"16px",top:"50%",transform:"translateY(-50%)"}}>
