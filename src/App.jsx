@@ -3365,7 +3365,7 @@ export default function App() {
                 {esPresD&&evM.lugar&&<div style={{marginBottom:"12px"}}><SLD t="📍 Lugar"/><div style={{display:"flex",gap:6,flexWrap:"wrap"}}><span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"5px 11px",borderRadius:6,fontSize:13,fontWeight:700,color:"#9A3A3A",background:"#FEF2F2",border:"2px solid #D34848",whiteSpace:"nowrap"}}>📍 {evM.lugar}</span>{evM.lugar_detalle&&<span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"5px 11px",borderRadius:6,fontSize:13,fontWeight:700,color:"#9A3A3A",background:"#FEF2F2",border:"2px solid #D34848",whiteSpace:"nowrap"}}>📍 {evM.lugar_detalle}</span>}</div></div>}
                 {!esPresD&&evM.plataforma&&<div style={{marginBottom:"12px"}}><SLD t="💻 Plataforma"/><PlatformChip platform={evM.plataforma==="Zoom"?"Zoom MundoChile":evM.plataforma} isMundoChile={esZoomMCD} extra={esZoomMCD?evM.zoom_administrador:""}/></div>}
                 {grupoEntries.length>0&&<div style={{marginBottom:"4px"}}>
-                  <SLD t="🎙 Intérpretes"/>
+                  <div style={{display:"flex",alignItems:"center",gap:"7px",marginBottom:"10px",padding:"5px 13px",background:"#FFF1F2",border:"1.5px solid #FECDD3",borderRadius:"10px",width:"fit-content",color:"#B91C1C"}}><IconMic size={17}/><span style={{fontSize:"14px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"0.05em"}}>Intérpretes</span></div>
                   {grupoEntries.map(([key,grupo])=>{
                     const pillClr=IDIOMA_PILL_CLR[grupo.idioma]||"#4C6EF5";
                     const hp=grupo.items.find(i=>i.hora)?.hora;
@@ -3469,7 +3469,7 @@ export default function App() {
                     </div>
                     {/* Columna derecha: intérpretes */}
                     <div>
-                      <SLD t="🎙 Intérpretes"/>
+                      <div style={{display:"flex",alignItems:"center",gap:"7px",marginBottom:"10px",padding:"5px 13px",background:"#FFF1F2",border:"1.5px solid #FECDD3",borderRadius:"10px",width:"fit-content",color:"#B91C1C"}}><IconMic size={17}/><span style={{fontSize:"14px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"0.05em"}}>Intérpretes</span></div>
                       {grupoEntries.length===0
                         ?<div style={{color:"#848B95",fontSize:14,fontStyle:"italic"}}>Sin intérpretes asignados</div>
                         :grupoEntries.map(([key,grupo])=>{

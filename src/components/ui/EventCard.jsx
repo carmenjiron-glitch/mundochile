@@ -319,7 +319,7 @@ export default function EventCard({ ev, diaDe, clientes, contactos=[], interpret
 
           {/* COLUMNA DERECHA — intérpretes */}
           <div>
-            <div style={{ fontSize:"13px", fontWeight:"600", color:"#0F172A", textTransform:"uppercase", letterSpacing:"0.04em", marginBottom:"6px" }}>🎙 Intérpretes</div>
+            <div style={{ display:"flex", alignItems:"center", gap:"7px", marginBottom:"10px", padding:"5px 13px", background:"#FFF1F2", border:"1.5px solid #FECDD3", borderRadius:"10px", width:"fit-content", color:"#B91C1C" }}><IconMicOutline size={17}/><span style={{ fontSize:"14px", fontWeight:"700", textTransform:"uppercase", letterSpacing:"0.05em" }}>Intérpretes</span></div>
             {Object.keys(grupos).length === 0 ? (
               <div style={{ color:"#374151", fontSize:13, fontStyle:"italic" }}>Sin intérpretes asignados</div>
             ) : (
