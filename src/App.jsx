@@ -3207,9 +3207,9 @@ export default function App() {
       const iso=toISO(d),evs=evsDia(iso),esHoy=iso===hoy();
       const mesLargo=MESES_L[d.getMonth()].charAt(0).toUpperCase()+MESES_L[d.getMonth()].slice(1);
       const colBg="rgba(255,255,255,0.14)";
-      const hdrBg="rgba(255,255,255,0.10)";
+      const hdrBg="rgba(22,42,82,0.97)";
       return <div key={`${esWeekend?"fs":"lf"}-${i}`} style={{background:colBg,borderRadius:"12px",padding:"10px",minHeight:"calc(100vh - 260px)"}}>
-        <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{padding:"8px 10px",borderRadius:"10px",marginBottom:"8px",background:hdrBg,cursor:"pointer",transition:"background 0.15s",border:`3px solid ${esHoy?"#F97316":"transparent"}`,textAlign:"center"}}
+        <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{padding:"8px 10px",borderRadius:"10px",marginBottom:"8px",background:hdrBg,cursor:"pointer",transition:"background 0.15s",border:`3px solid ${esHoy?"#F97316":"transparent"}`,textAlign:"center",position:"sticky",top:"140px",zIndex:5,backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)"}}
           onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"}
           onMouseLeave={e=>{e.currentTarget.style.background=hdrBg;}}>
           <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"7px",flexWrap:"nowrap"}}>
