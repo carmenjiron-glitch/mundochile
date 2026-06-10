@@ -3229,14 +3229,6 @@ export default function App() {
 
     if(esMobile) return (
       <div style={{padding:"10px 12px 80px"}}>
-        <div style={{display:"flex",gap:"8px",padding:"4px 4px 8px",alignItems:"center",position:"sticky",top:"136px",zIndex:40,background:"rgba(30,58,110,0.95)",backdropFilter:"blur(8px)",borderRadius:"10px",marginBottom:"4px"}}>
-          <button onClick={()=>setPantalla("disponibilidad")} style={{flexShrink:0,display:"flex",alignItems:"center",gap:"6px",padding:"5.5px 12px",borderRadius:"10px",background:"rgba(253,230,138,0.12)",color:"#FDE68A",fontSize:"13px",fontWeight:"500",border:"1.5px solid #FCD34D",height:"29px",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit",letterSpacing:"0.02em",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#86EFAC" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}><polyline points="20 6 9 17 4 12"/></svg>
-            Disponibilidad
-          </button>
-          <div style={{flex:1}}/>
-          {hayFS?<div style={{color:"rgba(255,255,255,0.70)",fontSize:"13px",fontStyle:"italic"}}>📅 {evsFinSemana.length} evento{evsFinSemana.length!==1?"s":""} este fin de semana</div>:<div style={{color:"rgba(255,255,255,0.65)",fontSize:"13px",fontStyle:"italic"}}>📅 Sin eventos este fin de semana</div>}
-        </div>
         {diasLF.map((d,i)=>{
           const iso=toISO(d),evs=evsDia(iso),esHoy=iso===hoy();
           const mesLargo=MESES_L[d.getMonth()].charAt(0).toUpperCase()+MESES_L[d.getMonth()].slice(1);
@@ -3277,20 +3269,6 @@ export default function App() {
 
     return (
       <div style={{padding:"16px 24px 80px"}}>
-        <div style={{display:"flex",gap:"8px",padding:"6px 8px 6px",alignItems:"center",position:"sticky",top:"136px",zIndex:40,background:"rgba(30,58,110,0.95)",backdropFilter:"blur(8px)",borderRadius:"10px",marginBottom:"8px"}}>
-          <button onClick={()=>setPantalla("disponibilidad")} style={{flexShrink:0,display:"flex",alignItems:"center",gap:"6px",padding:"5.5px 12px",borderRadius:"10px",background:"rgba(253,230,138,0.12)",color:"#FDE68A",fontSize:"13px",fontWeight:"500",border:"1.5px solid #FCD34D",height:"29px",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit",letterSpacing:"0.02em",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#86EFAC" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}><polyline points="20 6 9 17 4 12"/></svg>
-            Disponibilidad
-          </button>
-          <div style={{flex:1,display:"flex",justifyContent:"center"}}>
-            {hayFS?<div style={{color:"rgba(255,255,255,0.70)",fontSize:"13px",fontStyle:"italic"}}>📅 {evsFinSemana.length} evento{evsFinSemana.length!==1?"s":""} este fin de semana</div>:<div style={{color:"rgba(255,255,255,0.65)",fontSize:"13px",fontStyle:"italic"}}>📅 Sin eventos este fin de semana</div>}
-          </div>
-          <div style={{display:"flex",gap:"8px",alignItems:"center",visibility:hayFiltros?"visible":"hidden"}}>
-            <button onClick={()=>setFiltros({estado:"",modalidad:"",tipo:"",interprete_id:"",cliente_id:"",par_id:"",proveedor_av:"",mes:""})} title="Limpiar filtros" style={{background:"#EF4444",color:"#FFFFFF",border:"none",borderRadius:"50%",width:20,height:20,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:12,fontWeight:700,flexShrink:0,padding:0,lineHeight:1}}>×</button>
-            <button onClick={generarFichaMultiple} style={{display:"flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"12px",background:"#1A6FD4",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",height:"26px",boxShadow:"0 2px 4px rgba(26,111,212,0.3)",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📋 Fichas</button>
-            <button onClick={exportarExcelFiltrado} style={{display:"flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"12px",background:"#059669",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",height:"26px",boxShadow:"0 2px 4px rgba(5,150,105,0.3)",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📊 Excel</button>
-          </div>
-        </div>
         <div style={{display:"grid",gridTemplateColumns:hayFS?[...diasLF,...diasFS].map(d=>evsDia(toISO(d)).length>0?"minmax(0,1fr)":"minmax(0,0.5fr)").join(" "):"repeat(5,minmax(0,1fr))",gap:"8px",padding:"8px",alignItems:"stretch"}}>
           {diasLF.map((d,i)=>renderCol(d,i,false))}
           {hayFS&&diasFS.map((d,i)=>renderCol(d,i+5,true))}
@@ -3601,7 +3579,7 @@ export default function App() {
               :<button onClick={()=>setBuscando(true)} style={{padding:"7px 12px",fontSize:"17px",background:"rgba(255,255,255,0.15)",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}} title="Buscar">🔍</button>
             }
             {busqueda&&<button onClick={()=>{setBusqueda("");setBuscando(false);}} style={{padding:"7px 10px",fontSize:"15px",background:"rgba(255,255,255,0.15)",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>✕</button>}
-            {esEditor&&<button onClick={exportarExcel} style={{padding:"7px 12px",fontSize:"15px",background:"rgba(22,163,74,0.25)",color:"#6EE7B7",border:"1px solid rgba(22,163,74,0.5)",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}} title="Exportar Excel">📊</button>}
+            {esEditor&&pantalla==="calendario"&&<button onClick={()=>setPantalla("disponibilidad")} style={{padding:"5px 10px",fontSize:"13px",background:"rgba(253,230,138,0.12)",color:"#FDE68A",border:"1.5px solid #FCD34D",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:"5px"}} title="Disponibilidad"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#86EFAC" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Disponibilidad</button>}
             {esEditor&&<button onClick={()=>setModalEvento({modo:"nuevo",data:evVacio()})} style={{padding:"7px 16px",fontSize:"17px",background:"#e63946",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit",fontWeight:"500"}}>+ Nuevo</button>}
             {esAdmin&&<button onClick={()=>setPantalla(p=>p==="config"?"calendario":"config")} style={{padding:"7px 12px",fontSize:"17px",background:pantalla==="config"?"rgba(255,255,255,0.35)":"rgba(255,255,255,0.15)",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>⚙️</button>}
             <button onClick={()=>{sb.auth.signOut();window.location.reload();}} style={{padding:"9px 14px",fontSize:"17px",background:"rgba(255,255,255,0.15)",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>Salir</button>
@@ -3614,13 +3592,15 @@ export default function App() {
         {vista!=="grilla"&&<div style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",width:"100%",display:"flex",alignItems:"center",justifyContent:"center",padding:"0 16px",boxSizing:"border-box",position:"sticky"}}>
           {/* CENTRO: FilterBar centrado */}
           <div style={{display:"flex",alignItems:"center",padding:"6px 0"}}>
-            <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes} clientes={clientesConEventos} pares={paresConEventos} proveedores={proveedoresConEventos} showClear={vista!=="semana"}/>
+            <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes} clientes={clientesConEventos} pares={paresConEventos} proveedores={proveedoresConEventos} showClear={true} hayFinSemana={vista==="semana"&&diasSemana.slice(5,7).some(d=>evsDia(toISO(d)).length>0)}/>
           </div>
-          {/* DERECHA: Fichas/Excel fuera del flujo (no en semana, están en sub-bar) */}
+          {/* DERECHA: Fichas (solo vistas no-semana) */}
           {vista!=="semana"&&<div style={{position:"absolute",right:"16px",top:"50%",transform:"translateY(-50%)",display:"flex",gap:"8px",transition:"opacity 0.2s, transform 0.2s",opacity:hayFiltros?1:0,pointerEvents:hayFiltros?"auto":"none",visibility:hayFiltros?"visible":"hidden"}}>
             <button onClick={generarFichaMultiple} style={{display:"flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"12px",background:"#1A6FD4",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",height:"26px",boxShadow:"0 2px 4px rgba(26,111,212,0.3)",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📋 Fichas</button>
-            <button onClick={exportarExcelFiltrado} style={{display:"flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"12px",background:"#059669",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",height:"26px",boxShadow:"0 2px 4px rgba(5,150,105,0.3)",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📊 Excel</button>
           </div>}
+        </div>}
+        {vista==="grilla"&&<div style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",width:"100%",display:"flex",alignItems:"center",justifyContent:"flex-end",padding:"6px 16px",boxSizing:"border-box"}}>
+          <button onClick={exportarExcelFiltrado} style={{display:"flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"12px",background:"#059669",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",height:"26px",boxShadow:"0 2px 4px rgba(5,150,105,0.3)",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📊 Excel</button>
         </div>}
         {vista==="semana"&&renderSemana()}
         {vista==="dia"&&renderDia()}

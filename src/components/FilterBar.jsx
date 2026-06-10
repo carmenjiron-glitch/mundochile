@@ -1,6 +1,6 @@
 // FilterBar.jsx — MundoChile v3.0 — Una línea, todos dropdowns
 
-export default function FilterBar({ filters, onChange, interpreters = [], clientes = [], pares = [], proveedores = [], showClear = true }) {
+export default function FilterBar({ filters, onChange, interpreters = [], clientes = [], pares = [], proveedores = [], showClear = true, hayFinSemana = false }) {
   const hayFiltro = filters.estado || filters.modalidad || filters.tipo || filters.interprete_id || filters.cliente_id || filters.par_id || filters.proveedor_av || filters.mes;
   const limpiar = { estado:"", modalidad:"", tipo:"", interprete_id:"", cliente_id:"", par_id:"", proveedor_av:"", mes:"" };
 
@@ -38,6 +38,10 @@ export default function FilterBar({ filters, onChange, interpreters = [], client
 
   return (
     <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:"8px", flexWrap:"nowrap", width:"auto", overflow:"hidden" }}>
+
+      {showClear && hayFiltro && (
+        <button onClick={() => onChange(limpiar)} title="Limpiar filtros" style={{background:"#EF4444",color:"#FFFFFF",border:"none",borderRadius:"50%",width:20,height:20,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:12,fontWeight:700,flexShrink:0,padding:0,lineHeight:1}}>×</button>
+      )}
 
       <div style={grp}>
         <span style={lbl}>Mes</span>
@@ -119,6 +123,8 @@ export default function FilterBar({ filters, onChange, interpreters = [], client
         </select>
       </div>
 
+      {hayFinSemana && <span title="Hay eventos este fin de semana" style={{fontSize:"16px",cursor:"default",flexShrink:0,lineHeight:1}}>⚠️</span>}
+
       {proveedores.length > 0 && (
         <div style={grp}>
           <span style={lbl}>Proveedor AV</span>
@@ -130,29 +136,6 @@ export default function FilterBar({ filters, onChange, interpreters = [], client
         </div>
       )}
 
-      {showClear && hayFiltro && (
-        <button
-          onClick={() => onChange(limpiar)}
-          title="Limpiar filtros"
-          style={{
-            background: "#EF4444",
-            color: "#FFFFFF",
-            border: "none",
-            borderRadius: "50%",
-            width: 20,
-            height: 20,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            fontSize: 12,
-            fontWeight: 700,
-            flexShrink: 0,
-            padding: 0,
-            lineHeight: 1,
-          }}
-        >×</button>
-      )}
 
     </div>
   );
