@@ -3228,7 +3228,7 @@ export default function App() {
     };
 
     if(esMobile) return (
-      <div style={{padding:"10px 12px 80px"}}>
+      <div style={{padding:"4px 12px 80px"}}>
         {diasLF.map((d,i)=>{
           const iso=toISO(d),evs=evsDia(iso),esHoy=iso===hoy();
           const mesLargo=MESES_L[d.getMonth()].charAt(0).toUpperCase()+MESES_L[d.getMonth()].slice(1);
@@ -3268,7 +3268,7 @@ export default function App() {
     );
 
     return (
-      <div style={{padding:"16px 24px 80px"}}>
+      <div style={{padding:"6px 24px 80px"}}>
         <div style={{display:"grid",gridTemplateColumns:hayFS?[...diasLF,...diasFS].map(d=>evsDia(toISO(d)).length>0?"minmax(0,1fr)":"minmax(0,0.5fr)").join(" "):"repeat(5,minmax(0,1fr))",gap:"8px",padding:"8px",alignItems:"stretch"}}>
           {diasLF.map((d,i)=>renderCol(d,i,false))}
           {hayFS&&diasFS.map((d,i)=>renderCol(d,i+5,true))}
