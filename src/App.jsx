@@ -2544,7 +2544,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
 }
 
 // ─── VISTA AGENDA (F8) ───────────────────────────────────────────────────────
-function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],lugares=[],filtros,setFiltros,onAbrir,onVerMultidia,vista}) {
+function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],lugares=[],contactos=[],filtros,setFiltros,onAbrir,onVerMultidia,vista}) {
   const hoyISO=hoy();
   const sorted=[...eventos].sort((a,b)=>a.fecha_inicio.localeCompare(b.fecha_inicio));
   const byDay={};
@@ -3614,7 +3614,7 @@ export default function App() {
         {vista==="semana"&&renderSemana()}
         {vista==="dia"&&renderDia()}
         {vista==="mes"&&renderMes()}
-        {vista==="agenda"&&<VistaAgenda vista={vista} eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} filtros={filtros} setFiltros={setFiltros} onAbrir={abrirEvento} onVerMultidia={verTodosLosDias}/>}
+        {vista==="agenda"&&<VistaAgenda vista={vista} eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} contactos={contactos} filtros={filtros} setFiltros={setFiltros} onAbrir={abrirEvento} onVerMultidia={verTodosLosDias}/>}
         {vista==="grilla"&&<VistaGrilla eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} contactos={contactos} onAbrir={abrirEvento} onVerMultidia={verTodosLosDias} vista={vista}/>}
       </>}
       {pantalla==="disponibilidad"&&<VistaDisponibilidad eventos={eventos} interpretes={interpretes} pares={pares} clientes={clientes} onAbrir={abrirEvento} busqueda={busqueda}/>}
