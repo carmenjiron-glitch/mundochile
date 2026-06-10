@@ -2398,7 +2398,6 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
 function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contactos=[],onAbrir,onVerMultidia,vista}) {
   const [colFiltros,setColFiltros]=useState({});
   const [openCol,setOpenCol]=useState(null);
-  const [mesesFiltro,setMesesFiltro]=useState(new Set());
   const [celdaActiva,setCeldaActiva]=useState(null);
   const tablaRef=useRef(null);
   const filteredRef=useRef([]);
@@ -2432,9 +2431,8 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
     const mesLargo=`${MESES_L[d.getMonth()].charAt(0).toUpperCase()+MESES_L[d.getMonth()].slice(1)} ${d.getFullYear()}`;
     return {ev,cli,contactoNombre:contacto?.nombre||cli?.nombre_contacto||"",esMultidia:ev.fecha_inicio!==ev.fecha_termino,a1,a2,i1N,i2N,par,detalleEq,provNom,detalleInst,mesKey,mesStr,mesLargo};
   }),[eventos,clientes,interpretes,pares,proveedores,contactos]);
-  const mesesDisponibles=useMemo(()=>[...new Set(allRows.map(r=>r.mesLargo))],[allRows]);
   const uniqueVals=useMemo(()=>({
-    "Mes":[...new Set(allRows.map(r=>r.mesStr))].filter(Boolean),
+    "Mes":[...new Set(allRows.map(r=>r.mesLargo))].filter(Boolean),
     "Orden de Compra":[...new Set(allRows.map(r=>r.ev.nro_oc||""))].filter(Boolean),
     "Cliente":[...new Set(allRows.map(r=>r.cli?.nombre_empresa||""))].filter(Boolean),
     "Contacto Cliente":[...new Set(allRows.map(r=>r.contactoNombre||""))].filter(Boolean),
@@ -2460,8 +2458,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
     "Nro Boleta Intérprete 2":[...new Set(allRows.map(r=>r.ev.nro_boleta_2||""))].filter(Boolean),
   }),[allRows]);
   const filtered=useMemo(()=>allRows.filter(r=>{
-    if(mesesFiltro.size>0&&!mesesFiltro.has(r.mesLargo))return false;
-    if(colFiltros["Mes"]&&r.mesStr!==colFiltros["Mes"])return false;
+    if(colFiltros["Mes"]&&r.mesLargo!==colFiltros["Mes"])return false;
     if(colFiltros["Orden de Compra"]&&(r.ev.nro_oc||"")!==colFiltros["Orden de Compra"])return false;
     if(colFiltros["Cliente"]&&(r.cli?.nombre_empresa||"")!==colFiltros["Cliente"])return false;
     if(colFiltros["Contacto Cliente"]&&(r.contactoNombre||"")!==colFiltros["Contacto Cliente"])return false;
@@ -2485,7 +2482,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
     if(colFiltros["Nro OT 2"]&&(r.a2?.nro_ot||"")!==colFiltros["Nro OT 2"])return false;
     if(colFiltros["Nro Boleta Intérprete 2"]&&(r.ev.nro_boleta_2||"")!==colFiltros["Nro Boleta Intérprete 2"])return false;
     return true;
-  }),[allRows,mesesFiltro,colFiltros]);
+  }),[allRows,colFiltros]);
   useEffect(()=>{filteredRef.current=filtered;},[filtered]);
   useEffect(()=>{
     const el=tablaRef.current;
@@ -2517,13 +2514,13 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
     if(el) el.scrollIntoView({block:"nearest",inline:"nearest"});
   },[celdaActiva]);
   const COL_MINW={"Mes":"60px","Orden de Compra":"90px","Cliente":"120px","Contacto Cliente":"110px","# Evento":"70px","Detalle Equipos AV":"90px","Proveedor":"90px","Detalles Instalación":"90px","Modalidad":"90px","Tipo":"110px","Nombre Evento":"150px","Lugar":"100px","Par de Idiomas":"100px","Jornada":"90px","Horario":"100px","Fecha Inicio":"100px","Fecha Término":"100px","Comentarios":"90px","Intérprete 1":"100px","Nro OT":"80px","Nro Boleta":"80px","Intérprete 2":"100px","Nro OT 2":"80px"};
-  const thS={background:"#1E3A5F",color:"#FFFFFF",position:"sticky",top:0,zIndex:50,borderRight:"1px solid rgba(255,255,255,0.15)",borderBottom:"2px solid #94A3B8",height:"auto",padding:0,textAlign:"center"};
+  const thS={background:"#1E3A5F",color:"#FFFFFF",position:"sticky",top:0,zIndex:50,borderRight:"1px solid rgba(255,255,255,0.15)",borderBottom:"2px solid #94A3B8",height:"auto",padding:0,textAlign:"center",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"};
   const renderThFiltro=(col)=>{
     const active=!!colFiltros[col];const isOpen=openCol===col;
     return(<th key={col} style={{...thS,background:active?"#2D5F9E":"#1E3A5F",cursor:"pointer",userSelect:"none",zIndex:isOpen?1000:50,minWidth:COL_MINW[col]||"80px"}}>
       <div style={{position:"relative",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"space-between",gap:"4px",padding:"6px 8px",minHeight:"48px",height:"100%",boxSizing:"border-box"}}
         onClick={e=>{e.stopPropagation();setOpenCol(isOpen?null:col);}}>
-        <span style={{fontSize:"11px",fontWeight:"600",color:"#FFFFFF",textAlign:"center",whiteSpace:"normal",wordBreak:"break-word",lineHeight:"1.3",width:"100%"}}>{col}</span>
+        <span style={{fontSize:"12px",fontWeight:"600",color:"#FFFFFF",textAlign:"center",whiteSpace:"normal",wordBreak:"break-word",lineHeight:"1.3",width:"100%",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>{col}</span>
         <span style={{display:"block",fontSize:"9px",color:"rgba(255,255,255,0.8)",marginTop:"2px",flexShrink:0}}>{active?"▲":"▼"}</span>
         {isOpen&&(<div onClick={e=>e.stopPropagation()}
           style={{position:"absolute",top:"100%",left:"0",marginTop:"2px",zIndex:1000,minWidth:"160px",background:"#FFFFFF",color:"#1A1A1A",borderRadius:"6px",boxShadow:"0 4px 12px rgba(0,0,0,0.15)",border:"1px solid #E5E7EB",maxHeight:"240px",overflowY:"auto",fontSize:"12px",textAlign:"left",fontWeight:"400"}}>
@@ -2538,33 +2535,18 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
   const hoyISO=toISO(new Date());
   const byMonth={};let rowIdx=0;
   filtered.forEach(r=>{if(!byMonth[r.mesKey])byMonth[r.mesKey]={label:r.mesLargo,rows:[]};byMonth[r.mesKey].rows.push(r);});
-  const hayFiltros=mesesFiltro.size>0||Object.values(colFiltros).some(Boolean);
-  const countMes=filtered.length;
-  const toggleMes=(mes)=>setMesesFiltro(prev=>{const n=new Set(prev);n.has(mes)?n.delete(mes):n.add(mes);return n;});
   return (
     <div style={{paddingBottom:"80px",width:"100%"}}>
-      <div style={{padding:"8px 16px",display:"flex",alignItems:"center",gap:"6px",flexWrap:"wrap",background:"rgba(26,47,90,0.97)",borderBottom:"1px solid rgba(255,255,255,0.10)"}}>
-        <button onClick={()=>setMesesFiltro(new Set())}
-          style={{padding:"4px 14px",borderRadius:"20px",fontSize:"12px",fontWeight:"600",cursor:"pointer",fontFamily:"inherit",border:"none",flexShrink:0,
-            background:mesesFiltro.size===0?"#FFFFFF":"rgba(255,255,255,0.15)",
-            color:mesesFiltro.size===0?"#1E3A5F":"#FFFFFF"}}>
-          Todos
-        </button>
-        {mesesDisponibles.map(mes=>{
-          const sel=mesesFiltro.has(mes);
-          return(<button key={mes} onClick={()=>toggleMes(mes)}
-            style={{padding:"4px 14px",borderRadius:"20px",fontSize:"12px",fontWeight:"600",cursor:"pointer",fontFamily:"inherit",border:"none",flexShrink:0,
-              background:sel?"#FFFFFF":"rgba(255,255,255,0.15)",
-              color:sel?"#1E3A5F":"#FFFFFF"}}>
-            {mes}
-          </button>);
-        })}
-        <span style={{marginLeft:"auto",padding:"4px 12px",background:"rgba(255,255,255,0.12)",color:"rgba(255,255,255,0.85)",fontSize:"12px",fontWeight:"600",borderRadius:"20px",whiteSpace:"nowrap",flexShrink:0}}>
-          {countMes} evento{countMes!==1?"s":""}
+      <div style={{padding:"4px 16px",display:"flex",alignItems:"center",gap:"8px",background:"rgba(26,47,90,0.97)",borderBottom:"1px solid rgba(255,255,255,0.10)",minHeight:"30px"}}>
+        <span style={{padding:"2px 10px",background:"rgba(255,255,255,0.12)",color:"rgba(255,255,255,0.85)",fontSize:"12px",fontWeight:"600",borderRadius:"16px",whiteSpace:"nowrap",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>
+          {filtered.length} evento{filtered.length!==1?"s":""}
         </span>
-        {Object.values(colFiltros).some(Boolean)&&<button onClick={()=>setColFiltros({})} style={{padding:"4px 10px",background:"#EF4444",color:"#FFFFFF",border:"none",borderRadius:"20px",cursor:"pointer",fontSize:"11px",fontFamily:"inherit",flexShrink:0}}>✕ Col</button>}
+        {colFiltros["Mes"]&&<span style={{padding:"2px 10px",background:"rgba(255,255,255,0.22)",color:"#FFFFFF",fontSize:"12px",fontWeight:"600",borderRadius:"16px",whiteSpace:"nowrap",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>
+          📅 {colFiltros["Mes"]}
+        </span>}
+        {Object.values(colFiltros).some(Boolean)&&<button onClick={()=>setColFiltros({})} style={{padding:"2px 10px",background:"#EF4444",color:"#FFFFFF",border:"none",borderRadius:"16px",cursor:"pointer",fontSize:"11px",fontFamily:"inherit",WebkitFontSmoothing:"antialiased",marginLeft:"auto"}}>✕ Col</button>}
       </div>
-      <div ref={tablaRef} style={{overflowX:"auto",overflowY:"auto",width:"100%",height:"calc(100vh - 200px)",outline:"none",background:"#F1F5F9"}} tabIndex={0}>
+      <div ref={tablaRef} style={{overflowX:"auto",overflowY:"auto",width:"100%",height:"calc(100vh - 172px)",outline:"none",background:"#F1F5F9"}} tabIndex={0}>
       <table style={{borderCollapse:"collapse",tableLayout:"fixed",minWidth:"2200px",width:"100%",fontSize:"13px",background:"#F1F5F9"}}>
         <thead style={{position:"sticky",top:"0",zIndex:"40",background:"#1E3A5F"}}>
           <tr>
