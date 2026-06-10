@@ -1,6 +1,6 @@
 // FilterBar.jsx — MundoChile v3.0 — Una línea, todos dropdowns
 
-export default function FilterBar({ filters, onChange, interpreters = [], clientes = [], pares = [], proveedores = [], showClear = true, hayFinSemana = false, esSemana = false }) {
+export default function FilterBar({ filters, onChange, interpreters = [], clientes = [], pares = [], proveedores = [], showClear = true, hayFinSemana = false }) {
   const hayFiltro = filters.estado || filters.modalidad || filters.tipo || filters.interprete_id || filters.cliente_id || filters.par_id || filters.proveedor_av || filters.mes;
   const limpiar = { estado:"", modalidad:"", tipo:"", interprete_id:"", cliente_id:"", par_id:"", proveedor_av:"", mes:"" };
 
@@ -124,11 +124,6 @@ export default function FilterBar({ filters, onChange, interpreters = [], client
       </div>
 
       {hayFinSemana && <span title="Hay eventos este fin de semana" style={{fontSize:"16px",cursor:"default",flexShrink:0,lineHeight:1}}>⚠️</span>}
-      {esSemana && !hayFinSemana && (
-        <span title="No hay eventos este fin de semana" style={{flexShrink:0,cursor:"default",lineHeight:1,display:"inline-flex",alignItems:"center"}}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00C853" strokeWidth="3"><circle cx="12" cy="12" r="10"/></svg>
-        </span>
-      )}
 
       {proveedores.length > 0 && (
         <div style={grp}>
