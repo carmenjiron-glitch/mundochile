@@ -3226,10 +3226,10 @@ export default function App() {
         <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{padding:"8px 10px",borderRadius:"10px",marginBottom:"8px",background:hdrBg,cursor:"pointer",transition:"background 0.15s",border:`3px solid ${esHoy?"#F97316":"transparent"}`,textAlign:"center",position:"sticky",top:"140px",zIndex:5,backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)"}}
           onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"}
           onMouseLeave={e=>{e.currentTarget.style.background=hdrBg;}}>
-          <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"7px",flexWrap:"nowrap"}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"7px",flexWrap:"wrap",overflow:"hidden",minWidth:0}}>
             <span style={{fontSize:"16px",fontWeight:"700",color:"#fff",textTransform:"uppercase",letterSpacing:"0.04em",flexShrink:0}}>{nombresDia[i]}</span>
             <div style={{width:"30px",height:"30px",borderRadius:"50%",background:esHoy?"#F97316":"transparent",color:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"16px",fontWeight:"700",flexShrink:0}}>{d.getDate()}</div>
-            <span style={{fontSize:"16px",fontWeight:"500",color:"rgba(255,255,255,0.90)",whiteSpace:"nowrap"}}>{mesLargo}</span>
+            <span style={{fontSize:"16px",fontWeight:"500",color:"rgba(255,255,255,0.90)"}}>{mesLargo}</span>
           </div>
           <div style={{display:"inline-block",background:"rgba(255,255,255,0.20)",color:"#fff",fontSize:"13px",fontWeight:"500",padding:"2px 10px",borderRadius:"20px",marginTop:"5px",visibility:evs.length>0?"visible":"hidden"}}>{evs.length>0?`${evs.length} evento${evs.length!==1?"s":""}`:" "}</div>
         </div>
