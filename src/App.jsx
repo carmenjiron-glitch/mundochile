@@ -640,7 +640,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
             <label style={S.lbl}>🌐 Par de idiomas</label>
             <select style={{...S.sel,fontWeight:"400",color:C.textoMed}} value={a.par_id||""} onChange={e=>edit("par_id",e.target.value?Number(e.target.value):"")}>
               <option value="">Seleccionar par de idiomas…</option>
-              {(pares||[]).filter(p=>p.activo!==false).sort((a,b)=>(a.descripcion||"").localeCompare(b.descripcion||"")).map(p=><option key={p.id} value={p.id}>{p.descripcion||(p.idioma_origen&&p.idioma_destino?`${p.idioma_origen} – ${p.idioma_destino}`:"Par sin nombre")}</option>)}
+              {(()=>{const interpSel=interpretes.find(x=>x.id===a.interprete_id);const ids=interpSel?.par_ids||[];const pp=ids.length?(pares||[]).filter(p=>p.activo!==false&&ids.includes(p.id)):(pares||[]).filter(p=>p.activo!==false);return pp.sort((x,y)=>(x.descripcion||"").localeCompare(y.descripcion||"")).map(p=><option key={p.id} value={p.id}>{p.descripcion||(p.idioma_origen&&p.idioma_destino?`${p.idioma_origen} – ${p.idioma_destino}`:"Par sin nombre")}</option>);})()}
             </select>
           </div>
         </div>
@@ -1971,6 +1971,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
     const {id:_,created_at:__,...clean}=payload;
     let err,savedId=id;
     if(tabla==="interpretes"){
+      if(!clean.par_ids||clean.par_ids.length===0){setErrorGuardar("Debes asignar al menos un par de idiomas.");return;}
       const {notas,par_ids,...cleanSinNotas}=clean;
       if(id==="nuevo"){const r=await sb.from(tabla).insert(cleanSinNotas).select("id").single();err=r.error;savedId=r.data?.id;}
       else{const r=await sb.from(tabla).update(cleanSinNotas).eq("id",id);err=r.error;}
@@ -2086,13 +2087,21 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
               </select></div>
           </div>
           <div style={{marginBottom:"12px"}}><label style={S.lbl}>Notas</label><textarea style={{...S.inp,minHeight:"60px"}} value={formEdit.notas||""} onChange={e=>setFormEdit(f=>({...f,notas:e.target.value}))}/></div>
-          <div style={{...S.fila,marginBottom:"12px"}}>
-            <div style={S.camp}><label style={S.lbl}>Par de idiomas</label>
-              <select style={S.sel} value={(formEdit.par_ids||[])[0]||""} onChange={e=>setFormEdit(f=>({...f,par_ids:e.target.value?[Number(e.target.value)]:[]}))}>
-                <option value="">Seleccionar…</option>
-                {pares.filter(p=>p.activo!==false).sort((a,b)=>(a.descripcion||"").localeCompare(b.descripcion||"")).map(p=><option key={p.id} value={p.id}>{p.descripcion||(p.idioma_origen&&p.idioma_destino?`${p.idioma_origen} – ${p.idioma_destino}`:"Par sin nombre")}</option>)}
-              </select>
+          <div style={{marginBottom:"12px"}}>
+            <label style={{...S.lbl,color:(formEdit.par_ids||[]).length===0?"#DC2626":undefined}}>Pares de idiomas * <span style={{fontWeight:"400",textTransform:"none",letterSpacing:0,color:"#9CA3AF"}}>(obligatorio — uno o más)</span></label>
+            <div style={{display:"flex",flexWrap:"wrap",gap:"6px",marginTop:"6px"}}>
+              {pares.filter(p=>p.activo!==false).sort((a,b)=>(a.descripcion||"").localeCompare(b.descripcion||"")).map(p=>{
+                const sel=(formEdit.par_ids||[]).includes(p.id);
+                const clr=IDIOMA_PILL_CLR[p.idioma_origen]||"#4C6EF5";
+                return(<button key={p.id} type="button"
+                  onClick={()=>setFormEdit(f=>{const ids=f.par_ids||[];return{...f,par_ids:ids.includes(p.id)?ids.filter(x=>x!==p.id):[...ids,p.id]};})}
+                  style={{padding:"5px 12px",borderRadius:"20px",border:`2px solid ${sel?clr:"#D1D5DB"}`,background:sel?"#fff":"#F8FAFC",color:sel?"#1A1A1A":"#6B7280",cursor:"pointer",fontSize:"13px",fontWeight:sel?"600":"400",fontFamily:"inherit",display:"inline-flex",alignItems:"center",gap:"5px",lineHeight:1}}>
+                  <FlagImg idioma={p.idioma_origen}/>
+                  {p.descripcion||(p.idioma_origen&&p.idioma_destino?`${p.idioma_origen} – ${p.idioma_destino}`:"Par sin nombre")}
+                </button>);
+              })}
             </div>
+            {(formEdit.par_ids||[]).length===0&&<div style={{marginTop:"5px",fontSize:"12px",color:"#EF4444"}}>⚠ Selecciona al menos un par de idiomas</div>}
           </div>
           <label style={{display:"flex",gap:"8px",alignItems:"center",cursor:"pointer",fontSize:"17px",color:C.rojo,fontWeight:"500",marginBottom:"16px"}}>
             <input type="checkbox" checked={!!formEdit.es_host_zoom} onChange={e=>setFormEdit(f=>({...f,es_host_zoom:e.target.checked}))}/> 🔑 Host Zoom MundoChile
@@ -2110,7 +2119,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
           .map(i=>{
             const nombreCompleto=`${i.nombre||""}${i.apellido?" "+i.apellido:""}`;
             const aColor=avatarColor(nombreCompleto);
-            const parsDelInterp=pares.filter(p=>(interpPares[i.id]||[]).includes(p.id)||(i.par_ids||[]).includes(p.id));
+            const parsDelInterp=(i.par_ids||[]).length>0?pares.filter(p=>(i.par_ids||[]).includes(p.id)):pares.filter(p=>(interpPares[i.id]||[]).includes(p.id));
             return(
               <div key={i.id}
                 style={{border:`1.5px solid ${C.grisBorde}`,borderRadius:"12px",padding:"14px 20px",marginBottom:"10px",background:"#fff",display:"flex",justifyContent:"space-between",alignItems:"center",gap:"12px",transition:"background 0.1s",opacity:i.activo===false?0.55:1}}
