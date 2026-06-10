@@ -1522,9 +1522,10 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,lugares=[],onEdi
 }
 
 // ─── MODAL FICHA ──────────────────────────────────────────────────────────────
-function ModalFicha({evento,clientes,interpretes,pares,lugares=[],onCerrar,paginacion=null}) {
+function ModalFicha({evento,clientes,contactos=[],interpretes,pares,lugares=[],onCerrar,paginacion=null}) {
   const fichaRef=useRef(null);
   const cliente=clientes.find(c=>c.id===evento.cliente_id);
+  const nombreContactoFicha=contactos.find(c=>c.id===evento.contacto_id)?.nombre||cliente?.nombre_contacto||"";
   const esMultidia=evento.fecha_inicio!==evento.fecha_termino;
   const esPresencial=evento.modalidad==="presencial"||evento.modalidad==="hibrido";
   const dias=((evento.evento_dias||evento.dias||[]).sort((a,b)=>(a.orden||0)-(b.orden||0)));
@@ -1687,7 +1688,7 @@ function ModalFicha({evento,clientes,interpretes,pares,lugares=[],onCerrar,pagin
                   {/* Fila 1: Cliente | Tipo/Modalidad */}
                   <tr>
                     <td style={{padding:0,verticalAlign:"top",borderRight:hasDerecha?"2px solid #D1D5DB":"none"}}>
-                      {campos.cliente&&cliente&&<><div style={sH}>Cliente</div><div style={sB}><div style={{fontSize:"18px",fontWeight:"700",color:"#000000",lineHeight:1.2}}>{cliente.nombre_empresa}</div>{cliente.nombre_contacto&&<div style={{fontSize:"14px",color:"#484f56",fontStyle:"italic",marginTop:"3px"}}>{cliente.nombre_contacto}</div>}</div></>}
+                      {campos.cliente&&cliente&&<><div style={sH}>Cliente</div><div style={sB}><div style={{fontSize:"18px",fontWeight:"700",color:"#000000",lineHeight:1.2}}>{cliente.nombre_empresa}</div>{nombreContactoFicha&&<div style={{fontSize:"14px",color:"#484f56",fontStyle:"italic",marginTop:"3px"}}>{nombreContactoFicha}</div>}</div></>}
                     </td>
                     {hasDerecha&&<td style={{padding:0,verticalAlign:"top"}}>
                       {(campos.tipo||campos.modalidad)&&<><div style={{...sH,textAlign:"center"}}>Tipo / Modalidad</div><div style={{...sB}}><div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center",justifyContent:"center"}}>{campos.tipo&&tiposArr(evento.tipo).map(t=><span key={t} style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:(B_TIPO[t]||{ct:"#294099"}).ct,WebkitFontSmoothing:"antialiased",background:(B_TIPO[t]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO[t]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>{t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤":"🤫"} {t}</span>)}{campos.modalidad&&evento.modalidad&&<span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:(B_MOD[evento.modalidad]||{ct:"#4B4B4B"}).ct,WebkitFontSmoothing:"antialiased",background:(B_MOD[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?<IconPresencial size={14} color={(B_MOD[evento.modalidad]||{ct:"#4B4B4B"}).ct}/>:evento.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evento.modalidad]}</span>}</div></div></>}
@@ -2556,7 +2557,7 @@ function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],lugares=
               ?<div style={{padding:"16px 20px",color:"#646870",fontSize:"14px",fontStyle:"normal",display:"flex",alignItems:"center",gap:"8px",background:"#FAFAFA",borderRadius:"8px",border:"1px dashed #E5E7EB",marginBottom:"8px"}}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1B9E4B" strokeWidth="2.9"><circle cx="12" cy="12" r="10"/></svg>Sin eventos este día</div>
               :<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginTop:"12px"}}>
                 {evs.map(ev=>(
-                  <EventCard key={ev.id} ev={ev} diaDe={fecha} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} onClick={()=>onAbrir(ev)} onVerMultidia={onVerMultidia} pillsHalf={true} agendaSmall={true}/>
+                  <EventCard key={ev.id} ev={ev} diaDe={fecha} clientes={clientes} contactos={contactos} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} onClick={()=>onAbrir(ev)} onVerMultidia={onVerMultidia} pillsHalf={true} agendaSmall={true}/>
                 ))}
               </div>
             }
@@ -3196,7 +3197,7 @@ export default function App() {
           </div>
           {evs.length>0&&<div style={{display:"inline-block",background:"rgba(255,255,255,0.20)",color:"#fff",fontSize:"13px",fontWeight:"500",padding:"2px 10px",borderRadius:"20px",marginTop:"5px"}}>{evs.length} evento{evs.length!==1?"s":""}</div>}
         </div>
-        {evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} onNavegar={d=>{setDiaActual(d);setVista("dia");}} onVerMultidia={verTodosLosDias} solidPill/>)}
+        {evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} contactos={contactos} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} onNavegar={d=>{setDiaActual(d);setVista("dia");}} onVerMultidia={verTodosLosDias} solidPill/>)}
         {evs.length===0&&<div style={{textAlign:"center",color:esWeekend?"rgba(255,255,255,0.30)":"rgba(255,255,255,0.5)",fontWeight:"500",fontSize:"15px",padding:"20px 0"}}>Sin eventos</div>}
       </div>;
     };
@@ -3225,7 +3226,7 @@ export default function App() {
               <div style={{flex:1,color:"#fff",fontWeight:"500",fontSize:"17px"}}>{evs.length>0?`${evs.length} evento${evs.length!==1?"s":""}`:""}</div>
               <div style={{fontSize:"14px",color:"rgba(255,255,255,0.6)"}}>›</div>
             </div>
-            {evs.length>0&&<div style={{padding:"0 10px 10px"}}>{evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} onNavegar={d=>{setDiaActual(d);setVista("dia");}} onVerMultidia={verTodosLosDias} solidPill/>)}</div>}
+            {evs.length>0&&<div style={{padding:"0 10px 10px"}}>{evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} contactos={contactos} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} onNavegar={d=>{setDiaActual(d);setVista("dia");}} onVerMultidia={verTodosLosDias} solidPill/>)}</div>}
           </div>;
         })}
         {hayFS&&<div style={{height:"1px",background:"rgba(255,255,255,0.15)",margin:"8px 0"}}/>}
@@ -3243,7 +3244,7 @@ export default function App() {
               <div style={{flex:1,color:"#fff",fontWeight:"500",fontSize:"17px"}}>{evs.length>0?`${evs.length} evento${evs.length!==1?"s":""}`:""}</div>
               <div style={{fontSize:"14px",color:"rgba(255,255,255,0.6)"}}>›</div>
             </div>
-            {evs.length>0&&<div style={{padding:"0 10px 10px"}}>{evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} onNavegar={d=>{setDiaActual(d);setVista("dia");}} onVerMultidia={verTodosLosDias} solidPill/>)}</div>}
+            {evs.length>0&&<div style={{padding:"0 10px 10px"}}>{evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} contactos={contactos} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} onNavegar={d=>{setDiaActual(d);setVista("dia");}} onVerMultidia={verTodosLosDias} solidPill/>)}</div>}
           </div>;
         })}
       </div>
@@ -3284,6 +3285,7 @@ export default function App() {
       const evM=eventosFiltrados.find(e=>e.id===eventoMultidiaId);
       if(!evM){setModoMultidia(false);setEventoMultidiaId(null);return null;}
       const cli=clientes.find(c=>c.id===evM.cliente_id);
+      const cliContactoMD=contactos.find(c=>c.id===evM.contacto_id)?.nombre||cli?.nombre_contacto||"";
       const borderC=colorCliente(evM.cliente_id);
       const esPresD=evM.modalidad==="presencial"||evM.modalidad==="hibrido";
       const esZoomMCD=evM.plataforma==="Zoom MundoChile"||evM.plataforma==="Zoom";
@@ -3346,7 +3348,7 @@ export default function App() {
               <div key={iso} id={`multidia-card-${x}`} onClick={()=>abrirEvento(diaEspecifico)} style={{background:"#FFFFFF",borderLeft:`16px solid ${borderC}`,borderTop:`6px solid ${borderC}`,borderRadius:"0 12px 12px 0",padding:"20px 29px",boxShadow:"0 2px 12px rgba(0,0,0,0.10)",cursor:"pointer",width:"100%"}}>
                 <div onClick={(e)=>{e.stopPropagation();setDiaActual(iso);setModoMultidia(false);setEventoMultidiaId(null);setVista("dia");}} style={{fontSize:"15px",fontWeight:"700",color:"#C62828",marginBottom:"12px",cursor:"pointer",textDecoration:"underline",textDecorationColor:"rgba(198,40,40,0.35)"}} onMouseEnter={e=>e.currentTarget.style.color="#B71C1C"} onMouseLeave={e=>e.currentTarget.style.color="#C62828"}>📅 Día {x} de {totalDias} — {formatLargo(iso)}</div>
                 <div style={{fontSize:"34px",fontWeight:"600",color:"#0F172A",lineHeight:1.2,marginBottom:4}}>{cli?.nombre_empresa||"—"}</div>
-                {cli?.nombre_contacto&&<div style={{fontSize:"16px",fontWeight:"500",color:"#6B7280",fontStyle:"italic",marginBottom:4}}>Contacto: {cli.nombre_contacto}</div>}
+                {cliContactoMD&&<div style={{fontSize:"16px",fontWeight:"500",color:"#6B7280",fontStyle:"italic",marginBottom:4}}>Contacto: {cliContactoMD}</div>}
                 {(evM.nombre_evento||evM.titulo||evM.nombre||evM.descripcion)&&<div style={{fontSize:"16px",fontWeight:"500",color:"#111827",marginTop:2}}><span style={{fontWeight:"600",color:"#6B7280"}}>Nombre del evento: </span>{evM.nombre_evento||evM.titulo||evM.nombre||evM.descripcion}</div>}
                 <HRD/>
                 <div style={{fontSize:"17px",fontWeight:"500",color:"#1E293B",marginBottom:"4px"}}>📅 {formatMedioES(evM.fecha_inicio)} → {formatMedioES(evM.fecha_termino)}</div>
@@ -3407,6 +3409,7 @@ export default function App() {
           :<div style={{display:"flex",flexDirection:"column",gap:"16px"}}>
             {evs.map(ev=>{
               const cli=clientes.find(c=>c.id===ev.cliente_id);
+              const cliContactoDia=contactos.find(c=>c.id===ev.contacto_id)?.nombre||cli?.nombre_contacto||"";
               const borderC=colorCliente(ev.cliente_id);
               const esPresD=ev.modalidad==="presencial"||ev.modalidad==="hibrido";
               const esZoomMCD=ev.plataforma==="Zoom MundoChile"||ev.plataforma==="Zoom";
@@ -3448,7 +3451,7 @@ export default function App() {
                     <div>
                       <div style={{fontSize:"17px",fontWeight:"500",color:"#1E293B",marginBottom:"4px"}}>📅 {esMultidiaD?formatLargo(diaActual):formatLargo(ev.fecha_inicio)}</div>
                       <div style={{fontSize:"16px",fontWeight:"500",color:"#0F172A",marginBottom:"6px"}}>🕐 {ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)} hrs{ev.jornada&&<span style={{fontWeight:"400",color:"#6B7280",fontSize:"14px"}}> · {pluralizarJornada(ev.jornada)}</span>}</div>
-                      {cli?.nombre_contacto&&<div style={{fontSize:"15px",fontWeight:"500",color:"#6B7280",fontStyle:"italic",marginBottom:4}}>Contacto: {cli.nombre_contacto}</div>}
+                      {cliContactoDia&&<div style={{fontSize:"15px",fontWeight:"500",color:"#6B7280",fontStyle:"italic",marginBottom:4}}>Contacto: {cliContactoDia}</div>}
                       {ev.nombre_evento&&<div style={{fontSize:"14px",fontWeight:"500",color:"#374151",marginBottom:4}}>{ev.nombre_evento}</div>}
                       <HRD/>
                       <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center",marginBottom:"4px"}}>
@@ -3606,7 +3609,7 @@ export default function App() {
       {/* ── MODALES ── */}
       {modalEvento&&<ModalEvento eventoInicial={modalEvento.data} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} contactos={contactos} todos_eventos={eventos} perfil={perfil} onGuardar={()=>{setModalEvento(null);cargarDatos();addToast("Evento guardado correctamente","success");}} onCerrar={()=>setModalEvento(null)} onNuevoCliente={(cb)=>setModalNuevoCli({cb})} onNuevoContacto={setModalNuevoContacto} onNuevoInterprete={(ai,di,cb)=>setModalNuevoInt({ai,di,cb})} onLugarCreado={cargarDatos} onNuevoLugar={(cb)=>setModalNuevoLugar({cb})} onNuevoProveedor={prov=>setProveedores(prev=>[...prev,prov])}/>}
       {modalDetalle&&<ModalDetalle evento={modalDetalle} clientes={clientes} interpretes={interpretes} pares={pares} perfil={perfil} lugares={lugares} onEditar={()=>editarEvento(modalDetalle)} onEliminar={()=>eliminarEvento(modalDetalle.id)} onCerrar={()=>setModalDetalle(null)} onVerFicha={()=>{setModalFicha(modalDetalle);setModalDetalle(null);}} onNavDia={(dIdx)=>{setVistaAnterior(vista);setEventoMultidiaId(modalDetalle.id);setDiaMultidiaSeleccionado(dIdx+1);setModoMultidia(true);setVista("dia");setModalDetalle(null);}} addToast={addToast}/>}
-      {modalFicha&&<ModalFicha evento={modalFicha} clientes={clientes} interpretes={interpretes} pares={pares} lugares={lugares} onCerrar={()=>setModalFicha(null)}/>}
+      {modalFicha&&<ModalFicha evento={modalFicha} clientes={clientes} contactos={contactos} interpretes={interpretes} pares={pares} lugares={lugares} onCerrar={()=>setModalFicha(null)}/>}
       {modalFichasMultiples&&<ModalFichasMultiples eventosLista={modalFichasMultiples} clientes={clientes} interpretes={interpretes} pares={pares} onCerrar={()=>setModalFichasMultiples(null)}/>}
       {modalNuevoCli&&<ModalNuevoCliente onGuardar={async(d)=>{const{notas,...dSinNotas}=d;console.log("[NuevoCliente] payload insert:",dSinNotas,"notas:",notas);const{data,error}=await sb.from("clientes").insert(dSinNotas).select().single();console.log("[NuevoCliente] result:",{data,error});if(data&&notas!==undefined)await sb.from("clientes").update({notas}).eq("id",data.id);if(data)setClientes(prev=>[...prev,data]);const cb=modalNuevoCli?.cb;setModalNuevoCli(false);if(data){cb?.(data.id);addToast("Cliente creado","success");}cargarDatos();}} onCerrar={()=>setModalNuevoCli(false)}/>}
       {modalNuevoInt&&<ModalNuevoInterprete pares={pares} onGuardar={async(d,parId)=>{const{notas,...dSinNotas}=d;const{data}=await sb.from("interpretes").insert(dSinNotas).select().single();if(data?.id&&notas!==undefined)await sb.from("interpretes").update({notas}).eq("id",data.id);await cargarDatos();if(data?.id&&modalNuevoInt?.cb)modalNuevoInt.cb(data.id,parId);setModalNuevoInt(null);addToast("Intérprete creado","success");}} onCerrar={()=>setModalNuevoInt(null)}/>}

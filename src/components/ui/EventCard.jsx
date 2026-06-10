@@ -116,8 +116,9 @@ const Chip = ({ label, emoji, fontSize=12, padding="4px 10px", dark=false, fw:fw
 };
 
 // ── Componente principal ──────────────────────────────────────────────────────
-export default function EventCard({ ev, diaDe, clientes, interpretes, pares, proveedores=[], lugares=[], onClick, onNavegar, onVerMultidia=null, solidPill=false, pillsHalf=false, agendaSmall=false }) {
-  const cliente     = clientes.find(c => c.id === ev.cliente_id);
+export default function EventCard({ ev, diaDe, clientes, contactos=[], interpretes, pares, proveedores=[], lugares=[], onClick, onNavegar, onVerMultidia=null, solidPill=false, pillsHalf=false, agendaSmall=false }) {
+  const cliente       = clientes.find(c => c.id === ev.cliente_id);
+  const nombreContacto = contactos.find(c => c.id === ev.contacto_id)?.nombre || cliente?.nombre_contacto || "";
   const borderColor = colorCliente(ev.cliente_id);
   const esPresencial = ev.modalidad === "presencial" || ev.modalidad === "hibrido";
   const esZoomMC    = ev.plataforma === "Zoom MundoChile" || ev.plataforma === "Zoom";
@@ -262,7 +263,7 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
               {ev.comentarios && <div style={{ width:"10px", height:"10px", borderRadius:"50%", background:"#F472B6", boxShadow:"0 0 6px #F472B6", marginLeft:"8px", flexShrink:0 }}/>}
             </div>
             )}
-            {cliente?.nombre_contacto && <div style={{ fontSize:"16px", fontWeight:"500", color:"#6B7280", fontStyle:"italic", marginBottom:4, marginTop:4 }}>Contacto: {cliente.nombre_contacto}</div>}
+            {nombreContacto && <div style={{ fontSize:"16px", fontWeight:"500", color:"#6B7280", fontStyle:"italic", marginBottom:4, marginTop:4 }}>Contacto: {nombreContacto}</div>}
             {ev.nombre_evento && <div style={{ fontSize:"16px", fontWeight:"500", color:"#111827", marginTop:2 }}><span style={{ fontWeight:"600", color:"#6B7280" }}>Nombre del evento: </span>{ev.nombre_evento}</div>}
 
             <hr style={{ border:"none", borderTop:"1px solid #E5E7EB", margin:"14px 0" }}/>
@@ -364,9 +365,9 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
               <div style={{ fontSize:21, fontWeight:600, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", minWidth:0, marginBottom:4 }}>
                 {cliente?.nombre_empresa || "—"}
               </div>
-              {cliente?.nombre_contacto && (
+              {nombreContacto && (
                 <div style={{ fontSize:16, color:"#373B42", fontStyle:"italic", marginTop:2 }}>
-                  Contacto: {cliente.nombre_contacto}
+                  Contacto: {nombreContacto}
                 </div>
               )}
             </>
@@ -385,9 +386,9 @@ export default function EventCard({ ev, diaDe, clientes, interpretes, pares, pro
                   {cliente?.nombre_empresa || "—"}
                 </div>
               </div>
-              {cliente?.nombre_contacto && (
+              {nombreContacto && (
                 <div style={{ fontSize:16, color:"#373B42", fontStyle:"italic", marginTop:2 }}>
-                  Contacto: {cliente.nombre_contacto}
+                  Contacto: {nombreContacto}
                 </div>
               )}
             </>
