@@ -3300,6 +3300,7 @@ export default function App() {
 
     const renderCol=(d,i,esWeekend=false)=>{
       const iso=toISO(d),evs=evsDia(iso),esHoy=iso===hoy();
+      const esManana=iso===toISO(new Date(desdeISO(hoy()).getTime()+86400000));
       const mesLargo=MESES_L[d.getMonth()].charAt(0).toUpperCase()+MESES_L[d.getMonth()].slice(1);
       const colBg="rgba(255,255,255,0.14)";
       const hdrBg="rgba(22,42,82,0.97)";
@@ -3311,10 +3312,12 @@ export default function App() {
             <span style={{fontSize:"16px",fontWeight:"700",color:"#fff",textTransform:"uppercase",letterSpacing:"0.04em",flexShrink:0}}>{nombresDia[i]}</span>
             <div style={{width:"30px",height:"30px",borderRadius:"50%",background:esHoy?"#F97316":"transparent",color:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"16px",fontWeight:"700",flexShrink:0}}>{d.getDate()}</div>
             <span style={{fontSize:"16px",fontWeight:"500",color:"rgba(255,255,255,0.90)"}}>{mesLargo}</span>
+            {esHoy&&<div style={{width:"14px",height:"14px",borderRadius:"50%",background:"#22C55E",boxShadow:"0 0 8px #22C55E",animation:"flash 1.2s ease-in-out infinite",flexShrink:0}}/>}
+            {esManana&&!esHoy&&<div style={{width:"14px",height:"14px",borderRadius:"50%",background:"#EAB308",boxShadow:"0 0 8px #EAB308",animation:"flashYellow 1.8s ease-in-out infinite",flexShrink:0}}/>}
           </div>
           <div style={{display:"inline-block",background:"rgba(255,255,255,0.20)",color:"#fff",fontSize:"13px",fontWeight:"500",padding:"2px 10px",borderRadius:"20px",marginTop:"5px",visibility:evs.length>0?"visible":"hidden"}}>{evs.length>0?`${evs.length} evento${evs.length!==1?"s":""}`:" "}</div>
         </div>
-        {evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} contactos={contactos} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} onNavegar={d=>{setDiaActual(d);setVista("dia");}} onVerMultidia={verTodosLosDias} solidPill/>)}
+        {evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} contactos={contactos} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} onNavegar={d=>{setDiaActual(d);setVista("dia");}} onVerMultidia={verTodosLosDias} solidPill hideDots={true}/>)}
         {evs.length===0&&<div style={{textAlign:"center",color:esWeekend?"rgba(255,255,255,0.30)":"rgba(255,255,255,0.5)",fontWeight:"500",fontSize:"15px",padding:"20px 0"}}>Sin eventos</div>}
       </div>;
     };
@@ -3335,7 +3338,7 @@ export default function App() {
               <div style={{flex:1,color:"#fff",fontWeight:"500",fontSize:"17px"}}>{evs.length>0?`${evs.length} evento${evs.length!==1?"s":""}`:""}</div>
               <div style={{fontSize:"14px",color:"rgba(255,255,255,0.6)"}}>›</div>
             </div>
-            {evs.length>0&&<div style={{padding:"0 10px 10px"}}>{evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} contactos={contactos} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} onNavegar={d=>{setDiaActual(d);setVista("dia");}} onVerMultidia={verTodosLosDias} solidPill/>)}</div>}
+            {evs.length>0&&<div style={{padding:"0 10px 10px"}}>{evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} contactos={contactos} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} onNavegar={d=>{setDiaActual(d);setVista("dia");}} onVerMultidia={verTodosLosDias} solidPill hideDots={true}/>)}</div>}
           </div>;
         })}
         {hayFS&&<div style={{height:"1px",background:"rgba(255,255,255,0.15)",margin:"8px 0"}}/>}
@@ -3353,7 +3356,7 @@ export default function App() {
               <div style={{flex:1,color:"#fff",fontWeight:"500",fontSize:"17px"}}>{evs.length>0?`${evs.length} evento${evs.length!==1?"s":""}`:""}</div>
               <div style={{fontSize:"14px",color:"rgba(255,255,255,0.6)"}}>›</div>
             </div>
-            {evs.length>0&&<div style={{padding:"0 10px 10px"}}>{evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} contactos={contactos} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} onNavegar={d=>{setDiaActual(d);setVista("dia");}} onVerMultidia={verTodosLosDias} solidPill/>)}</div>}
+            {evs.length>0&&<div style={{padding:"0 10px 10px"}}>{evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} contactos={contactos} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} onNavegar={d=>{setDiaActual(d);setVista("dia");}} onVerMultidia={verTodosLosDias} solidPill hideDots={true}/>)}</div>}
           </div>;
         })}
       </div>
