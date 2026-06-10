@@ -1500,7 +1500,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,lugares=[],onEdi
                     const entries=Object.entries(grupos);
                     return(
                       <div style={{border:"2px solid #1D4ED8",borderRadius:"12px",background:"#EFF6FF",overflow:"hidden"}}>
-                        <div style={{background:"#FEF9C3",padding:"8px 14px",fontWeight:"700",fontSize:"13px",color:"#111827",textTransform:"uppercase",letterSpacing:"0.06em",display:"flex",alignItems:"center",gap:"6px"}}><IconMic size={14}/> Intérpretes</div>
+                        <div style={{background:"#FEF9C3",padding:"8px 14px",fontWeight:"700",fontSize:"13px",color:"#111827",textTransform:"uppercase",letterSpacing:"0.06em",display:"flex",alignItems:"center",justifyContent:"center",gap:"6px"}}><IconMic size={14}/> Intérpretes</div>
                         <div style={{padding:"12px 14px"}}>
                           {!entries.length&&<div style={{fontSize:"13px",color:"#374151",fontStyle:"italic"}}>Sin intérpretes asignados</div>}
                           {entries.map(([key,grupo])=>{
@@ -3457,7 +3457,7 @@ export default function App() {
                 {esPresD&&evM.lugar&&<div style={{marginBottom:"12px"}}><SLD t="📍 Lugar"/><div style={{display:"flex",gap:6,flexWrap:"wrap"}}><span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"5px 11px",borderRadius:6,fontSize:13,fontWeight:700,color:"#9A3A3A",background:"#FEF2F2",border:"2px solid #D34848",whiteSpace:"nowrap"}}>📍 {evM.lugar}</span>{evM.lugar_detalle&&<span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"5px 11px",borderRadius:6,fontSize:13,fontWeight:700,color:"#9A3A3A",background:"#FEF2F2",border:"2px solid #D34848",whiteSpace:"nowrap"}}>📍 {evM.lugar_detalle}</span>}</div></div>}
                 {!esPresD&&evM.plataforma&&<div style={{marginBottom:"12px"}}><SLD t="💻 Plataforma"/><PlatformChip platform={evM.plataforma==="Zoom"?"Zoom MundoChile":evM.plataforma} isMundoChile={esZoomMCD} extra={esZoomMCD?evM.zoom_administrador:""}/></div>}
                 {grupoEntries.length>0&&<div style={{marginBottom:"4px"}}>
-                  <div style={{display:"flex",alignItems:"center",gap:"7px",marginBottom:"10px",padding:"5px 13px",background:"#FFF1F2",border:"1.5px solid #FECDD3",borderRadius:"10px",width:"fit-content",color:"#B91C1C"}}><IconMic size={17}/><span style={{fontSize:"14px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"0.05em"}}>Intérpretes</span></div>
+                  <div style={{display:"flex",alignItems:"center",gap:"7px",marginBottom:"10px",padding:"5px 13px",background:"#FFF1F2",border:"1.5px solid #FECDD3",borderRadius:"10px",width:"fit-content",margin:"0 auto 10px auto",color:"#B91C1C"}}><IconMic size={17}/><span style={{fontSize:"14px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"0.05em"}}>Intérpretes</span></div>
                   {grupoEntries.map(([key,grupo])=>{
                     const pillClr=IDIOMA_PILL_CLR[grupo.idioma]||"#4C6EF5";
                     const hp=grupo.items.find(i=>i.hora)?.hora;
@@ -3561,7 +3561,7 @@ export default function App() {
                     </div>
                     {/* Columna derecha: intérpretes */}
                     <div>
-                      <div style={{display:"flex",alignItems:"center",gap:"7px",marginBottom:"10px",padding:"5px 13px",background:"#FFF1F2",border:"1.5px solid #FECDD3",borderRadius:"10px",width:"fit-content",color:"#B91C1C"}}><IconMic size={17}/><span style={{fontSize:"14px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"0.05em"}}>Intérpretes</span></div>
+                      <div style={{display:"flex",alignItems:"center",gap:"7px",marginBottom:"10px",padding:"5px 13px",background:"#FFF1F2",border:"1.5px solid #FECDD3",borderRadius:"10px",width:"fit-content",margin:"0 auto 10px auto",color:"#B91C1C"}}><IconMic size={17}/><span style={{fontSize:"14px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"0.05em"}}>Intérpretes</span></div>
                       {grupoEntries.length===0
                         ?<div style={{color:"#848B95",fontSize:14,fontStyle:"italic"}}>Sin intérpretes asignados</div>
                         :grupoEntries.map(([key,grupo])=>{
