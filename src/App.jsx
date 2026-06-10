@@ -3579,6 +3579,7 @@ export default function App() {
               :<button onClick={()=>setBuscando(true)} style={{padding:"7px 12px",fontSize:"17px",background:"rgba(255,255,255,0.15)",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}} title="Buscar">🔍</button>
             }
             {busqueda&&<button onClick={()=>{setBusqueda("");setBuscando(false);}} style={{padding:"7px 10px",fontSize:"15px",background:"rgba(255,255,255,0.15)",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>✕</button>}
+            {esEditor&&pantalla==="calendario"&&vista==="grilla"&&<button onClick={exportarExcelFiltrado} style={{padding:"9px 14px",fontSize:"17px",background:"rgba(22,163,74,0.25)",color:"#6EE7B7",border:"1px solid rgba(22,163,74,0.5)",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>📊 Excel</button>}
             {esEditor&&pantalla==="calendario"&&<button onClick={()=>setPantalla("disponibilidad")} style={{padding:"5px 10px",fontSize:"13px",background:"rgba(253,230,138,0.12)",color:"#FDE68A",border:"1.5px solid #FCD34D",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:"5px"}} title="Disponibilidad"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#86EFAC" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Disponibilidad</button>}
             {esEditor&&<button onClick={()=>setModalEvento({modo:"nuevo",data:evVacio()})} style={{padding:"7px 16px",fontSize:"17px",background:"#e63946",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit",fontWeight:"500"}}>+ Nuevo</button>}
             {esAdmin&&<button onClick={()=>setPantalla(p=>p==="config"?"calendario":"config")} style={{padding:"7px 12px",fontSize:"17px",background:pantalla==="config"?"rgba(255,255,255,0.35)":"rgba(255,255,255,0.15)",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>⚙️</button>}
@@ -3598,9 +3599,6 @@ export default function App() {
           {vista!=="semana"&&<div style={{position:"absolute",right:"16px",top:"50%",transform:"translateY(-50%)",display:"flex",gap:"8px",transition:"opacity 0.2s, transform 0.2s",opacity:hayFiltros?1:0,pointerEvents:hayFiltros?"auto":"none",visibility:hayFiltros?"visible":"hidden"}}>
             <button onClick={generarFichaMultiple} style={{display:"flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"12px",background:"#1A6FD4",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",height:"26px",boxShadow:"0 2px 4px rgba(26,111,212,0.3)",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📋 Fichas</button>
           </div>}
-        </div>}
-        {vista==="grilla"&&<div style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",width:"100%",display:"flex",alignItems:"center",justifyContent:"flex-end",padding:"6px 16px",boxSizing:"border-box"}}>
-          <button onClick={exportarExcelFiltrado} style={{display:"flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"12px",background:"#059669",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",height:"26px",boxShadow:"0 2px 4px rgba(5,150,105,0.3)",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📊 Excel</button>
         </div>}
         {vista==="semana"&&renderSemana()}
         {vista==="dia"&&renderDia()}
