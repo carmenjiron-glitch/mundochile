@@ -3699,11 +3699,6 @@ export default function App() {
           <div style={{display:"flex",alignItems:"center",padding:"6px 0"}}>
             <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes} clientes={clientesConEventos} pares={paresConEventos} proveedores={proveedoresConEventos} showClear={true} hayFinSemana={vista==="semana"&&diasSemana.slice(5,7).some(d=>evsDia(toISO(d)).length>0)}/>
           </div>
-          {/* DERECHA: contador eventos (siempre visible, bajo botón NUEVO) */}
-          {vista!=="semana"&&<div style={{position:"absolute",right:"165px",top:"50%",transform:"translateY(-50%)",padding:"1px 10px",border:"1px solid rgba(255,255,255,0.85)",borderRadius:"9px",background:"transparent",textAlign:"center"}}>
-            <div style={{color:"#FFFFFF",fontSize:"14px",fontWeight:"550",lineHeight:1.3,whiteSpace:"nowrap"}}>{eventosFiltrados.length} evento{eventosFiltrados.length!==1?"s":""}</div>
-            <div style={{color:"rgba(255,255,255,0.70)",fontSize:"11px",whiteSpace:"nowrap"}}>{hayFiltros?"filtrado":"total"}</div>
-          </div>}
           {/* DERECHA: Fichas (solo cuando filtrado) */}
           {vista!=="semana"&&hayFiltros&&<div style={{position:"absolute",right:"16px",top:"50%",transform:"translateY(-50%)"}}>
             <button onClick={generarFichaMultiple} style={{display:"flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"12px",background:"#1A6FD4",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",height:"26px",boxShadow:"0 2px 4px rgba(26,111,212,0.3)",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📋 Fichas</button>
