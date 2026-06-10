@@ -394,6 +394,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
   const [form,setForm]=useState(()=>{
     if(!eventoInicial) return evVacio();
     const f=JSON.parse(JSON.stringify(eventoInicial));
+    if(f.plataforma==="Zoom") f.plataforma="Zoom MundoChile";
     f.asignaciones=(f.asignaciones||[]).map(a=>({...a,conflicto_ok:true}));
     f.dias=(f.dias||[]).map(d=>({...d,asignaciones:(d.asignaciones||[]).map(a=>({...a,conflicto_ok:true}))}));
     return f;
@@ -1288,7 +1289,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,lugares=[],onEdi
                             <button title="Copiar link" onClick={()=>{const q=`${evento.lugar||""}${evento.lugar_detalle?", "+evento.lugar_detalle:""}`.trim();navigator.clipboard.writeText(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`).then(()=>{setGeoOk(true);setTimeout(()=>setGeoOk(false),2500);}).catch(()=>{});}} style={{padding:"8px 16px",borderRadius:"8px",border:`1px solid ${geoOk?"#79D79B":"#84B1E4"}`,background:geoOk?"#F0FDF4":"#EFF6FF",display:"inline-flex",alignItems:"center",gap:"5px",cursor:"pointer",fontSize:"14px",fontWeight:"500",color:geoOk?"#145B2F":"#0F4577",fontFamily:"inherit"}}>{geoOk?"✓ Copiado":"⊕ Copiar link Maps"}</button>
                           </div>
                         </>}
-                        {!esPresencial&&evento.plataforma&&<PlatformChip platform={evento.plataforma} isMundoChile={esZoomMC} extra={esZoomMC?evento.zoom_administrador:""}/>}
+                        {!esPresencial&&evento.plataforma&&<PlatformChip platform={evento.plataforma==="Zoom"?"Zoom MundoChile":evento.plataforma} isMundoChile={esZoomMC} extra={esZoomMC?evento.zoom_administrador:""}/>}
                       </div>
                     </div>
                   )}
@@ -1421,7 +1422,7 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,lugares=[],onEdi
                           </div>
                         </>}
                         {!esPresencial&&evento.plataforma&&<>
-                          <PlatformChip platform={evento.plataforma} isMundoChile={esZoomMC} extra={esZoomMC?evento.zoom_administrador:""}/>
+                          <PlatformChip platform={evento.plataforma==="Zoom"?"Zoom MundoChile":evento.plataforma} isMundoChile={esZoomMC} extra={esZoomMC?evento.zoom_administrador:""}/>
                           {evento.zoom_link&&<div style={{display:"flex",alignItems:"center",gap:"8px",marginTop:"8px",padding:"8px 12px",background:"#EFF6FF",borderRadius:"8px",border:"1px solid #BFDBFE"}}>
                             <span style={{fontSize:"15px",color:"#1D4ED8",flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>🔗 {evento.zoom_link}</span>
                             <button onClick={()=>navigator.clipboard.writeText(evento.zoom_link)} style={{padding:"5px 12px",background:"#1D4ED8",color:"#fff",border:"none",borderRadius:"6px",cursor:"pointer",fontSize:"14px",fontWeight:"500",whiteSpace:"nowrap",flexShrink:0}}>📋 Copiar</button>
