@@ -241,16 +241,17 @@ function CampoCopia({valor, mostrarValor=true, wrapStyle={}, btnColor=null, btnF
   );
 }
 
-function SelHora({value,onChange,placeholder="Hora"}) {
+function SelHora({value,onChange,placeholder="Hora",sugeridas=[]}) {
   const [manual,setManual]=useState(false);
   const v5=value?.slice(0,5)||"";
-  const esManual=manual||(!!v5&&!HORAS.includes(v5));
+  const esManual=manual||(!!v5&&!HORAS.includes(v5)&&!sugeridas.some(s=>s.value===v5));
   if(esManual) return (
     <input type="time" step="60" style={S.inp} value={v5} onChange={e=>onChange(e.target.value)} placeholder="08:30"/>
   );
   return (
     <select style={S.sel} value={v5} onChange={e=>{if(e.target.value==="__otro__"){setManual(true);onChange("");}else onChange(e.target.value);}}>
       <option value="">{placeholder}</option>
+      {sugeridas.map(s=><option key={`sug-${s.value}`} value={s.value}>{s.label}</option>)}
       {HORAS.map(h=><option key={h} value={h}>{h} hrs</option>)}
       <option value="__otro__">Otro horario…</option>
     </select>
@@ -407,6 +408,13 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
   const [zoomOtro,setZoomOtro]=useState(!ZOOM_ADMIN.includes(form.zoom_administrador)&&!!form.zoom_administrador);
   const [adminZoomManual,setAdminZoomManual]=useState("");
   const [modalNuevoProveedor,setModalNuevoProveedor]=useState(null);
+  const [lugarDirEdit,setLugarDirEdit]=useState("");
+  useEffect(()=>{
+    const TL={hotel:"Hotel",centro_eventos:"Centro de eventos",universidad:"Universidad",edificio_corporativo:"Edificio corporativo",oficina_cliente:"Oficina del cliente",planta_produccion:"Planta de producción",faena_minera:"Faena minera",ministerio:"Ministerio",edificio_gobierno:"Edificio de gobierno",otro:"Otro"};
+    const fn=l=>l.tipo&&TL[l.tipo]?`${TL[l.tipo]} ${l.nombre}`:l.nombre;
+    const lr=(lugares||[]).filter(l=>l.activo!==false).find(l=>fn(l)===form.lugar);
+    setLugarDirEdit(lr?.direccion||"");
+  },[form.lugar,lugares]);
 
   useEffect(()=>{
     if(!form.fecha_inicio||!form.fecha_termino) return;
@@ -551,6 +559,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           }
         }
       }
+      if(lugarDirEdit&&lugarDirEdit.trim()){const TL={hotel:"Hotel",centro_eventos:"Centro de eventos",universidad:"Universidad",edificio_corporativo:"Edificio corporativo",oficina_cliente:"Oficina del cliente",planta_produccion:"Planta de producción",faena_minera:"Faena minera",ministerio:"Ministerio",edificio_gobierno:"Edificio de gobierno",otro:"Otro"};const fn=l=>l.tipo&&TL[l.tipo]?`${TL[l.tipo]} ${l.nombre}`:l.nombre;const lr=(lugares||[]).filter(l=>l.activo!==false).find(l=>fn(l)===form.lugar);if(lr&&!lr.direccion){await sb.from("lugares").update({direccion:lugarDirEdit.trim()}).eq("id",lr.id);}}
       guardandoRef.current=false;
       if(cerrar){onGuardar();}
       else{setGuardadoOk(true);setTimeout(()=>setGuardadoOk(false),2000);setTimeout(()=>{const m=document.querySelector("[data-modal-scroll]");if(m)m.scrollTop=0;},80);}
@@ -589,6 +598,10 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
       else setForm(f=>{const dias=[...f.dias],asigs=[...dias[dIdx].asignaciones];asigs.splice(idx,1);dias[dIdx]={...dias[dIdx],asignaciones:asigs};return{...f,dias};});
     };
     const interp=interpretes.find(x=>x.id===a.interprete_id);
+    const horaRef=dIdx===null?form.hora_inicio:form.dias?.[dIdx]?.hora_inicio;
+    const _sg=(h,m)=>{if(!h)return null;const[hh,mm]=h.split(':').map(Number);const t=hh*60+mm-m;if(t<0)return null;return`${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`;};
+    const[_s30,_s45]=[_sg(horaRef,30),_sg(horaRef,45)];
+    const sugerPres=[...(_s30?[{value:_s30,label:`30 min antes del inicio (${_s30})`}]:[]),...(_s45?[{value:_s45,label:`45 min antes del inicio (${_s45})`}]:[])];
     return (
       <div ref={divRef} id={`asig-${dIdx??'s'}-${idx}`} data-fila-asig="" style={{border:`1.5px solid ${a.es_host_zoom?"#E03131":C.grisBorde}`,borderRadius:"10px",padding:"14px",marginBottom:"10px",background:C.gris,boxShadow:a.es_host_zoom?"0 0 0 2px #fecaca":undefined}}>
         <div style={{fontWeight:"600",color:"#374151",fontSize:"13px",marginBottom:"10px",paddingBottom:"8px",borderBottom:`1px solid ${C.grisBorde}`}}>Intérprete {idx+1}</div>
@@ -633,7 +646,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
         <div style={{...S.fila,marginTop:"10px"}}>
           <div style={S.camp}><label style={S.lbl}>N° OT</label><input style={S.inp} defaultValue={a.nro_ot} onBlur={e=>edit("nro_ot",e.target.value)} placeholder="OT-0000"/></div>
           <div style={S.camp}><label style={S.lbl}>N° Boleta</label><input style={S.inp} defaultValue={a.nro_boleta} onBlur={e=>edit("nro_boleta",e.target.value)} placeholder="628"/></div>
-          <div style={S.camp}><label style={S.lbl}>🕐 Hora presentación</label><SelHora value={a.hora_presentacion} onChange={v=>edit("hora_presentacion",v)} placeholder="Misma del evento"/></div>
+          <div style={S.camp}><label style={S.lbl}>🕐 Hora presentación</label><SelHora value={a.hora_presentacion} onChange={v=>edit("hora_presentacion",v)} placeholder="Misma del evento" sugeridas={sugerPres}/></div>
         </div>
         <div style={{display:"flex",gap:"16px",marginTop:"10px",flexWrap:"wrap",alignItems:"center"}}>
           <label style={{display:"flex",gap:"6px",alignItems:"center",cursor:"pointer",fontSize:"13px",color:a.es_host_zoom?"#B82E38":C.textoMed,fontWeight:a.es_host_zoom?"600":"400"}}>
@@ -770,6 +783,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                   <button onClick={()=>onNuevoLugar&&onNuevoLugar(l=>{const TL={hotel:"Hotel",centro_eventos:"Centro de eventos",universidad:"Universidad",edificio_corporativo:"Edificio corporativo",oficina_cliente:"Oficina del cliente",planta_produccion:"Planta de producción",faena_minera:"Faena minera",ministerio:"Ministerio",edificio_gobierno:"Edificio de gobierno",otro:"Otro"};const fn=l.tipo&&TL[l.tipo]?`${TL[l.tipo]} ${l.nombre}`:l.nombre;setF("lugar",fn);if(onLugarCreado)onLugarCreado();})} style={{padding:"0",width:"42px",height:"42px",background:"#3B82F6",color:"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"20px",fontWeight:"300",fontFamily:"inherit",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,lineHeight:1}}>+</button>
                 </div>
               </div>
+              {(()=>{const TL={hotel:"Hotel",centro_eventos:"Centro de eventos",universidad:"Universidad",edificio_corporativo:"Edificio corporativo",oficina_cliente:"Oficina del cliente",planta_produccion:"Planta de producción",faena_minera:"Faena minera",ministerio:"Ministerio",edificio_gobierno:"Edificio de gobierno",otro:"Otro"};const fn=l=>l.tipo&&TL[l.tipo]?`${TL[l.tipo]} ${l.nombre}`:l.nombre;const lr=(lugares||[]).filter(l=>l.activo!==false).find(l=>fn(l)===form.lugar);const dbDir=lr?.direccion||"";const efectivaDir=dbDir||lugarDirEdit;if(!form.lugar)return null;return(<div style={{marginBottom:"10px"}}><label style={S.lbl}>📌 Dirección</label>{dbDir?<div style={{padding:"8px 12px",background:"#F0F7FF",border:"1px solid #BFDBFE",borderRadius:"8px",color:"#374151",fontSize:"14px"}}>{dbDir}</div>:<input style={S.inp} value={lugarDirEdit} onChange={e=>setLugarDirEdit(e.target.value)} placeholder="Escribe la dirección del lugar…"/>}{efectivaDir&&<div style={{display:"flex",gap:"8px",marginTop:"6px",alignItems:"center"}}><a href={`https://maps.google.com/?q=${encodeURIComponent(efectivaDir)}`} target="_blank" rel="noreferrer" style={{fontSize:"13px",color:"#1A6FD4",textDecoration:"underline",fontFamily:"inherit"}}>🗺 Ver en Maps</a><button onClick={()=>navigator.clipboard.writeText(efectivaDir).catch(()=>{})} style={{background:"none",border:"1px solid #A0AEC0",borderRadius:"4px",cursor:"pointer",fontSize:"12px",padding:"2px 7px",color:"#4A5568",fontFamily:"inherit",lineHeight:1}}>📋 Copiar</button></div>}</div>);})()}
               <div style={{marginBottom:"20px"}}><label style={S.lbl}>Detalles del lugar</label><input style={S.inp} value={form.lugar_detalle} onChange={e=>setF("lugar_detalle",e.target.value)} placeholder="Sala Andes, piso 3…"/></div>
             </>}
             {/* Comentarios */}
