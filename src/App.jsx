@@ -911,6 +911,21 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                     <label style={S.lbl}>Contactos proveedor</label>
                     <button onClick={()=>setForm(f=>{const eqs=[...(f.equipos||[])];let cs=[];try{cs=JSON.parse(eqs[eIdx].proveedor_contacto||"[]");}catch{cs=[];}cs.push({tipo:"celular",valor:""});eqs[eIdx]={...eqs[eIdx],proveedor_contacto:JSON.stringify(cs)};return{...f,equipos:eqs};})} style={{...S.btnP,padding:"4px 10px",fontSize:"14px",fontWeight:"500"}}>+</button>
                   </div>
+                  {eq.proveedor_id&&(()=>{
+                    const prov=proveedores.find(p=>p.id===Number(eq.proveedor_id));
+                    if(!prov)return null;
+                    const team=[1,2,3].flatMap(n=>{const nom=prov[`contacto${n}_nombre`];if(!nom)return[];return[{nom,cel:prov[`contacto${n}_celular`]||"",mail:prov[`contacto${n}_email`]||"",cargo:prov[`contacto${n}_cargo`]||""}];});
+                    if(!team.length)return null;
+                    let cs=[];try{cs=JSON.parse(eq.proveedor_contacto||"[]");}catch{}
+                    const isSel=(nom)=>cs.some(x=>x.nombre===nom);
+                    const toggle=(t)=>{let cs2=[...cs];if(isSel(t.nom)){cs2=cs2.filter(x=>x.nombre!==t.nom);}else{if(t.cel)cs2.push({tipo:"celular",valor:t.cel,nombre:t.nom,cargo:t.cargo});if(t.mail)cs2.push({tipo:"mail",valor:t.mail,nombre:t.nom,cargo:t.cargo});}setForm(f=>{const eqs=[...(f.equipos||[])];eqs[eIdx]={...eqs[eIdx],proveedor_contacto:JSON.stringify(cs2)};return{...f,equipos:eqs};});};
+                    return(<div style={{marginBottom:"8px"}}>
+                      <div style={{fontSize:"11px",color:"#64748B",fontWeight:"600",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:"5px"}}>Del equipo del proveedor</div>
+                      <div style={{display:"flex",flexWrap:"wrap",gap:"5px"}}>
+                        {team.map((t,i)=>{const sel=isSel(t.nom);return(<button key={i} type="button" onClick={()=>toggle(t)} style={{padding:"4px 10px",borderRadius:"20px",border:`1.5px solid ${sel?"#1A6FD4":"#CBD5E1"}`,background:sel?"#EFF6FF":"#F8FAFC",color:sel?"#1A6FD4":"#475569",cursor:"pointer",fontSize:"12px",fontWeight:sel?"600":"400",fontFamily:"inherit",lineHeight:1}}>{sel?"✓ ":""}{t.nom}{t.cargo?` · ${t.cargo}`:""}</button>);})}
+                      </div>
+                    </div>);
+                  })()}
                   <div style={{maxHeight:"160px",overflowY:"auto",display:"flex",flexDirection:"column",gap:"6px"}}>
                     {(()=>{let cs=[];try{cs=JSON.parse(eq.proveedor_contacto||"[]");}catch{cs=eq.proveedor_contacto?[{tipo:"celular",valor:eq.proveedor_contacto}]:[];}
                     return cs.map((c,ci)=>(
@@ -1036,6 +1051,21 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                           <label style={S.lbl}>Contactos proveedor</label>
                           <button onClick={()=>{let cs=[];try{cs=JSON.parse(eq.proveedor_contacto||"[]");}catch{cs=[];}cs.push({tipo:"celular",valor:""});editEq(dIdx,eIdx,"proveedor_contacto",JSON.stringify(cs));}} style={{...S.btnP,padding:"4px 10px",fontSize:"14px",fontWeight:"500"}}>+</button>
                         </div>
+                        {eq.proveedor_id&&(()=>{
+                          const prov=proveedores.find(p=>p.id===Number(eq.proveedor_id));
+                          if(!prov)return null;
+                          const team=[1,2,3].flatMap(n=>{const nom=prov[`contacto${n}_nombre`];if(!nom)return[];return[{nom,cel:prov[`contacto${n}_celular`]||"",mail:prov[`contacto${n}_email`]||"",cargo:prov[`contacto${n}_cargo`]||""}];});
+                          if(!team.length)return null;
+                          let cs=[];try{cs=JSON.parse(eq.proveedor_contacto||"[]");}catch{}
+                          const isSel=(nom)=>cs.some(x=>x.nombre===nom);
+                          const toggle=(t)=>{let cs2=[...cs];if(isSel(t.nom)){cs2=cs2.filter(x=>x.nombre!==t.nom);}else{if(t.cel)cs2.push({tipo:"celular",valor:t.cel,nombre:t.nom,cargo:t.cargo});if(t.mail)cs2.push({tipo:"mail",valor:t.mail,nombre:t.nom,cargo:t.cargo});}editEq(dIdx,eIdx,"proveedor_contacto",JSON.stringify(cs2));};
+                          return(<div style={{marginBottom:"8px"}}>
+                            <div style={{fontSize:"11px",color:"#64748B",fontWeight:"600",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:"5px"}}>Del equipo del proveedor</div>
+                            <div style={{display:"flex",flexWrap:"wrap",gap:"5px"}}>
+                              {team.map((t,i)=>{const sel=isSel(t.nom);return(<button key={i} type="button" onClick={()=>toggle(t)} style={{padding:"4px 10px",borderRadius:"20px",border:`1.5px solid ${sel?"#1A6FD4":"#CBD5E1"}`,background:sel?"#EFF6FF":"#F8FAFC",color:sel?"#1A6FD4":"#475569",cursor:"pointer",fontSize:"12px",fontWeight:sel?"600":"400",fontFamily:"inherit",lineHeight:1}}>{sel?"✓ ":""}{t.nom}{t.cargo?` · ${t.cargo}`:""}</button>);})}
+                            </div>
+                          </div>);
+                        })()}
                         <div style={{maxHeight:"160px",overflowY:"auto",display:"flex",flexDirection:"column",gap:"6px"}}>
                           {(()=>{let cs=[];try{cs=JSON.parse(eq.proveedor_contacto||"[]");}catch{cs=eq.proveedor_contacto?[{tipo:"celular",valor:eq.proveedor_contacto}]:[];}
                           return cs.map((c,ci)=>(
@@ -1097,7 +1127,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
 
 // ─── MODAL NUEVO PROVEEDOR ───────────────────────────────────────────────────
 function ModalNuevoProveedor({onCerrar,onGuardado}) {
-  const CT={nombre:"",c1_nombre:"",c1_celular:"",c1_email:"",c2_nombre:"",c2_celular:"",c2_email:"",c3_nombre:"",c3_celular:"",c3_email:"",comentarios:""};
+  const CT={nombre:"",telefono:"",email_e:"",rut:"",ciudad:"",c1_nombre:"",c1_cargo:"",c1_celular:"",c1_email:"",c2_nombre:"",c2_cargo:"",c2_celular:"",c2_email:"",c3_nombre:"",c3_cargo:"",c3_celular:"",c3_email:"",comentarios:""};
   const [form,setForm]=useState(CT);
   const [guardando,setGuardando]=useState(false);
   const [error,setError]=useState("");
@@ -1106,19 +1136,28 @@ function ModalNuevoProveedor({onCerrar,onGuardado}) {
   const guardar=async()=>{
     if(!form.nombre.trim()){setError("El nombre es obligatorio.");return;}
     setGuardando(true);setError("");
-    const payload={nombre:form.nombre.trim(),activo:true};
-    if(form.c1_nombre.trim())payload.contacto1_nombre=form.c1_nombre.trim();
-    if(form.c1_celular.trim())payload.contacto1_celular=form.c1_celular.trim();
-    if(form.c1_email.trim())payload.contacto1_email=form.c1_email.trim();
-    if(form.c2_nombre.trim())payload.contacto2_nombre=form.c2_nombre.trim();
-    if(form.c2_celular.trim())payload.contacto2_celular=form.c2_celular.trim();
-    if(form.c2_email.trim())payload.contacto2_email=form.c2_email.trim();
-    if(form.c3_nombre.trim())payload.contacto3_nombre=form.c3_nombre.trim();
-    if(form.c3_celular.trim())payload.contacto3_celular=form.c3_celular.trim();
-    if(form.c3_email.trim())payload.contacto3_email=form.c3_email.trim();
-    if(form.comentarios.trim())payload.comentarios=form.comentarios.trim();
+    const base={nombre:form.nombre.trim(),activo:true};
+    if(form.telefono.trim())base.telefono=form.telefono.trim();
+    if(form.email_e.trim())base.email=form.email_e.trim();
+    if(form.c1_nombre.trim())base.contacto1_nombre=form.c1_nombre.trim();
+    if(form.c1_celular.trim())base.contacto1_celular=form.c1_celular.trim();
+    if(form.c1_email.trim())base.contacto1_email=form.c1_email.trim();
+    if(form.c2_nombre.trim())base.contacto2_nombre=form.c2_nombre.trim();
+    if(form.c2_celular.trim())base.contacto2_celular=form.c2_celular.trim();
+    if(form.c2_email.trim())base.contacto2_email=form.c2_email.trim();
+    if(form.c3_nombre.trim())base.contacto3_nombre=form.c3_nombre.trim();
+    if(form.c3_celular.trim())base.contacto3_celular=form.c3_celular.trim();
+    if(form.c3_email.trim())base.contacto3_email=form.c3_email.trim();
+    if(form.comentarios.trim())base.comentarios=form.comentarios.trim();
+    const opt={};
+    if(form.rut.trim())opt.rut=form.rut.trim();
+    if(form.ciudad.trim())opt.ciudad=form.ciudad.trim();
+    if(form.c1_cargo.trim())opt.contacto1_cargo=form.c1_cargo.trim();
+    if(form.c2_cargo.trim())opt.contacto2_cargo=form.c2_cargo.trim();
+    if(form.c3_cargo.trim())opt.contacto3_cargo=form.c3_cargo.trim();
     await sb.rpc("reload_schema_cache").catch(()=>{});
-    const {data,error:err}=await sb.from("proveedores").insert(payload).select().single();
+    let {data,error:err}=await sb.from("proveedores").insert({...base,...opt}).select().single();
+    if(err&&Object.keys(opt).length){({data,error:err}=await sb.from("proveedores").insert(base).select().single());}
     setGuardando(false);
     if(err){setError("Error al guardar: "+err.message);return;}
     onGuardado(data);
@@ -1126,41 +1165,47 @@ function ModalNuevoProveedor({onCerrar,onGuardado}) {
 
   const INP={width:"100%",padding:"8px 10px",borderRadius:"8px",border:"1px solid #CBD5E1",fontSize:"13px",fontFamily:"inherit",outline:"none",boxSizing:"border-box"};
   const LBL={fontSize:"11px",fontWeight:"600",color:"#475569",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:"4px",display:"block"};
-  const contactoRow=(num,pre)=>(
-    <div style={{display:"grid",gridTemplateColumns:"1fr 140px 1fr",gap:"8px",marginBottom:"10px"}}>
-      <div><label style={LBL}>Contacto {num} — Nombre</label><input style={INP} value={form[pre+"nombre"]} onChange={e=>setF(pre+"nombre",e.target.value)} placeholder="Nombre contacto"/></div>
-      <div><label style={LBL}>Celular</label><input style={INP} value={form[pre+"celular"]} onChange={e=>setF(pre+"celular",e.target.value)} placeholder="+56 9…"/></div>
-      <div><label style={LBL}>Email</label><input style={INP} type="email" value={form[pre+"email"]} onChange={e=>setF(pre+"email",e.target.value)} placeholder="correo@…"/></div>
-    </div>
-  );
 
   return (
     <div style={{position:"fixed",top:0,left:0,width:"100vw",height:"100vh",background:"rgba(0,0,0,0.6)",zIndex:2000,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px",boxSizing:"border-box"}}>
-      <div style={{background:"#FFFFFF",borderRadius:"16px",width:"100%",maxWidth:"640px",maxHeight:"90vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,0.3)"}}>
+      <div style={{background:"#FFFFFF",borderRadius:"16px",width:"100%",maxWidth:"660px",maxHeight:"90vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 80px rgba(0,0,0,0.3)"}}>
         <div style={{padding:"20px 24px 16px",borderBottom:"1px solid #E2E8F0",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
-          <div style={{fontSize:"16px",fontWeight:"700",color:"#0F172A"}}>Nuevo Proveedor AV</div>
+          <div style={{fontSize:"16px",fontWeight:"700",color:"#0F172A"}}>🔊 Nuevo Proveedor AV</div>
           <button onClick={onCerrar} style={{background:"none",border:"none",cursor:"pointer",fontSize:"20px",color:"#64748B",padding:"4px",lineHeight:1}}>×</button>
         </div>
         <div style={{flex:1,overflowY:"auto",padding:"20px 24px"}}>
-          <div style={{marginBottom:"16px"}}>
-            <label style={LBL}>Nombre empresa *</label>
-            <input style={INP} value={form.nombre} onChange={e=>setF("nombre",e.target.value)} placeholder="Nombre del proveedor AV" autoFocus/>
+          <div style={{fontSize:"11px",fontWeight:"700",color:"#94A3B8",textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:"10px"}}>Datos de la empresa</div>
+          <div style={{marginBottom:"14px"}}><label style={LBL}>Nombre empresa *</label><input style={INP} value={form.nombre} onChange={e=>setF("nombre",e.target.value)} placeholder="Empresa Proveedora AV Ltda." autoFocus/></div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"14px"}}>
+            <div><label style={LBL}>Teléfono empresa</label><input style={INP} value={form.telefono} onChange={e=>setF("telefono",e.target.value)} placeholder="+56 2 2000 0000"/></div>
+            <div><label style={LBL}>Email empresa</label><input style={INP} type="email" value={form.email_e} onChange={e=>setF("email_e",e.target.value)} placeholder="info@empresa.cl"/></div>
           </div>
-          <div style={{borderTop:"1px solid #E2E8F0",paddingTop:"14px",marginBottom:"12px"}}>
-            <div style={{fontSize:"12px",fontWeight:"600",color:"#64748B",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:"12px"}}>Contactos</div>
-            {contactoRow(1,"c1_")}
-            {contactoRow(2,"c2_")}
-            {contactoRow(3,"c3_")}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"20px"}}>
+            <div><label style={LBL}>RUT</label><input style={INP} value={form.rut} onChange={e=>setF("rut",e.target.value)} placeholder="76.XXX.XXX-X"/></div>
+            <div><label style={LBL}>Ciudad</label><input style={INP} value={form.ciudad} onChange={e=>setF("ciudad",e.target.value)} placeholder="Santiago"/></div>
           </div>
-          <div>
-            <label style={LBL}>Comentarios</label>
-            <textarea style={{...INP,minHeight:"70px",resize:"vertical"}} value={form.comentarios} onChange={e=>setF("comentarios",e.target.value)} placeholder="Notas adicionales…"/>
+          <div style={{borderTop:"1px solid #E2E8F0",paddingTop:"14px"}}>
+            <div style={{fontSize:"11px",fontWeight:"700",color:"#94A3B8",textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:"12px"}}>Equipo de contacto</div>
+            {[1,2,3].map(n=>{const pre=`c${n}_`;return(
+              <div key={n} style={{background:"#F8FAFC",borderRadius:"10px",padding:"12px 14px",marginBottom:"10px",border:"1px solid #E2E8F0"}}>
+                <div style={{fontSize:"11px",fontWeight:"600",color:"#94A3B8",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:"8px"}}>Contacto {n}</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px",marginBottom:"8px"}}>
+                  <div><label style={LBL}>Nombre</label><input style={INP} value={form[pre+"nombre"]} onChange={e=>setF(pre+"nombre",e.target.value)} placeholder="Nombre contacto"/></div>
+                  <div><label style={LBL}>Cargo / Rol</label><input style={INP} value={form[pre+"cargo"]} onChange={e=>setF(pre+"cargo",e.target.value)} placeholder="Técnico, Jefe de proyecto…"/></div>
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px"}}>
+                  <div><label style={LBL}>Celular</label><input style={INP} value={form[pre+"celular"]} onChange={e=>setF(pre+"celular",e.target.value)} placeholder="+56 9…"/></div>
+                  <div><label style={LBL}>Email</label><input style={INP} type="email" value={form[pre+"email"]} onChange={e=>setF(pre+"email",e.target.value)} placeholder="correo@…"/></div>
+                </div>
+              </div>
+            );})}
           </div>
+          <div style={{marginTop:"6px"}}><label style={LBL}>Notas / Datos adicionales</label><textarea style={{...INP,minHeight:"70px",resize:"vertical"}} value={form.comentarios} onChange={e=>setF("comentarios",e.target.value)} placeholder="Observaciones, especialidades, condiciones…"/></div>
           {error&&<div style={{marginTop:"10px",color:"#DC2626",fontSize:"13px"}}>{error}</div>}
         </div>
         <div style={{padding:"16px 24px",borderTop:"1px solid #E2E8F0",display:"flex",gap:"10px",justifyContent:"flex-end",flexShrink:0}}>
           <button onClick={onCerrar} style={{padding:"9px 18px",borderRadius:"8px",border:"1px solid #CBD5E1",background:"#F8FAFC",color:"#374151",cursor:"pointer",fontSize:"13px",fontWeight:"500",fontFamily:"inherit"}}>Cancelar</button>
-          <button onClick={guardar} disabled={guardando} style={{padding:"9px 22px",borderRadius:"8px",border:"none",background:"#1A6FD4",color:"#FFFFFF",cursor:guardando?"not-allowed":"pointer",fontSize:"13px",fontWeight:"600",fontFamily:"inherit",opacity:guardando?0.7:1}}>{guardando?"Guardando…":"Guardar proveedor"}</button>
+          <button onClick={guardar} disabled={guardando} style={{padding:"9px 22px",borderRadius:"8px",border:"none",background:"#1A6FD4",color:"#FFFFFF",cursor:guardando?"not-allowed":"pointer",fontSize:"13px",fontWeight:"600",fontFamily:"inherit",opacity:guardando?0.7:1}}>{guardando?"Guardando…":"💾 Guardar proveedor"}</button>
         </div>
       </div>
     </div>
@@ -1488,12 +1533,20 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,lugares=[],onEdi
                     <div style={{border:"2px solid #138B3F",borderRadius:"12px",background:"#F0FDF4",overflow:"hidden"}}>
                       <div style={{background:"#FEF9C3",padding:"8px 14px",fontWeight:"700",fontSize:"13px",color:"#111827",textTransform:"uppercase",letterSpacing:"0.06em",display:"flex",alignItems:"center",gap:"6px"}}><IconAV size={14}/> Equipos AV</div>
                       <div style={{padding:"12px 14px"}}>
-                        {(evento.evento_dias||[]).flatMap(d=>d.equipos_dia||[]).map((eq,eIdx)=>(
-                          <div key={eIdx} style={{fontSize:"14px",color:"#166534",padding:"5px 10px",background:"#DCFCE7",border:"1px solid #86EFAC",borderRadius:"6px",marginBottom:"6px",display:"flex",alignItems:"center",gap:"6px"}}>
-                            <IconAV size={14}/> {eq.tipo_equipo==="fijo"?"Sistema fijo":eq.tipo_equipo==="portatil"?"Sistema portátil":"Cabina portátil"}
-                            {eq.proveedor_nombre&&` · ${eq.proveedor_nombre}`}{eq.num_receptores>0&&` · ${eq.num_receptores} receptores`}{eq.num_cabinas>0&&` · ${eq.num_cabinas} cabinas`}
-                          </div>
-                        ))}
+                        {(evento.evento_dias||[]).flatMap(d=>d.equipos_dia||[]).map((eq,eIdx)=>{
+                          let csD=[];try{csD=JSON.parse(eq.proveedor_contacto||"[]");}catch{}
+                          return(<div key={eIdx} style={{marginBottom:"6px"}}>
+                            <div style={{fontSize:"14px",color:"#166534",padding:"5px 10px",background:"#DCFCE7",border:"1px solid #86EFAC",borderRadius:"6px",display:"flex",alignItems:"center",gap:"6px"}}>
+                              <IconAV size={14}/> {eq.tipo_equipo==="fijo"?"Sistema fijo":eq.tipo_equipo==="portatil"?"Sistema portátil":"Cabina portátil"}
+                              {eq.proveedor_nombre&&` · ${eq.proveedor_nombre}`}{eq.num_receptores>0&&` · ${eq.num_receptores} receptores`}{eq.num_cabinas>0&&` · ${eq.num_cabinas} cabinas`}
+                            </div>
+                            {csD.length>0&&<div style={{paddingLeft:"8px",marginTop:"4px",display:"flex",flexWrap:"wrap",gap:"4px"}}>
+                              {csD.map((c,i)=><span key={i} style={{fontSize:"12px",color:"#166534",background:"#F0FDF4",border:"1px solid #86EFAC",borderRadius:"4px",padding:"2px 7px",display:"inline-flex",alignItems:"center",gap:"3px"}}>
+                                {c.tipo==="mail"?"✉️":c.tipo==="whatsapp"?"💬":"📱"}{c.nombre?` ${c.nombre}:`:""} {c.valor}
+                              </span>)}
+                            </div>}
+                          </div>);
+                        })}
                       </div>
                     </div>
                   )}
@@ -1927,6 +1980,11 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
       if(id==="nuevo"){const r=await sb.from(tabla).insert(cleanBase).select("id").single();err=r.error;savedId=r.data?.id;}
       else{const r=await sb.from(tabla).update(cleanBase).eq("id",id);err=r.error;}
       if(!err&&savedId){const upd={};if(tipo!==undefined)upd.tipo=tipo;if(direccion!==undefined)upd.direccion=direccion;if(Object.keys(upd).length)await sb.from(tabla).update(upd).eq("id",savedId);}
+    } else if(tabla==="proveedores") {
+      const OPT=["rut","ciudad","contacto1_cargo","contacto2_cargo","contacto3_cargo"];
+      const tryOpt=OPT.some(k=>clean[k]);
+      if(id==="nuevo"){let r=await sb.from(tabla).insert(clean);err=r.error;if(err&&tryOpt){const c2={...clean};OPT.forEach(k=>delete c2[k]);r=await sb.from(tabla).insert(c2);err=r.error;}}
+      else{let r=await sb.from(tabla).update(clean).eq("id",id);err=r.error;if(err&&tryOpt){const c2={...clean};OPT.forEach(k=>delete c2[k]);r=await sb.from(tabla).update(c2).eq("id",id);err=r.error;}}
     } else {
       if(tabla==="pares_idiomas"&&clean.idioma_origen&&clean.idioma_destino)
         clean.descripcion=`${clean.idioma_origen} – ${clean.idioma_destino}`;
@@ -2172,17 +2230,36 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
       {/* ── PROVEEDORES ── */}
       {tab==="proveedores"&&<>
         <div style={{display:"flex",justifyContent:"flex-end",marginBottom:"20px"}}>
-          <button onClick={()=>{setEditando("nuevo");setFormEdit({nombre:"",nombre_contacto:"",email:"",telefono:"",notas:"",activo:true});}} style={S.btnA}>+ Nuevo proveedor</button>
+          <button onClick={()=>{setEditando("nuevo");setFormEdit({nombre:"",telefono:"",email:"",rut:"",ciudad:"",contacto1_nombre:"",contacto1_cargo:"",contacto1_celular:"",contacto1_email:"",contacto2_nombre:"",contacto2_cargo:"",contacto2_celular:"",contacto2_email:"",contacto3_nombre:"",contacto3_cargo:"",contacto3_celular:"",contacto3_email:"",comentarios:"",activo:true});}} style={S.btnA}>+ Nuevo proveedor</button>
         </div>
         {editando&&<div style={{background:C.azulClaro,border:`1.5px solid ${C.azulBorde}`,borderRadius:"12px",padding:"20px",marginBottom:"20px"}}>
+          <div style={{fontSize:"11px",fontWeight:"700",color:"#94A3B8",textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:"10px"}}>Datos de la empresa</div>
+          <div style={{marginBottom:"12px"}}><label style={S.lbl}>Nombre empresa *</label>{EF("nombre")}</div>
           <div style={{...S.fila,marginBottom:"12px"}}>
-            <div style={S.camp}><label style={S.lbl}>Nombre empresa *</label>{EF("nombre")}</div>
-            <div style={S.camp}><label style={S.lbl}>Contacto</label>{EF("nombre_contacto")}</div>
-          </div>
-          <div style={{...S.fila,marginBottom:"20px"}}>
-            <div style={S.camp}><label style={S.lbl}>Email</label>{EF("email")}</div>
             <div style={S.camp}><label style={S.lbl}>Teléfono</label>{EF("telefono")}</div>
+            <div style={S.camp}><label style={S.lbl}>Email</label>{EF("email")}</div>
           </div>
+          <div style={{...S.fila,marginBottom:"16px"}}>
+            <div style={S.camp}><label style={S.lbl}>RUT</label>{EF("rut")}</div>
+            <div style={S.camp}><label style={S.lbl}>Ciudad</label>{EF("ciudad")}</div>
+          </div>
+          <div style={{borderTop:`1px solid ${C.azulBorde}`,paddingTop:"12px",marginBottom:"12px"}}>
+            <div style={{fontSize:"11px",fontWeight:"700",color:"#94A3B8",textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:"10px"}}>Equipo de contacto</div>
+            {[1,2,3].map(n=>(
+              <div key={n} style={{background:"#fff",borderRadius:"8px",padding:"10px 12px",marginBottom:"8px",border:`1px solid ${C.azulBorde}`}}>
+                <div style={{fontSize:"11px",fontWeight:"600",color:"#94A3B8",textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:"8px"}}>Contacto {n}</div>
+                <div style={{...S.fila,marginBottom:"8px"}}>
+                  <div style={S.camp}><label style={S.lbl}>Nombre</label>{EF(`contacto${n}_nombre`)}</div>
+                  <div style={S.camp}><label style={S.lbl}>Cargo / Rol</label>{EF(`contacto${n}_cargo`)}</div>
+                </div>
+                <div style={S.fila}>
+                  <div style={S.camp}><label style={S.lbl}>Celular</label>{EF(`contacto${n}_celular`)}</div>
+                  <div style={S.camp}><label style={S.lbl}>Email</label>{EF(`contacto${n}_email`)}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{marginBottom:"12px"}}><label style={S.lbl}>Notas / Datos adicionales</label><textarea style={{...S.inp,minHeight:"60px"}} value={formEdit.comentarios||""} onChange={e=>setFormEdit(f=>({...f,comentarios:e.target.value}))}/></div>
           <div style={{display:"flex",gap:"8px"}}>
             <button onClick={()=>guardar("proveedores",formEdit,editando)} style={S.btnA}>💾 Guardar</button>
             <button onClick={()=>{setEditando(null);setFormEdit({});}} style={S.btnG}>Cancelar</button>
