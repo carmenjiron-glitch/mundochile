@@ -1529,13 +1529,13 @@ function ModalFicha({evento,clientes,interpretes,pares,lugares=[],onCerrar,pagin
   const esPresencial=evento.modalidad==="presencial"||evento.modalidad==="hibrido";
   const dias=((evento.evento_dias||evento.dias||[]).sort((a,b)=>(a.orden||0)-(b.orden||0)));
   const CAMPOS_OPC=[
-    {k:"cliente",l:"🏢 Cliente"},{k:"contacto",l:"👤 Contacto"},{k:"evento",l:"📌 Evento"},{k:"tipo",l:<><IconMic size={14}/> Tipo</>},
+    {k:"cliente",l:"🏢 Cliente"},{k:"evento",l:"📌 Evento"},{k:"tipo",l:<><IconMic size={14}/> Tipo</>},
     {k:"modalidad",l:"🔄 Modalidad"},{k:"fecha",l:"📅 Fecha"},{k:"horario",l:"🕐 Horario"},
     {k:"jornada",l:"⏱ Jornada"},{k:"lugar",l:"📍 Lugar"},{k:"plataforma",l:"💻 Plataforma"},
     {k:"facturacion",l:"💰 Facturación"},
     {k:"interpretes",l:<><IconMic size={14}/> Intérpretes</>},{k:"equipos",l:<><IconAV size={14}/> Equipos AV</>},{k:"comentarios",l:"💬 Comentarios"},
   ];
-  const DEFAULTS={cliente:true,contacto:true,evento:true,tipo:true,modalidad:true,fecha:true,horario:true,jornada:true,lugar:true,plataforma:true,facturacion:true,interpretes:true,equipos:false,comentarios:false};
+  const DEFAULTS={cliente:true,evento:true,tipo:true,modalidad:true,fecha:true,horario:true,jornada:true,lugar:true,plataforma:true,facturacion:true,interpretes:true,equipos:false,comentarios:false};
   const [campos,setCampos]=useState(()=>({...DEFAULTS,...JSON.parse(localStorage.getItem("mc_ficha_campos")||"{}")}));
   const toggleCampo=(k)=>{const n={...campos,[k]:!campos[k]};setCampos(n);localStorage.setItem("mc_ficha_campos",JSON.stringify(n));};
   const [imgJPG,setImgJPG]=useState(null);
@@ -1687,7 +1687,7 @@ function ModalFicha({evento,clientes,interpretes,pares,lugares=[],onCerrar,pagin
                   {/* Fila 1: Cliente | Tipo/Modalidad */}
                   <tr>
                     <td style={{padding:0,verticalAlign:"top",borderRight:hasDerecha?"2px solid #D1D5DB":"none"}}>
-                      {campos.cliente&&cliente&&<><div style={sH}>Cliente</div><div style={sB}><div style={{fontSize:"18px",fontWeight:"700",color:"#000000",lineHeight:1.2}}>{cliente.nombre_empresa}</div>{campos.contacto&&cliente.nombre_contacto&&<div style={{fontSize:"14px",color:"#484f56",fontStyle:"italic",marginTop:"3px"}}>{cliente.nombre_contacto}</div>}</div></>}
+                      {campos.cliente&&cliente&&<><div style={sH}>Cliente</div><div style={sB}><div style={{fontSize:"18px",fontWeight:"700",color:"#000000",lineHeight:1.2}}>{cliente.nombre_empresa}</div>{cliente.nombre_contacto&&<div style={{fontSize:"14px",color:"#484f56",fontStyle:"italic",marginTop:"3px"}}>{cliente.nombre_contacto}</div>}</div></>}
                     </td>
                     {hasDerecha&&<td style={{padding:0,verticalAlign:"top"}}>
                       {(campos.tipo||campos.modalidad)&&<><div style={{...sH,textAlign:"center"}}>Tipo / Modalidad</div><div style={{...sB}}><div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center",justifyContent:"center"}}>{campos.tipo&&tiposArr(evento.tipo).map(t=><span key={t} style={{display:"inline-flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:(B_TIPO[t]||{ct:"#294099"}).ct,WebkitFontSmoothing:"antialiased",background:(B_TIPO[t]||{bg:"#EEF2FF"}).bg,border:`2px solid ${(B_TIPO[t]||{c:"#3B5BDB"}).c}`,whiteSpace:"nowrap"}}>{t==="Simultánea"?<IconoSimultanea/>:t==="Consecutiva"?"🎤":"🤫"} {t}</span>)}{campos.modalidad&&evento.modalidad&&<span style={{display:"inline-flex",alignItems:"center",gap:"5px",padding:"5px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"500",color:(B_MOD[evento.modalidad]||{ct:"#4B4B4B"}).ct,WebkitFontSmoothing:"antialiased",background:(B_MOD[evento.modalidad]||{bg:"#F7F7F5"}).bg,border:`2px solid ${(B_MOD[evento.modalidad]||{c:"#6B6B6B"}).c}`,whiteSpace:"nowrap"}}>{evento.modalidad==="presencial"?<IconPresencial size={14} color={(B_MOD[evento.modalidad]||{ct:"#4B4B4B"}).ct}/>:evento.modalidad==="hibrido"?"🔀":"💻"} {LBL_MODAL[evento.modalidad]}</span>}</div></div></>}
