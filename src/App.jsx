@@ -2455,7 +2455,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
     "Nro Boleta Intérprete 1":[...new Set(allRows.map(r=>r.a1?.nro_boleta||""))].filter(Boolean),
     "Intérprete 2":[...new Set(allRows.map(r=>r.i2N))].filter(Boolean),
     "Nro OT 2":[...new Set(allRows.map(r=>r.a2?.nro_ot||""))].filter(Boolean),
-    "Nro Boleta Intérprete 2":[...new Set(allRows.map(r=>r.ev.nro_boleta_2||""))].filter(Boolean),
+    "Nro Boleta Intérprete 2":[...new Set(allRows.map(r=>r.a2?.nro_boleta||""))].filter(Boolean),
   }),[allRows]);
   const filtered=useMemo(()=>allRows.filter(r=>{
     if(colFiltros["Mes"]&&r.mesLargo!==colFiltros["Mes"])return false;
@@ -2480,7 +2480,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
     if(colFiltros["Nro Boleta Intérprete 1"]&&(r.a1?.nro_boleta||"")!==colFiltros["Nro Boleta Intérprete 1"])return false;
     if(colFiltros["Intérprete 2"]&&r.i2N!==colFiltros["Intérprete 2"])return false;
     if(colFiltros["Nro OT 2"]&&(r.a2?.nro_ot||"")!==colFiltros["Nro OT 2"])return false;
-    if(colFiltros["Nro Boleta Intérprete 2"]&&(r.ev.nro_boleta_2||"")!==colFiltros["Nro Boleta Intérprete 2"])return false;
+    if(colFiltros["Nro Boleta Intérprete 2"]&&(r.a2?.nro_boleta||"")!==colFiltros["Nro Boleta Intérprete 2"])return false;
     return true;
   }),[allRows,colFiltros]);
   useEffect(()=>{filteredRef.current=filtered;},[filtered]);
@@ -2604,15 +2604,15 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
                   <td data-celda={`${fi}-21`} onClick={()=>setCeldaActiva({fila:fi,col:21})} style={cs(21)}>{a1?.nro_boleta||""}</td>
                   <td data-celda={`${fi}-22`} onClick={()=>setCeldaActiva({fila:fi,col:22})} style={cs(22)}>{i2N}</td>
                   <td data-celda={`${fi}-23`} onClick={()=>setCeldaActiva({fila:fi,col:23})} style={cs(23)}>{a2?.nro_ot||""}</td>
-                  <td data-celda={`${fi}-24`} onClick={()=>setCeldaActiva({fila:fi,col:24})} style={cs(24)}>{ev.nro_boleta_2||""}</td>
+                  <td data-celda={`${fi}-24`} onClick={()=>setCeldaActiva({fila:fi,col:24})} style={cs(24)}>{a2?.nro_boleta||""}</td>
                 </tr>
               );
             })}
           </tbody>
         ))}
-        {mesesFiltro.size>0&&(()=>{
-          const totalBoleta1=filtered.reduce((sum,r)=>sum+(Number(r.a1?.nro_boleta)||0),0);
-          const totalBoleta2=filtered.reduce((sum,r)=>sum+(Number(r.ev.nro_boleta_2)||0),0);
+        {colFiltros["Mes"]&&(()=>{
+          const totalBoleta1=filtered.filter(r=>r.a1?.nro_boleta!=null&&r.a1.nro_boleta!=="").length;
+          const totalBoleta2=filtered.filter(r=>r.a2?.nro_boleta!=null&&r.a2.nro_boleta!=="").length;
           const totalBoletas=totalBoleta1+totalBoleta2;
           return(
             <tfoot>
@@ -3695,7 +3695,7 @@ export default function App() {
           {/* CENTRO: FilterBar centrado */}
           <div style={{display:"flex",alignItems:"center",padding:"6px 0"}}>
             <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes} clientes={clientesConEventos} pares={paresConEventos} proveedores={proveedoresConEventos} showClear={true} hayFinSemana={vista==="semana"&&diasSemana.slice(5,7).some(d=>evsDia(toISO(d)).length>0)}/>
-            {vista==="semana"&&!diasSemana.slice(5,7).some(d=>evsDia(toISO(d)).length>0)&&<span title="No hay eventos este fin de semana" style={{position:"absolute",right:"24px",top:"50%",transform:"translateY(-50%)",display:"inline-flex",alignItems:"center",cursor:"default",lineHeight:1}}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00C853" strokeWidth="3.5"><circle cx="12" cy="12" r="10"/></svg></span>}
+            {vista==="semana"&&!diasSemana.slice(5,7).some(d=>evsDia(toISO(d)).length>0)&&<span title="No hay eventos este fin de semana" style={{position:"absolute",right:"49px",top:"50%",transform:"translateY(-50%)",display:"inline-flex",alignItems:"center",cursor:"default",lineHeight:1}}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00C853" strokeWidth="3.5"><circle cx="12" cy="12" r="10"/></svg></span>}
           </div>
           {/* DERECHA: Fichas (solo cuando filtrado) */}
           {vista!=="semana"&&hayFiltros&&<div style={{position:"absolute",right:"16px",top:"50%",transform:"translateY(-50%)"}}>
