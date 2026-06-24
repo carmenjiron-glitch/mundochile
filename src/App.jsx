@@ -3648,7 +3648,7 @@ export default function App() {
     <div style={{fontFamily:"'Inter','Segoe UI',system-ui,sans-serif",minHeight:"100vh",background:"linear-gradient(135deg, #1a2a4a 0%, #1e3a6e 50%, #2563a8 100%)",color:"#FFFFFF",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",textRendering:"optimizeLegibility",overflowX:"clip"}}>
       {/* ── TOPBAR ── */}
       <div style={{position:"sticky",top:0,zIndex:100,background:"#162654"}}>
-        <div style={{padding:"0 24px",display:"flex",alignItems:"center",justifyContent:"space-between",height:"96px",gap:"14px"}}>
+        <div style={{padding:"0 24px",display:"flex",alignItems:"center",justifyContent:"space-between",minHeight:"96px",gap:"14px",flexWrap:"wrap"}}>
           {/* IZQUIERDA: logo + brand */}
           <div style={{display:"flex",alignItems:"center",gap:"10px",flexShrink:0}}>
             <div style={{flexShrink:0,display:"flex",alignItems:"center"}}>
@@ -3718,7 +3718,7 @@ export default function App() {
             {esEditor&&pantalla==="calendario"&&<button onClick={()=>setPantalla("disponibilidad")} style={{padding:"5px 10px",fontSize:"13px",background:"rgba(253,230,138,0.12)",color:"#FDE68A",border:"1.5px solid #FCD34D",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:"5px"}} title="Disponibilidad"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#86EFAC" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Disponibilidad</button>}
             {esEditor&&<button onClick={()=>setModalEvento({modo:"nuevo",data:evVacio()})} style={{padding:"7px 16px",fontSize:"17px",background:"#e63946",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit",fontWeight:"500"}}>+ Nuevo</button>}
             {esAdmin&&<button onClick={()=>setPantalla(p=>p==="config"?"calendario":"config")} style={{padding:"7px 12px",fontSize:"17px",background:pantalla==="config"?"rgba(255,255,255,0.35)":"rgba(255,255,255,0.15)",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>⚙️</button>}
-            <button onClick={()=>{sb.auth.signOut();window.location.reload();}} style={{padding:"9px 14px",fontSize:"17px",background:"rgba(255,255,255,0.15)",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>Salir</button>
+            <button onClick={async()=>{await sb.auth.signOut();window.location.reload();}} style={{padding:"9px 14px",fontSize:"17px",background:"rgba(255,255,255,0.15)",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>Salir</button>
           </div>
         </div>
       </div>
