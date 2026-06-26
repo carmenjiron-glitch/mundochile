@@ -1953,7 +1953,7 @@ function ModalNuevoInterprete({onGuardar,onCerrar,pares=[]}) {
 }
 
 // ─── PANTALLA CONFIGURACIÓN ───────────────────────────────────────────────────
-function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onActualizar,perfil}) {
+function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onActualizar,perfil,eventos=[]}) {
   const [tab,setTab]=useState("interpretes");
   const [editando,setEditando]=useState(null);
   const [formEdit,setFormEdit]=useState({});
@@ -1962,7 +1962,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
   const [busquedaInterp,setBusquedaInterp]=useState("");
   const [filtroParConfig,setFiltroParConfig]=useState("");
   const [confirmarEliminar,setConfirmarEliminar]=useState(null);
-  const tabs=[{id:"interpretes",l:"👤 Intérpretes"},{id:"clientes",l:"🏢 Clientes"},{id:"idiomas",l:"🌐 Idiomas"},{id:"proveedores",l:"🔧 Proveedores"},{id:"lugares",l:"📍 Lugares"},{id:"usuarios",l:"👥 Usuarios"}];
+  const tabs=[{id:"interpretes",l:"👤 Intérpretes"},{id:"clientes",l:"🏢 Clientes"},{id:"idiomas",l:"🌐 Idiomas"},{id:"proveedores",l:"🔧 Proveedores"},{id:"lugares",l:"📍 Lugares"},{id:"usuarios",l:"👥 Usuarios"},{id:"estadisticas",l:"📊 Estadísticas"}];
 
   useEffect(()=>{if(tab==="usuarios")sb.from("perfiles").select("*").order("nombre").then(({data})=>data&&setPerfiles(data));},[tab]);
   useEffect(()=>{
@@ -2020,8 +2020,8 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
   return (
     <>
       <div style={{position:"sticky",top:"96px",zIndex:80,background:"rgba(22,38,84,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)"}}>
-        <div style={{maxWidth:"900px",margin:"0 auto",padding:"0 16px"}}>
-          <div style={{display:"flex",flexWrap:"nowrap",gap:"8px",alignItems:"center",overflowX:"auto",justifyContent:"center",width:"100%",padding:"12px 0"}}>
+        <div style={{margin:"0 auto",padding:"0 16px"}}>
+          <div style={{display:"flex",flexWrap:"wrap",gap:"8px",alignItems:"center",justifyContent:"center",width:"100%",padding:"12px 0"}}>
             {tabs.map(t=><button key={t.id} onClick={()=>{setTab(t.id);setEditando(null);setFormEdit({});}}
               style={{
                 padding:"8px 20px",borderRadius:"10px",cursor:"pointer",fontFamily:"inherit",fontSize:"13px",
@@ -2368,6 +2368,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
         })}
         {perfiles.length===0&&<div style={{textAlign:"center",padding:"40px",color:C.textoSuave}}>Cargando usuarios…</div>}
       </>}
+      {tab==="estadisticas"&&<PantallaEstadisticas eventos={eventos} clientes={clientes} interpretes={interpretes} pares={pares}/>}
 
       {confirmarEliminar&&(
         <div style={{position:"fixed",top:0,left:0,width:"100vw",height:"100vh",background:"rgba(0,0,0,0.5)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center"}}>
@@ -3038,6 +3039,124 @@ function VistaDisponibilidad({ eventos, interpretes, pares, clientes=[], onAbrir
   );
 }
 
+function PantallaEstadisticas({eventos,clientes,interpretes,pares}){
+  const [periodo,setPeriodo]=useState("año");
+
+  const eventosFiltrados=useMemo(()=>{
+    const ahora=new Date();
+    const año=ahora.getFullYear();
+    const mes=ahora.getMonth();
+    return eventos.filter(ev=>{
+      if(!ev.fecha_inicio)return false;
+      const f=new Date(ev.fecha_inicio+"T12:00:00");
+      if(periodo==="mes")return f.getFullYear()===año&&f.getMonth()===mes;
+      if(periodo==="año")return f.getFullYear()===año;
+      return true;
+    });
+  },[eventos,periodo]);
+
+  const topClientes=useMemo(()=>{
+    const cnt={};
+    eventosFiltrados.forEach(ev=>{if(!ev.cliente_id)return;cnt[ev.cliente_id]=(cnt[ev.cliente_id]||0)+1;});
+    const mapa=clientes.reduce((m,c)=>{m[c.id]=c.nombre_empresa;return m;},{});
+    return Object.entries(cnt).map(([id,n])=>({label:mapa[id]||`Cliente ${id}`,n})).sort((a,b)=>b.n-a.n).slice(0,10);
+  },[eventosFiltrados,clientes]);
+
+  const topInterpretes=useMemo(()=>{
+    const cnt={};
+    eventosFiltrados.forEach(ev=>{
+      const asigs=[...(ev.asignaciones||[]),...(ev.evento_dias||[]).flatMap(d=>d.asignaciones_dia||[])];
+      asigs.forEach(a=>{if(!a.interprete_id)return;cnt[a.interprete_id]=(cnt[a.interprete_id]||0)+1;});
+    });
+    const mapa=interpretes.reduce((m,i)=>{m[i.id]=`${i.nombre}${i.apellido?" "+i.apellido:""}`;return m;},{});
+    return Object.entries(cnt).map(([id,n])=>({label:mapa[id]||`Intérprete ${id}`,n})).sort((a,b)=>b.n-a.n).slice(0,10);
+  },[eventosFiltrados,interpretes]);
+
+  const topIdiomas=useMemo(()=>{
+    const cnt={};
+    eventosFiltrados.forEach(ev=>{
+      const asigs=[...(ev.asignaciones||[]),...(ev.evento_dias||[]).flatMap(d=>d.asignaciones_dia||[])];
+      asigs.forEach(a=>{if(!a.par_id)return;cnt[a.par_id]=(cnt[a.par_id]||0)+1;});
+    });
+    const mapa=pares.reduce((m,p)=>{m[p.id]=p.descripcion||(p.idioma_origen&&p.idioma_destino?`${p.idioma_origen} → ${p.idioma_destino}`:"Par sin nombre");return m;},{});
+    return Object.entries(cnt).map(([id,n])=>({label:mapa[id]||`Par ${id}`,n})).sort((a,b)=>b.n-a.n).slice(0,10);
+  },[eventosFiltrados,pares]);
+
+  const topModalidades=useMemo(()=>{
+    const cnt={};
+    eventosFiltrados.forEach(ev=>{const m=ev.modalidad||"sin modalidad";cnt[m]=(cnt[m]||0)+1;});
+    return Object.entries(cnt).map(([label,n])=>({label,n})).sort((a,b)=>b.n-a.n).slice(0,10);
+  },[eventosFiltrados]);
+
+  const topTipos=useMemo(()=>{
+    const cnt={};
+    eventosFiltrados.forEach(ev=>{
+      const tipos=Array.isArray(ev.tipo)?ev.tipo:(ev.tipo?[ev.tipo]:[]);
+      tipos.forEach(t=>{if(t)cnt[t]=(cnt[t]||0)+1;});
+    });
+    return Object.entries(cnt).map(([label,n])=>({label,n})).sort((a,b)=>b.n-a.n).slice(0,10);
+  },[eventosFiltrados]);
+
+  const rankingData=[
+    {titulo:"🏢 Top clientes",       items:topClientes,    color:"#2563EB"},
+    {titulo:"👤 Intérpretes activos", items:topInterpretes, color:"#7C3AED"},
+    {titulo:"🌐 Idiomas solicitados", items:topIdiomas,     color:"#0891B2"},
+    {titulo:"📍 Modalidades",         items:topModalidades, color:"#059669"},
+    {titulo:"🎙️ Tipos de servicio",  items:topTipos,       color:"#D97706"},
+  ];
+
+  const total=eventosFiltrados.length;
+  const periodos=[["mes","Este mes"],["año","Este año"],["todo","Todo el historial"]];
+  const _nombresMes=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+  const _ahora=new Date();
+  const labelPeriodo=periodo==="mes"?`${_nombresMes[_ahora.getMonth()]} ${_ahora.getFullYear()}`:periodo==="año"?`${_ahora.getFullYear()}`:"todo el historial";
+
+  return(
+    <div style={{background:"#F1F5F9",minHeight:"calc(100vh - 96px)",paddingBottom:"40px"}}>
+      <div style={{background:"#1E3A5F",padding:"18px 32px",display:"flex",alignItems:"center",gap:"16px",borderBottom:"1px solid rgba(255,255,255,0.10)"}}>
+        <div>
+          <div style={{color:"#FFFFFF",fontSize:"19px",fontWeight:"600",lineHeight:1,WebkitFontSmoothing:"antialiased"}}>Estadísticas</div>
+          <div style={{color:"rgba(255,255,255,0.65)",fontSize:"13px",marginTop:"4px"}}>{total} evento{total!==1?"s":""} en {labelPeriodo}</div>
+        </div>
+        <div style={{marginLeft:"auto",display:"flex",gap:"6px",flexWrap:"wrap"}}>
+          {periodos.map(([v,l])=>(
+            <button key={v} onClick={()=>setPeriodo(v)}
+              style={{padding:"6px 14px",background:periodo===v?"#FFFFFF":"rgba(255,255,255,0.12)",color:periodo===v?"#1E3A5F":"#FFFFFF",border:"none",borderRadius:"8px",cursor:"pointer",fontSize:"13px",fontWeight:periodo===v?"600":"400",fontFamily:"inherit",whiteSpace:"nowrap",transition:"all 0.15s"}}>
+              {l}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div style={{padding:"28px 32px",display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(380px,1fr))",gap:"20px"}}>
+        {rankingData.map(({titulo,items,color})=>(
+          <div key={titulo} style={{background:"#FFFFFF",borderRadius:"12px",padding:"20px 24px",boxShadow:"0 1px 3px rgba(0,0,0,0.08)",border:"1px solid #E2E8F0"}}>
+            <div style={{fontWeight:"600",fontSize:"14px",color:"#1E3A5F",marginBottom:"16px",letterSpacing:"0.01em"}}>{titulo}</div>
+            {!items.length
+              ?<div style={{color:"#94A3B8",fontSize:"13px"}}>Sin datos para el período seleccionado</div>
+              :items.map((item,i)=>{
+                const pct=Math.round((item.n/items[0].n)*100);
+                return(
+                  <div key={i} style={{marginBottom:i<items.length-1?"10px":0}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:"3px",gap:"8px"}}>
+                      <span style={{fontSize:"13px",color:"#334155",fontWeight:i===0?"600":"400",flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                        {i+1}. {item.label}
+                      </span>
+                      <span style={{fontSize:"12px",color:"#64748B",flexShrink:0,fontVariantNumeric:"tabular-nums"}}>{item.n}</span>
+                    </div>
+                    <div style={{height:"5px",background:"#F1F5F9",borderRadius:"3px",overflow:"hidden"}}>
+                      <div style={{height:"100%",width:`${pct}%`,background:color,borderRadius:"3px"}}/>
+                    </div>
+                  </div>
+                );
+              })
+            }
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   // TEMP: login desactivado — para reactivar cambiar SKIP_LOGIN a false
   const SKIP_LOGIN = false;
@@ -3664,18 +3783,19 @@ export default function App() {
             </div>
             <div>
               <div style={{fontWeight:"500",fontSize:"16px",color:"#FFFFFF",lineHeight:1,letterSpacing:"0.01em"}}>MundoChile</div>
-              <div style={{fontSize:"13px",color:"rgba(255,255,255,0.70)",marginTop:"3px"}}>Translations & Interpreters · Since 2003</div>
+              <div style={{fontSize:"13px",color:"rgba(255,255,255,0.70)",marginTop:"3px",lineHeight:1.3}}>Translations & Interpreters</div>
+              <div style={{fontSize:"12px",color:"rgba(255,255,255,0.55)",lineHeight:1.3}}>Since 2003</div>
             </div>
           </div>
           {/* CENTRO: tabs izquierda + pill derecho centrado */}
-          {(pantalla==="calendario"||pantalla==="disponibilidad")&&<div style={{display:"flex",alignItems:"center",flex:1,minWidth:0,gap:"8px"}}>
+          {(pantalla==="calendario"||pantalla==="disponibilidad"||pantalla==="config")&&<div style={{display:"flex",alignItems:"center",flex:1,minWidth:0,gap:"8px"}}>
             <div style={{display:"flex",gap:"4px",alignItems:"center",flexShrink:0}}>
               {[["semana","Semana"],["dia","Día"],["mes","Mes"],["agenda","Agenda"],["grilla","Grilla"]].map(([v,l])=>{
                 const activo=pantalla==="calendario"&&vista===v;
                 return(<button key={v} onClick={()=>{setVista(v);setPantalla("calendario");}} style={{padding:"6px 12px",background:activo?"#FFFFFF":"rgba(255,255,255,0.12)",border:"none",borderRadius:"8px",color:activo?"#1E3A6E":"#FFFFFF",fontWeight:activo?"600":"400",cursor:"pointer",fontSize:"13px",fontFamily:"inherit",transition:"all 0.15s",whiteSpace:"nowrap"}}>{l}</button>);
               })}
             </div>
-            <div style={{flex:1,display:"flex",justifyContent:"center",alignItems:"center",minWidth:0,overflow:"hidden"}}>
+            <div style={{flex:1,display:"flex",justifyContent:"center",alignItems:"center",minWidth:0,overflow:"visible"}}>
               {pantalla==="calendario"&&vista==="agenda"&&(()=>{
                 const semIni=toISO(diasSemana[0]);const semFin=toISO(diasSemana[6]);
                 const n=eventosFiltrados.filter(e=>e.fecha_inicio<=semFin&&(e.fecha_termino||e.fecha_inicio)>=semIni).length;
@@ -3695,9 +3815,9 @@ export default function App() {
                 const _t=tituloNav();
                 const _fs=_t.length>40?11:_t.length>30?13:_t.length>22?15:17;
                 return(
-                <div style={{padding:"4.5px 16px",border:"1px solid rgba(255,255,255,0.85)",borderRadius:"9px",background:"transparent",textAlign:"center",minWidth:0,maxWidth:"100%"}}>
-                  <div style={{color:"#FFFFFF",fontSize:`${_fs}px`,fontWeight:"500",lineHeight:1.2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{_t}</div>
-                  <div style={{color:"rgba(255,255,255,0.70)",fontSize:"13.5px",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{contadorSubtitulo()}</div>
+                <div style={{padding:"4.5px 16px",border:"1px solid rgba(255,255,255,0.85)",borderRadius:"9px",background:"transparent",textAlign:"center",width:"max-content",flexShrink:0}}>
+                  <div style={{color:"#FFFFFF",fontSize:`${_fs}px`,fontWeight:"500",lineHeight:1.2,whiteSpace:"nowrap"}}>{_t}</div>
+                  <div style={{color:"rgba(255,255,255,0.70)",fontSize:"13.5px",whiteSpace:"nowrap"}}>{contadorSubtitulo()}</div>
                 </div>);
               })()}
             </div>
@@ -3717,7 +3837,7 @@ export default function App() {
             {esEditor&&pantalla==="calendario"&&vista==="grilla"&&<button onClick={exportarExcelFiltrado} style={{padding:"9px 14px",fontSize:"17px",background:"rgba(22,163,74,0.25)",color:"#6EE7B7",border:"1px solid rgba(22,163,74,0.5)",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>📊 Excel</button>}
             {esEditor&&pantalla==="calendario"&&<button onClick={()=>setPantalla("disponibilidad")} style={{padding:"5px 10px",fontSize:"13px",background:"rgba(253,230,138,0.12)",color:"#FDE68A",border:"1.5px solid #FCD34D",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:"5px"}} title="Disponibilidad"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#86EFAC" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Disponibilidad</button>}
             {esEditor&&<button onClick={()=>setModalEvento({modo:"nuevo",data:evVacio()})} style={{padding:"7px 16px",fontSize:"17px",background:"#e63946",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit",fontWeight:"500"}}>+ Nuevo</button>}
-            {(esAdmin||esEditor)&&<button onClick={()=>setPantalla(p=>p==="config"?"calendario":"config")} style={{padding:"7px 12px",fontSize:"17px",background:pantalla==="config"?"rgba(255,255,255,0.35)":"rgba(255,255,255,0.15)",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>⚙️</button>}
+            {(esAdmin||esEditor)&&<button onClick={()=>{setPantalla(p=>p==="config"?"calendario":"config");window.scrollTo(0,0);}} style={{padding:"7px 12px",fontSize:"17px",background:pantalla==="config"?"rgba(255,255,255,0.35)":"rgba(255,255,255,0.15)",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>⚙️</button>}
             <button onClick={async()=>{await sb.auth.signOut();window.location.reload();}} style={{padding:"9px 14px",fontSize:"17px",background:"rgba(255,255,255,0.15)",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>Salir</button>
           </div>
         </div>
@@ -3743,7 +3863,7 @@ export default function App() {
         {vista==="grilla"&&<VistaGrilla eventos={eventosFiltrados} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} contactos={contactos} onAbrir={abrirEvento} onVerMultidia={verTodosLosDias} vista={vista}/>}
       </>}
       {pantalla==="disponibilidad"&&<VistaDisponibilidad eventos={eventos} interpretes={interpretes} pares={pares} clientes={clientes} onAbrir={abrirEvento} busqueda={busqueda}/>}
-      {pantalla==="config"&&(esAdmin||esEditor)&&<PantallaConfig clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} onActualizar={cargarDatos} perfil={perfil}/>}
+      {pantalla==="config"&&(esAdmin||esEditor)&&<PantallaConfig clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} onActualizar={cargarDatos} perfil={perfil} eventos={eventos}/>}
 
       {/* ── MODALES ── */}
       {modalEvento&&<ModalEvento eventoInicial={modalEvento.data} clientes={clientes} interpretes={interpretes} pares={pares} proveedores={proveedores} lugares={lugares} contactos={contactos} todos_eventos={eventos} perfil={perfil} onGuardar={()=>{setModalEvento(null);cargarDatos();addToast("Evento guardado correctamente","success");}} onCerrar={()=>setModalEvento(null)} onNuevoCliente={(cb)=>setModalNuevoCli({cb})} onNuevoContacto={setModalNuevoContacto} onNuevoInterprete={(ai,di,cb)=>setModalNuevoInt({ai,di,cb})} onLugarCreado={cargarDatos} onNuevoLugar={(cb)=>setModalNuevoLugar({cb})} onNuevoProveedor={prov=>setProveedores(prev=>[...prev,prov])}/>}
