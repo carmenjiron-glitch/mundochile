@@ -2675,6 +2675,16 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
 
 // ─── VISTA AGENDA (F8) ───────────────────────────────────────────────────────
 function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],lugares=[],contactos=[],filtros,setFiltros,onAbrir,onVerMultidia,vista}) {
+  const [stickyTop, setStickyTop] = useState(140);
+  useEffect(() => {
+    const medir = () => {
+      const fb = document.getElementById("filterbar");
+      if (fb) { const r = fb.getBoundingClientRect(); setStickyTop(r.bottom); }
+    };
+    medir();
+    window.addEventListener("resize", medir);
+    return () => window.removeEventListener("resize", medir);
+  }, []);
   const hoyISO=hoy();
   const sorted=[...eventos].sort((a,b)=>a.fecha_inicio.localeCompare(b.fecha_inicio));
   const byDay={};
@@ -2705,7 +2715,7 @@ function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],lugares=
         const idDia=`agenda-dia-${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
         return (
           <div key={fecha} id={idDia} data-fecha={fecha} style={{marginBottom:"32px"}}>
-            <div style={{position:"sticky",top:"140px",zIndex:10,background:esHoy?"rgba(34,197,94,0.18)":"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",color:"#fff",fontSize:"14px",fontWeight:"500",padding:"10px 16px",borderRadius:"8px",margin:"16px 0 8px",letterSpacing:"0.03em",border:esHoy?"1px solid rgba(34,197,94,0.4)":"1px solid rgba(255,255,255,0.12)"}}>
+            <div style={{position:"sticky",top:stickyTop,zIndex:10,background:esHoy?"rgba(34,197,94,0.18)":"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",color:"#fff",fontSize:"14px",fontWeight:"500",padding:"10px 16px",borderRadius:"8px",margin:"16px 0 8px",letterSpacing:"0.03em",border:esHoy?"1px solid rgba(34,197,94,0.4)":"1px solid rgba(255,255,255,0.12)"}}>
               {esHoy?"📅 Hoy — ":""}{formatLargo(fecha)} · {evs.length} evento{evs.length!==1?"s":""}
             </div>
             {evs.length===0
@@ -3845,7 +3855,7 @@ export default function App() {
 
       {/* ── CONTENIDO ── */}
       {pantalla==="calendario"&&<>
-        {vista!=="grilla"&&<div style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",width:"100%",display:"flex",alignItems:"center",justifyContent:"center",padding:"0 16px",boxSizing:"border-box",position:"sticky"}}>
+        {vista!=="grilla"&&<div id="filterbar" style={{position:"sticky",top:"96px",zIndex:90,background:"rgba(26,47,90,0.97)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderBottom:"1px solid rgba(255,255,255,0.10)",width:"100%",display:"flex",alignItems:"center",justifyContent:"center",padding:"0 16px",boxSizing:"border-box",position:"sticky"}}>
           {/* CENTRO: FilterBar centrado */}
           <div style={{display:"flex",alignItems:"center",padding:"6px 0"}}>
             <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes} clientes={clientesConEventos} pares={paresConEventos} proveedores={proveedoresConEventos} showClear={true} hayFinSemana={vista==="semana"&&diasSemana.slice(5,7).some(d=>evsDia(toISO(d)).length>0)}/>
