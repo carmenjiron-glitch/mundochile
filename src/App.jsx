@@ -3862,7 +3862,7 @@ export default function App() {
             {vista==="semana"&&!diasSemana.slice(5,7).some(d=>evsDia(toISO(d)).length>0)&&<span title="No hay eventos este fin de semana" style={{position:"absolute",right:"49px",top:"50%",transform:"translateY(-50%)",display:"inline-flex",alignItems:"center",cursor:"default",lineHeight:1}}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00C853" strokeWidth="3.5"><circle cx="12" cy="12" r="10"/></svg></span>}
           </div>
           {/* DERECHA: Fichas (solo cuando filtrado) */}
-          {vista!=="semana"&&hayFiltros&&<div style={{position:"absolute",right:"16px",top:"50%",transform:"translateY(-50%)"}}>
+          {vista!=="semana"&&hayFiltros&&<div style={{display:"flex",alignItems:"center",flexShrink:0,marginLeft:"8px"}}>
             <button onClick={generarFichaMultiple} style={{display:"flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"12px",background:"#1A6FD4",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",height:"26px",boxShadow:"0 2px 4px rgba(26,111,212,0.3)",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📋 Fichas</button>
           </div>}
         </div>}
