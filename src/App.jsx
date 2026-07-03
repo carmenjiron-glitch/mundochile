@@ -3458,10 +3458,10 @@ export default function App() {
       const colBg="rgba(255,255,255,0.14)";
       const hdrBg="rgba(22,42,82,0.97)";
       return <div key={`${esWeekend?"fs":"lf"}-${i}`} style={{background:colBg,borderRadius:"12px",padding:"10px",minHeight:"calc(100vh - 260px)"}}>
-        <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{padding:"8px 10px",borderRadius:"10px",marginBottom:"8px",background:hdrBg,cursor:"pointer",transition:"background 0.15s",border:`3px solid ${esHoy?"#F97316":"transparent"}`,textAlign:"center",position:"sticky",top:"140px",zIndex:5,backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)"}}
+        <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{padding:"8px 10px",borderRadius:"10px",marginBottom:"8px",background:hdrBg,cursor:"pointer",transition:"background 0.15s",border:`3px solid ${esHoy?"#F97316":"transparent"}`,textAlign:"center",position:"sticky",top:"140px",zIndex:5,backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}
           onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"}
           onMouseLeave={e=>{e.currentTarget.style.background=hdrBg;}}>
-          <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"7px",flexWrap:"wrap",overflow:"hidden",minWidth:0}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"7px",flexWrap:"wrap",overflow:"hidden",minWidth:0,marginTop:"5px"}}>
             <span style={{fontSize:"16px",fontWeight:"700",color:"#fff",textTransform:"uppercase",letterSpacing:"0.04em",flexShrink:0}}>{nombresDia[i]}</span>
             <div style={{width:"30px",height:"30px",borderRadius:"50%",background:esHoy?"#F97316":"transparent",color:"#FFFFFF",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"16px",fontWeight:"700",flexShrink:0}}>{d.getDate()}</div>
             <span style={{fontSize:"16px",fontWeight:"500",color:"rgba(255,255,255,0.90)"}}>{mesLargo}</span>
