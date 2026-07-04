@@ -2570,6 +2570,7 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
       <div style={{position:"relative",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"space-between",gap:"4px",padding:"6px 8px",minHeight:"48px",height:"100%",boxSizing:"border-box"}}
         onClick={e=>{e.stopPropagation();setOpenCol(isOpen?null:col);}}>
         <span style={{fontSize:"12px",fontWeight:"600",color:"#FFFFFF",textAlign:"center",whiteSpace:"normal",wordBreak:"break-word",lineHeight:"1.3",width:"100%",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>{col}</span>
+
         <span style={{display:"block",fontSize:"9px",color:"rgba(255,255,255,0.8)",marginTop:"2px",flexShrink:0}}>{active?"▲":"▼"}</span>
         {isOpen&&(<div onClick={e=>e.stopPropagation()}
           style={{position:"absolute",top:"100%",left:"0",marginTop:"2px",zIndex:1000,minWidth:"160px",background:"#FFFFFF",color:"#1A1A1A",borderRadius:"6px",boxShadow:"0 4px 12px rgba(0,0,0,0.15)",border:"1px solid #E5E7EB",maxHeight:"240px",overflowY:"auto",fontSize:"12px",textAlign:"left",fontWeight:"400"}}>
@@ -2587,19 +2588,11 @@ function VistaGrilla({eventos,clientes,interpretes,pares,proveedores=[],contacto
   filtered.forEach(r=>{if(!byMonth[r.mesKey])byMonth[r.mesKey]={label:r.mesLargo,rows:[]};byMonth[r.mesKey].rows.push(r);});
   return (
     <div style={{paddingBottom:"80px",width:"100%"}}>
-      <div style={{padding:"4px 16px",display:"flex",alignItems:"center",gap:"8px",background:"rgba(26,47,90,0.97)",borderBottom:"1px solid rgba(255,255,255,0.10)",minHeight:"30px"}}>
-        {colFiltros["Mes"]&&<span style={{padding:"2px 10px",background:"rgba(255,255,255,0.22)",color:"#FFFFFF",fontSize:"12px",fontWeight:"600",borderRadius:"16px",whiteSpace:"nowrap",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>
-          📅 {colFiltros["Mes"]}
-        </span>}
-        <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:"4px"}}>
-          {Object.values(colFiltros).some(Boolean)&&<button onClick={()=>setColFiltros({})} style={{padding:"2px 10px",background:"#EF4444",color:"#FFFFFF",border:"none",borderRadius:"16px",cursor:"pointer",fontSize:"11px",fontFamily:"inherit",WebkitFontSmoothing:"antialiased"}}>✕ Col</button>}
-        </div>
-      </div>
-      <div ref={tablaRef} style={{overflowX:"auto",overflowY:"auto",width:"100%",height:"calc(100vh - 172px)",outline:"none",background:"#F1F5F9"}} tabIndex={0}>
+      <div ref={tablaRef} style={{overflowX:"auto",overflowY:"auto",width:"100%",height:"calc(100vh - 142px)",outline:"none",background:"#F1F5F9"}} tabIndex={0}>
       <table style={{borderCollapse:"separate",borderSpacing:0,tableLayout:"fixed",minWidth:"2200px",width:"100%",fontSize:"13px",background:"#F1F5F9"}}>
         <thead style={{position:"sticky",top:"0",zIndex:"40",background:"#1E3A5F"}}>
           <tr>
-            <th style={{...thS,width:"40px",left:0,zIndex:100}}></th>
+            <th style={{...thS,width:"40px",left:0,zIndex:100}}>{Object.values(colFiltros).some(Boolean)&&<button title="Limpiar filtros de columna" onClick={()=>setColFiltros({})} style={{background:"#EF4444",color:"#FFFFFF",border:"none",borderRadius:"50%",width:20,height:20,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:12,fontWeight:700,padding:0,lineHeight:1,margin:"auto"}}>×</button>}</th>
             {COLS.map(col=>FILTERABLE.includes(col)?renderThFiltro(col):<th key={col} style={thS}>{col}</th>)}
           </tr>
         </thead>
@@ -3897,7 +3890,7 @@ export default function App() {
               :<button onClick={()=>setBuscando(true)} style={{padding:"7px 12px",fontSize:"17px",background:"rgba(255,255,255,0.15)",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}} title="Buscar">🔍</button>
             }
             {busqueda&&<button onClick={()=>{setBusqueda("");setBuscando(false);}} style={{padding:"7px 10px",fontSize:"15px",background:"rgba(255,255,255,0.15)",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>✕</button>}
-            {esEditor&&pantalla==="calendario"&&vista==="grilla"&&<button onClick={exportarExcelFiltrado} style={{padding:"9px 14px",fontSize:"17px",background:"rgba(22,163,74,0.25)",color:"#6EE7B7",border:"1px solid rgba(22,163,74,0.5)",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>📊 Excel</button>}
+            {esEditor&&pantalla==="calendario"&&vista==="grilla"&&<button onClick={exportarExcelFiltrado} style={{padding:"7px 16px",fontSize:"17px",background:"rgba(22,163,74,0.25)",color:"#6EE7B7",border:"1px solid rgba(22,163,74,0.5)",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>📊 Excel</button>}
             {esEditor&&pantalla==="calendario"&&<button onClick={()=>setPantalla("disponibilidad")} style={{padding:"5px 10px",fontSize:"13px",background:"rgba(253,230,138,0.12)",color:"#FDE68A",border:"1.5px solid #FCD34D",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:"5px"}} title="Disponibilidad"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#86EFAC" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Disponibilidad</button>}
             {esEditor&&<button onClick={()=>setModalEvento({modo:"nuevo",data:evVacio()})} style={{padding:"7px 16px",fontSize:"17px",background:"#e63946",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit",fontWeight:"500"}}>+ Nuevo</button>}
             {(esAdmin||esEditor)&&<button onClick={()=>{setPantalla(p=>p==="config"?"calendario":"config");window.scrollTo(0,0);}} style={{padding:"7px 12px",fontSize:"17px",background:pantalla==="config"?"rgba(255,255,255,0.35)":"rgba(255,255,255,0.15)",color:"#fff",border:"none",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>⚙️</button>}
