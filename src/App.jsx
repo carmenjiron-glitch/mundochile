@@ -3281,9 +3281,9 @@ export default function App() {
     else if(filtros.estado) evs=evs.filter(e=>e.estado===filtros.estado);
     if(filtros.modalidad) evs=evs.filter(e=>e.modalidad===filtros.modalidad);
     if(filtros.tipo) evs=evs.filter(e=>tiposArr(e.tipo).includes(filtros.tipo));
-    if(filtros.interprete_id) evs=evs.filter(e=>(e.asignaciones||[]).some(a=>String(a.interprete_id)===String(filtros.interprete_id)));
+    if(filtros.interprete_id) evs=evs.filter(e=>{const todasAsig=[...(e.asignaciones||[]),...(e.evento_dias||[]).flatMap(d=>d.asignaciones_dia||[])];return todasAsig.some(a=>String(a.interprete_id)===String(filtros.interprete_id));});
     if(filtros.cliente_id) evs=evs.filter(e=>String(e.cliente_id)===String(filtros.cliente_id));
-    if(filtros.par_id) evs=evs.filter(e=>(e.asignaciones||[]).some(a=>String(a.par_id)===String(filtros.par_id)));
+    if(filtros.par_id) evs=evs.filter(e=>{const todasAsig=[...(e.asignaciones||[]),...(e.evento_dias||[]).flatMap(d=>d.asignaciones_dia||[])];return todasAsig.some(a=>String(a.par_id)===String(filtros.par_id));});
     if(filtros.proveedor_av) evs=evs.filter(e=>{const eqs=(e.evento_dias||[]).flatMap(d=>d.equipos_dia||[]);if(filtros.proveedor_av==="sin_proveedor")return eqs.length>0&&eqs.every(eq=>!eq.proveedor_id);return eqs.some(eq=>String(eq.proveedor_id)===String(filtros.proveedor_av));});
     if(filtros.mes&&filtros.mes!=="todos"){const m=Number(filtros.mes);evs=evs.filter(e=>new Date(e.fecha_inicio+"T12:00:00").getMonth()+1===m);}
     const seen=new Set();
