@@ -158,6 +158,20 @@ const semanaDesde = (off) => {
   d.setDate(d.getDate()-dow+off*7);
   return Array.from({length:7},(_,i)=>{ const x=new Date(d); x.setDate(d.getDate()+i); return x; });
 };
+const offsetSemanaParaFecha = (fechaISO) => {
+  const hoy = new Date();
+  const dowHoy = hoy.getDay() === 0 ? 6 : hoy.getDay() - 1;
+  const lunesHoy = new Date(hoy); lunesHoy.setDate(hoy.getDate() - dowHoy);
+  const fecha = desdeISO(fechaISO);
+  const dowFecha = fecha.getDay() === 0 ? 6 : fecha.getDay() - 1;
+  const lunesFecha = new Date(fecha); lunesFecha.setDate(fecha.getDate() - dowFecha);
+  return Math.round((lunesFecha - lunesHoy) / (1000*60*60*24*7));
+};
+const offsetMesParaFecha = (fechaISO) => {
+  const hoy = new Date();
+  const fecha = desdeISO(fechaISO);
+  return (fecha.getFullYear() - hoy.getFullYear()) * 12 + (fecha.getMonth() - hoy.getMonth());
+};
 const HORAS = (() => { const h=[]; for(let x=7;x<=22;x++) for(let m of [0,15,30,45]) h.push(`${String(x).padStart(2,"0")}:${String(m).padStart(2,"0")}`); return h; })();
 
 // ─── ESTILOS BASE ─────────────────────────────────────────────────────────────
@@ -3369,6 +3383,45 @@ export default function App() {
     },200);
     return()=>clearTimeout(t);
   },[modoMultidia,diaMultidiaSeleccionado]);
+
+  useEffect(() => {
+    const algunFiltroActivo = Object.values(filtros || {}).some(v => v);
+    if (!algunFiltroActivo) return;
+    if (!eventosFiltrados.length) return;
+
+    if (vista === "agenda" || vista === "grilla") {
+      window.scrollTo({ top: 0, behavior: "instant" });
+      return;
+    }
+    if (vista !== "dia" && vista !== "semana" && vista !== "mes") return;
+
+    let hayEnVentana = false;
+    if (vista === "dia") {
+      hayEnVentana = eventosFiltrados.some(e => e.fecha_inicio <= diaActual && e.fecha_termino >= diaActual);
+    } else if (vista === "semana") {
+      const desde = toISO(diasSemana[0]), hasta = toISO(diasSemana[6]);
+      hayEnVentana = eventosFiltrados.some(e => e.fecha_inicio <= hasta && e.fecha_termino >= desde);
+    } else if (vista === "mes") {
+      const mv = new Date(); mv.setMonth(mv.getMonth() + mesOff);
+      hayEnVentana = eventosFiltrados.some(e => {
+        const f = desdeISO(e.fecha_inicio);
+        return f.getFullYear()===mv.getFullYear() && f.getMonth()===mv.getMonth();
+      });
+    }
+    if (hayEnVentana) return;
+
+    const hoy = new Date();
+    let mejor = null, mejorDiff = Infinity;
+    eventosFiltrados.forEach(e => {
+      const diff = Math.abs(desdeISO(e.fecha_inicio) - hoy);
+      if (diff < mejorDiff) { mejorDiff = diff; mejor = e; }
+    });
+    if (!mejor) return;
+
+    if (vista === "dia") setDiaActual(mejor.fecha_inicio);
+    else if (vista === "semana") setSemanaOff(offsetSemanaParaFecha(mejor.fecha_inicio));
+    else if (vista === "mes") setMesOff(offsetMesParaFecha(mejor.fecha_inicio));
+  }, [filtros, eventosFiltrados, vista]);
 
   const editarEvento=async(ev)=>{
     const{data}=await sb.from("eventos")
