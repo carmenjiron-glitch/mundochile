@@ -2708,7 +2708,12 @@ function VistaAgenda({eventos,clientes,interpretes,pares,proveedores=[],lugares=
   });
   if(!byDay[hoyISO])byDay[hoyISO]=[];
   const fechas=Object.keys(byDay).sort();
-  useEffect(()=>{if(vista!=="agenda")return;setTimeout(()=>{const hoy=new Date();const idHoy=`agenda-dia-${hoy.getFullYear()}-${hoy.getMonth()}-${hoy.getDate()}`;let el=document.getElementById(idHoy);if(!el){const todos=Array.from(document.querySelectorAll("[id^='agenda-dia-']"));const hoyMs=new Date(hoy.getFullYear(),hoy.getMonth(),hoy.getDate()).getTime();el=todos.find(e=>{const parts=e.id.replace("agenda-dia-","").split("-");const fechaEl=new Date(Number(parts[0]),Number(parts[1]),Number(parts[2])).getTime();return fechaEl>=hoyMs;})||todos[0];}if(el){const offset=160;const top=el.getBoundingClientRect().top+window.scrollY-offset;window.scrollTo({top,behavior:"instant"});}},300);},[vista]);
+  useEffect(()=>{
+    if(vista!=="agenda")return;
+    if(Object.values(filtros||{}).some(v=>v))return;
+    const t=setTimeout(()=>{const hoy=new Date();const idHoy=`agenda-dia-${hoy.getFullYear()}-${hoy.getMonth()}-${hoy.getDate()}`;let el=document.getElementById(idHoy);if(!el){const todos=Array.from(document.querySelectorAll("[id^='agenda-dia-']"));const hoyMs=new Date(hoy.getFullYear(),hoy.getMonth(),hoy.getDate()).getTime();el=todos.find(e=>{const parts=e.id.replace("agenda-dia-","").split("-");const fechaEl=new Date(Number(parts[0]),Number(parts[1]),Number(parts[2])).getTime();return fechaEl>=hoyMs;})||todos[0];}if(el){const offset=stickyTop+8;const top=el.getBoundingClientRect().top+window.scrollY-offset;window.scrollTo({top,behavior:"instant"});}},300);
+    return()=>clearTimeout(t);
+  },[vista,filtros]);
   return (
     <div style={{padding:"16px 24px 80px",width:"100%",maxWidth:"100%"}}>
       {!fechas.length&&<div style={{textAlign:"center",padding:"80px 20px",color:"#fff"}}>
@@ -3411,10 +3416,29 @@ export default function App() {
     });
     if (!mejor) return;
 
-    if (vista === "dia") setDiaActual(mejor.fecha_inicio);
+    if (vista === "dia") {
+      setDiaActual(mejor.fecha_inicio);
+      setModoMultidia(false);
+      setEventoMultidiaId(null);
+      setDiaMultidiaSeleccionado(0);
+      setModalDetalle(null);
+    }
     else if (vista === "semana") setSemanaOff(offsetSemanaParaFecha(mejor.fecha_inicio));
     else if (vista === "mes") setMesOff(offsetMesParaFecha(mejor.fecha_inicio));
   }, [filtros, eventosFiltrados, vista]);
+
+  useEffect(() => {
+    const algunFiltroActivo = Object.values(filtros || {}).some(v => v);
+    if (algunFiltroActivo) return;
+    const hd = new Date().getDay();
+    setDiaActual(toISO(new Date()));
+    setSemanaOff(hd === 0 || hd === 6 ? 1 : 0);
+    setMesOff(0);
+    setModoMultidia(false);
+    setEventoMultidiaId(null);
+    setDiaMultidiaSeleccionado(0);
+    setModalDetalle(null);
+  }, [filtros]);
 
   const editarEvento=async(ev)=>{
     const{data}=await sb.from("eventos")
