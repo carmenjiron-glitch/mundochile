@@ -750,7 +750,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                   );})}
                 </div></div>
               <div style={S.camp}><label style={S.lbl}><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display:"inline",verticalAlign:"middle",marginRight:"2px"}}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Modalidad</label>
-                <select style={S.sel} value={form.modalidad} onChange={e=>setF("modalidad",e.target.value)}>{MODALIDADES.map(m=><option key={m} value={m}>{LBL_MODAL[m]}</option>)}</select></div>
+                <select style={S.sel} value={form.modalidad||""} onChange={e=>setF("modalidad",e.target.value)}>{MODALIDADES.map(m=><option key={m} value={m}>{LBL_MODAL[m]}</option>)}</select></div>
             </div>
             {/* Fechas */}
             <div style={{...S.fila,marginBottom:"20px"}}>
@@ -762,14 +762,14 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
               <div style={S.camp}><label style={S.lbl}>🕐 Hora inicio</label><SelHora value={form.hora_inicio} onChange={v=>setF("hora_inicio",v)}/></div>
               <div style={S.camp}><label style={S.lbl}>🕐 Hora término</label><SelHora value={form.hora_termino} onChange={v=>setF("hora_termino",v)}/></div>
               <div style={S.camp}><label style={S.lbl}>⏱ Jornada</label>
-                <select style={S.sel} value={form.jornada} onChange={e=>setF("jornada",e.target.value)}>{getJornadas(form.modalidad).map(j=><option key={j}>{j}</option>)}</select></div>
+                <select style={S.sel} value={form.jornada||""} onChange={e=>setF("jornada",e.target.value)}>{getJornadas(form.modalidad).map(j=><option key={j}>{j}</option>)}</select></div>
             </div>}
             {form.jornada==="Otro horario personalizado"&&!esMultidia&&<div style={{marginBottom:"20px"}}><label style={S.lbl}>✍️ Horario personalizado</label><input style={S.inp} value={form.jornada_personalizada} onChange={e=>setF("jornada_personalizada",e.target.value)}/></div>}
             {/* Plataforma (remoto/híbrido) */}
             {(form.modalidad==="remoto"||form.modalidad==="hibrido")&&<>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1.5fr 1fr",gap:"12px",alignItems:"end",marginBottom:"20px"}}>
                 <div style={S.camp}><label style={S.lbl}>💻 Plataforma</label>
-                  <select style={S.sel} value={form.plataforma} onChange={e=>setF("plataforma",e.target.value)}>{PLATAFORMAS.map(p=><option key={p}>{p}</option>)}</select></div>
+                  <select style={S.sel} value={form.plataforma||""} onChange={e=>setF("plataforma",e.target.value)}>{PLATAFORMAS.map(p=><option key={p}>{p}</option>)}</select></div>
                 {(form.plataforma==="Zoom MundoChile"||form.plataforma==="Zoom")&&<div style={S.camp}><label style={S.lbl}>🔑 Administrador Zoom</label>
                   <select style={S.sel}
                     value={(()=>{if(!form.zoom_administrador)return"";if(form.zoom_administrador==="__manual__")return"__manual__";const m=interpretes.find(i=>`${i.nombre} ${i.apellido||""}`.trim()===form.zoom_administrador.trim());return m?String(m.id):"__manual__";})()}
@@ -826,7 +826,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
               {/* Estado de facturación + N° Factura */}
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",alignItems:"end",marginBottom:"12px"}}>
                 <div style={S.camp}><label style={S.lbl}>Estado de facturación</label>
-                  <select style={{...S.sel,textAlign:"left"}} value={form.estado} onChange={e=>setF("estado",e.target.value)}>{ESTADOS.map(e=><option key={e} style={{textAlign:"left"}}>{e}</option>)}</select>
+                  <select style={{...S.sel,textAlign:"left"}} value={form.estado||""} onChange={e=>setF("estado",e.target.value)}>{ESTADOS.map(e=><option key={e} style={{textAlign:"left"}}>{e}</option>)}</select>
                 </div>
                 <div style={S.camp}><label style={S.lbl}>N° Factura</label>
                   <input style={S.inp} type="text" value={form.numero_factura||""} onChange={e=>setF("numero_factura",e.target.value)} placeholder="Ej: 12345"/>
@@ -891,7 +891,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                 </div>
                 <div style={S.fila}>
                   <div style={S.camp}><label style={S.lbl}>Tipo de sistema</label>
-                    <select style={S.sel} value={eq.tipo_equipo} onChange={e=>setForm(f=>{const eqs=[...(f.equipos||[])];eqs[eIdx]={...eqs[eIdx],tipo_equipo:e.target.value};return{...f,equipos:eqs};})}>
+                    <select style={S.sel} value={eq.tipo_equipo||""} onChange={e=>setForm(f=>{const eqs=[...(f.equipos||[])];eqs[eIdx]={...eqs[eIdx],tipo_equipo:e.target.value};return{...f,equipos:eqs};})}>
                       <option value="fijo">Sistema fijo (cabina y receptores)</option>
                       <option value="portatil">Sistema portátil</option>
                       <option value="cabina_portatil">Cabina portátil</option>
@@ -1034,7 +1034,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                       </div>
                       <div style={S.fila}>
                         <div style={S.camp}><label style={S.lbl}>Tipo de sistema</label>
-                          <select style={S.sel} value={eq.tipo_equipo} onChange={e=>editEq(dIdx,eIdx,"tipo_equipo",e.target.value)}>
+                          <select style={S.sel} value={eq.tipo_equipo||""} onChange={e=>editEq(dIdx,eIdx,"tipo_equipo",e.target.value)}>
                             <option value="fijo">Sistema fijo (cabina y receptores)</option>
                             <option value="portatil">Sistema portátil</option>
                             <option value="cabina_portatil">Cabina portátil</option>
@@ -3950,7 +3950,7 @@ export default function App() {
       {modalDetalle&&<ModalDetalle evento={modalDetalle} clientes={clientes} interpretes={interpretes} pares={pares} perfil={perfil} lugares={lugares} onEditar={()=>editarEvento(modalDetalle)} onEliminar={()=>eliminarEvento(modalDetalle.id)} onCerrar={()=>setModalDetalle(null)} onVerFicha={()=>{setModalFicha(modalDetalle);setModalDetalle(null);}} onNavDia={(dIdx)=>{setVistaAnterior(vista);setEventoMultidiaId(modalDetalle.id);setDiaMultidiaSeleccionado(dIdx+1);setModoMultidia(true);setVista("dia");setModalDetalle(null);}} addToast={addToast}/>}
       {modalFicha&&<ModalFicha evento={modalFicha} clientes={clientes} contactos={contactos} interpretes={interpretes} pares={pares} lugares={lugares} onCerrar={()=>setModalFicha(null)}/>}
       {modalFichasMultiples&&<ModalFichasMultiples eventosLista={modalFichasMultiples} clientes={clientes} interpretes={interpretes} pares={pares} onCerrar={()=>setModalFichasMultiples(null)}/>}
-      {modalNuevoCli&&<ModalNuevoCliente onGuardar={async(d)=>{const{notas,...dSinNotas}=d;console.log("[NuevoCliente] payload insert:",dSinNotas,"notas:",notas);const{data,error}=await sb.from("clientes").insert(dSinNotas).select().single();console.log("[NuevoCliente] result:",{data,error});if(data&&notas!==undefined)await sb.from("clientes").update({notas}).eq("id",data.id);if(data)setClientes(prev=>[...prev,data]);const cb=modalNuevoCli?.cb;setModalNuevoCli(false);if(data){cb?.(data.id);addToast("Cliente creado","success");}cargarDatos();}} onCerrar={()=>setModalNuevoCli(false)}/>}
+      {modalNuevoCli&&<ModalNuevoCliente onGuardar={async(d)=>{const{notas,...dSinNotas}=d;const{data,error}=await sb.from("clientes").insert(dSinNotas).select().single();if(data&&notas!==undefined)await sb.from("clientes").update({notas}).eq("id",data.id);if(data)setClientes(prev=>[...prev,data]);const cb=modalNuevoCli?.cb;setModalNuevoCli(false);if(data){cb?.(data.id);addToast("Cliente creado","success");}cargarDatos();}} onCerrar={()=>setModalNuevoCli(false)}/>}
       {modalNuevoInt&&<ModalNuevoInterprete pares={pares} onGuardar={async(d,parId)=>{const{notas,...dSinNotas}=d;const{data}=await sb.from("interpretes").insert(dSinNotas).select().single();if(data?.id&&notas!==undefined)await sb.from("interpretes").update({notas}).eq("id",data.id);await cargarDatos();if(data?.id&&modalNuevoInt?.cb)modalNuevoInt.cb(data.id,parId);setModalNuevoInt(null);addToast("Intérprete creado","success");}} onCerrar={()=>setModalNuevoInt(null)}/>}
       {modalNuevoContacto&&<ModalNuevoContacto clienteId={modalNuevoContacto.cliente_id} onGuardar={async(d)=>{const{data:nc}=await sb.from("contactos").insert({...d,cliente_id:Number(modalNuevoContacto.cliente_id),activo:true}).select().single();if(nc&&modalNuevoContacto.cb)modalNuevoContacto.cb(nc);await cargarDatos();setModalNuevoContacto(null);addToast("Contacto creado","success");}} onCerrar={()=>setModalNuevoContacto(null)}/>}
       {modalNuevoLugar&&<ModalNuevoLugar onGuardado={async(data)=>{if(modalNuevoLugar.cb)modalNuevoLugar.cb(data);await cargarDatos();setModalNuevoLugar(null);addToast("Lugar creado","success");}} onCerrar={()=>setModalNuevoLugar(null)}/>}
