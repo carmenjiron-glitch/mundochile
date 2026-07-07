@@ -1965,6 +1965,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
   const [busquedaInterp,setBusquedaInterp]=useState("");
   const [filtroParConfig,setFiltroParConfig]=useState("");
   const [confirmarEliminar,setConfirmarEliminar]=useState(null);
+  const [errorEliminar,setErrorEliminar]=useState(null);
   const tabs=[{id:"interpretes",l:"👤 Intérpretes"},{id:"clientes",l:"🏢 Clientes"},{id:"idiomas",l:"🌐 Idiomas"},{id:"proveedores",l:"🔧 Proveedores"},{id:"lugares",l:"📍 Lugares"},{id:"usuarios",l:"👥 Usuarios"},{id:"estadisticas",l:"📊 Estadísticas"}];
 
   useEffect(()=>{if(tab==="usuarios")sb.from("perfiles").select("*").order("nombre").then(({data})=>data&&setPerfiles(data));},[tab]);
@@ -2012,8 +2013,23 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
   };
 
   const ejecutarEliminacion=async({tipo,id})=>{
+    setErrorEliminar(null);
     const tabla=tipo==="cliente"?"clientes":tipo==="interprete"?"interpretes":"proveedores";
-    await sb.from(tabla).delete().eq("id",id);
+    const{error}=await sb.from(tabla).delete().eq("id",id);
+    if(error){
+      if(error.code==="23503"){
+        let msg="No se puede eliminar: tiene registros asociados. Puedes desactivarlo en su lugar.";
+        if(tipo==="cliente"){
+          const{count}=await sb.from("eventos").select("id",{count:"exact",head:true}).eq("cliente_id",id);
+          msg=`No se puede eliminar: tiene ${count??1} evento(s) asociado(s). Puedes desactivarlo en su lugar.`;
+        }
+        setErrorEliminar(msg);
+      }else{
+        setErrorEliminar(`Error al eliminar: ${error.message}`);
+      }
+      return;
+    }
+    setConfirmarEliminar(null);
     onActualizar();
   };
 
@@ -2062,7 +2078,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
             </select>
             {filtroParConfig&&<button onClick={()=>setFiltroParConfig("")} style={{background:"#EF4444",color:"#FFFFFF",border:"none",borderRadius:"50%",width:"20px",height:"20px",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:"12px",fontWeight:"700",lineHeight:1,padding:0,flexShrink:0}}>×</button>}
           </div>
-          <button onClick={()=>{setEditando("nuevo");setFormEdit({nombre:"",apellido:"",email:"",telefono:"",ciudad:"",modalidad_trabajo:"ambas",es_host_zoom:false,notas:"",par_ids:[],activo:true});}} style={S.btnA}>+ Nuevo intérprete</button>
+          {!editando&&<button onClick={()=>{window.scrollTo({top:0,behavior:"instant"});setEditando("nuevo");setFormEdit({nombre:"",apellido:"",email:"",telefono:"",ciudad:"",modalidad_trabajo:"ambas",es_host_zoom:false,notas:"",par_ids:[],activo:true});}} style={S.btnA}>+ Nuevo intérprete</button>}
         </div>
 
         {/* Form edición */}
@@ -2159,7 +2175,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
                   </div>
                 </div>
                 <div style={{display:"flex",gap:"8px",alignItems:"center",flexShrink:0}}>
-                  <button onClick={()=>{setEditando(i.id);setFormEdit({...i});}} style={S.btnEdit}><span style={{filter:"brightness(10)"}}>✏️</span> Editar</button>
+                  <button onClick={()=>{window.scrollTo({top:0,behavior:"instant"});setEditando(i.id);setFormEdit({...i});}} style={S.btnEdit}><span style={{filter:"brightness(10)"}}>✏️</span> Editar</button>
                   <button onClick={async()=>{await sb.from("interpretes").update({activo:!i.activo}).eq("id",i.id);onActualizar();}}
                     style={{padding:"4px 10px",background:"#FFFFFF",color:"#6B7280",border:"1px solid #D1D5DB",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",height:"28px",fontFamily:"inherit"}}>
                     {i.activo?"Desactivar":"Activar"}
@@ -2180,9 +2196,9 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
 
       {/* ── CLIENTES ── */}
       {tab==="clientes"&&<>
-        <div style={{display:"flex",justifyContent:"flex-end",marginBottom:"20px"}}>
-          <button onClick={()=>{setEditando("nuevo");setFormEdit({nombre_empresa:"",nombre_contacto:"",email_contacto:"",telefono:"",celular:"",notas:"",activo:true});}} style={S.btnA}>+ Nuevo cliente</button>
-        </div>
+        {!editando&&<div style={{display:"flex",justifyContent:"flex-end",marginBottom:"20px"}}>
+          <button onClick={()=>{window.scrollTo({top:0,behavior:"instant"});setEditando("nuevo");setFormEdit({nombre_empresa:"",nombre_contacto:"",email_contacto:"",telefono:"",celular:"",notas:"",activo:true});}} style={S.btnA}>+ Nuevo cliente</button>
+        </div>}
         {editando&&<div style={{background:C.azulClaro,border:`1.5px solid ${C.azulBorde}`,borderRadius:"12px",padding:"20px",marginBottom:"20px"}}>
           <div style={{fontWeight:"500",color:C.azul,marginBottom:"20px"}}>{editando==="nuevo"?"Nuevo cliente":"Editar cliente"}</div>
           <div style={{marginBottom:"12px"}}><label style={S.lbl}>Nombre empresa *</label>{EF("nombre_empresa")}</div>
@@ -2195,6 +2211,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
             <div style={S.camp}><label style={S.lbl}>Celular</label>{EF("celular")}</div>
           </div>
           <div style={{marginBottom:"20px"}}><label style={S.lbl}>Notas</label><textarea style={{...S.inp,minHeight:"60px"}} value={formEdit.notas||""} onChange={e=>setFormEdit(f=>({...f,notas:e.target.value}))}/></div>
+          {errorGuardar&&<div style={{background:"#FEF2F2",border:"1px solid #FECACA",borderRadius:"8px",padding:"8px 12px",marginBottom:"12px",color:"#DC2626",fontSize:"13px"}}>⚠️ {errorGuardar}</div>}
           <div style={{display:"flex",gap:"8px"}}>
             <button onClick={()=>guardar("clientes",formEdit,editando)} style={S.btnA}>💾 Guardar</button>
             <button onClick={()=>{setEditando(null);setFormEdit({});}} style={S.btnG}>Cancelar</button>
@@ -2218,7 +2235,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
               </div>
             </div>
             <div style={{display:"flex",gap:"8px",flexShrink:0}}>
-              <button onClick={()=>{setEditando(c.id);setFormEdit({...c});}} style={S.btnEdit}><span style={{filter:"brightness(10)"}}>✏️</span> Editar</button>
+              <button onClick={()=>{window.scrollTo({top:0,behavior:"instant"});setEditando(c.id);setFormEdit({...c});}} style={S.btnEdit}><span style={{filter:"brightness(10)"}}>✏️</span> Editar</button>
               <button onClick={()=>setConfirmarEliminar({tipo:"cliente",id:c.id,nombre:c.nombre_empresa||"este cliente"})}
                 style={{padding:"4px 10px",background:"#FEF2F2",color:"#DC2626",border:"1px solid #FECACA",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",height:"28px",fontFamily:"inherit"}}>
                 Eliminar
@@ -2230,9 +2247,9 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
 
       {/* ── IDIOMAS ── */}
       {tab==="idiomas"&&<>
-        <div style={{display:"flex",justifyContent:"flex-end",marginBottom:"20px"}}>
-          <button onClick={()=>{setEditando("nuevo");setFormEdit({idioma_origen:"",idioma_destino:"Español",activo:true});}} style={S.btnA}>+ Nuevo par de idiomas</button>
-        </div>
+        {!editando&&<div style={{display:"flex",justifyContent:"flex-end",marginBottom:"20px"}}>
+          <button onClick={()=>{window.scrollTo({top:0,behavior:"instant"});setEditando("nuevo");setFormEdit({idioma_origen:"",idioma_destino:"Español",activo:true});}} style={S.btnA}>+ Nuevo par de idiomas</button>
+        </div>}
         {editando&&<div style={{background:C.azulClaro,border:`1.5px solid ${C.azulBorde}`,borderRadius:"12px",padding:"20px",marginBottom:"20px"}}>
           <div style={{...S.fila,marginBottom:"20px"}}>
             <div style={S.camp}><label style={S.lbl}>Idioma origen</label>{EF("idioma_origen")}</div>
@@ -2246,16 +2263,16 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
         {pares.map(p=>(
           <div key={p.id} style={{border:`1.5px solid ${C.grisBorde}`,borderRadius:"10px",padding:"12px 18px",marginBottom:"8px",background:"#fff",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
             <div style={{fontWeight:"500",fontSize:"16px",color:C.texto}}>🌐 {p.descripcion}</div>
-            <button onClick={()=>{setEditando(p.id);setFormEdit({...p});}} style={S.btnP}>✏️ Editar</button>
+            <button onClick={()=>{window.scrollTo({top:0,behavior:"instant"});setEditando(p.id);setFormEdit({...p});}} style={S.btnP}>✏️ Editar</button>
           </div>
         ))}
       </>}
 
       {/* ── PROVEEDORES ── */}
       {tab==="proveedores"&&<>
-        <div style={{display:"flex",justifyContent:"flex-end",marginBottom:"20px"}}>
-          <button onClick={()=>{setEditando("nuevo");setFormEdit({nombre:"",telefono:"",email:"",rut:"",ciudad:"",contacto1_nombre:"",contacto1_cargo:"",contacto1_celular:"",contacto1_email:"",contacto2_nombre:"",contacto2_cargo:"",contacto2_celular:"",contacto2_email:"",contacto3_nombre:"",contacto3_cargo:"",contacto3_celular:"",contacto3_email:"",comentarios:"",activo:true});}} style={S.btnA}>+ Nuevo proveedor</button>
-        </div>
+        {!editando&&<div style={{display:"flex",justifyContent:"flex-end",marginBottom:"20px"}}>
+          <button onClick={()=>{window.scrollTo({top:0,behavior:"instant"});setEditando("nuevo");setFormEdit({nombre:"",telefono:"",email:"",rut:"",ciudad:"",contacto1_nombre:"",contacto1_cargo:"",contacto1_celular:"",contacto1_email:"",contacto2_nombre:"",contacto2_cargo:"",contacto2_celular:"",contacto2_email:"",contacto3_nombre:"",contacto3_cargo:"",contacto3_celular:"",contacto3_email:"",comentarios:"",activo:true});}} style={S.btnA}>+ Nuevo proveedor</button>
+        </div>}
         {editando&&<div style={{background:C.azulClaro,border:`1.5px solid ${C.azulBorde}`,borderRadius:"12px",padding:"20px",marginBottom:"20px"}}>
           <div style={{fontSize:"11px",fontWeight:"700",color:"#94A3B8",textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:"10px"}}>Datos de la empresa</div>
           <div style={{marginBottom:"12px"}}><label style={S.lbl}>Nombre empresa *</label>{EF("nombre")}</div>
@@ -2299,7 +2316,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
               </div>
             </div>
             <div style={{display:"flex",gap:"8px",flexShrink:0}}>
-              <button onClick={()=>{setEditando(p.id);setFormEdit({...p});}} style={S.btnP}>✏️ Editar</button>
+              <button onClick={()=>{window.scrollTo({top:0,behavior:"instant"});setEditando(p.id);setFormEdit({...p});}} style={S.btnP}>✏️ Editar</button>
               <button onClick={()=>setConfirmarEliminar({tipo:"proveedor",id:p.id,nombre:p.nombre||"este proveedor"})}
                 style={{padding:"4px 10px",background:"#FEF2F2",color:"#DC2626",border:"1px solid #FECACA",borderRadius:"6px",cursor:"pointer",fontWeight:"500",fontSize:"12px",height:"28px",fontFamily:"inherit"}}>
                 Eliminar
@@ -2311,9 +2328,9 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
 
       {/* ── LUGARES ── */}
       {tab==="lugares"&&<>
-        <div style={{display:"flex",justifyContent:"flex-end",marginBottom:"20px"}}>
-          <button onClick={()=>{setEditando("nuevo");setFormEdit({nombre:"",tipo:"",direccion:"",activo:true});}} style={S.btnA}>+ Nuevo lugar</button>
-        </div>
+        {!editando&&<div style={{display:"flex",justifyContent:"flex-end",marginBottom:"20px"}}>
+          <button onClick={()=>{window.scrollTo({top:0,behavior:"instant"});setEditando("nuevo");setFormEdit({nombre:"",tipo:"",direccion:"",activo:true});}} style={S.btnA}>+ Nuevo lugar</button>
+        </div>}
         {editando&&<div style={{background:C.azulClaro,border:`1.5px solid ${C.azulBorde}`,borderRadius:"12px",padding:"20px",marginBottom:"20px"}}>
           <div style={{fontWeight:"500",color:C.azul,marginBottom:"16px"}}>{editando==="nuevo"?"Nuevo lugar":"Editar lugar"}</div>
           <div style={{...S.fila,marginBottom:"12px"}}>
@@ -2334,7 +2351,7 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
               {l.direccion&&<div style={{fontSize:"15px",color:C.textoMed,marginTop:"3px"}}>{l.direccion}</div>}
             </div>
             <div style={{display:"flex",gap:"6px"}}>
-              <button onClick={()=>{setEditando(l.id);setFormEdit({...l});}} style={S.btnEdit}><span style={{filter:"brightness(10)"}}>✏️</span> Editar</button>
+              <button onClick={()=>{window.scrollTo({top:0,behavior:"instant"});setEditando(l.id);setFormEdit({...l});}} style={S.btnEdit}><span style={{filter:"brightness(10)"}}>✏️</span> Editar</button>
               <button onClick={async()=>{await sb.from("lugares").update({activo:!l.activo}).eq("id",l.id);onActualizar();}}
                 style={{...S.btnP,background:l.activo?C.rojoClaro:C.verdeClaro,color:l.activo?C.rojo:C.verde,borderColor:l.activo?C.rojo:C.verde}}>
                 {l.activo?"Desactivar":"Activar"}
@@ -2377,15 +2394,16 @@ function PantallaConfig({clientes,interpretes,pares,proveedores,lugares=[],onAct
         <div style={{position:"fixed",top:0,left:0,width:"100vw",height:"100vh",background:"rgba(0,0,0,0.5)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center"}}>
           <div style={{background:"#FFFFFF",borderRadius:"12px",padding:"32px",maxWidth:"400px",width:"90%",boxShadow:"0 8px 32px rgba(0,0,0,0.2)"}}>
             <h3 style={{fontSize:"18px",fontWeight:"600",color:"#111827",margin:"0 0 8px 0"}}>¿Confirmar eliminación?</h3>
-            <p style={{fontSize:"14px",color:"#6B7280",margin:"0 0 24px 0"}}>
+            <p style={{fontSize:"14px",color:"#6B7280",margin:"0 0 16px 0"}}>
               Estás a punto de eliminar <strong>{confirmarEliminar.nombre}</strong>. Esta acción no se puede deshacer.
             </p>
+            {errorEliminar&&<div style={{background:"#FEF2F2",border:"1px solid #FECACA",borderRadius:"8px",padding:"8px 12px",marginBottom:"16px",color:"#DC2626",fontSize:"13px"}}>⚠️ {errorEliminar}</div>}
             <div style={{display:"flex",gap:"12px",justifyContent:"flex-end"}}>
-              <button onClick={()=>setConfirmarEliminar(null)}
+              <button onClick={()=>{setConfirmarEliminar(null);setErrorEliminar(null);}}
                 style={{padding:"8px 20px",borderRadius:"8px",background:"#F3F4F6",color:"#374151",border:"1px solid #D1D5DB",cursor:"pointer",fontSize:"13px",fontWeight:"500",fontFamily:"inherit"}}>
                 Cancelar
               </button>
-              <button onClick={async()=>{await ejecutarEliminacion(confirmarEliminar);setConfirmarEliminar(null);}}
+              <button onClick={()=>ejecutarEliminacion(confirmarEliminar)}
                 style={{padding:"8px 20px",borderRadius:"8px",background:"#DC2626",color:"#FFFFFF",border:"none",cursor:"pointer",fontSize:"13px",fontWeight:"500",fontFamily:"inherit"}}>
                 Sí, eliminar
               </button>
