@@ -404,6 +404,87 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
 }
 
 // ─── MODAL EVENTO ─────────────────────────────────────────────────────────────
+function FilaAsig({a,idx,dIdx=null,form,setForm,interpretes,pares,conflicto,onNuevoInterprete}){
+  const [alerta,setAlerta]=useState(null);
+  const edit=(k,v)=>{
+    const extra=k==="interprete_id"?{conflicto_ok:false}:{};
+    if(dIdx===null) setForm(f=>{const asigs=[...f.asignaciones];asigs[idx]={...asigs[idx],[k]:v,...extra};return{...f,asignaciones:asigs};});
+    else setForm(f=>{const dias=[...f.dias],asigs=[...dias[dIdx].asignaciones],oldVal=asigs[idx]?.[k];asigs[idx]={...asigs[idx],[k]:v,...extra};dias[dIdx]={...dias[dIdx],asignaciones:asigs};if(dIdx===0){for(let d=1;d<dias.length;d++){const dA=[...(dias[d].asignaciones||[])];if(dA[idx]!==undefined&&dA[idx][k]===oldVal){dA[idx]={...dA[idx],[k]:v,...extra};dias[d]={...dias[d],asignaciones:dA};}}}return{...f,dias};});
+    if(k==="interprete_id") setAlerta(v?conflicto(v):null);
+  };
+  const aceptarConflicto=()=>{
+    if(dIdx===null) setForm(f=>{const asigs=[...f.asignaciones];asigs[idx]={...asigs[idx],conflicto_ok:true};return{...f,asignaciones:asigs};});
+    else setForm(f=>{const dias=[...f.dias],asigs=[...dias[dIdx].asignaciones];asigs[idx]={...asigs[idx],conflicto_ok:true};dias[dIdx]={...dias[dIdx],asignaciones:asigs};return{...f,dias};});
+    setAlerta(null);
+  };
+  const rem=()=>{
+    const nombre=interpretes.find(x=>x.id===a.interprete_id);
+    const label=nombre?`${nombre.nombre||""}${nombre.apellido?" "+nombre.apellido:""}`.trim():`Intérprete ${idx+1}`;
+    if(!window.confirm(`¿Quitar a ${label} de la asignación?`))return;
+    if(dIdx===null) setForm(f=>{const asigs=[...f.asignaciones];asigs.splice(idx,1);return{...f,asignaciones:asigs};});
+    else setForm(f=>{const dias=[...f.dias],asigs=[...dias[dIdx].asignaciones];asigs.splice(idx,1);dias[dIdx]={...dias[dIdx],asignaciones:asigs};return{...f,dias};});
+  };
+  const interp=interpretes.find(x=>x.id===a.interprete_id);
+  const horaRef=dIdx===null?form.hora_inicio:form.dias?.[dIdx]?.hora_inicio;
+  const _sg=(h,m)=>{if(!h)return null;const[hh,mm]=h.split(':').map(Number);const t=hh*60+mm-m;if(t<0)return null;return`${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`;};
+  const[_s30,_s45]=[_sg(horaRef,30),_sg(horaRef,45)];
+  const sugerPres=[...(_s30?[{value:_s30,label:`30 min antes del inicio (${_s30})`}]:[]),...(_s45?[{value:_s45,label:`45 min antes del inicio (${_s45})`}]:[])];
+  return (
+    <div id={`asig-${dIdx??'s'}-${idx}`} data-fila-asig="" style={{border:`1.5px solid ${a.es_host_zoom?"#E03131":C.grisBorde}`,borderRadius:"10px",padding:"14px",marginBottom:"10px",background:C.gris,boxShadow:a.es_host_zoom?"0 0 0 2px #fecaca":undefined}}>
+      <div style={{fontWeight:"600",color:"#374151",fontSize:"13px",marginBottom:"10px",paddingBottom:"8px",borderBottom:`1px solid ${C.grisBorde}`}}>Intérprete {idx+1}</div>
+      {alerta&&<div style={{background:"#FEF2F2",border:"2px solid #DC2626",borderRadius:"10px",padding:"14px 16px",marginBottom:"12px",boxShadow:"0 0 0 4px rgba(220,38,38,0.12)"}}>
+        <div style={{display:"flex",alignItems:"flex-start",gap:"10px"}}>
+          <span style={{fontSize:"22px",flexShrink:0,lineHeight:1.2}}>🚫</span>
+          <div style={{flex:1}}>
+            <div style={{fontWeight:"700",fontSize:"14px",color:"#991B1B",marginBottom:"4px"}}>Conflicto de agenda detectado</div>
+            <div style={{fontSize:"13px",color:"#7F1D1D",marginBottom:"12px",lineHeight:1.5}}>
+              <strong>{interp?.nombre||"Este intérprete"}</strong> ya está asignado a <strong>"{alerta.nombre_evento||"otro evento"}"</strong> el {formatLargo(alerta.fecha_inicio)}.<br/>No puedes guardar hasta resolver este conflicto.
+            </div>
+            <div style={{display:"flex",gap:"8px",flexWrap:"wrap"}}>
+              <button onClick={aceptarConflicto} style={{padding:"6px 16px",background:"#991B1B",color:"#fff",border:"none",borderRadius:"7px",cursor:"pointer",fontWeight:"600",fontSize:"13px",fontFamily:"inherit"}}>✓ Asignar como excepción</button>
+              <button onClick={()=>{edit("interprete_id","");}} style={{padding:"6px 16px",background:"none",color:"#991B1B",border:"1.5px solid #DC2626",borderRadius:"7px",cursor:"pointer",fontWeight:"600",fontSize:"13px",fontFamily:"inherit"}}>← Cambiar intérprete</button>
+            </div>
+          </div>
+        </div>
+      </div>}
+      <div style={S.fila}>
+        <div style={{...S.camp,minWidth:"200px"}}>
+          <label style={S.lbl}>👤 Intérprete</label>
+          <div style={{display:"flex",gap:"6px"}}>
+            <select style={S.sel} value={a.interprete_id||""} onChange={e=>edit("interprete_id",e.target.value?Number(e.target.value):"")}>
+              <option value="">Seleccionar…</option>
+              {interpretes.filter(i=>i.activo).map(i=><option key={i.id} value={i.id}>{i.nombre}{i.apellido?" "+i.apellido:""}{i.es_host_zoom?" 🔑":""}{i.ciudad?` · ${i.ciudad}`:""}</option>)}
+            </select>
+            <button onClick={()=>onNuevoInterprete(idx,dIdx,(interpId,parId)=>{edit("interprete_id",interpId);if(parId)edit("par_id",parId);})} style={{...S.btnP,fontSize:"19px",fontWeight:"500",width:"48px",height:"48px",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>+</button>
+          </div>
+          {interp&&<div style={{fontSize:"14px",color:C.textoSuave,marginTop:"4px",display:"flex",gap:"8px",flexWrap:"wrap"}}>
+            {interp.ciudad&&<span>📍 {interp.ciudad}</span>}
+            {interp.modalidad_trabajo&&<span>{interp.modalidad_trabajo==="ambas"?"💻📍":interp.modalidad_trabajo==="online"?"💻 Online":"📍 Presencial"}</span>}
+          </div>}
+        </div>
+        <div style={S.camp}>
+          <label style={S.lbl}>🌐 Par de idiomas</label>
+          <select style={{...S.sel,fontWeight:"400",color:C.textoMed}} value={a.par_id||""} onChange={e=>edit("par_id",e.target.value?Number(e.target.value):"")}>
+            <option value="">Seleccionar par de idiomas…</option>
+            {(()=>{const interpSel=interpretes.find(x=>x.id===a.interprete_id);const ids=interpSel?.par_ids||[];const pp=ids.length?(pares||[]).filter(p=>p.activo!==false&&ids.includes(p.id)):(pares||[]).filter(p=>p.activo!==false);return pp.sort((x,y)=>(x.descripcion||"").localeCompare(y.descripcion||"")).map(p=><option key={p.id} value={p.id}>{p.descripcion||(p.idioma_origen&&p.idioma_destino?`${p.idioma_origen} – ${p.idioma_destino}`:"Par sin nombre")}</option>);})()}
+          </select>
+        </div>
+      </div>
+      <div style={{...S.fila,marginTop:"10px"}}>
+        <div style={S.camp}><label style={S.lbl}>N° OT</label><input style={S.inp} defaultValue={a.nro_ot} onBlur={e=>edit("nro_ot",e.target.value)} placeholder="OT-0000"/></div>
+        <div style={S.camp}><label style={S.lbl}>N° Boleta</label><input style={S.inp} defaultValue={a.nro_boleta} onBlur={e=>edit("nro_boleta",e.target.value)} placeholder="628"/></div>
+        <div style={S.camp}><label style={S.lbl}>🕐 Hora presentación</label><SelHora value={a.hora_presentacion} onChange={v=>edit("hora_presentacion",v)} placeholder="Misma del evento" sugeridas={sugerPres}/></div>
+      </div>
+      <div style={{display:"flex",gap:"16px",marginTop:"10px",flexWrap:"wrap",alignItems:"center"}}>
+        <label style={{display:"flex",gap:"6px",alignItems:"center",cursor:"pointer",fontSize:"13px",color:a.es_host_zoom?"#B82E38":C.textoMed,fontWeight:a.es_host_zoom?"600":"400"}}>
+          <input type="checkbox" checked={!!a.es_host_zoom} onChange={e=>edit("es_host_zoom",e.target.checked)}/> 🔑 Host Zoom MundoChile
+        </label>
+        <div style={{marginLeft:"auto"}}><button onClick={rem} style={{background:"none",border:"none",cursor:"pointer",color:"#B82E38",fontWeight:"500",fontSize:"13px"}}>✕ Quitar</button></div>
+      </div>
+    </div>
+  );
+}
+
 function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugares=[],contactos=[],todos_eventos,perfil,onGuardar,onCerrar,onNuevoCliente,onNuevoContacto,onNuevoInterprete,onLugarCreado,onNuevoLugar,onNuevoProveedor}) {
   const [form,setForm]=useState(()=>{
     if(!eventoInicial) return evVacio();
@@ -577,111 +658,19 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
       if(lugarDirEdit&&lugarDirEdit.trim()){const TL={hotel:"Hotel",centro_eventos:"Centro de eventos",universidad:"Universidad",edificio_corporativo:"Edificio corporativo",oficina_cliente:"Oficina del cliente",planta_produccion:"Planta de producción",faena_minera:"Faena minera",ministerio:"Ministerio",edificio_gobierno:"Edificio de gobierno",otro:"Otro"};const fn=l=>l.tipo&&TL[l.tipo]?`${TL[l.tipo]} ${l.nombre}`:l.nombre;const lr=(lugares||[]).filter(l=>l.activo!==false).find(l=>fn(l)===form.lugar);if(lr&&!lr.direccion){await sb.from("lugares").update({direccion:lugarDirEdit.trim()}).eq("id",lr.id);}}
       guardandoRef.current=false;
       if(cerrar){onGuardar();}
-      else{setGuardadoOk(true);setTimeout(()=>setGuardadoOk(false),2000);setTimeout(()=>{const m=document.querySelector("[data-modal-scroll]");if(m)m.scrollTop=0;},80);}
+      else{setGuardadoOk(true);setTimeout(()=>setGuardadoOk(false),2000);}
     } catch(e){setError("Error al guardar: "+(e.message||JSON.stringify(e)));guardandoRef.current=false;}
     finally{setGuardando(false);guardandoRef.current=false;}
   };
 
-  // Fila de asignación
-  const FilaAsig=({a,idx,dIdx=null})=>{
-    const [alerta,setAlerta]=useState(null);
-    const divRef=useRef(null);
-    useEffect(()=>{
-      if(!scrollToNewAsigRef.current||!divRef.current)return;
-      scrollToNewAsigRef.current=false;
-      requestAnimationFrame(()=>requestAnimationFrame(()=>{
-        divRef.current?.scrollIntoView({block:'start'});
-      }));
-    },[]);
-    const edit=(k,v)=>{
-      if(modalScrollRef.current&&modalScrollRef.current.scrollTop>0)savedScrollPos.current=modalScrollRef.current.scrollTop;
-      const extra=k==="interprete_id"?{conflicto_ok:false}:{};
-      if(dIdx===null) setForm(f=>{const asigs=[...f.asignaciones];asigs[idx]={...asigs[idx],[k]:v,...extra};return{...f,asignaciones:asigs};});
-      else setForm(f=>{const dias=[...f.dias],asigs=[...dias[dIdx].asignaciones],oldVal=asigs[idx]?.[k];asigs[idx]={...asigs[idx],[k]:v,...extra};dias[dIdx]={...dias[dIdx],asignaciones:asigs};if(dIdx===0){for(let d=1;d<dias.length;d++){const dA=[...(dias[d].asignaciones||[])];if(dA[idx]!==undefined&&dA[idx][k]===oldVal){dA[idx]={...dA[idx],[k]:v,...extra};dias[d]={...dias[d],asignaciones:dA};}}}return{...f,dias};});
-      if(k==="interprete_id") setAlerta(v?conflicto(v):null);
-    };
-    const aceptarConflicto=()=>{
-      if(dIdx===null) setForm(f=>{const asigs=[...f.asignaciones];asigs[idx]={...asigs[idx],conflicto_ok:true};return{...f,asignaciones:asigs};});
-      else setForm(f=>{const dias=[...f.dias],asigs=[...dias[dIdx].asignaciones];asigs[idx]={...asigs[idx],conflicto_ok:true};dias[dIdx]={...dias[dIdx],asignaciones:asigs};return{...f,dias};});
-      setAlerta(null);
-    };
-    const rem=()=>{
-      const nombre=interpretes.find(x=>x.id===a.interprete_id);
-      const label=nombre?`${nombre.nombre||""}${nombre.apellido?" "+nombre.apellido:""}`.trim():`Intérprete ${idx+1}`;
-      if(!window.confirm(`¿Quitar a ${label} de la asignación?`))return;
-      if(dIdx===null) setForm(f=>{const asigs=[...f.asignaciones];asigs.splice(idx,1);return{...f,asignaciones:asigs};});
-      else setForm(f=>{const dias=[...f.dias],asigs=[...dias[dIdx].asignaciones];asigs.splice(idx,1);dias[dIdx]={...dias[dIdx],asignaciones:asigs};return{...f,dias};});
-    };
-    const interp=interpretes.find(x=>x.id===a.interprete_id);
-    const horaRef=dIdx===null?form.hora_inicio:form.dias?.[dIdx]?.hora_inicio;
-    const _sg=(h,m)=>{if(!h)return null;const[hh,mm]=h.split(':').map(Number);const t=hh*60+mm-m;if(t<0)return null;return`${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`;};
-    const[_s30,_s45]=[_sg(horaRef,30),_sg(horaRef,45)];
-    const sugerPres=[...(_s30?[{value:_s30,label:`30 min antes del inicio (${_s30})`}]:[]),...(_s45?[{value:_s45,label:`45 min antes del inicio (${_s45})`}]:[])];
-    return (
-      <div ref={divRef} id={`asig-${dIdx??'s'}-${idx}`} data-fila-asig="" style={{border:`1.5px solid ${a.es_host_zoom?"#E03131":C.grisBorde}`,borderRadius:"10px",padding:"14px",marginBottom:"10px",background:C.gris,boxShadow:a.es_host_zoom?"0 0 0 2px #fecaca":undefined}}>
-        <div style={{fontWeight:"600",color:"#374151",fontSize:"13px",marginBottom:"10px",paddingBottom:"8px",borderBottom:`1px solid ${C.grisBorde}`}}>Intérprete {idx+1}</div>
-        {alerta&&<div style={{background:"#FEF2F2",border:"2px solid #DC2626",borderRadius:"10px",padding:"14px 16px",marginBottom:"12px",boxShadow:"0 0 0 4px rgba(220,38,38,0.12)"}}>
-          <div style={{display:"flex",alignItems:"flex-start",gap:"10px"}}>
-            <span style={{fontSize:"22px",flexShrink:0,lineHeight:1.2}}>🚫</span>
-            <div style={{flex:1}}>
-              <div style={{fontWeight:"700",fontSize:"14px",color:"#991B1B",marginBottom:"4px"}}>Conflicto de agenda detectado</div>
-              <div style={{fontSize:"13px",color:"#7F1D1D",marginBottom:"12px",lineHeight:1.5}}>
-                <strong>{interp?.nombre||"Este intérprete"}</strong> ya está asignado a <strong>"{alerta.nombre_evento||"otro evento"}"</strong> el {formatLargo(alerta.fecha_inicio)}.<br/>No puedes guardar hasta resolver este conflicto.
-              </div>
-              <div style={{display:"flex",gap:"8px",flexWrap:"wrap"}}>
-                <button onClick={aceptarConflicto} style={{padding:"6px 16px",background:"#991B1B",color:"#fff",border:"none",borderRadius:"7px",cursor:"pointer",fontWeight:"600",fontSize:"13px",fontFamily:"inherit"}}>✓ Asignar como excepción</button>
-                <button onClick={()=>{edit("interprete_id","");}} style={{padding:"6px 16px",background:"none",color:"#991B1B",border:"1.5px solid #DC2626",borderRadius:"7px",cursor:"pointer",fontWeight:"600",fontSize:"13px",fontFamily:"inherit"}}>← Cambiar intérprete</button>
-              </div>
-            </div>
-          </div>
-        </div>}
-        <div style={S.fila}>
-          <div style={{...S.camp,minWidth:"200px"}}>
-            <label style={S.lbl}>👤 Intérprete</label>
-            <div style={{display:"flex",gap:"6px"}}>
-              <select style={S.sel} value={a.interprete_id||""} onChange={e=>edit("interprete_id",e.target.value?Number(e.target.value):"")}>
-                <option value="">Seleccionar…</option>
-                {interpretes.filter(i=>i.activo).map(i=><option key={i.id} value={i.id}>{i.nombre}{i.apellido?" "+i.apellido:""}{i.es_host_zoom?" 🔑":""}{i.ciudad?` · ${i.ciudad}`:""}</option>)}
-              </select>
-              <button onClick={()=>onNuevoInterprete(idx,dIdx,(interpId,parId)=>{edit("interprete_id",interpId);if(parId)edit("par_id",parId);})} style={{...S.btnP,fontSize:"19px",fontWeight:"500",width:"48px",height:"48px",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>+</button>
-            </div>
-            {interp&&<div style={{fontSize:"14px",color:C.textoSuave,marginTop:"4px",display:"flex",gap:"8px",flexWrap:"wrap"}}>
-              {interp.ciudad&&<span>📍 {interp.ciudad}</span>}
-              {interp.modalidad_trabajo&&<span>{interp.modalidad_trabajo==="ambas"?"💻📍":interp.modalidad_trabajo==="online"?"💻 Online":"📍 Presencial"}</span>}
-            </div>}
-          </div>
-          <div style={S.camp}>
-            <label style={S.lbl}>🌐 Par de idiomas</label>
-            <select style={{...S.sel,fontWeight:"400",color:C.textoMed}} value={a.par_id||""} onChange={e=>edit("par_id",e.target.value?Number(e.target.value):"")}>
-              <option value="">Seleccionar par de idiomas…</option>
-              {(()=>{const interpSel=interpretes.find(x=>x.id===a.interprete_id);const ids=interpSel?.par_ids||[];const pp=ids.length?(pares||[]).filter(p=>p.activo!==false&&ids.includes(p.id)):(pares||[]).filter(p=>p.activo!==false);return pp.sort((x,y)=>(x.descripcion||"").localeCompare(y.descripcion||"")).map(p=><option key={p.id} value={p.id}>{p.descripcion||(p.idioma_origen&&p.idioma_destino?`${p.idioma_origen} – ${p.idioma_destino}`:"Par sin nombre")}</option>);})()}
-            </select>
-          </div>
-        </div>
-        <div style={{...S.fila,marginTop:"10px"}}>
-          <div style={S.camp}><label style={S.lbl}>N° OT</label><input style={S.inp} defaultValue={a.nro_ot} onBlur={e=>edit("nro_ot",e.target.value)} placeholder="OT-0000"/></div>
-          <div style={S.camp}><label style={S.lbl}>N° Boleta</label><input style={S.inp} defaultValue={a.nro_boleta} onBlur={e=>edit("nro_boleta",e.target.value)} placeholder="628"/></div>
-          <div style={S.camp}><label style={S.lbl}>🕐 Hora presentación</label><SelHora value={a.hora_presentacion} onChange={v=>edit("hora_presentacion",v)} placeholder="Misma del evento" sugeridas={sugerPres}/></div>
-        </div>
-        <div style={{display:"flex",gap:"16px",marginTop:"10px",flexWrap:"wrap",alignItems:"center"}}>
-          <label style={{display:"flex",gap:"6px",alignItems:"center",cursor:"pointer",fontSize:"13px",color:a.es_host_zoom?"#B82E38":C.textoMed,fontWeight:a.es_host_zoom?"600":"400"}}>
-            <input type="checkbox" checked={!!a.es_host_zoom} onChange={e=>edit("es_host_zoom",e.target.checked)}/> 🔑 Host Zoom MundoChile
-          </label>
-          <div style={{marginLeft:"auto"}}><button onClick={rem} style={{background:"none",border:"none",cursor:"pointer",color:"#B82E38",fontWeight:"500",fontSize:"13px"}}>✕ Quitar</button></div>
-        </div>
-      </div>
-    );
-  };
-
-  const scrollToNewAsigRef=useRef(false);
   const modalScrollRef=useRef(null);
-  const savedScrollPos=useRef(0);
-  useLayoutEffect(()=>{if(savedScrollPos.current>0&&modalScrollRef.current){modalScrollRef.current.scrollTop=savedScrollPos.current;savedScrollPos.current=0;}});
   const addAsig=(dIdx=null)=>{
-    scrollToNewAsigRef.current=true;
     if(dIdx===null) setForm(f=>({...f,asignaciones:[...f.asignaciones,asigVacia()]}));
     else setForm(f=>{const dias=[...f.dias],cnt=(dias[dIdx].asignaciones||[]).length;dias[dIdx]={...dias[dIdx],asignaciones:[...(dias[dIdx].asignaciones||[]),asigVacia()]};if(dIdx===0){for(let d=1;d<dias.length;d++){if((dias[d].asignaciones||[]).length===cnt)dias[d]={...dias[d],asignaciones:[...(dias[d].asignaciones||[]),asigVacia()]};}}return{...f,dias};});
-    setTimeout(()=>{const filas=document.querySelectorAll("[data-fila-asig]");const ul=filas[filas.length-1];const m=document.querySelector("[data-modal-scroll]");if(ul&&m)m.scrollTop=ul.getBoundingClientRect().top-m.getBoundingClientRect().top+m.scrollTop;},80);
+    setTimeout(()=>{
+      const cont=modalScrollRef.current;
+      if(cont) cont.scrollTo({top:cont.scrollHeight,behavior:"smooth"});
+    },100);
   };
 
   const addEq=(dIdx)=>{setForm(f=>{const dias=[...f.dias],cnt=(dias[dIdx].equipos||[]).length;dias[dIdx]={...dias[dIdx],equipos:[...(dias[dIdx].equipos||[]),eqVacio()]};if(dIdx===0){for(let d=1;d<dias.length;d++){if((dias[d].equipos||[]).length===cnt)dias[d]={...dias[d],equipos:[...(dias[d].equipos||[]),eqVacio()]};}}return{...f,dias};});setTimeout(()=>{const t=document.querySelector(`[data-dia-section="${dIdx}"]`);const m=document.querySelector("[data-modal-scroll]");if(t&&m)m.scrollTop=t.offsetTop-m.offsetTop;},80);};
@@ -872,8 +861,8 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
               <button onClick={()=>addAsig()} style={S.btnA}>+ Agregar intérprete</button>
             </div>
             {form.asignaciones.length===0&&<div style={{textAlign:"center",color:C.textoSuave,padding:"40px 20px",border:`2px dashed ${C.grisBorde}`,borderRadius:"12px"}}>Sin intérpretes — Agrega uno arriba</div>}
-            {form.asignaciones.map((a,idx)=><FilaAsig key={idx} a={a} idx={idx}/>)}
-            {form.asignaciones.length>0&&<button onClick={()=>addAsig()} style={{...S.btnP,width:"100%",padding:"9px"}}>+ Agregar otro intérprete</button>}
+            {form.asignaciones.map((a,idx)=><FilaAsig key={idx} a={a} idx={idx} form={form} setForm={setForm} interpretes={interpretes} pares={pares} conflicto={conflicto} onNuevoInterprete={onNuevoInterprete}/>)}
+            {form.asignaciones.length>0&&<button onClick={()=>addAsig()} style={{...S.btnA,width:"100%",padding:"12px",fontSize:"15px",fontWeight:"600",height:"auto"}}>+ Agregar otro intérprete</button>}
           </>}
 
           {/* ── TAB EQUIPOS AV (un día) ── */}
@@ -1017,7 +1006,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                     <button onClick={()=>addAsig(dIdx)} style={{...S.btnP,fontSize:"13px",color:"#2C5CA0",border:"1px solid #869CB8"}}>+ Agregar intérprete</button>
                   </div>
                   {(dia.asignaciones||[]).length===0&&<div style={{color:C.textoSuave,fontSize:"15px",textAlign:"center",padding:"12px",border:`1.5px dashed ${C.grisBorde}`,borderRadius:"8px"}}>Sin intérpretes para este día</div>}
-                  {(dia.asignaciones||[]).map((a,aIdx)=><FilaAsig key={aIdx} a={a} idx={aIdx} dIdx={dIdx}/>)}
+                  {(dia.asignaciones||[]).map((a,aIdx)=><FilaAsig key={aIdx} a={a} idx={aIdx} dIdx={dIdx} form={form} setForm={setForm} interpretes={interpretes} pares={pares} conflicto={conflicto} onNuevoInterprete={onNuevoInterprete}/>)}
                   {(dia.asignaciones||[]).length>0&&<button onClick={()=>addAsig(dIdx)} style={{...S.btnP,width:"100%",padding:"9px",marginTop:"8px"}}>+ Agregar otro intérprete</button>}
                 </div>
                 {/* Equipos AV */}
