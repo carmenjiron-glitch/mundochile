@@ -658,7 +658,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
       if(lugarDirEdit&&lugarDirEdit.trim()){const TL={hotel:"Hotel",centro_eventos:"Centro de eventos",universidad:"Universidad",edificio_corporativo:"Edificio corporativo",oficina_cliente:"Oficina del cliente",planta_produccion:"Planta de producción",faena_minera:"Faena minera",ministerio:"Ministerio",edificio_gobierno:"Edificio de gobierno",otro:"Otro"};const fn=l=>l.tipo&&TL[l.tipo]?`${TL[l.tipo]} ${l.nombre}`:l.nombre;const lr=(lugares||[]).filter(l=>l.activo!==false).find(l=>fn(l)===form.lugar);if(lr&&!lr.direccion){await sb.from("lugares").update({direccion:lugarDirEdit.trim()}).eq("id",lr.id);}}
       guardandoRef.current=false;
       if(cerrar){onGuardar();}
-      else{setGuardadoOk(true);setTimeout(()=>setGuardadoOk(false),2000);}
+      else{setGuardadoOk(true);setTimeout(()=>setGuardadoOk(false),2000);setTimeout(()=>{const m=document.querySelector("[data-modal-scroll]");if(m)m.scrollTop=0;},80);}
     } catch(e){setError("Error al guardar: "+(e.message||JSON.stringify(e)));guardandoRef.current=false;}
     finally{setGuardando(false);guardandoRef.current=false;}
   };
