@@ -24,6 +24,21 @@ export const T = {
 export const PALETA = ['#E03131','#C2255C','#9C36B5','#3B5BDB','#1971C2','#0C8599','#2F9E44','#E67700','#D9480F','#5C7CFA','#F06595','#20C997']
 export const clientColor = (id) => PALETA[(id||0)%12]
 
+// resuelve hora_presentacion ("-30"/"-45" relativos, "HH:MM" absoluto, o vacío = hora de inicio del evento/día)
+export const resolverHoraPresentacion = (horaPresentacion, horaInicioRef) => {
+  const v = horaPresentacion ? horaPresentacion.slice(0,5) : "";
+  if (v === "-30" || v === "-45") {
+    if (!horaInicioRef) return null;
+    const mins = v === "-30" ? 30 : 45;
+    const [hh, mm] = horaInicioRef.slice(0,5).split(":").map(Number);
+    const total = hh*60 + mm - mins;
+    if (total < 0) return null;
+    return `${String(Math.floor(total/60)).padStart(2,"0")}:${String(total%60).padStart(2,"0")}`;
+  }
+  if (v) return v;
+  return horaInicioRef ? horaInicioRef.slice(0,5) : null;
+};
+
 // backwards compat
 export const PALETA_CLIENTE = PALETA
 export const colorCliente = clientColor

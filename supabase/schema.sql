@@ -117,7 +117,7 @@ create table if not exists asignaciones (
   es_boleta_adicional boolean default false,
   es_host_zoom        boolean default false,
   rol                 text default 'Principal' check (rol in ('Principal','Apoyo')),
-  hora_presentacion   time,
+  hora_presentacion   text,
   estado_pago         text default 'Pendiente' check (estado_pago in ('Pendiente','Pagado')),
   created_at          timestamptz default now()
 );
@@ -146,7 +146,7 @@ create table if not exists asignaciones_dia (
   es_boleta_adicional boolean default false,
   es_host_zoom        boolean default false,
   rol                 text default 'Principal' check (rol in ('Principal','Apoyo')),
-  hora_presentacion   time,
+  hora_presentacion   text,
   estado_pago         text default 'Pendiente' check (estado_pago in ('Pendiente','Pagado')),
   created_at          timestamptz default now()
 );

@@ -8,6 +8,7 @@ import MultiDayPill from "./components/ui/MultiDayPill.jsx";
 import PlatformChip from "./components/ui/PlatformChip.jsx";
 import InterpreterRow from "./components/ui/InterpreterRow.jsx";
 import FilterBar from "./components/FilterBar.jsx";
+import { resolverHoraPresentacion } from "./design-system/tokens";
 
 const IconMic = ({size=24}) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -204,7 +205,7 @@ const evVacio = () => ({
   nro_hes:"", nro_otros:"", comentarios_av:"", contacto_id:"", fecha_emision:"",
   asignaciones:[], dias:[], equipos:[],
 });
-const asigVacia = () => ({interprete_id:"",par_id:"",nro_ot:"",nro_boleta:"",es_boleta_adicional:false,es_host_zoom:false,rol:"Principal",hora_presentacion:"",estado_pago:"Pendiente",conflicto_ok:false});
+const asigVacia = () => ({interprete_id:"",par_id:"",nro_ot:"",nro_boleta:"",es_boleta_adicional:false,es_host_zoom:false,rol:"Principal",hora_presentacion:"-30",estado_pago:"Pendiente",conflicto_ok:false});
 const diaVacio  = (fecha) => ({fecha,hora_inicio:"09:00",hora_termino:"13:00",jornada:"Media Jornada",jornada_personalizada:"",tipo:null,modalidad:null,lugar:null,lugar_detalle:null,asignaciones:[],equipos:[]});
 const eqVacio   = () => ({tipo_equipo:"fijo",proveedor_id:"",proveedor_nombre:"",proveedor_contacto:"",proveedor_telefono:"",num_receptores:0,num_cabinas:0,num_asistentes:0,asistentes_origen:"mismo_proveedor",asistentes_otro_proveedor:"",asistentes_mundochile_nombres:"",portatiles_origen:"mundochile",proveedor_portatiles:"",dia_montaje:"",hora_montaje:"",contacto_in_situ:"",instrucciones:""});
 
@@ -266,6 +267,31 @@ function SelHora({value,onChange,placeholder="Hora",sugeridas=[]}) {
     <select style={S.sel} value={v5} onChange={e=>{if(e.target.value==="__otro__"){setManual(true);onChange("");}else onChange(e.target.value);}}>
       <option value="">{placeholder}</option>
       {sugeridas.map(s=><option key={`sug-${s.value}`} value={s.value}>{s.label}</option>)}
+      {HORAS.map(h=><option key={h} value={h}>{h} hrs</option>)}
+      <option value="__otro__">Otro horario…</option>
+    </select>
+  );
+}
+
+
+function SelHoraPresentacion({value,onChange,horaInicioRef}) {
+  const [manual,setManual]=useState(false);
+  const v5=value?value.slice(0,5):"";
+  const esRelativo=v5==="-30"||v5==="-45";
+  const selectValue=esRelativo?v5:(v5||(horaInicioRef?horaInicioRef.slice(0,5):""));
+  const esManual=manual||(!esRelativo&&!!selectValue&&!HORAS.includes(selectValue));
+  if(esManual){
+    const valorResuelto=resolverHoraPresentacion(value,horaInicioRef);
+    return (
+      <input type="time" step="60" style={S.inp} value={valorResuelto||""} onChange={e=>onChange(e.target.value)} placeholder="08:30"/>
+    );
+  }
+  const _sg=(m)=>{if(!horaInicioRef)return null;const[hh,mm]=horaInicioRef.slice(0,5).split(':').map(Number);const t=hh*60+mm-m;if(t<0)return null;return`${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`;};
+  const s30=_sg(30),s45=_sg(45);
+  return (
+    <select style={S.sel} value={selectValue} onChange={e=>{if(e.target.value==="__otro__"){setManual(true);onChange("");}else onChange(e.target.value);}}>
+      {s30&&<option value="-30">30 min antes ({s30})</option>}
+      {s45&&<option value="-45">45 min antes ({s45})</option>}
       {HORAS.map(h=><option key={h} value={h}>{h} hrs</option>)}
       <option value="__otro__">Otro horario…</option>
     </select>
@@ -404,7 +430,8 @@ function TarjetaEvento({ev,diaDe,clientes,pares,interpretes,proveedores=[],onCli
 }
 
 // ─── MODAL EVENTO ─────────────────────────────────────────────────────────────
-function FilaAsig({a,idx,dIdx=null,form,setForm,interpretes,pares,conflicto,onNuevoInterprete}){
+const contarRepetidos=(lista)=>{const c={};(lista||[]).forEach(x=>{if(x.interprete_id)c[x.interprete_id]=(c[x.interprete_id]||0)+1;});return c;};
+function FilaAsig({a,idx,dIdx=null,form,setForm,interpretes,pares,conflicto,onNuevoInterprete,esDuplicado=false}){
   const [alerta,setAlerta]=useState(null);
   const edit=(k,v)=>{
     const extra=k==="interprete_id"?{conflicto_ok:false}:{};
@@ -426,9 +453,6 @@ function FilaAsig({a,idx,dIdx=null,form,setForm,interpretes,pares,conflicto,onNu
   };
   const interp=interpretes.find(x=>x.id===a.interprete_id);
   const horaRef=dIdx===null?form.hora_inicio:form.dias?.[dIdx]?.hora_inicio;
-  const _sg=(h,m)=>{if(!h)return null;const[hh,mm]=h.split(':').map(Number);const t=hh*60+mm-m;if(t<0)return null;return`${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`;};
-  const[_s30,_s45]=[_sg(horaRef,30),_sg(horaRef,45)];
-  const sugerPres=[...(_s30?[{value:_s30,label:`30 min antes del inicio (${_s30})`}]:[]),...(_s45?[{value:_s45,label:`45 min antes del inicio (${_s45})`}]:[])];
   return (
     <div id={`asig-${dIdx??'s'}-${idx}`} data-fila-asig="" style={{border:`1.5px solid ${a.es_host_zoom?"#E03131":C.grisBorde}`,borderRadius:"10px",padding:"14px",marginBottom:"10px",background:C.gris,boxShadow:a.es_host_zoom?"0 0 0 2px #fecaca":undefined}}>
       <div style={{fontWeight:"600",color:"#374151",fontSize:"13px",marginBottom:"10px",paddingBottom:"8px",borderBottom:`1px solid ${C.grisBorde}`}}>Intérprete {idx+1}</div>
@@ -457,6 +481,7 @@ function FilaAsig({a,idx,dIdx=null,form,setForm,interpretes,pares,conflicto,onNu
             </select>
             <button onClick={()=>onNuevoInterprete(idx,dIdx,(interpId,parId)=>{edit("interprete_id",interpId);if(parId)edit("par_id",parId);})} style={{...S.btnP,fontSize:"19px",fontWeight:"500",width:"48px",height:"48px",display:"flex",alignItems:"center",justifyContent:"center",padding:0,lineHeight:1}}>+</button>
           </div>
+          {esDuplicado&&<div style={{color:"#D97706",fontSize:"12px",marginTop:"4px"}}>⚠ Este intérprete ya está asignado en este día</div>}
           {interp&&<div style={{fontSize:"14px",color:C.textoSuave,marginTop:"4px",display:"flex",gap:"8px",flexWrap:"wrap"}}>
             {interp.ciudad&&<span>📍 {interp.ciudad}</span>}
             {interp.modalidad_trabajo&&<span>{interp.modalidad_trabajo==="ambas"?"💻📍":interp.modalidad_trabajo==="online"?"💻 Online":"📍 Presencial"}</span>}
@@ -473,7 +498,7 @@ function FilaAsig({a,idx,dIdx=null,form,setForm,interpretes,pares,conflicto,onNu
       <div style={{...S.fila,marginTop:"10px"}}>
         <div style={S.camp}><label style={S.lbl}>N° OT</label><input style={S.inp} defaultValue={a.nro_ot} onBlur={e=>edit("nro_ot",e.target.value)} placeholder="OT-0000"/></div>
         <div style={S.camp}><label style={S.lbl}>N° Boleta</label><input style={S.inp} defaultValue={a.nro_boleta} onBlur={e=>edit("nro_boleta",e.target.value)} placeholder="628"/></div>
-        <div style={S.camp}><label style={S.lbl}>🕐 Hora presentación</label><SelHora value={a.hora_presentacion} onChange={v=>edit("hora_presentacion",v)} placeholder="Misma del evento" sugeridas={sugerPres}/></div>
+        <div style={S.camp}><label style={S.lbl}>🕐 Hora presentación</label><SelHoraPresentacion value={a.hora_presentacion} onChange={v=>edit("hora_presentacion",v)} horaInicioRef={horaRef}/></div>
       </div>
       <div style={{display:"flex",gap:"16px",marginTop:"10px",flexWrap:"wrap",alignItems:"center"}}>
         <label style={{display:"flex",gap:"6px",alignItems:"center",cursor:"pointer",fontSize:"13px",color:a.es_host_zoom?"#B82E38":C.textoMed,fontWeight:a.es_host_zoom?"600":"400"}}>
@@ -542,6 +567,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
   },[contactos,form.cliente_id]);
 
   const esMultidia=form.dias.length>1;
+  const repAsigUnDia=contarRepetidos(form.asignaciones);
 
   const conflicto=(interp_id)=>{
     if(!interp_id) return null;
@@ -668,8 +694,13 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
     if(dIdx===null) setForm(f=>({...f,asignaciones:[...f.asignaciones,asigVacia()]}));
     else setForm(f=>{const dias=[...f.dias],cnt=(dias[dIdx].asignaciones||[]).length;dias[dIdx]={...dias[dIdx],asignaciones:[...(dias[dIdx].asignaciones||[]),asigVacia()]};if(dIdx===0){for(let d=1;d<dias.length;d++){if((dias[d].asignaciones||[]).length===cnt)dias[d]={...dias[d],asignaciones:[...(dias[d].asignaciones||[]),asigVacia()]};}}return{...f,dias};});
     setTimeout(()=>{
-      const cont=modalScrollRef.current;
-      if(cont) cont.scrollTo({top:cont.scrollHeight,behavior:"smooth"});
+      if(dIdx===null){
+        const cont=modalScrollRef.current;
+        if(cont) cont.scrollTo({top:cont.scrollHeight,behavior:"smooth"});
+      } else {
+        const bloqueDia=document.querySelector(`[data-interpretes-dia="${dIdx}"]`);
+        bloqueDia?.scrollIntoView({behavior:"smooth",block:"end"});
+      }
     },100);
   };
 
@@ -857,18 +888,18 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
           {/* ── TAB INTÉRPRETES (un día) ── */}
           {tab==="interpretes"&&!esMultidia&&<>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"20px"}}>
-              <div style={{fontWeight:"500",color:"#B82E38",fontSize:"17px",display:"flex",alignItems:"center",gap:"6px"}}><IconMic size={20}/> Intérpretes asignados</div>
+              <div style={{fontWeight:"600",color:"#B82E38",fontSize:"17px",display:"flex",alignItems:"center",gap:"6px"}}><IconMic size={20}/> Intérpretes asignados</div>
               <button onClick={()=>addAsig()} style={S.btnA}>+ Agregar intérprete</button>
             </div>
             {form.asignaciones.length===0&&<div style={{textAlign:"center",color:C.textoSuave,padding:"40px 20px",border:`2px dashed ${C.grisBorde}`,borderRadius:"12px"}}>Sin intérpretes — Agrega uno arriba</div>}
-            {form.asignaciones.map((a,idx)=><FilaAsig key={idx} a={a} idx={idx} form={form} setForm={setForm} interpretes={interpretes} pares={pares} conflicto={conflicto} onNuevoInterprete={onNuevoInterprete}/>)}
+            {form.asignaciones.map((a,idx)=><FilaAsig key={idx} a={a} idx={idx} form={form} setForm={setForm} interpretes={interpretes} pares={pares} conflicto={conflicto} onNuevoInterprete={onNuevoInterprete} esDuplicado={!!a.interprete_id&&repAsigUnDia[a.interprete_id]>1}/>)}
             {form.asignaciones.length>0&&<button onClick={()=>addAsig()} style={{...S.btnA,width:"100%",padding:"12px",fontSize:"15px",fontWeight:"600",height:"auto"}}>+ Agregar otro intérprete</button>}
           </>}
 
           {/* ── TAB EQUIPOS AV (un día) ── */}
           {tab==="equipos"&&!esMultidia&&<>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"20px"}}>
-              <div style={{fontWeight:"500",color:C.verde,fontSize:"17px",display:"flex",alignItems:"center",gap:"6px"}}><IconAV size={20}/> Equipos AV</div>
+              <div style={{fontWeight:"600",color:C.verde,fontSize:"17px",display:"flex",alignItems:"center",gap:"6px"}}><IconAV size={20}/> Equipos AV</div>
               <button onClick={()=>setForm(f=>({...f,equipos:[...(f.equipos||[]),eqVacio()]}))} style={S.btnA}>+ Agregar equipos</button>
             </div>
             {(form.equipos||[]).length===0&&<div style={{textAlign:"center",color:C.textoSuave,padding:"40px 20px",border:`2px dashed ${C.grisBorde}`,borderRadius:"12px"}}>Sin equipos AV — Agrega uno arriba</div>}
@@ -972,6 +1003,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
             </div>
             {form.dias.map((dia,dIdx)=>{
               const modEfectiva=dia.modalidad||form.modalidad;
+              const repAsigDia=contarRepetidos(dia.asignaciones);
               return(
             <div key={dia.fecha} data-dia-section={dIdx} style={{border:"2.5px solid #1D4ED8",borderRadius:"14px",marginBottom:"16px",overflow:"hidden"}}>
               {/* Header del día */}
@@ -1000,19 +1032,19 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                   </div>
                 </div>
                 {/* Intérpretes del día */}
-                <div style={{marginTop:"12px",border:"2px solid #E03131",borderRadius:"16px",padding:"16px",background:"rgba(224,49,49,0.06)",marginBottom:"16px"}}>
+                <div data-interpretes-dia={dIdx} style={{marginTop:"12px",border:"2px solid #E03131",borderRadius:"16px",padding:"16px",background:"rgba(224,49,49,0.06)",marginBottom:"16px"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
-                    <div style={{fontWeight:"500",color:"#E03131",fontSize:"16px",display:"flex",alignItems:"center",gap:"5px"}}><IconMic size={16}/> Intérpretes de este día</div>
-                    <button onClick={()=>addAsig(dIdx)} style={{...S.btnP,fontSize:"13px",color:"#2C5CA0",border:"1px solid #869CB8"}}>+ Agregar intérprete</button>
+                    <div style={{fontWeight:"600",color:"#E03131",fontSize:"17px",display:"flex",alignItems:"center",gap:"5px"}}><IconMic size={16}/> Intérpretes de este día</div>
+                    <button onClick={()=>addAsig(dIdx)} style={{...S.btnA,padding:"8px 16px",fontWeight:"500",WebkitFontSmoothing:"antialiased"}}>+ Agregar intérprete</button>
                   </div>
                   {(dia.asignaciones||[]).length===0&&<div style={{color:C.textoSuave,fontSize:"15px",textAlign:"center",padding:"12px",border:`1.5px dashed ${C.grisBorde}`,borderRadius:"8px"}}>Sin intérpretes para este día</div>}
-                  {(dia.asignaciones||[]).map((a,aIdx)=><FilaAsig key={aIdx} a={a} idx={aIdx} dIdx={dIdx} form={form} setForm={setForm} interpretes={interpretes} pares={pares} conflicto={conflicto} onNuevoInterprete={onNuevoInterprete}/>)}
-                  {(dia.asignaciones||[]).length>0&&<button onClick={()=>addAsig(dIdx)} style={{...S.btnP,width:"100%",padding:"9px",marginTop:"8px"}}>+ Agregar otro intérprete</button>}
+                  {(dia.asignaciones||[]).map((a,aIdx)=><FilaAsig key={aIdx} a={a} idx={aIdx} dIdx={dIdx} form={form} setForm={setForm} interpretes={interpretes} pares={pares} conflicto={conflicto} onNuevoInterprete={onNuevoInterprete} esDuplicado={!!a.interprete_id&&repAsigDia[a.interprete_id]>1}/>)}
+                  {(dia.asignaciones||[]).length>0&&<button onClick={()=>addAsig(dIdx)} style={{...S.btnA,width:"100%",padding:"12px",fontSize:"15px",fontWeight:"600",height:"auto",marginTop:"8px"}}>+ Agregar otro intérprete</button>}
                 </div>
                 {/* Equipos AV */}
                 {modEfectiva!=="remoto"&&<div style={{marginTop:"14px",border:"2px solid #155724",borderRadius:"16px",padding:"16px",background:"rgba(21,87,36,0.06)",marginBottom:"16px"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
-                    <div style={{fontWeight:"500",color:"#155724",fontSize:"16px",display:"flex",alignItems:"center",gap:"5px"}}><IconAV size={16}/> Equipos AV de este día</div>
+                    <div style={{fontWeight:"600",color:"#155724",fontSize:"17px",display:"flex",alignItems:"center",gap:"5px"}}><IconAV size={16}/> Equipos AV de este día</div>
                     <button onClick={()=>addEq(dIdx)} style={{...S.btnP,fontSize:"13px",color:"#2C5CA0",border:"1px solid #869CB8"}}>+ Agregar equipos</button>
                   </div>
                   {(dia.equipos||[]).map((eq,eIdx)=>(
@@ -1508,7 +1540,8 @@ function ModalDetalle({evento,clientes,interpretes,pares,perfil,lugares=[],onEdi
                           {!entries.length&&<div style={{fontSize:"13px",color:"#374151",fontStyle:"italic"}}>Sin intérpretes asignados</div>}
                           {entries.map(([key,grupo])=>{
                             const pillClr=IDIOMA_PILL_CLR[grupo.idioma]||"#4C6EF5";
-                            const hp=grupo.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
+                            const hpRaw=grupo.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
+                            const hp=hpRaw?resolverHoraPresentacion(hpRaw,evento.hora_inicio):null;
                             return(<div key={key} style={{marginBottom:"12px"}}>
                               <div style={{position:"relative",textAlign:"center",marginBottom:"6px"}}>
                                 <span style={{fontSize:"13px",fontWeight:"600",color:"#1256A3",textTransform:"uppercase",letterSpacing:"0.06em",WebkitFontSmoothing:"antialiased"}}>{key}</span>
@@ -1733,7 +1766,7 @@ function ModalFicha({evento,clientes,contactos=[],interpretes,pares,lugares=[],o
               const pillClrFor=(idioma)=>IDIOMA_PILL_CLR[idioma]||"#4C6EF5";
               const dimClr=(hex)=>{try{const v=hex.replace('#','');const r=parseInt(v.slice(0,2),16),g=parseInt(v.slice(2,4),16),b=parseInt(v.slice(4,6),16);const m=(x)=>Math.round(Math.min(255,x*0.9+25.5));return`#${m(r).toString(16).padStart(2,'0')}${m(g).toString(16).padStart(2,'0')}${m(b).toString(16).padStart(2,'0')}`;}catch{return hex;}};
               const pillSt=(idioma)=>({background:"#FFFFFF",border:`1.5px solid ${dimClr(pillClrFor(idioma))}`,color:"#313131",borderRadius:"17px",padding:"5px 10px",textAlign:"center",width:"100%",fontSize:"14px",fontWeight:"400",display:"flex",alignItems:"center",justifyContent:"center",gap:"5px",boxSizing:"border-box"});
-              const renderI=(asigs)=>{
+              const renderI=(asigs,horaInicioRef)=>{
                 if(!asigs||asigs.length===0) return null;
                 const gmap={};
                 asigs.forEach(a=>{
@@ -1751,7 +1784,8 @@ function ModalFicha({evento,clientes,contactos=[],interpretes,pares,lugares=[],o
                 return(<div>
                   {pares2.map((g,i)=>{
                     const clr=pillClrFor(g.idioma);
-                    const hp=g.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
+                    const hpRaw=g.items.find(({asig})=>asig.hora_presentacion)?.asig.hora_presentacion;
+                    const hp=hpRaw?resolverHoraPresentacion(hpRaw,horaInicioRef):null;
                     return(<div key={i} style={{marginBottom:i<pares2.length-1||solos.length>0?"12px":0}}>
                       <div style={{textAlign:"center",fontSize:"12px",fontWeight:"600",color:/inglés.*español/i.test(g.desc)?dimClr("#2D8CFF"):dimClr(clr),marginBottom:"4px",textTransform:"uppercase",letterSpacing:"0.06em"}}>{g.desc}</div>
                       <div style={{display:"grid",gridTemplateColumns:"1fr",gap:"5px"}}>
@@ -1764,17 +1798,18 @@ function ModalFicha({evento,clientes,contactos=[],interpretes,pares,lugares=[],o
                     {solos.map((g,i)=>{
                       const clr=pillClrFor(g.idioma);
                       const {interp,asig}=g.items[0];
+                      const hpSolo=asig.hora_presentacion?resolverHoraPresentacion(asig.hora_presentacion,horaInicioRef):null;
                       return(<div key={i}>
                         <div style={{textAlign:"center",fontSize:"12px",fontWeight:"600",color:/inglés.*español/i.test(g.desc)?dimClr("#2D8CFF"):dimClr(clr),marginBottom:"3px",textTransform:"uppercase",letterSpacing:"0.06em"}}>{g.desc}</div>
                         <div style={pillSt(g.idioma)}>{asig.es_host_zoom&&<span style={{fontSize:"9px"}}>🔑</span>}<FlagImg idioma={g.idioma}/><span>{interp.nombre}{interp.apellido?" "+interp.apellido:""}</span></div>
-                        {asig.hora_presentacion&&<div style={{textAlign:"center",fontSize:"13px",color:"#40464D",marginTop:"6px"}}>🕐 Hora de presentación: {asig.hora_presentacion.slice(0,5)} hrs</div>}
+                        {hpSolo&&<div style={{textAlign:"center",fontSize:"13px",color:"#40464D",marginTop:"6px"}}>🕐 Hora de presentación: {hpSolo.slice(0,5)} hrs</div>}
                       </div>);
                     })}
                   </div>)}
                 </div>);
               };
               const asigsSingle=evento.asignaciones||[];
-              const interpsEl=campos.interpretes&&asigsSingle.length>0?renderI(asigsSingle):null;
+              const interpsEl=campos.interpretes&&asigsSingle.length>0?renderI(asigsSingle,evento.hora_inicio):null;
               const hasInterpsDia=campos.interpretes&&esMultidia&&dias.length>0;
               const hasInterps=interpsEl||hasInterpsDia;
               const hasDerecha=(campos.tipo||campos.modalidad)||hasInterps;
@@ -1812,7 +1847,7 @@ function ModalFicha({evento,clientes,contactos=[],interpretes,pares,lugares=[],o
                     </td>
                     {hasDerecha&&<td style={{padding:0,verticalAlign:"top"}}>
                       {interpsEl&&<><div style={{...sH,textAlign:"center"}}>Intérpretes</div><div style={{...sB,borderBottom:"none"}}>{interpsEl}</div></>}
-                      {hasInterpsDia&&<><div style={{...sH,textAlign:"center"}}>Intérpretes por día</div><div style={{background:"#FFFFFF"}}>{dias.map((dia,dIdx)=>(<div key={dIdx} style={{borderBottom:dIdx<dias.length-1?"1px solid #E5E7EB":"none"}}><div style={{background:"#EBF4FF",padding:"4px 16px",fontSize:"11px",fontWeight:"600",color:"#1A6FD4",textTransform:"uppercase",letterSpacing:"0.04em"}}>Día {dIdx+1}/{dias.length} · {formatCorto(dia.fecha)} · {dia.hora_inicio?.slice(0,5)}–{dia.hora_termino?.slice(0,5)}</div><div style={{padding:"10px 16px"}}>{renderI(dia.asignaciones_dia||dia.asignaciones||[])}</div></div>))}</div></>}
+                      {hasInterpsDia&&<><div style={{...sH,textAlign:"center"}}>Intérpretes por día</div><div style={{background:"#FFFFFF"}}>{dias.map((dia,dIdx)=>(<div key={dIdx} style={{borderBottom:dIdx<dias.length-1?"1px solid #E5E7EB":"none"}}><div style={{background:"#EBF4FF",padding:"4px 16px",fontSize:"11px",fontWeight:"600",color:"#1A6FD4",textTransform:"uppercase",letterSpacing:"0.04em"}}>Día {dIdx+1}/{dias.length} · {formatCorto(dia.fecha)} · {dia.hora_inicio?.slice(0,5)}–{dia.hora_termino?.slice(0,5)}</div><div style={{padding:"10px 16px"}}>{renderI(dia.asignaciones_dia||dia.asignaciones||[],dia.hora_inicio)}</div></div>))}</div></>}
                     </td>}
                   </tr>}
                   {/* Fila 5: Lugar | (vacío) */}
@@ -3543,10 +3578,11 @@ export default function App() {
       const esManana=iso===toISO(new Date(desdeISO(hoy()).getTime()+86400000));
       const mesLargo=MESES_L[d.getMonth()].charAt(0).toUpperCase()+MESES_L[d.getMonth()].slice(1);
       const colBg="rgba(255,255,255,0.14)";
-      const hdrBg="rgba(22,42,82,0.97)";
+      const hdrBg="#162A52";
       return <div key={`${esWeekend?"fs":"lf"}-${i}`} style={{background:colBg,borderRadius:"12px",padding:"10px",minHeight:"calc(100vh - 260px)"}}>
-        <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{padding:"8px 10px",borderRadius:"10px",marginBottom:"8px",background:hdrBg,cursor:"pointer",transition:"background 0.15s",border:`3px solid ${esHoy?"#F97316":"transparent"}`,textAlign:"center",position:"sticky",top:"140px",zIndex:5,backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}
-          onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.25)"}
+        <div data-pill-dia="" style={{position:"sticky",top:"140px",zIndex:60,background:hdrBg,marginBottom:"8px"}}>
+          <div onClick={()=>{setDiaActual(iso);setVista("dia");}} style={{padding:"8px 10px",borderRadius:"10px",background:hdrBg,cursor:"pointer",transition:"background 0.15s",border:`3px solid ${esHoy?"#F97316":"transparent"}`,textAlign:"center",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}
+          onMouseEnter={e=>e.currentTarget.style.background="#51607E"}
           onMouseLeave={e=>{e.currentTarget.style.background=hdrBg;}}>
           <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"7px",flexWrap:"wrap",overflow:"hidden",minWidth:0,marginTop:"5px"}}>
             <span style={{fontSize:"16px",fontWeight:"700",color:"#fff",textTransform:"uppercase",letterSpacing:"0.04em",flexShrink:0}}>{nombresDia[i]}</span>
@@ -3556,6 +3592,7 @@ export default function App() {
             {esManana&&!esHoy&&<div style={{width:"14px",height:"14px",borderRadius:"50%",background:"#EAB308",boxShadow:"0 0 8px #EAB308",animation:"flashYellow 1.8s ease-in-out infinite",flexShrink:0}}/>}
           </div>
           <div style={{display:"inline-block",background:"rgba(255,255,255,0.20)",color:"#fff",fontSize:"13px",fontWeight:"500",padding:"2px 10px",borderRadius:"20px",marginTop:"5px",visibility:evs.length>0?"visible":"hidden"}}>{evs.length>0?`${evs.length} evento${evs.length!==1?"s":""}`:" "}</div>
+        </div>
         </div>
         {evs.map(ev=><EventCard key={ev.id} ev={ev} diaDe={iso} clientes={clientes} contactos={contactos} pares={pares} interpretes={interpretes} proveedores={proveedores} onClick={()=>abrirEvento(ev)} onNavegar={d=>{setDiaActual(d);setVista("dia");}} onVerMultidia={verTodosLosDias} solidPill hideDots={true}/>)}
         {evs.length===0&&<div style={{textAlign:"center",color:esWeekend?"rgba(255,255,255,0.30)":"rgba(255,255,255,0.5)",fontWeight:"500",fontSize:"15px",padding:"20px 0"}}>Sin eventos</div>}
@@ -3703,7 +3740,8 @@ export default function App() {
                   <div style={{display:"flex",alignItems:"center",gap:"7px",marginBottom:"10px",padding:"5px 13px",background:"#FFF1F2",border:"1.5px solid #FECDD3",borderRadius:"10px",width:"fit-content",margin:"0 auto 10px auto",color:"#B91C1C"}}><IconMic size={17}/><span style={{fontSize:"14px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"0.05em"}}>Intérpretes</span></div>
                   {grupoEntries.map(([key,grupo])=>{
                     const pillClr=IDIOMA_PILL_CLR[grupo.idioma]||"#4C6EF5";
-                    const hp=grupo.items.find(i=>i.hora)?.hora;
+                    const hpRaw=grupo.items.find(i=>i.hora)?.hora;
+                    const hp=hpRaw?resolverHoraPresentacion(hpRaw,evM.hora_inicio):null;
                     return(<div key={key} style={{marginBottom:"12px"}}>
                       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"6px"}}>
                         <span style={{fontSize:"12px",fontWeight:"600",color:pillClr,textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
@@ -3773,6 +3811,7 @@ export default function App() {
                 grupos[key].items.push({interp,isHost:!!a.es_host_zoom,hora:a.hora_presentacion||null});
               });
               const grupoEntries=Object.entries(grupos);
+              const horaInicioDiaActual=(ev.evento_dias||[]).find(d=>d.fecha===diaActual)?.hora_inicio||ev.hora_inicio;
               return (
                 <div key={ev.id} onClick={()=>abrirEvento(ev)} style={{background:"#FFFFFF",borderLeft:`16px solid ${borderC}`,borderTop:`6px solid ${borderC}`,borderRadius:"0 12px 12px 0",padding:"20px 24px",boxShadow:"0 2px 12px rgba(0,0,0,0.10)",cursor:"pointer"}}>
                   {/* Header full-width: nombre cliente + dots + pill multidía */}
@@ -3809,7 +3848,8 @@ export default function App() {
                         ?<div style={{color:"#848B95",fontSize:14,fontStyle:"italic"}}>Sin intérpretes asignados</div>
                         :grupoEntries.map(([key,grupo])=>{
                           const pillClr=IDIOMA_PILL_CLR[grupo.idioma]||"#4C6EF5";
-                          const hp=grupo.items.find(i=>i.hora)?.hora;
+                          const hpRaw=grupo.items.find(i=>i.hora)?.hora;
+                          const hp=hpRaw?resolverHoraPresentacion(hpRaw,horaInicioDiaActual):null;
                           return(<div key={key} style={{marginBottom:"12px"}}>
                             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"6px"}}>
                               <span style={{fontSize:"12px",fontWeight:"600",color:pillClr,textTransform:"uppercase",letterSpacing:"0.06em"}}>{key}</span>
@@ -3943,6 +3983,7 @@ export default function App() {
             <button onClick={generarFichaMultiple} style={{display:"flex",alignItems:"center",gap:"4px",padding:"5px 12px",borderRadius:"12px",background:"#1A6FD4",color:"#FFFFFF",fontSize:"11px",fontWeight:"600",border:"none",height:"26px",boxShadow:"0 2px 4px rgba(26,111,212,0.3)",cursor:"pointer",whiteSpace:"nowrap",fontFamily:"inherit"}}>📋 Fichas</button>
           </div>}
         </div>}
+        {vista==="semana"&&<div style={{position:"sticky",top:"140px",zIndex:85,height:0,width:"100%",boxShadow:"0 -22px 0 22px rgba(26,47,90,0.97)"}}/>}
         {vista==="semana"&&renderSemana()}
         {vista==="dia"&&renderDia()}
         {vista==="mes"&&renderMes()}

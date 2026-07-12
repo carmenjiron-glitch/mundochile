@@ -1,5 +1,5 @@
 // EventCard.jsx — MundoChile v3.0 — Diseño Trello
-import { colorCliente, INTERP_LANG } from "../../design-system/tokens";
+import { colorCliente, INTERP_LANG, resolverHoraPresentacion } from "../../design-system/tokens";
 import PlatformChip from "./PlatformChip";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -146,6 +146,9 @@ export default function EventCard({ ev, diaDe, clientes, contactos=[], interpret
   const provNombre   = tieneEquipos
     ? (todosEquipos[0].proveedor_nombre || proveedores.find(p => p.id === todosEquipos[0].proveedor_id)?.nombre || "")
     : "";
+
+  // Hora de inicio de referencia para resolver hora_presentacion relativa (-30/-45)
+  const horaInicioRef = (ev.evento_dias || []).find(d => d.fecha === diaDe)?.hora_inicio || ev.hora_inicio;
 
   // Agrupar intérpretes por par de idiomas (asignaciones directas + por día)
   const todasAsigs = [
@@ -325,7 +328,8 @@ export default function EventCard({ ev, diaDe, clientes, contactos=[], interpret
             ) : (
               Object.entries(grupos).map(([key, grupo]) => {
                 const pillClr = IDIOMA_PILL_CLR[grupo.idioma] || "#4C6EF5";
-                const hp = grupo.items.find(i => i.hora)?.hora;
+                const hpRaw = grupo.items.find(i => i.hora)?.hora;
+                const hp = hpRaw ? resolverHoraPresentacion(hpRaw, horaInicioRef) : null;
                 return (
                   <div key={key} style={{ marginBottom:"12px" }}>
                     <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"6px" }}>
@@ -432,7 +436,8 @@ export default function EventCard({ ev, diaDe, clientes, contactos=[], interpret
           {Object.entries(grupos).map(([key, grupo]) => {
             const pillClr = IDIOMA_PILL_CLR[grupo.idioma] || "#4C6EF5";
             const border  = solidPill ? `2px solid ${pillClr}` : `3px solid ${pillClr}`;
-            const hp      = grupo.items.find(i => i.hora)?.hora;
+            const hpRaw   = grupo.items.find(i => i.hora)?.hora;
+            const hp      = hpRaw ? resolverHoraPresentacion(hpRaw, horaInicioRef) : null;
             const pillPad = solidPill ? "1px 4px" : "4px 10px";
             const pillFs  = solidPill ? 12 : 12;
             const flagSz  = solidPill ? 13 : 14;
