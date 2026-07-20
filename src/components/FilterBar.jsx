@@ -1,11 +1,11 @@
 // FilterBar.jsx — MundoChile v3.0 — Una línea, todos dropdowns
 
-export default function FilterBar({ filters, onChange, interpreters = [], clientes = [], pares = [], proveedores = [], showClear = true, hayFinSemana = false }) {
+export default function FilterBar({ filters, onChange, interpreters = [], clientes = [], pares = [], proveedores = [], showClear = true, hayFinSemana = false, finSemanaSinEventos = false, compacto = false }) {
   const hayFiltro = filters.estado || filters.modalidad || filters.tipo || filters.interprete_id || filters.cliente_id || filters.par_id || filters.proveedor_av || filters.mes;
   const limpiar = { estado:"", modalidad:"", tipo:"", interprete_id:"", cliente_id:"", par_id:"", proveedor_av:"", mes:"" };
 
   const lbl = {
-    fontSize: "11px",
+    fontSize: compacto ? "10.5px" : "11px",
     fontWeight: "400",
     color: "#FFFFFF",
     whiteSpace: "nowrap",
@@ -14,15 +14,15 @@ export default function FilterBar({ filters, onChange, interpreters = [], client
     flexShrink: 0,
     border: "1px solid #E53E3E",
     borderRadius: "12px",
-    padding: "2px 9px",
+    padding: compacto ? "2px 8px" : "2px 9px",
     background: "transparent",
     WebkitFontSmoothing: "antialiased",
     MozOsxFontSmoothing: "grayscale",
   };
 
   const sel = {
-    fontSize: "12px",
-    padding: "3px 7px",
+    fontSize: compacto ? "11.5px" : "12px",
+    padding: compacto ? "3px 6px" : "3px 7px",
     borderRadius: "12px",
     border: "1px solid rgba(255,255,255,0.3)",
     background: "rgba(255,255,255,0.1)",
@@ -32,12 +32,13 @@ export default function FilterBar({ filters, onChange, interpreters = [], client
     outline: "none",
     fontFamily: "inherit",
     maxWidth: 130,
+    ...(compacto ? { overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" } : {}),
   };
 
   const grp = { display: "inline-flex", alignItems: "center", gap: "4px", flexShrink: 0 };
 
   return (
-    <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:"8px", flexWrap:"nowrap", width:"auto", overflow:"hidden" }}>
+    <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap: compacto ? "6px" : "8px", flexWrap:"nowrap", width:"auto" }}>
 
       {showClear && hayFiltro && (
         <button onClick={() => onChange(limpiar)} title="Limpiar filtros" style={{background:"#EF4444",color:"#FFFFFF",border:"none",borderRadius:"50%",width:20,height:20,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:12,fontWeight:700,flexShrink:0,padding:0,lineHeight:1}}>×</button>
@@ -121,6 +122,7 @@ export default function FilterBar({ filters, onChange, interpreters = [], client
             <option key={i.id} value={i.id} style={{ color:"#000" }}>{i.nombre}{i.apellido ? " " + i.apellido : ""}</option>
           ))}
         </select>
+        {finSemanaSinEventos && proveedores.length === 0 && <span title="No hay eventos este fin de semana" style={{display:"inline-flex",alignItems:"center",cursor:"default",lineHeight:1,flexShrink:0,marginLeft:"8px"}}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00C853" strokeWidth="3.5"><circle cx="12" cy="12" r="10"/></svg></span>}
       </div>
 
       {hayFinSemana && <span title="Hay eventos este fin de semana" style={{fontSize:"16px",cursor:"default",flexShrink:0,lineHeight:1}}>⚠️</span>}
@@ -133,9 +135,9 @@ export default function FilterBar({ filters, onChange, interpreters = [], client
             <option value="sin_proveedor" style={{ color:"#000" }}>Sin proveedor</option>
             {proveedores.map(p => <option key={p.id} value={p.id} style={{ color:"#000" }}>{p.nombre}</option>)}
           </select>
+          {finSemanaSinEventos && <span title="No hay eventos este fin de semana" style={{display:"inline-flex",alignItems:"center",cursor:"default",lineHeight:1,flexShrink:0,marginLeft:"8px"}}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00C853" strokeWidth="3.5"><circle cx="12" cy="12" r="10"/></svg></span>}
         </div>
       )}
-
 
     </div>
   );

@@ -3239,14 +3239,14 @@ export default function App() {
   const [filaPillsTop,setFilaPillsTop]=useState(140);
   useEffect(()=>{
     if(vista!=="semana")return;
-    const medir=()=>{
-      const fb=document.getElementById("filterbar");
-      if(!fb)return;
-      setFilaPillsTop(Math.round(fb.getBoundingClientRect().bottom));
-    };
+    const fb=document.getElementById("filterbar");
+    if(!fb)return;
+    const medir=()=>setFilaPillsTop(Math.round(fb.getBoundingClientRect().bottom));
     medir();
+    const ro=new ResizeObserver(medir);
+    ro.observe(fb);
     window.addEventListener("resize",medir);
-    return()=>window.removeEventListener("resize",medir);
+    return()=>{ro.disconnect();window.removeEventListener("resize",medir);};
   },[vista]);
   const [compactHeader,setCompactHeader]=useState(window.innerWidth<1440);
   useEffect(()=>{
@@ -4015,8 +4015,7 @@ export default function App() {
         {vista!=="grilla"&&<div id="filterbar" style={{position:"sticky",top:"96px",zIndex:90,background:"#1A2F5A",borderBottom:"1px solid rgba(255,255,255,0.10)",width:"100%",display:"flex",alignItems:"center",justifyContent:"center",padding:"0 16px",boxSizing:"border-box"}}>
           {/* CENTRO: FilterBar centrado */}
           <div style={{display:"flex",alignItems:"center",padding:"6px 0",minWidth:0,position:"relative"}}>
-            <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes} clientes={clientesConEventos} pares={paresConEventos} proveedores={proveedoresConEventos} showClear={true} hayFinSemana={vista==="semana"&&diasSemana.slice(5,7).some(d=>evsDia(toISO(d)).length>0)}/>
-            {vista==="semana"&&!diasSemana.slice(5,7).some(d=>evsDia(toISO(d)).length>0)&&<span title="No hay eventos este fin de semana" style={{position:"absolute",right:"49px",top:"50%",transform:"translateY(-50%)",display:"inline-flex",alignItems:"center",cursor:"default",lineHeight:1}}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00C853" strokeWidth="3.5"><circle cx="12" cy="12" r="10"/></svg></span>}
+            <FilterBar filters={filtros} onChange={setFiltros} interpreters={interpretes} clientes={clientesConEventos} pares={paresConEventos} proveedores={proveedoresConEventos} showClear={true} hayFinSemana={vista==="semana"&&diasSemana.slice(5,7).some(d=>evsDia(toISO(d)).length>0)} finSemanaSinEventos={vista==="semana"&&!diasSemana.slice(5,7).some(d=>evsDia(toISO(d)).length>0)} compacto={compactHeader}/>
           </div>
           {/* DERECHA: Fichas (solo cuando filtrado) */}
           {vista!=="semana"&&hayFiltros&&<div style={{display:"flex",alignItems:"center",flexShrink:0,marginLeft:"8px"}}>
