@@ -3980,7 +3980,7 @@ export default function App() {
               })()}
               {pantalla==="calendario"&&vista!=="agenda"&&vista!=="grilla"&&(()=>{
                 const _t=tituloNav(compactHeader);
-                const _fs=_t.length>40?11:_t.length>30?13:_t.length>22?15:17;
+                const _fs=compactHeader?(_t.length>40?10:_t.length>30?11:_t.length>22?12:13):(_t.length>40?11:_t.length>30?13:_t.length>22?15:17);
                 return(
                 <div style={{padding:"4.5px 16px",border:"1px solid rgba(255,255,255,0.85)",borderRadius:"9px",background:"transparent",textAlign:"center",minWidth:0,maxWidth:"100%",overflow:"hidden",boxSizing:"border-box",flexShrink:compactHeader?0:1}}>
                   <div style={{color:"#FFFFFF",fontSize:`${_fs}px`,fontWeight:"500",lineHeight:1.2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{_t}</div>

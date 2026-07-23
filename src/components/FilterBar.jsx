@@ -14,7 +14,7 @@ export default function FilterBar({ filters, onChange, interpreters = [], client
     flexShrink: 0,
     border: "1px solid #E53E3E",
     borderRadius: "12px",
-    padding: compacto ? "2px 8px" : "2px 9px",
+    padding: compacto ? "2px 7px" : "2px 9px",
     background: "transparent",
     WebkitFontSmoothing: "antialiased",
     MozOsxFontSmoothing: "grayscale",
@@ -22,7 +22,7 @@ export default function FilterBar({ filters, onChange, interpreters = [], client
 
   const sel = {
     fontSize: compacto ? "11.5px" : "12px",
-    padding: compacto ? "3px 6px" : "3px 7px",
+    padding: compacto ? "3px 5px" : "3px 7px",
     borderRadius: "12px",
     border: "1px solid rgba(255,255,255,0.3)",
     background: "rgba(255,255,255,0.1)",
@@ -31,14 +31,14 @@ export default function FilterBar({ filters, onChange, interpreters = [], client
     height: "26px",
     outline: "none",
     fontFamily: "inherit",
-    maxWidth: 130,
-    ...(compacto ? { overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" } : {}),
+    maxWidth: compacto ? "100px" : 130,
+    ...(compacto ? { flex:"1 1 auto", minWidth:"48px", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" } : {}),
   };
 
-  const grp = { display: "inline-flex", alignItems: "center", gap: "4px", flexShrink: 0 };
+  const grp = { display: "inline-flex", alignItems: "center", gap: "4px", flexShrink: compacto ? 1 : 0 };
 
   return (
-    <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap: compacto ? "6px" : "8px", flexWrap:"nowrap", width:"auto" }}>
+    <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap: compacto ? "5px" : "8px", flexWrap:"nowrap", width:"auto" }}>
 
       {showClear && hayFiltro && (
         <button onClick={() => onChange(limpiar)} title="Limpiar filtros" style={{background:"#EF4444",color:"#FFFFFF",border:"none",borderRadius:"50%",width:20,height:20,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:12,fontWeight:700,flexShrink:0,padding:0,lineHeight:1}}>×</button>
