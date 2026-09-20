@@ -3833,9 +3833,15 @@ export default function App() {
               <div style={{fontSize:"12px",color:"rgba(255,255,255,0.70)"}}>Mi espacio de intérprete</div>
             </div>
           </div>
-          <button onClick={async()=>{await sb.auth.signOut();window.location.reload();}} style={{padding:"8px 14px",fontSize:"14px",background:"rgba(255,255,255,0.12)",color:"#fff",border:"1px solid rgba(255,255,255,0.18)",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>Salir</button>
+          <div style={{display:"flex",gap:"8px"}}>
+            <button onClick={()=>setPantalla("interprete-eventos")} style={{padding:"8px 12px",background:pantalla==="interprete-eventos"?"rgba(255,255,255,0.28)":"rgba(255,255,255,0.12)",color:"#fff",border:"1px solid rgba(255,255,255,0.18)",borderRadius:"8px",cursor:"pointer"}}>Mis eventos</button>
+            <button onClick={()=>setPantalla("interprete-disponibilidad")} style={{padding:"8px 12px",background:pantalla==="interprete-disponibilidad"?"rgba(255,255,255,0.28)":"rgba(255,255,255,0.12)",color:"#fff",border:"1px solid rgba(255,255,255,0.18)",borderRadius:"8px",cursor:"pointer"}}>Mi disponibilidad</button>
+            <button onClick={async()=>{await sb.auth.signOut();window.location.reload();}} style={{padding:"8px 14px",fontSize:"14px",background:"rgba(255,255,255,0.12)",color:"#fff",border:"1px solid rgba(255,255,255,0.18)",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>Salir</button>
+          </div>
         </div>
-        <main style={{maxWidth:"1100px",margin:"0 auto",padding:"28px 20px 60px"}}>
+        {pantalla==="interprete-disponibilidad"
+          ? <InterpreterAvailability supabase={sb} interpreteId={perfil?.interprete_id}/>
+          : <main style={{maxWidth:"1100px",margin:"0 auto",padding:"28px 20px 60px"}}>
           <div style={{marginBottom:"24px"}}>
             <div style={{fontSize:"28px",fontWeight:"650",color:"#162654"}}>Mis eventos</div>
             <div style={{fontSize:"14px",color:"#64748B",marginTop:"5px"}}>Eventos y asignaciones asociados a tu agenda.</div>
@@ -3868,7 +3874,7 @@ export default function App() {
                   })}
                 </div>
           }
-        </main>
+        </main>}
       </div>
     );
   }
