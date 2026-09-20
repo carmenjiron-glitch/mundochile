@@ -228,12 +228,12 @@ on public.eventos for update to authenticated
 using (public.get_user_rol() = 'editor')
 with check (public.get_user_rol() = 'editor');
 
-create policy eventos_read_editor_viewer
+create policy eventos_read_admin_editor
 on public.eventos for select to authenticated
-using (public.get_user_rol() in ('admin','editor','viewer'));
+using (public.get_user_rol() in ('admin','editor'));
 
--- Intérprete NO tiene SELECT directo sobre eventos.
--- "Mis eventos" se entrega mediante get_my_interpreter_events().
+-- Intérprete y Viewer NO tienen SELECT directo sobre eventos.
+-- Sus lecturas se entregan mediante funciones seguras.
 
 -- DÍAS DE EVENTO
 create policy evento_dias_admin_all
