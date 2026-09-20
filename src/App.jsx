@@ -8,6 +8,7 @@ import MultiDayPill from "./components/ui/MultiDayPill.jsx";
 import PlatformChip from "./components/ui/PlatformChip.jsx";
 import InterpreterRow from "./components/ui/InterpreterRow.jsx";
 import FilterBar from "./components/FilterBar.jsx";
+import InterpreterAvailability from "./components/InterpreterAvailability.jsx";
 import { resolverHoraPresentacion } from "./design-system/tokens";
 
 const IconMic = ({size=24}) => (
