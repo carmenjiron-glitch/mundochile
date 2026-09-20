@@ -48,12 +48,12 @@ returns trigger
 language plpgsql
 security invoker
 set search_path = public
-as $
+as $$
 begin
   new.updated_at = now();
   return new;
 end;
-$;
+$$;
 
 revoke all on function public.update_disponibilidad_updated_at() from public;
 
