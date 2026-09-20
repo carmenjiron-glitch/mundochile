@@ -3817,6 +3817,61 @@ export default function App() {
   const esInterprete=perfil?.rol==="interprete";
   const esViewer=perfil?.rol==="viewer";
 
+
+  if(esInterprete){
+    const misEventos=[...eventos].sort((a,b)=>String(a.fecha_inicio||"").localeCompare(String(b.fecha_inicio||"")));
+    return (
+      <div style={{fontFamily:"'Inter','Segoe UI',system-ui,sans-serif",minHeight:"100vh",background:"#F5F7FB",color:"#172033"}}>
+        <div style={{position:"sticky",top:0,zIndex:100,background:"#162654",color:"#fff",minHeight:"78px",display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 24px",boxSizing:"border-box"}}>
+          <div style={{display:"flex",alignItems:"center",gap:"12px"}}>
+            <div style={{width:"52px",height:"52px",borderRadius:"50%",background:"#fff",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
+              <img src={LOGO_SRC} alt="MundoChile" style={{width:"48px",height:"48px",objectFit:"contain"}}/>
+            </div>
+            <div>
+              <div style={{fontSize:"17px",fontWeight:"600"}}>MundoChile</div>
+              <div style={{fontSize:"12px",color:"rgba(255,255,255,0.70)"}}>Mi espacio de intérprete</div>
+            </div>
+          </div>
+          <button onClick={async()=>{await sb.auth.signOut();window.location.reload();}} style={{padding:"8px 14px",fontSize:"14px",background:"rgba(255,255,255,0.12)",color:"#fff",border:"1px solid rgba(255,255,255,0.18)",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>Salir</button>
+        </div>
+        <main style={{maxWidth:"1100px",margin:"0 auto",padding:"28px 20px 60px"}}>
+          <div style={{marginBottom:"24px"}}>
+            <div style={{fontSize:"28px",fontWeight:"650",color:"#162654"}}>Mis eventos</div>
+            <div style={{fontSize:"14px",color:"#64748B",marginTop:"5px"}}>Eventos y asignaciones asociados a tu agenda.</div>
+          </div>
+          {cargando
+            ? <div style={{background:"#fff",border:"1px solid #E5E7EB",borderRadius:"14px",padding:"28px",color:"#64748B"}}>Cargando tus eventos…</div>
+            : misEventos.length===0
+              ? <div style={{background:"#fff",border:"1px solid #E5E7EB",borderRadius:"14px",padding:"32px",textAlign:"center",color:"#64748B"}}>No tienes eventos asignados.</div>
+              : <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",gap:"14px"}}>
+                  {misEventos.map(ev=>{
+                    const asigns=Array.isArray(ev.asignaciones)?ev.asignaciones:[];
+                    const paresEvento=[...new Map(asigns.filter(a=>a.idioma_origen||a.idioma_destino).map(a=>[a.par_id||String(a.idioma_origen)+String(a.idioma_destino),a])).values()];
+                    return <div key={ev.id} style={{background:"#fff",border:"1px solid #E5E7EB",borderRadius:"14px",padding:"18px",boxShadow:"0 1px 2px rgba(15,23,42,0.04)"}}>
+                      <div style={{fontSize:"17px",fontWeight:"650",color:"#162654",marginBottom:"10px"}}>{ev.nombre_evento||"Evento"}</div>
+                      <div style={{display:"grid",gap:"6px",fontSize:"13px",color:"#475569"}}>
+                        <div>📅 {ev.fecha_inicio||"Fecha por confirmar"}{ev.fecha_termino&&ev.fecha_termino!==ev.fecha_inicio?" → "+ev.fecha_termino:""}</div>
+                        {(ev.hora_inicio||ev.hora_termino)&&<div>🕐 {ev.hora_inicio?.slice?.(0,5)||"—"}{ev.hora_termino?" – "+ev.hora_termino.slice(0,5):""}</div>}
+                        {ev.modalidad&&<div>💻 {ev.modalidad}{ev.plataforma?" · "+ev.plataforma:""}</div>}
+                        {ev.lugar&&<div>📍 {ev.lugar}{ev.lugar_detalle?" · "+ev.lugar_detalle:""}</div>}
+                        {ev.jornada&&<div>🗓️ {ev.jornada_personalizada||ev.jornada}</div>}
+                        {ev.zoom_link&&<div style={{marginTop:"3px"}}><a href={ev.zoom_link} target="_blank" rel="noreferrer" style={{color:"#1A6FD4",fontWeight:"600"}}>Abrir enlace Zoom</a></div>}
+                      </div>
+                      {paresEvento.length>0&&<div style={{marginTop:"13px",paddingTop:"12px",borderTop:"1px solid #EEF2F7"}}>
+                        <div style={{fontSize:"11px",fontWeight:"700",color:"#64748B",textTransform:"uppercase",marginBottom:"7px"}}>Mi asignación</div>
+                        <div style={{display:"flex",flexWrap:"wrap",gap:"6px"}}>
+                          {paresEvento.map((a,i)=><span key={i} style={{background:"#EEF4FF",color:"#1D4ED8",borderRadius:"20px",padding:"5px 9px",fontSize:"12px",fontWeight:"600"}}>{a.idioma_origen} → {a.idioma_destino}{a.rol?" · "+a.rol:""}</span>)}
+                        </div>
+                      </div>}
+                    </div>;
+                  })}
+                </div>
+          }
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div style={{fontFamily:"'Inter','Segoe UI',system-ui,sans-serif",minHeight:"100vh",background:"linear-gradient(135deg, #1a2a4a 0%, #1e3a6e 50%, #2563a8 100%)",color:"#FFFFFF",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",textRendering:"optimizeLegibility",maxWidth:"100vw"}}>
       {/* ── TOPBAR ── */}
