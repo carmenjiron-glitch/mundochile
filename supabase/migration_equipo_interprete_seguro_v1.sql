@@ -23,7 +23,7 @@ returns table (
   num_receptores integer,
   num_cabinas integer,
   num_asistentes integer,
-  proveedor_portatiles boolean,
+  proveedor_portatiles text,
   dia_montaje date,
   hora_montaje time,
   contacto_in_situ text,
@@ -59,11 +59,19 @@ as $$
   join public.eventos e
     on e.id = ed.evento_id
   where public.get_user_rol() = 'interprete'
-    and exists (
-      select 1
-      from public.asignaciones_dia ad
-      where ad.evento_dia_id = ed.id
-        and ad.interprete_id = public.get_interprete_id()
+    and (
+      exists (
+        select 1
+        from public.asignaciones a
+        where a.evento_id = e.id
+          and a.interprete_id = public.get_interprete_id()
+      )
+      or exists (
+        select 1
+        from public.asignaciones_dia ad
+        where ad.evento_dia_id = ed.id
+          and ad.interprete_id = public.get_interprete_id()
+      )
     )
   order by ed.fecha nulls last, ed.hora_inicio nulls last, eq.id;
 $$;
