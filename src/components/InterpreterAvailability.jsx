@@ -19,17 +19,20 @@ export default function InterpreterAvailability({ supabase, interpreteId }) {
   const reset=()=>{setEditing(null);setForm({fecha:"",hora_desde:"",hora_hasta:"",disponible:true,modalidad:"Ambas",observaciones:""});};
   const save=async()=>{
     if(!form.fecha||!interpreteId) return;
-    if((form.hora_desde&&!form.hora_hasta)||(form.hora_desde&&form.hora_hasta<=form.hora_desde)) return;
+    const hasDesde=Boolean(form.hora_desde);
+    const hasHasta=Boolean(form.hora_hasta);
+    if(hasDesde!==hasHasta) return;
+    if(hasDesde&&hasHasta&&form.hora_hasta<=form.hora_desde) return;
     setSaving(true);
     const payload={...form,interprete_id:interpreteId,hora_desde:form.hora_desde||null,hora_hasta:form.hora_hasta||null};
     const result=editing
       ? await supabase.from("disponibilidad_interpretes").update(payload).eq("id",editing).eq("interprete_id",interpreteId)
       : await supabase.from("disponibilidad_interpretes").insert(payload);
     setSaving(false);
-    if(!result.error){reset();load();}
+    if(!result.error){reset();await load();}
   };
   const edit=item=>{setEditing(item.id);setForm({fecha:item.fecha||"",hora_desde:item.hora_desde?.slice(0,5)||"",hora_hasta:item.hora_hasta?.slice(0,5)||"",disponible:item.disponible,modalidad:item.modalidad||"Ambas",observaciones:item.observaciones||""});};
-  const remove=async id=>{await supabase.from("disponibilidad_interpretes").delete().eq("id",id).eq("interprete_id",interpreteId);load();};
+  const remove=async id=>{const {error}=await supabase.from("disponibilidad_interpretes").delete().eq("id",id).eq("interprete_id",interpreteId);if(!error)await load();};
 
   return <div style={{background:"#F5F7FB",minHeight:"calc(100vh - 78px)",padding:"28px 20px 60px"}}>
     <div style={{maxWidth:"1100px",margin:"0 auto"}}>
