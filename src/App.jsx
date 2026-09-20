@@ -3329,10 +3329,7 @@ export default function App() {
           asignaciones:(asigR.data||[]).filter(a=>a.evento_id===e.evento_id),
           evento_dias:[],
         })));
-        if(asigR.data) setAsignaciones?.(asigR.data);
-        if(eqR.data) setEquipos?.(eqR.data);
         if(parR.data) setPares(parR.data);
-        if(perfilR.data?.[0]) setInterpretePerfil?.(perfilR.data[0]);
         setClientes([]);
         setInterpretes([]);
         setProveedores([]);
