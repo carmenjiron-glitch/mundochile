@@ -12,23 +12,17 @@
 --   RLS controla FILAS, no columnas. Las tablas de asignaciones contienen
 --   datos operacionales y algunos campos financieros/sensibles.
 --   Por ello, esta V1 NO concede acceso a asignaciones a Viewer.
---   La lectura de asignaciones para Viewer se habilitará después mediante
---   una capa de datos segura (vista/API) que exponga solo las columnas permitidas.
+--   La lectura segura de asignaciones/eventos se hará mediante funciones
+--   SECURITY DEFINER explícitas.
 
 begin;
 
--- ============================================================
--- 1. PERFIL -> INTÉRPRETE
--- ============================================================
-
-alter table public.perfiles
-  add column if not exists interprete_id bigint;
+alter table public.perfiles add column if not exists interprete_id bigint;
 
 do $$
 begin
   if not exists (
-    select 1
-    from pg_constraint
+    select 1 from pg_constraint
     where conname = 'perfiles_interprete_id_fkey'
       and conrelid = 'public.perfiles'::regclass
   ) then
@@ -40,16 +34,11 @@ begin
   end if;
 end $$;
 
-alter table public.perfiles
-  drop constraint if exists perfiles_rol_check;
+alter table public.perfiles drop constraint if exists perfiles_rol_check;
 
 alter table public.perfiles
   add constraint perfiles_rol_check
   check (rol in ('admin','editor','interprete','viewer'));
-
--- ============================================================
--- 2. FUNCIONES DE SEGURIDAD
--- ============================================================
 
 create or replace function public.get_user_rol()
 returns text
@@ -58,10 +47,7 @@ stable
 security definer
 set search_path = public
 as $$
-  select rol
-  from public.perfiles
-  where id = auth.uid()
-  limit 1;
+  select rol from public.perfiles where id = auth.uid() limit 1;
 $$;
 
 create or replace function public.get_interprete_id()
@@ -71,57 +57,33 @@ stable
 security definer
 set search_path = public
 as $$
-  select interprete_id
-  from public.perfiles
-  where id = auth.uid()
-  limit 1;
+  select interprete_id from public.perfiles where id = auth.uid() limit 1;
 $$;
 
 revoke all on function public.get_user_rol() from public;
 grant execute on function public.get_user_rol() to authenticated;
-
 revoke all on function public.get_interprete_id() from public;
 grant execute on function public.get_interprete_id() to authenticated;
 
--- ============================================================
--- 3. ELIMINAR POLÍTICAS RLS HEREDADAS
--- ============================================================
-
 do $$
-declare
-  r record;
+declare r record;
 begin
   for r in
     select schemaname, tablename, policyname
     from pg_policies
     where schemaname = 'public'
       and tablename in (
-        'perfiles',
-        'clientes',
-        'contactos',
-        'interpretes',
-        'pares_idiomas',
-        'proveedores',
-        'eventos',
-        'evento_dias',
-        'asignaciones',
-        'asignaciones_dia',
-        'equipos_dia',
-        'lugares'
+        'perfiles','clientes','contactos','interpretes','pares_idiomas',
+        'proveedores','eventos','evento_dias','asignaciones',
+        'asignaciones_dia','equipos_dia','lugares'
       )
   loop
     execute format(
       'drop policy if exists %I on %I.%I',
-      r.policyname,
-      r.schemaname,
-      r.tablename
+      r.policyname, r.schemaname, r.tablename
     );
   end loop;
 end $$;
-
--- ============================================================
--- 4. RLS ACTIVADO
--- ============================================================
 
 alter table public.perfiles enable row level security;
 alter table public.clientes enable row level security;
@@ -136,389 +98,235 @@ alter table public.asignaciones_dia enable row level security;
 alter table public.equipos_dia enable row level security;
 alter table public.lugares enable row level security;
 
--- ============================================================
--- 5. PERFILES
--- Admin: total.
--- Usuario: solo puede leer su propio perfil.
--- No existe UPDATE propio: el usuario no puede cambiar su rol
--- ni su vinculación con un intérprete.
--- ============================================================
-
+-- PERFILES
 create policy perfiles_admin_all
-on public.perfiles
-for all to authenticated
+on public.perfiles for all to authenticated
 using (public.get_user_rol() = 'admin')
 with check (public.get_user_rol() = 'admin');
 
 create policy perfiles_own_select
-on public.perfiles
-for select to authenticated
+on public.perfiles for select to authenticated
 using (id = auth.uid());
 
--- ============================================================
--- 6. CLIENTES
--- Admin: total
--- Editor: crear/editar, no eliminar
--- Viewer: lectura
--- Intérprete: sin acceso
--- ============================================================
-
+-- CLIENTES
 create policy clientes_admin_all
-on public.clientes
-for all to authenticated
+on public.clientes for all to authenticated
 using (public.get_user_rol() = 'admin')
 with check (public.get_user_rol() = 'admin');
 
 create policy clientes_editor_insert
-on public.clientes
-for insert to authenticated
+on public.clientes for insert to authenticated
 with check (public.get_user_rol() = 'editor');
 
 create policy clientes_editor_update
-on public.clientes
-for update to authenticated
+on public.clientes for update to authenticated
 using (public.get_user_rol() = 'editor')
 with check (public.get_user_rol() = 'editor');
 
 create policy clientes_read_admin_editor_viewer
-on public.clientes
-for select to authenticated
+on public.clientes for select to authenticated
 using (public.get_user_rol() in ('admin','editor','viewer'));
 
--- ============================================================
--- 7. CONTACTOS
--- ============================================================
-
+-- CONTACTOS
 create policy contactos_admin_all
-on public.contactos
-for all to authenticated
+on public.contactos for all to authenticated
 using (public.get_user_rol() = 'admin')
 with check (public.get_user_rol() = 'admin');
 
 create policy contactos_editor_insert
-on public.contactos
-for insert to authenticated
+on public.contactos for insert to authenticated
 with check (public.get_user_rol() = 'editor');
 
 create policy contactos_editor_update
-on public.contactos
-for update to authenticated
+on public.contactos for update to authenticated
 using (public.get_user_rol() = 'editor')
 with check (public.get_user_rol() = 'editor');
 
 create policy contactos_read_admin_editor_viewer
-on public.contactos
-for select to authenticated
+on public.contactos for select to authenticated
 using (public.get_user_rol() in ('admin','editor','viewer'));
 
--- ============================================================
--- 8. INTÉRPRETES
--- Admin: total
--- Editor: administrar directorio
--- Intérprete: solo su propio registro
--- Viewer: lectura
--- ============================================================
-
+-- INTERPRETES
 create policy interpretes_admin_all
-on public.interpretes
-for all to authenticated
+on public.interpretes for all to authenticated
 using (public.get_user_rol() = 'admin')
 with check (public.get_user_rol() = 'admin');
 
 create policy interpretes_editor_insert
-on public.interpretes
-for insert to authenticated
+on public.interpretes for insert to authenticated
 with check (public.get_user_rol() = 'editor');
 
 create policy interpretes_editor_update
-on public.interpretes
-for update to authenticated
+on public.interpretes for update to authenticated
 using (public.get_user_rol() = 'editor')
 with check (public.get_user_rol() = 'editor');
 
 create policy interpretes_read_admin_editor_viewer
-on public.interpretes
-for select to authenticated
+on public.interpretes for select to authenticated
 using (public.get_user_rol() in ('admin','editor','viewer'));
 
 create policy interpretes_own_select
-on public.interpretes
-for select to authenticated
+on public.interpretes for select to authenticated
 using (
   public.get_user_rol() = 'interprete'
   and id = public.get_interprete_id()
 );
 
-create policy interpretes_own_update
-on public.interpretes
-for update to authenticated
-using (
-  public.get_user_rol() = 'interprete'
-  and id = public.get_interprete_id()
-)
-with check (
-  public.get_user_rol() = 'interprete'
-  and id = public.get_interprete_id()
-);
-
--- ============================================================
--- 9. PARES DE IDIOMAS
--- ============================================================
-
+-- PARES DE IDIOMAS
 create policy pares_admin_all
-on public.pares_idiomas
-for all to authenticated
+on public.pares_idiomas for all to authenticated
 using (public.get_user_rol() = 'admin')
 with check (public.get_user_rol() = 'admin');
 
 create policy pares_editor_insert
-on public.pares_idiomas
-for insert to authenticated
+on public.pares_idiomas for insert to authenticated
 with check (public.get_user_rol() = 'editor');
 
 create policy pares_editor_update
-on public.pares_idiomas
-for update to authenticated
+on public.pares_idiomas for update to authenticated
 using (public.get_user_rol() = 'editor')
 with check (public.get_user_rol() = 'editor');
 
 create policy pares_read_authenticated_roles
-on public.pares_idiomas
-for select to authenticated
+on public.pares_idiomas for select to authenticated
 using (public.get_user_rol() in ('admin','editor','interprete','viewer'));
 
--- ============================================================
--- 10. PROVEEDORES AV
--- Intérprete no accede al directorio de proveedores.
--- ============================================================
-
+-- PROVEEDORES AV
 create policy proveedores_admin_all
-on public.proveedores
-for all to authenticated
+on public.proveedores for all to authenticated
 using (public.get_user_rol() = 'admin')
 with check (public.get_user_rol() = 'admin');
 
 create policy proveedores_editor_insert
-on public.proveedores
-for insert to authenticated
+on public.proveedores for insert to authenticated
 with check (public.get_user_rol() = 'editor');
 
 create policy proveedores_editor_update
-on public.proveedores
-for update to authenticated
+on public.proveedores for update to authenticated
 using (public.get_user_rol() = 'editor')
 with check (public.get_user_rol() = 'editor');
 
 create policy proveedores_read_admin_editor_viewer
-on public.proveedores
-for select to authenticated
+on public.proveedores for select to authenticated
 using (public.get_user_rol() in ('admin','editor','viewer'));
 
--- ============================================================
--- 11. EVENTOS
--- Admin: total
--- Editor: crear/editar, no eliminar
--- Viewer: lectura
--- Intérprete: solo eventos asignados
--- ============================================================
-
+-- EVENTOS
 create policy eventos_admin_all
-on public.eventos
-for all to authenticated
+on public.eventos for all to authenticated
 using (public.get_user_rol() = 'admin')
 with check (public.get_user_rol() = 'admin');
 
 create policy eventos_editor_insert
-on public.eventos
-for insert to authenticated
+on public.eventos for insert to authenticated
 with check (public.get_user_rol() = 'editor');
 
 create policy eventos_editor_update
-on public.eventos
-for update to authenticated
+on public.eventos for update to authenticated
 using (public.get_user_rol() = 'editor')
 with check (public.get_user_rol() = 'editor');
 
 create policy eventos_read_editor_viewer
-on public.eventos
-for select to authenticated
+on public.eventos for select to authenticated
 using (public.get_user_rol() in ('admin','editor','viewer'));
 
-create policy eventos_interprete_own
-on public.eventos
-for select to authenticated
-using (
-  public.get_user_rol() = 'interprete'
-  and (
-    exists (
-      select 1
-      from public.asignaciones a
-      where a.evento_id = eventos.id
-        and a.interprete_id = public.get_interprete_id()
-    )
-    or exists (
-      select 1
-      from public.evento_dias ed
-      join public.asignaciones_dia ad
-        on ad.evento_dia_id = ed.id
-      where ed.evento_id = eventos.id
-        and ad.interprete_id = public.get_interprete_id()
-    )
-  )
-);
+-- Intérprete NO tiene SELECT directo sobre eventos.
+-- "Mis eventos" se entrega mediante get_my_interpreter_events().
 
--- ============================================================
--- 12. DÍAS DE EVENTO
--- Editor puede operar días de eventos; no existe una política
--- independiente de DELETE sobre eventos.
--- ============================================================
-
+-- DÍAS DE EVENTO
 create policy evento_dias_admin_all
-on public.evento_dias
-for all to authenticated
+on public.evento_dias for all to authenticated
 using (public.get_user_rol() = 'admin')
 with check (public.get_user_rol() = 'admin');
 
 create policy evento_dias_editor_all
-on public.evento_dias
-for all to authenticated
+on public.evento_dias for all to authenticated
 using (public.get_user_rol() = 'editor')
 with check (public.get_user_rol() = 'editor');
 
 create policy evento_dias_viewer_select
-on public.evento_dias
-for select to authenticated
+on public.evento_dias for select to authenticated
 using (public.get_user_rol() = 'viewer');
 
-create policy evento_dias_interprete_own
-on public.evento_dias
-for select to authenticated
-using (
-  public.get_user_rol() = 'interprete'
-  and exists (
-    select 1
-    from public.asignaciones_dia ad
-    where ad.evento_dia_id = evento_dias.id
-      and ad.interprete_id = public.get_interprete_id()
-  )
-);
-
--- ============================================================
--- 13. ASIGNACIONES
--- Admin/Editor: gestionar
--- Intérprete: solo sus asignaciones
--- Viewer: SIN acceso directo en V1 por contener campos sensibles.
--- ============================================================
-
+-- ASIGNACIONES
 create policy asignaciones_admin_all
-on public.asignaciones
-for all to authenticated
+on public.asignaciones for all to authenticated
 using (public.get_user_rol() = 'admin')
 with check (public.get_user_rol() = 'admin');
 
 create policy asignaciones_editor_all
-on public.asignaciones
-for all to authenticated
+on public.asignaciones for all to authenticated
 using (public.get_user_rol() = 'editor')
 with check (public.get_user_rol() = 'editor');
 
-create policy asignaciones_interprete_own
-on public.asignaciones
-for select to authenticated
-using (
-  public.get_user_rol() = 'interprete'
-  and interprete_id = public.get_interprete_id()
-);
+-- Intérprete NO tiene SELECT directo sobre asignaciones.
+-- "Mis asignaciones" se entrega mediante get_my_interpreter_assignments().
+-- Viewer tampoco tiene SELECT directo.
 
--- ============================================================
--- 14. ASIGNACIONES POR DÍA
--- ============================================================
-
+-- ASIGNACIONES POR DÍA
 create policy asignaciones_dia_admin_all
-on public.asignaciones_dia
-for all to authenticated
+on public.asignaciones_dia for all to authenticated
 using (public.get_user_rol() = 'admin')
 with check (public.get_user_rol() = 'admin');
 
 create policy asignaciones_dia_editor_all
-on public.asignaciones_dia
-for all to authenticated
+on public.asignaciones_dia for all to authenticated
 using (public.get_user_rol() = 'editor')
 with check (public.get_user_rol() = 'editor');
 
-create policy asignaciones_dia_interprete_own
-on public.asignaciones_dia
-for select to authenticated
-using (
-  public.get_user_rol() = 'interprete'
-  and interprete_id = public.get_interprete_id()
-);
+-- Intérprete/Viewer: lectura únicamente mediante funciones seguras.
 
--- ============================================================
--- 15. EQUIPOS POR DÍA
--- Intérprete solo ve equipos de sus propios eventos.
--- ============================================================
-
+-- EQUIPOS POR DÍA
 create policy equipos_dia_admin_all
-on public.equipos_dia
-for all to authenticated
+on public.equipos_dia for all to authenticated
 using (public.get_user_rol() = 'admin')
 with check (public.get_user_rol() = 'admin');
 
 create policy equipos_dia_editor_all
-on public.equipos_dia
-for all to authenticated
+on public.equipos_dia for all to authenticated
 using (public.get_user_rol() = 'editor')
 with check (public.get_user_rol() = 'editor');
 
 create policy equipos_dia_viewer_select
-on public.equipos_dia
-for select to authenticated
+on public.equipos_dia for select to authenticated
 using (public.get_user_rol() = 'viewer');
 
 create policy equipos_dia_interprete_own
-on public.equipos_dia
-for select to authenticated
+on public.equipos_dia for select to authenticated
 using (
   public.get_user_rol() = 'interprete'
   and exists (
     select 1
     from public.evento_dias ed
-    join public.asignaciones_dia ad
-      on ad.evento_dia_id = ed.id
+    join public.asignaciones_dia ad on ad.evento_dia_id = ed.id
     where ed.id = equipos_dia.evento_dia_id
       and ad.interprete_id = public.get_interprete_id()
   )
 );
 
--- ============================================================
--- 16. LUGARES
--- ============================================================
-
+-- LUGARES
 create policy lugares_admin_all
-on public.lugares
-for all to authenticated
+on public.lugares for all to authenticated
 using (public.get_user_rol() = 'admin')
 with check (public.get_user_rol() = 'admin');
 
 create policy lugares_editor_insert
-on public.lugares
-for insert to authenticated
+on public.lugares for insert to authenticated
 with check (public.get_user_rol() = 'editor');
 
 create policy lugares_editor_update
-on public.lugares
-for update to authenticated
+on public.lugares for update to authenticated
 using (public.get_user_rol() = 'editor')
 with check (public.get_user_rol() = 'editor');
 
 create policy lugares_read_admin_editor_viewer
-on public.lugares
-for select to authenticated
+on public.lugares for select to authenticated
 using (public.get_user_rol() in ('admin','editor','viewer'));
 
 commit;
 
 -- ============================================================
--- FIN
+-- NOTA
+-- Las funciones de lectura segura de asignaciones y eventos se
+-- encuentran en migrations separadas y deben aplicarse después
+-- de esta migración o dentro de una ejecución controlada.
 -- ============================================================
