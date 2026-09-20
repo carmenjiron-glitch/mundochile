@@ -187,9 +187,12 @@ on public.pares_idiomas for update to authenticated
 using (public.get_user_rol() = 'editor')
 with check (public.get_user_rol() = 'editor');
 
-create policy pares_read_authenticated_roles
+create policy pares_read_admin_editor_viewer
 on public.pares_idiomas for select to authenticated
-using (public.get_user_rol() in ('admin','editor','interprete','viewer'));
+using (public.get_user_rol() in ('admin','editor','viewer'));
+
+-- Intérprete: el catálogo completo de pares no se expone directamente.
+-- Los pares relevantes se entregan mediante función segura.
 
 -- PROVEEDORES AV
 create policy proveedores_admin_all
