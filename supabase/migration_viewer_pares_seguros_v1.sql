@@ -11,6 +11,7 @@ begin;
 create or replace function public.get_viewer_events()
 returns table (
   evento_id bigint,
+  cliente_id bigint,
   nombre_evento text,
   tipo text[],
   fecha_inicio date,
@@ -33,6 +34,7 @@ set search_path = public
 as $$
   select
     e.id,
+    e.cliente_id,
     e.nombre_evento,
     e.tipo,
     e.fecha_inicio,
