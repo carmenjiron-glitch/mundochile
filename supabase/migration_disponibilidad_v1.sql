@@ -57,7 +57,7 @@ $;
 
 revoke all on function public.update_disponibilidad_updated_at() from public;
 
- drop trigger if exists trg_disponibilidad_updated_at
+drop trigger if exists trg_disponibilidad_updated_at
   on public.disponibilidad_interpretes;
 
 create trigger trg_disponibilidad_updated_at
