@@ -290,18 +290,9 @@ create policy equipos_dia_viewer_select
 on public.equipos_dia for select to authenticated
 using (public.get_user_rol() = 'viewer');
 
-create policy equipos_dia_interprete_own
-on public.equipos_dia for select to authenticated
-using (
-  public.get_user_rol() = 'interprete'
-  and exists (
-    select 1
-    from public.evento_dias ed
-    join public.asignaciones_dia ad on ad.evento_dia_id = ed.id
-    where ed.id = equipos_dia.evento_dia_id
-      and ad.interprete_id = public.get_interprete_id()
-  )
-);
+-- Intérprete no tiene SELECT directo sobre equipos_dia en esta V1.
+-- La lectura de equipamiento propio deberá pasar por una función segura,
+-- evitando exponer proveedor/contactos de terceros.
 
 -- LUGARES
 create policy lugares_admin_all
