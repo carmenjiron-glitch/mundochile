@@ -3311,24 +3311,59 @@ export default function App() {
 
   const cargarDatos=useCallback(async()=>{
     setCargando(true);
-    const[evR,cliR,intR,parR,provR,lugR,conR]=await Promise.all([
-      sb.from("eventos").select("*, asignaciones(*), evento_dias(*, asignaciones_dia(*), equipos_dia(*))").order("fecha_inicio"),
-      sb.from("clientes").select("*").order("nombre_empresa"),
-      sb.from("interpretes").select("*").order("nombre"),
-      sb.from("pares_idiomas").select("*").order("idioma_origen"),
-      sb.from("proveedores").select("*").order("nombre"),
-      sb.from("lugares").select("*").order("nombre"),
-      sb.from("contactos").select("*").order("nombre"),
-    ]);
-    if(evR.data) setEventos(evR.data.filter((e,i,a)=>a.findIndex(x=>x.id===e.id)===i));
-    if(cliR.data) setClientes(cliR.data);
-    if(intR.data) setInterpretes(intR.data);
-    if(parR.data) setPares(parR.data);
-    if(provR.data) setProveedores(provR.data);
-    if(lugR.data) setLugares(lugR.data);
-    if(conR.data) setContactos(conR.data);
-    setCargando(false);
-  },[]);
+    try {
+      const rol=perfil?.rol;
+      if(rol==="interprete"){
+        const [evR,asigR,eqR,parR,perfilR]=await Promise.all([
+          sb.rpc("get_my_interpreter_events"),
+          sb.rpc("get_my_interpreter_assignments"),
+          sb.rpc("get_my_interpreter_equipment"),
+          sb.rpc("get_my_interpreter_language_pairs"),
+          sb.rpc("get_my_interpreter_profile"),
+        ]);
+        if(evR.data) setEventos(evR.data.map(e=>({
+          ...e,
+          id:e.evento_id,
+          tipo:e.tipo||["Simultánea"],
+          cliente_id:null,
+          asignaciones:(asigR.data||[]).filter(a=>a.evento_id===e.evento_id),
+          evento_dias:[],
+        })));
+        if(asigR.data) setAsignaciones?.(asigR.data);
+        if(eqR.data) setEquipos?.(eqR.data);
+        if(parR.data) setPares(parR.data);
+        if(perfilR.data?.[0]) setInterpretePerfil?.(perfilR.data[0]);
+        setClientes([]);
+        setInterpretes([]);
+        setProveedores([]);
+        setLugares([]);
+        setContactos([]);
+        setCargando(false);
+        return;
+      }
+
+      const [evR,cliR,intR,parR,provR,lugR,conR]=await Promise.all([
+        sb.from("eventos").select("*, asignaciones(*), evento_dias(*, asignaciones_dia(*), equipos_dia(*))").order("fecha_inicio"),
+        sb.from("clientes").select("*").order("nombre_empresa"),
+        sb.from("interpretes").select("*").order("nombre"),
+        sb.from("pares_idiomas").select("*").order("idioma_origen"),
+        sb.from("proveedores").select("*").order("nombre"),
+        sb.from("lugares").select("*").order("nombre"),
+        sb.from("contactos").select("*").order("nombre"),
+      ]);
+      if(evR.data) setEventos(evR.data.filter((e,i,a)=>a.findIndex(x=>x.id===e.id)===i));
+      if(cliR.data) setClientes(cliR.data);
+      if(intR.data) setInterpretes(intR.data);
+      if(parR.data) setPares(parR.data);
+      if(provR.data) setProveedores(provR.data);
+      if(lugR.data) setLugares(lugR.data);
+      if(conR.data) setContactos(conR.data);
+    } catch(e) {
+      console.error("Error cargando datos:",e);
+    } finally {
+      setCargando(false);
+    }
+  },[perfil?.rol]);
 
   const diasSemana=useMemo(()=>semanaDesde(semanaOff),[semanaOff]);
   const esMobile=typeof window!=="undefined"&&window.innerWidth<768;
@@ -3929,6 +3964,8 @@ export default function App() {
 
   const esAdmin=perfil?.rol==="admin";
   const esEditor=perfil?.rol==="editor"||esAdmin;
+  const esInterprete=perfil?.rol==="interprete";
+  const esViewer=perfil?.rol==="viewer";
 
   return (
     <div style={{fontFamily:"'Inter','Segoe UI',system-ui,sans-serif",minHeight:"100vh",background:"linear-gradient(135deg, #1a2a4a 0%, #1e3a6e 50%, #2563a8 100%)",color:"#FFFFFF",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale",textRendering:"optimizeLegibility",maxWidth:"100vw"}}>
