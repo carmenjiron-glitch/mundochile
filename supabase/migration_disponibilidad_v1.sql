@@ -41,6 +41,30 @@ create index if not exists idx_disponibilidad_interpretes_interprete_fecha
 create index if not exists idx_disponibilidad_interpretes_fecha
   on public.disponibilidad_interpretes (fecha);
 
+-- Mantiene updated_at sincronizado en cada modificación.
+-- Se crea un trigger local para no depender de los triggers históricos del esquema.
+create or replace function public.update_disponibilidad_updated_at()
+returns trigger
+language plpgsql
+security invoker
+set search_path = public
+as $
+begin
+  new.updated_at = now();
+  return new;
+end;
+$;
+
+revoke all on function public.update_disponibilidad_updated_at() from public;
+
+ drop trigger if exists trg_disponibilidad_updated_at
+  on public.disponibilidad_interpretes;
+
+create trigger trg_disponibilidad_updated_at
+before update on public.disponibilidad_interpretes
+for each row
+execute function public.update_disponibilidad_updated_at();
+
 alter table public.disponibilidad_interpretes enable row level security;
 
 -- Elimina cualquier política previa de esta tabla si la migración se reaplica.
