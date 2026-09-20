@@ -1,15 +1,19 @@
 -- Plataforma MundoChile
 -- Migration: RLS v1 — permisos alineados con la matriz definitiva
--- OBJETIVO:
---   1) Incorporar la relación perfil -> intérprete.
---   2) Eliminar las políticas RLS permisivas heredadas.
---   3) Aplicar permisos por rol a nivel de Supabase.
+-- Esta migración es para revisión y posterior aplicación controlada en Supabase.
+-- NO debe ejecutarse hasta completar la prueba de permisos.
 --
--- IMPORTANTE:
---   Este archivo se prepara para revisión. NO aplica cambios en Supabase por sí mismo.
---   La eliminación de registros maestros/eventos queda reservada a Admin.
---   Los campos sensibles/financieros requieren una segunda capa posterior
---   (vistas/columnas) si se desea ocultarlos también a nivel de datos.
+-- Alcance:
+--   1) Relación perfil -> intérprete.
+--   2) Eliminación de políticas permisivas heredadas.
+--   3) Permisos por rol a nivel de Supabase.
+--
+-- Nota de seguridad:
+--   RLS controla FILAS, no columnas. Las tablas de asignaciones contienen
+--   datos operacionales y algunos campos financieros/sensibles.
+--   Por ello, esta V1 NO concede acceso a asignaciones a Viewer.
+--   La lectura de asignaciones para Viewer se habilitará después mediante
+--   una capa de datos segura (vista/API) que exponga solo las columnas permitidas.
 
 begin;
 
@@ -134,6 +138,10 @@ alter table public.lugares enable row level security;
 
 -- ============================================================
 -- 5. PERFILES
+-- Admin: total.
+-- Usuario: solo puede leer su propio perfil.
+-- No existe UPDATE propio: el usuario no puede cambiar su rol
+-- ni su vinculación con un intérprete.
 -- ============================================================
 
 create policy perfiles_admin_all
@@ -142,19 +150,10 @@ for all to authenticated
 using (public.get_user_rol() = 'admin')
 with check (public.get_user_rol() = 'admin');
 
-create policy perfiles_read_authenticated
+create policy perfiles_own_select
 on public.perfiles
 for select to authenticated
-using (true);
-
-create policy perfiles_update_own_non_role
-on public.perfiles
-for update to authenticated
-using (id = auth.uid())
-with check (
-  id = auth.uid()
-  and rol = (select p.rol from public.perfiles p where p.id = auth.uid())
-);
+using (id = auth.uid());
 
 -- ============================================================
 -- 6. CLIENTES
@@ -214,7 +213,10 @@ using (public.get_user_rol() in ('admin','editor','viewer'));
 
 -- ============================================================
 -- 8. INTÉRPRETES
--- Editor administra el directorio; intérprete solo su propio registro.
+-- Admin: total
+-- Editor: administrar directorio
+-- Intérprete: solo su propio registro
+-- Viewer: lectura
 -- ============================================================
 
 create policy interpretes_admin_all
@@ -261,10 +263,6 @@ with check (
 
 -- ============================================================
 -- 9. PARES DE IDIOMAS
--- Admin: total
--- Editor: crear/editar
--- Viewer: lectura
--- Intérprete: lectura
 -- ============================================================
 
 create policy pares_admin_all
@@ -291,6 +289,7 @@ using (public.get_user_rol() in ('admin','editor','interprete','viewer'));
 
 -- ============================================================
 -- 10. PROVEEDORES AV
+-- Intérprete no accede al directorio de proveedores.
 -- ============================================================
 
 create policy proveedores_admin_all
@@ -370,6 +369,8 @@ using (
 
 -- ============================================================
 -- 12. DÍAS DE EVENTO
+-- Editor puede operar días de eventos; no existe una política
+-- independiente de DELETE sobre eventos.
 -- ============================================================
 
 create policy evento_dias_admin_all
@@ -406,7 +407,7 @@ using (
 -- 13. ASIGNACIONES
 -- Admin/Editor: gestionar
 -- Intérprete: solo sus asignaciones
--- Viewer: lectura
+-- Viewer: SIN acceso directo en V1 por contener campos sensibles.
 -- ============================================================
 
 create policy asignaciones_admin_all
@@ -420,11 +421,6 @@ on public.asignaciones
 for all to authenticated
 using (public.get_user_rol() = 'editor')
 with check (public.get_user_rol() = 'editor');
-
-create policy asignaciones_viewer_select
-on public.asignaciones
-for select to authenticated
-using (public.get_user_rol() = 'viewer');
 
 create policy asignaciones_interprete_own
 on public.asignaciones
@@ -449,11 +445,6 @@ on public.asignaciones_dia
 for all to authenticated
 using (public.get_user_rol() = 'editor')
 with check (public.get_user_rol() = 'editor');
-
-create policy asignaciones_dia_viewer_select
-on public.asignaciones_dia
-for select to authenticated
-using (public.get_user_rol() = 'viewer');
 
 create policy asignaciones_dia_interprete_own
 on public.asignaciones_dia
