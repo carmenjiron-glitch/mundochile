@@ -3417,6 +3417,206 @@ export default function App() {
     }
   },[perfil?.rol]);
 
+  const diasSemana=useMemo(()=>semanaDesde(semanaOff),[semanaOff]);
+  const esMobile=typeof window!=="undefined"&&window.innerWidth<768;
+
+  const clientesConEventos=useMemo(()=>{const ids=new Set(eventos.map(e=>e.cliente_id));return clientes.filter(c=>ids.has(c.id)).sort((a,b)=>(a.nombre_empresa||"").localeCompare(b.nombre_empresa||""));},[eventos,clientes]);
+  const paresConEventos=useMemo(()=>{const ids=new Set(eventos.flatMap(e=>(e.asignaciones||[]).map(a=>a.par_id).filter(Boolean)));return pares.filter(p=>ids.has(p.id)).sort((a,b)=>(a.descripcion||"").localeCompare(b.descripcion||""));},[eventos,pares]);
+  const proveedoresConEventos=useMemo(()=>{const ids=new Set(eventos.flatMap(e=>(e.evento_dias||[]).flatMap(d=>(d.equipos_dia||[]).map(eq=>eq.proveedor_id).filter(Boolean))));return proveedores.filter(p=>ids.has(p.id)).sort((a,b)=>(a.nombre||"").localeCompare(b.nombre||""));},[eventos,proveedores]);
+
+  const eventosFiltrados=useMemo(()=>{
+    let evs=eventos;
+    if(busqueda.trim()){
+      const b=busqueda.toLowerCase().trim();
+      evs=evs.filter(ev=>{
+        const cli=clientes.find(c=>c.id===ev.cliente_id);
+        const iNombres=(ev.asignaciones||[]).map(a=>{const i=interpretes.find(x=>x.id===a.interprete_id);return i?`${i.nombre} ${i.apellido||""}`:""}).join(" ");
+        const ots=(ev.asignaciones||[]).map(a=>a.nro_ot||"").join(" ");
+        const bols=(ev.asignaciones||[]).map(a=>a.nro_boleta||"").join(" ");
+        return(cli?.nombre_empresa||"").toLowerCase().includes(b)||(ev.nombre_evento||"").toLowerCase().includes(b)||(ev.nro_oc||"").toLowerCase().includes(b)||iNombres.toLowerCase().includes(b)||ots.toLowerCase().includes(b)||bols.toLowerCase().includes(b);
+      });
+    }
+    if(filtros.estado==="no_incluir") evs=evs.filter(e=>!e.estado);
+    else if(filtros.estado) evs=evs.filter(e=>e.estado===filtros.estado);
+    if(filtros.modalidad) evs=evs.filter(e=>e.modalidad===filtros.modalidad);
+    if(filtros.tipo) evs=evs.filter(e=>tiposArr(e.tipo).includes(filtros.tipo));
+    if(filtros.interprete_id) evs=evs.filter(e=>{const todasAsig=[...(e.asignaciones||[]),...(e.evento_dias||[]).flatMap(d=>d.asignaciones_dia||[])];return todasAsig.some(a=>String(a.interprete_id)===String(filtros.interprete_id));});
+    if(filtros.cliente_id) evs=evs.filter(e=>String(e.cliente_id)===String(filtros.cliente_id));
+    if(filtros.par_id) evs=evs.filter(e=>{const todasAsig=[...(e.asignaciones||[]),...(e.evento_dias||[]).flatMap(d=>d.asignaciones_dia||[])];return todasAsig.some(a=>String(a.par_id)===String(filtros.par_id));});
+    if(filtros.proveedor_av) evs=evs.filter(e=>{const eqs=(e.evento_dias||[]).flatMap(d=>d.equipos_dia||[]);if(filtros.proveedor_av==="sin_proveedor")return eqs.length>0&&eqs.every(eq=>!eq.proveedor_id);return eqs.some(eq=>String(eq.proveedor_id)===String(filtros.proveedor_av));});
+    if(filtros.mes&&filtros.mes!=="todos"){const m=Number(filtros.mes);evs=evs.filter(e=>new Date(e.fecha_inicio+"T12:00:00").getMonth()+1===m);}
+    const seen=new Set();
+    return evs.filter(e=>{if(seen.has(e.id))return false;seen.add(e.id);return true;});
+  },[eventos,busqueda,filtros,clientes,interpretes]);
+
+  const evsDia=(iso)=>eventosFiltrados.filter(e=>e.fecha_inicio<=iso&&e.fecha_termino>=iso).sort((a,b)=>(a.hora_inicio||"").localeCompare(b.hora_inicio||""));
+
+  const hayFiltros=busqueda||Object.values(filtros).some(Boolean);
+
+  const exportarExcel=()=>{
+    const rows=eventosFiltrados.map(ev=>{
+      const cli=clientes.find(c=>c.id===ev.cliente_id);
+      const asigs=[...(ev.asignaciones||[]),...(ev.evento_dias||[]).flatMap(d=>d.asignaciones_dia||[])].map(a=>{const i=interpretes.find(x=>x.id===a.interprete_id);const p=pares.find(x=>x.id===a.par_id);return i?`${i.nombre}${i.apellido?" "+i.apellido:""}${p?" ("+p.descripcion+")":""}`:""}).filter(Boolean).join("; ");
+      return{"Cliente":cli?.nombre_empresa||"","Evento":ev.nombre_evento||"","Tipo":ev.tipo||"","Modalidad":LBL_MODAL[ev.modalidad]||ev.modalidad,"Estado":ev.estado||"","Fecha inicio":ev.fecha_inicio,"Fecha término":ev.fecha_termino,"Hora inicio":ev.hora_inicio?.slice(0,5),"Hora término":ev.hora_termino?.slice(0,5),"Jornada":ev.jornada,"N° OC":ev.nro_oc||"","Lugar":ev.lugar||"","Plataforma":ev.plataforma||"","Intérpretes":asigs};
+    });
+    const ws=XLSX.utils.json_to_sheet(rows);
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,"Eventos");
+    XLSX.writeFile(wb,`MundoChile_${new Date().toISOString().slice(0,10)}.xlsx`);
+    addToast("Excel exportado correctamente","success");
+  };
+
+  const exportarExcelFiltrado=()=>{
+    const rows=eventosFiltrados.map(ev=>{
+      const cli=clientes.find(c=>c.id===ev.cliente_id);
+      const asigs=[...(ev.asignaciones||[]),...(ev.evento_dias||[]).flatMap(d=>d.asignaciones_dia||[])].map(a=>{const i=interpretes.find(x=>x.id===a.interprete_id);const p=pares.find(x=>x.id===a.par_id);return i?`${i.nombre}${i.apellido?" "+i.apellido:""}${p?" ("+p.descripcion+")":""}`:""}).filter(Boolean).join("; ");
+      return{"Cliente":cli?.nombre_empresa||"","Evento":ev.nombre_evento||"","Tipo":ev.tipo||"","Modalidad":LBL_MODAL[ev.modalidad]||ev.modalidad,"Estado":ev.estado||"","Fecha inicio":ev.fecha_inicio,"Fecha término":ev.fecha_termino,"Hora inicio":ev.hora_inicio?.slice(0,5),"Hora término":ev.hora_termino?.slice(0,5),"Jornada":ev.jornada,"N° OC":ev.nro_oc||"","Lugar":ev.lugar||"","Plataforma":ev.plataforma||"","Intérpretes":asigs};
+    });
+    const ws=XLSX.utils.json_to_sheet(rows);
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,"Eventos");
+    XLSX.writeFile(wb,`MundoChile_${new Date().toISOString().slice(0,10)}_filtrado.xlsx`);
+    addToast("Excel filtrado exportado","success");
+  };
+
+  const generarFichaMultiple=()=>{
+    if(!eventosFiltrados.length){addToast("No hay eventos filtrados","error");return;}
+    setModalFichasMultiples(eventosFiltrados);
+  };
+
+  const navAnterior=()=>{if(vista==="semana")setSemanaOff(o=>o-1);else if(vista==="mes")setMesOff(o=>o-1);else if(vista==="dia"){const d=desdeISO(diaActual);d.setDate(d.getDate()-1);setDiaActual(toISO(d));}};
+  const navSiguiente=()=>{if(vista==="semana")setSemanaOff(o=>o+1);else if(vista==="mes")setMesOff(o=>o+1);else if(vista==="dia"){const d=desdeISO(diaActual);d.setDate(d.getDate()+1);setDiaActual(toISO(d));}};
+
+  const tituloNav=(compacto=false)=>{
+    if(vista==="semana"){
+      const d=diasSemana;
+      if(compacto){
+        return d[0].getMonth()===d[6].getMonth()
+          ? `${d[0].getDate()}–${d[6].getDate()} ${MESES_C[d[0].getMonth()]} ${d[6].getFullYear()}`
+          : `${d[0].getDate()} ${MESES_C[d[0].getMonth()]}–${d[6].getDate()} ${MESES_C[d[6].getMonth()]} ${d[6].getFullYear()}`;
+      }
+      const capM=(m)=>MESES_L[m].charAt(0).toUpperCase()+MESES_L[m].slice(1);return `${d[0].getDate()} ${capM(d[0].getMonth())} – ${d[6].getDate()} ${capM(d[6].getMonth())} ${d[6].getFullYear()}`;}
+    if(vista==="mes"){const n=new Date();n.setMonth(n.getMonth()+mesOff);return `${MESES_L[n.getMonth()].charAt(0).toUpperCase()+MESES_L[n.getMonth()].slice(1)} ${n.getFullYear()}`;}
+    if(vista==="agenda") return "Agenda";
+    if(vista==="grilla") return "Grilla";
+    if(vista==="dia"&&modoMultidia&&eventoMultidiaId){const evM=eventosFiltrados.find(e=>e.id===eventoMultidiaId);const cli=clientes.find(c=>c.id===evM?.cliente_id);return `Evento Multidía — ${cli?.nombre_empresa||"—"}`;}
+    if(compacto){const d=desdeISO(diaActual);return `${DIAS_SEM[(d.getDay()+6)%7]} ${d.getDate()} ${MESES_C[d.getMonth()]} ${d.getFullYear()}`;}
+    return formatLargo(diaActual);
+  };
+  const contadorSubtitulo=(compacto=false)=>{
+    if(cargando) return "Cargando…";
+    if(vista==="dia"){const n=evsDia(diaActual).length;return `${n} evento${n!==1?"s":""}`;}
+    if(vista==="semana"){const semIni=toISO(diasSemana[0]);const semFin=toISO(diasSemana[6]);const n=eventosFiltrados.filter(e=>e.fecha_inicio<=semFin&&e.fecha_termino>=semIni).length;return compacto?`${n} evento${n!==1?"s":""}`:`${n} evento${n!==1?"s":""} esta semana`;}
+    if(vista==="mes"){const mv=new Date();mv.setMonth(mv.getMonth()+mesOff);const n=eventosFiltrados.filter(e=>{const f=desdeISO(e.fecha_inicio);return f.getFullYear()===mv.getFullYear()&&f.getMonth()===mv.getMonth();}).length;return `${n} evento${n!==1?"s":""}${hayFiltros?" (filtrado)":""}`;  }
+    const n=eventosFiltrados.length;return `${n} evento${n!==1?"s":""}${hayFiltros?" (filtrado)":""}`;
+  };
+
+  const abrirEvento=async(ev)=>{
+    const{data}=await sb.from("eventos").select("*, asignaciones(*), evento_dias(*, asignaciones_dia(*), equipos_dia(*))").eq("id",ev.id).single();
+    setModalDetalle(data||ev);
+  };
+
+  const verTodosLosDias=(eventoId)=>{
+    setVistaAnterior(vista);
+    setEventoMultidiaId(eventoId);
+    setDiaMultidiaSeleccionado(0);
+    setModoMultidia(true);
+    setVista("dia");
+  };
+
+  useEffect(()=>{if(vista!=="dia"){setModoMultidia(false);setEventoMultidiaId(null);}},[vista]);
+
+  useEffect(()=>{
+    if(!modoMultidia||diaMultidiaSeleccionado<1) return;
+    const t=setTimeout(()=>{
+      const hdr=document.querySelector('[data-multidia-header]');
+      const off=136+(hdr?.offsetHeight||160)+8;
+      const el=document.getElementById(`multidia-card-${diaMultidiaSeleccionado}`);
+      if(el){const y=el.getBoundingClientRect().top+window.scrollY-off;window.scrollTo({top:Math.max(0,y),behavior:"smooth"});}
+    },200);
+    return()=>clearTimeout(t);
+  },[modoMultidia,diaMultidiaSeleccionado]);
+
+  useEffect(() => {
+    const algunFiltroActivo = Object.values(filtros || {}).some(v => v);
+    if (!algunFiltroActivo) return;
+    if (!eventosFiltrados.length) return;
+
+    if (vista === "agenda" || vista === "grilla") {
+      window.scrollTo({ top: 0, behavior: "instant" });
+      return;
+    }
+    if (vista !== "dia" && vista !== "semana" && vista !== "mes") return;
+
+    let hayEnVentana = false;
+    if (vista === "dia") {
+      hayEnVentana = eventosFiltrados.some(e => e.fecha_inicio <= diaActual && e.fecha_termino >= diaActual);
+    } else if (vista === "semana") {
+      const desde = toISO(diasSemana[0]), hasta = toISO(diasSemana[6]);
+      hayEnVentana = eventosFiltrados.some(e => e.fecha_inicio <= hasta && e.fecha_termino >= desde);
+    } else if (vista === "mes") {
+      const mv = new Date(); mv.setMonth(mv.getMonth() + mesOff);
+      hayEnVentana = eventosFiltrados.some(e => {
+        const f = desdeISO(e.fecha_inicio);
+        return f.getFullYear()===mv.getFullYear() && f.getMonth()===mv.getMonth();
+      });
+    }
+    if (hayEnVentana) return;
+
+    const hoy = new Date();
+    let mejor = null, mejorDiff = Infinity;
+    eventosFiltrados.forEach(e => {
+      const diff = Math.abs(desdeISO(e.fecha_inicio) - hoy);
+      if (diff < mejorDiff) { mejorDiff = diff; mejor = e; }
+    });
+    if (!mejor) return;
+
+    if (vista === "dia") {
+      setDiaActual(mejor.fecha_inicio);
+      setModoMultidia(false);
+      setEventoMultidiaId(null);
+      setDiaMultidiaSeleccionado(0);
+      setModalDetalle(null);
+    }
+    else if (vista === "semana") setSemanaOff(offsetSemanaParaFecha(mejor.fecha_inicio));
+    else if (vista === "mes") setMesOff(offsetMesParaFecha(mejor.fecha_inicio));
+  }, [filtros, eventosFiltrados, vista]);
+
+  useEffect(() => {
+    const algunFiltroActivo = Object.values(filtros || {}).some(v => v);
+    if (algunFiltroActivo) return;
+    const hd = new Date().getDay();
+    setDiaActual(toISO(new Date()));
+    setSemanaOff(hd === 0 || hd === 6 ? 1 : 0);
+    setMesOff(0);
+    setModoMultidia(false);
+    setEventoMultidiaId(null);
+    setDiaMultidiaSeleccionado(0);
+    setModalDetalle(null);
+  }, [filtros]);
+
+  const editarEvento=async(ev)=>{
+    const{data}=await sb.from("eventos")
+      .select("*, asignaciones(*), evento_dias(*, asignaciones_dia(*), equipos_dia(*))")
+      .eq("id",ev.id).single();
+    const evFresh=data||ev;
+    const esDia=evFresh.fecha_inicio===evFresh.fecha_termino;
+    const diasForm=(evFresh.evento_dias||[])
+      .filter(d=>!esDia)
+      .sort((a,b)=>a.orden-b.orden)
+      .map(d=>({...d,asignaciones:(d.asignaciones_dia||[]).map(a=>({...asigVacia(),...a})),equipos:d.equipos_dia||[]}));
+    const equiposSingles=esDia&&(evFresh.evento_dias||[]).length>0?(evFresh.evento_dias[0].equipos_dia||[]):[];
+    const asigs=(evFresh.asignaciones||[]).map(a=>({...asigVacia(),...a}));
+    setModalDetalle(null);
+    setModalEvento({modo:"editar",data:{...evFresh,asignaciones:asigs,dias:diasForm,equipos:equiposSingles}});
+  };
+
+  const eliminarEvento=async(id)=>{
+    if(!confirm("¿Eliminar este evento? Esta acción no se puede deshacer.")) return;
+    await sb.from("eventos").delete().eq("id",id);
+    setModalDetalle(null);cargarDatos();
+  };
+
   // ── Vista MES ──
   const renderMes=()=>{
     const n=new Date();n.setMonth(n.getMonth()+mesOff);n.setDate(1);
