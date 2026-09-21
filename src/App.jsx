@@ -3833,7 +3833,14 @@ export default function App() {
               <div style={{fontSize:"12px",color:"rgba(255,255,255,0.70)"}}>Mi espacio de intérprete</div>
             </div>
           </div>
-          <div style={{display:"flex",gap:"8px"}}>
+          <div style={{display:"flex",alignItems:"center",gap:"10px",flexWrap:"wrap",justifyContent:"flex-end"}}>
+            <div style={{display:"flex",alignItems:"center",gap:"8px",padding:"5px 10px 5px 6px",background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.20)",borderRadius:"24px",minHeight:"40px",boxSizing:"border-box"}}>
+              <div style={{width:"32px",height:"32px",borderRadius:"50%",background:"#FFFFFF",color:"#162654",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"12px",fontWeight:"800",flexShrink:0}}>AP</div>
+              <div style={{display:"flex",flexDirection:"column",lineHeight:1.1}}>
+                <span style={{fontSize:"13px",fontWeight:"700",color:"#FFFFFF",whiteSpace:"nowrap"}}>Ana Pérez</span>
+                <span style={{fontSize:"10px",color:"rgba(255,255,255,0.68)",whiteSpace:"nowrap"}}>Intérprete</span>
+              </div>
+            </div>
             <button onClick={()=>setPantalla("interprete-eventos")} style={{padding:"8px 12px",background:pantalla==="interprete-eventos"?"rgba(255,255,255,0.28)":"rgba(255,255,255,0.12)",color:"#fff",border:"1px solid rgba(255,255,255,0.18)",borderRadius:"8px",cursor:"pointer"}}>Mis eventos</button>
             <button onClick={()=>setPantalla("interprete-disponibilidad")} style={{padding:"8px 12px",background:pantalla==="interprete-disponibilidad"?"rgba(255,255,255,0.28)":"rgba(255,255,255,0.12)",color:"#fff",border:"1px solid rgba(255,255,255,0.18)",borderRadius:"8px",cursor:"pointer"}}>Mi disponibilidad</button>
             <button onClick={async()=>{await sb.auth.signOut();window.location.reload();}} style={{padding:"8px 14px",fontSize:"14px",background:"rgba(255,255,255,0.12)",color:"#fff",border:"1px solid rgba(255,255,255,0.18)",borderRadius:"8px",cursor:"pointer",fontFamily:"inherit"}}>Salir</button>
