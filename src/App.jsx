@@ -65,8 +65,9 @@ const IconArrowsExchange = ({size=13,color="currentColor"}) => (
 )
 
 // ─── SUPABASE ────────────────────────────────────────────────────────────────
-const SB_URL = import.meta.env.VITE_SUPABASE_URL;
-const SB_KEY = import.meta.env.VITE_SUPABASE_KEY;
+const SB_URL = import.meta.env.VITE_SUPABASE_URL || "https://ebhetndpsowxocqaqyfs.supabase.co";
+// Supabase publishable key: safe for the browser; never use a service_role key here.
+const SB_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_KEY || "sb_publishable_kxncBhEhtFtviWVhf4_8UQ_5WEbULli";
 const sb = createClient(SB_URL, SB_KEY, {global:{headers:{"Cache-Control":"no-cache"}}});
 
 const LOGO_SRC = "/logo.png";
