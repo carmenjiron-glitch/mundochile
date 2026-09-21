@@ -3835,9 +3835,11 @@ export default function App() {
           </div>
           <div style={{display:"flex",alignItems:"center",gap:"10px",flexWrap:"wrap",justifyContent:"flex-end"}}>
             <div style={{display:"flex",alignItems:"center",gap:"8px",padding:"5px 10px 5px 6px",background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.20)",borderRadius:"24px",minHeight:"40px",boxSizing:"border-box"}}>
-              <div style={{width:"32px",height:"32px",borderRadius:"50%",background:"#FFFFFF",color:"#162654",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"12px",fontWeight:"800",flexShrink:0}}>AP</div>
+              <div style={{width:"32px",height:"32px",borderRadius:"50%",background:"#FFFFFF",color:"#162654",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"12px",fontWeight:"800",flexShrink:0}}>
+                {(perfil?.nombre||usuario?.email||"Intérprete").split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase()}
+              </div>
               <div style={{display:"flex",flexDirection:"column",lineHeight:1.1}}>
-                <span style={{fontSize:"13px",fontWeight:"700",color:"#FFFFFF",whiteSpace:"nowrap"}}>Ana Pérez</span>
+                <span style={{fontSize:"13px",fontWeight:"700",color:"#FFFFFF",whiteSpace:"nowrap"}}>{perfil?.nombre||usuario?.email||"Intérprete"}</span>
                 <span style={{fontSize:"10px",color:"rgba(255,255,255,0.68)",whiteSpace:"nowrap"}}>Intérprete</span>
               </div>
             </div>
