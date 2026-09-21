@@ -3812,7 +3812,15 @@ export default function App() {
       <div style={{textAlign:"center"}}><Logo size={48}/><div style={{marginTop:"16px",color:C.textoMed,fontSize:"16px",fontWeight:"500"}}>Cargando…</div></div>
     </div>
   );
-  if(!SKIP_LOGIN && !usuario) return <PantallaLogin onLogin={(u)=>{setUsuario(u);cargarPerfil(u.id);}}/>;
+  if(!SKIP_LOGIN && !usuario) return <PantallaLogin onLogin={(u)=>{setUsuario(u);setCargandoAuth(true);cargarPerfil(u.id);}}/>;
+  // Después de autenticar, esperar a que el perfil determine el rol antes de renderizar
+  // la interfaz. Sin este guard, el primer render tiene perfil=null y puede invocar
+  // funciones que solo existen en la vista administrativa.
+  if(!SKIP_LOGIN && usuario && !perfil) return (
+    <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:C.gris}}>
+      <div style={{textAlign:"center"}}><Logo size={48}/><div style={{marginTop:"16px",color:C.textoMed,fontSize:"16px",fontWeight:"500"}}>Cargando tu espacio…</div></div>
+    </div>
+  );
 
   const esAdmin=perfil?.rol==="admin";
   const esEditor=perfil?.rol==="editor"||esAdmin;
