@@ -65,6 +65,24 @@ grant execute on function public.get_user_rol() to authenticated;
 revoke all on function public.get_interprete_id() from public;
 grant execute on function public.get_interprete_id() to authenticated;
 
+-- Trigger de alta de usuarios: mantener el alta de perfil, pero impedir
+-- ejecución directa como RPC y fijar explícitamente el search_path.
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $
+begin
+  insert into public.perfiles (id, nombre, rol)
+  values (new.id, coalesce(new.email, 'Usuario'), 'editor')
+  on conflict (id) do nothing;
+  return new;
+end;
+$;
+
+revoke all on function public.handle_new_user() from public;
+
 do $$
 declare r record;
 begin
