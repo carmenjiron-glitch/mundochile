@@ -72,15 +72,14 @@ returns trigger
 language plpgsql
 security definer
 set search_path = public
-as $
+as $func$
 begin
   insert into public.perfiles (id, nombre, rol)
   values (new.id, coalesce(new.email, 'Usuario'), 'editor')
   on conflict (id) do nothing;
   return new;
 end;
-$;
-
+$func$;
 revoke all on function public.handle_new_user() from public;
 
 do $$
