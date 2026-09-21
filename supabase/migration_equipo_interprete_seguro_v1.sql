@@ -1,6 +1,6 @@
 -- Plataforma MundoChile
 -- Migration: capa segura de "Mi equipamiento" para intérpretes
--- Revisión previa: no ejecutar todavía en Supabase.
+-- Revisión previa: compatible con equipos_dia.hora_montaje TEXT.
 --
 -- Expone únicamente el equipamiento asociado a eventos/días en los
 -- que el intérprete autenticado tiene una asignación.
@@ -50,7 +50,7 @@ as $$
     eq.num_asistentes,
     eq.proveedor_portatiles,
     eq.dia_montaje,
-    eq.hora_montaje,
+    nullif(trim(eq.hora_montaje), '')::time as hora_montaje,
     eq.contacto_in_situ,
     eq.instrucciones
   from public.equipos_dia eq
