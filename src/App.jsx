@@ -4127,7 +4127,7 @@ export default function App() {
                   ? <div style={{background:"#fff",border:"1px solid #D8E0EA",borderRadius:"12px",padding:"42px",textAlign:"center",color:"#64748B",fontSize:"15px"}}>No tienes eventos asignados.</div>
                   : ordenados.length===0
                     ? <div style={{background:"#fff",border:"1px solid #D8E0EA",borderRadius:"12px",padding:"42px",textAlign:"center",color:"#64748B",fontSize:"15px"}}>No hay eventos que coincidan con los filtros seleccionados.</div>
-                    : <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(520px,1fr))",gap:"20px",maxWidth:"1080px"}}>
+                    : <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(390px,1fr))",gap:"18px",maxWidth:"900px",margin:"0 auto"}}>
                         {ordenados.map(ev=>{
                           const asigns=Array.isArray(ev.asignaciones)?ev.asignaciones:[];
                           const paresEvento=[...new Map(asigns.filter(a=>a.idioma_origen||a.idioma_destino).map(a=>[a.par_id||String(a.idioma_origen)+String(a.idioma_destino),a])).values()];
@@ -4138,15 +4138,15 @@ export default function App() {
                             <div key={ev.id} style={{position:"relative",background:"#fff",border:"1px solid #D5DDE8",borderLeft:"10px solid "+borde,borderRadius:"0 12px 12px 0",padding:"22px 24px 24px",boxShadow:"0 3px 12px rgba(15,23,42,0.10)",minHeight:"255px",boxSizing:"border-box"}}>
                               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"18px",marginBottom:"15px"}}>
                                 <div style={{fontSize:"21px",fontWeight:"750",color:"#162654",lineHeight:1.25,flex:"1 1 auto"}}>{ev.nombre_evento||"Evento"}</div>
-                                <div style={{flex:"0 0 132px",textAlign:"center",fontSize:"15px",fontWeight:"800",color:"#162654",background:"#EAF2FF",border:"2px solid #4F7FD8",borderRadius:"10px",padding:"9px 8px",lineHeight:1.25,whiteSpace:"normal"}}>
-                                  <div style={{fontSize:"11px",fontWeight:"700",textTransform:"uppercase",letterSpacing:"0.06em",color:"#55709B",marginBottom:"3px"}}>Fecha</div>
+                                <div style={{flex:"0 0 148px",textAlign:"center",fontSize:"17px",fontWeight:"800",color:"#fff",background:"#1D4ED8",border:"2px solid #174EA6",borderRadius:"10px",padding:"11px 9px",lineHeight:1.25,whiteSpace:"normal",boxShadow:"0 3px 8px rgba(29,78,216,0.20)"}}>
+                                  <div style={{fontSize:"11px",fontWeight:"800",textTransform:"uppercase",letterSpacing:"0.08em",color:"rgba(255,255,255,0.82)",marginBottom:"4px"}}>Fecha</div>
                                   {ev.fecha_inicio||"Por confirmar"}
                                 </div>
                               </div>
                               <div style={{display:"grid",gap:"9px",fontSize:"15px",color:"#334155",lineHeight:1.35}}>
                                 {(ev.hora_inicio||ev.hora_termino)&&<div style={{fontSize:"18px",fontWeight:"700",color:"#162654"}}>🕐 {ev.hora_inicio?.slice?.(0,5)||"—"}{ev.hora_termino?" – "+ev.hora_termino.slice(0,5):""} hrs</div>}
                                 {ev.fecha_termino&&ev.fecha_termino!==ev.fecha_inicio&&<div>📅 Evento hasta {ev.fecha_termino}</div>}
-                                {modalidad&&<div style={{display:"flex",gap:"7px",flexWrap:"wrap",alignItems:"center"}}>{tipos.map(t=><span key={t} style={{display:"inline-flex",alignItems:"center",padding:"6px 11px",borderRadius:"18px",fontSize:"13px",fontWeight:"700",color:"#174EA6",background:"#EEF4FF",border:"1px solid #BFD6FF"}}>{t}</span>)}<span style={{display:"inline-flex",alignItems:"center",padding:"6px 11px",borderRadius:"18px",fontSize:"13px",fontWeight:"700",color:"#475569",background:"#F1F5F9",border:"1px solid #CBD5E1"}}>{modalidad}</span></div>}
+                                {modalidad&&<div style={{display:"flex",gap:"7px",flexWrap:"wrap",alignItems:"center"}}>{tipos.map(t=><span key={t} style={{display:"inline-flex",alignItems:"center",padding:"6px 11px",borderRadius:"18px",fontSize:"13px",fontWeight:"700",color:"#174EA6",background:"#EEF4FF",border:"1px solid #BFD6FF"}}>{t}</span>)}<span style={{display:"inline-flex",alignItems:"center",padding:"6px 12px",borderRadius:"18px",fontSize:"13px",fontWeight:"800",color:"#fff",background:ev.modalidad==="presencial"?"#00A86B":ev.modalidad==="hibrido"?"#F59E0B":"#7C3AED",border:"1px solid "+(ev.modalidad==="presencial"?"#008A58":ev.modalidad==="hibrido"?"#D97706":"#6D28D9"),boxShadow:"0 2px 5px rgba(15,23,42,0.12)"}}>{modalidad}</span></div>}
                                 {ev.lugar&&<div style={{fontSize:"15px"}}>📍 {ev.lugar}{ev.lugar_detalle?" · "+ev.lugar_detalle:""}</div>}
                                 {ev.plataforma&&<div style={{fontSize:"15px"}}>💻 {ev.plataforma}</div>}
                                 {ev.jornada&&<div style={{fontSize:"14px",color:"#64748B"}}>🗓️ {ev.jornada_personalizada||ev.jornada}</div>}
