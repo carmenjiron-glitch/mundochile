@@ -46,7 +46,7 @@ export default function InterpreterAvailability({ supabase, interpreteId }) {
           <label>Modalidad<select value={form.modalidad} onChange={e=>setForm({...form,modalidad:e.target.value})}><option>Ambas</option><option>Presencial</option><option>Remoto</option></select></label>
           <label>Estado<select value={form.disponible?"Disponible":"No disponible"} onChange={e=>setForm({...form,disponible:e.target.value==="Disponible"})}><option>Disponible</option><option>No disponible</option></select></label>
         </div>
-        <label style={{display:"block",marginTop:"10px"}}>Observaciones<textarea value={form.observaciones} onChange={e=>setForm({...form,observaciones:e.target.value})} rows={2}/></label>
+        <label style={{display:"block",marginTop:"18px",fontSize:"14px",fontWeight:"600",color:"#334155"}}>Observaciones<textarea value={form.observaciones} onChange={e=>setForm({...form,observaciones:e.target.value})} rows={2} style={{marginTop:"7px",display:"block",width:"100%",boxSizing:"border-box",padding:"9px 11px",border:"1px solid #CBD5E1",borderRadius:"8px",fontSize:"14px",fontFamily:"inherit",color:"#26384F"}}/></label>
         <div style={{display:"flex",gap:"8px",justifyContent:"flex-end",marginTop:"12px"}}>{editing&&<button onClick={reset}>Cancelar</button>}<button onClick={save} disabled={saving||!form.fecha}>{saving?"Guardando…":editing?"Guardar cambios":"Agregar"}</button></div>
       </div>
       <div style={{background:"#fff",border:"1px solid #E5E7EB",borderRadius:"14px",overflow:"hidden"}}>
