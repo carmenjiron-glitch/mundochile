@@ -226,6 +226,71 @@ function ToastContainer({toasts,onRemove}) {
 }
 
 // ─── COMPONENTES PEQUEÑOS ────────────────────────────────────────────────────
+function VistaInterprete({usuario, perfil, perfilInterprete, asignaciones, eventos, equipos, pares, disponibilidad, onRecargar, onSalir}) {
+  const [tab,setTab]=useState("proximos");
+  const [guardando,setGuardando]=useState(false);
+  const [form,setForm]=useState(perfilInterprete||{});
+  const [mensaje,setMensaje]=useState("");
+  const [nuevo,setNuevo]=useState({fecha:"",hora_desde:"09:00",hora_hasta:"18:00",modalidad:"Ambas",observaciones:""});
+  useEffect(()=>setForm(perfilInterprete||{}),[perfilInterprete]);
+  const hoyISO=toISO(new Date());
+  const futuros=(asignaciones||[]).filter(a=>a.fecha>=hoyISO).sort((a,b)=>(a.fecha||"").localeCompare(b.fecha||"")||(a.hora_inicio||"").localeCompare(b.hora_inicio||""));
+  const pasados=(asignaciones||[]).filter(a=>a.fecha<hoyISO).sort((a,b)=>(b.fecha||"").localeCompare(a.fecha||""));
+  const guardarPerfil=async()=>{
+    setGuardando(true);setMensaje("");
+    const r=await sb.rpc("update_my_interpreter_profile",{p_nombre:form.nombre||"",p_apellido:form.apellido||"",p_email:form.email||"",p_telefono:form.telefono||"",p_ciudad:form.ciudad||"",p_modalidad_trabajo:form.modalidad_trabajo||"ambas",p_notas:form.notas||""});
+    setGuardando(false);setMensaje(r.error?"No se pudo guardar: "+r.error.message:"Perfil actualizado correctamente.");
+    if(!r.error)onRecargar();
+  };
+  const guardarDisponibilidad=async()=>{
+    if(!nuevo.fecha){setMensaje("Selecciona una fecha.");return;}
+    const r=await sb.from("disponibilidad_interpretes").insert({interprete_id:perfil.interprete_id,fecha:nuevo.fecha,hora_desde:nuevo.hora_desde||null,hora_hasta:nuevo.hora_hasta||null,modalidad:nuevo.modalidad,observaciones:nuevo.observaciones||null,disponible:true});
+    setMensaje(r.error?"No se pudo guardar: "+r.error.message:"Disponibilidad agregada.");
+    if(!r.error){setNuevo({fecha:"",hora_desde:"09:00",hora_hasta:"18:00",modalidad:"Ambas",observaciones:""});onRecargar();}
+  };
+  const eliminarDisponibilidad=async(id)=>{
+    const r=await sb.from("disponibilidad_interpretes").delete().eq("id",id);
+    setMensaje(r.error?"No se pudo eliminar: "+r.error.message:"Disponibilidad eliminada.");
+    if(!r.error)onRecargar();
+  };
+  const fechaTexto=f=>f?formatMedioES(f):"Fecha pendiente";
+  const Card=({children})=><div style={{background:"#fff",border:"1px solid #E5E7EB",borderRadius:"14px",padding:"18px",boxShadow:"0 2px 8px rgba(15,23,42,.06)"}}>{children}</div>;
+  const Asig=({a})=><Card><div style={{display:"flex",justifyContent:"space-between",gap:"12px",flexWrap:"wrap"}}>
+    <div><div style={{fontSize:"17px",fontWeight:"650",color:"#172554"}}>{a.nombre_evento||"Evento sin nombre"}</div>
+    <div style={{marginTop:"5px",fontSize:"14px",color:"#64748B"}}>{fechaTexto(a.fecha)} · {a.hora_inicio?.slice(0,5)||"Hora pendiente"}–{a.hora_termino?.slice(0,5)||""}</div>
+    <div style={{marginTop:"8px",display:"flex",gap:"6px",flexWrap:"wrap"}}>
+      {a.descripcion_par&&<span style={{padding:"4px 9px",borderRadius:"20px",background:"#EFF6FF",color:"#1D4ED8",fontSize:"12px",fontWeight:"600"}}>{a.descripcion_par}</span>}
+      {a.modalidad&&<span style={{padding:"4px 9px",borderRadius:"20px",background:"#F0FDF4",color:"#166534",fontSize:"12px",fontWeight:"600"}}>{a.modalidad}</span>}
+      {a.es_host_zoom&&<span style={{padding:"4px 9px",borderRadius:"20px",background:"#FEF3C7",color:"#92400E",fontSize:"12px",fontWeight:"600"}}>🔑 Host Zoom</span>}
+    </div></div>
+    <div style={{textAlign:"right",fontSize:"13px",color:"#475569"}}>{a.lugar||a.plataforma||"Modalidad por confirmar"}{a.hora_presentacion&&<div style={{marginTop:"5px"}}>Presentación: {resolverHoraPresentacion(a.hora_presentacion,a.hora_inicio)}</div>}</div>
+  </div>
+  {a.zoom_link&&<a href={a.zoom_link} target="_blank" rel="noreferrer" style={{display:"inline-block",marginTop:"12px",fontSize:"13px",color:"#2563EB"}}>Abrir enlace Zoom</a>}</Card>;
+  return <div style={{minHeight:"100vh",background:"#F7F8FA",color:"#172033",fontFamily:"'Inter','Segoe UI',system-ui,sans-serif"}}>
+    <div style={{background:"#162654",color:"#fff",padding:"18px 24px",display:"flex",justifyContent:"space-between",alignItems:"center",gap:"16px",flexWrap:"wrap"}}>
+      <div><div style={{fontSize:"22px",fontWeight:"650"}}>MundoChile</div><div style={{fontSize:"13px",opacity:.75}}>Portal de intérprete</div></div>
+      <div style={{display:"flex",alignItems:"center",gap:"12px"}}><span style={{fontSize:"14px"}}>{perfilInterprete?.nombre||perfil?.nombre||usuario?.email}</span><button onClick={onSalir} style={{padding:"8px 14px",border:"1px solid rgba(255,255,255,.35)",background:"rgba(255,255,255,.10)",color:"#fff",borderRadius:"8px",cursor:"pointer"}}>Salir</button></div>
+    </div>
+    <div style={{maxWidth:"1100px",margin:"0 auto",padding:"24px"}}>
+      <div style={{marginBottom:"20px"}}><h1 style={{margin:"0 0 5px",fontSize:"26px"}}>Hola, {perfilInterprete?.nombre||"intérprete"} 👋</h1><div style={{color:"#64748B"}}>Aquí puedes revisar tus asignaciones, disponibilidad y datos profesionales.</div></div>
+      <div style={{display:"flex",gap:"8px",flexWrap:"wrap",marginBottom:"18px"}}>{[["proximos","Próximas asignaciones"],["historial","Historial"],["disponibilidad","Disponibilidad"],["perfil","Mi perfil"]].map(([v,l])=><button key={v} onClick={()=>setTab(v)} style={{padding:"9px 14px",borderRadius:"9px",border:"1px solid #CBD5E1",background:tab===v?"#1D4ED8":"#fff",color:tab===v?"#fff":"#334155",cursor:"pointer",fontWeight:"600"}}>{l}</button>)}</div>
+      {mensaje&&<div style={{marginBottom:"14px",padding:"10px 12px",borderRadius:"8px",background:"#EFF6FF",color:"#1E40AF",fontSize:"14px"}}>{mensaje}</div>}
+      {tab==="proximos"&&<div style={{display:"grid",gap:"12px"}}>{futuros.length?futuros.map((a,i)=><Asig key={a.asignacion_id+"-"+i} a={a}/>):<Card><div style={{color:"#64748B"}}>No tienes asignaciones futuras registradas.</div></Card>}</div>}
+      {tab==="historial"&&<div style={{display:"grid",gap:"12px"}}>{pasados.length?pasados.map((a,i)=><Asig key={a.asignacion_id+"-"+i} a={a}/>):<Card><div style={{color:"#64748B"}}>No hay historial de asignaciones.</div></Card>}</div>}
+      {tab==="disponibilidad"&&<div style={{display:"grid",gridTemplateColumns:"minmax(280px,360px) 1fr",gap:"16px"}}>
+        <Card><h3 style={{marginTop:0}}>Agregar disponibilidad</h3>
+          {["fecha","hora_desde","hora_hasta"].map(k=><label key={k} style={{display:"block",marginBottom:"10px",fontSize:"13px",fontWeight:"600",color:"#475569"}}>{k==="fecha"?"Fecha":k==="hora_desde"?"Desde":"Hasta"}<input type={k==="fecha"?"date":"time"} value={nuevo[k]} onChange={e=>setNuevo(x=>({...x,[k]:e.target.value}))} style={{...S.inp,height:"40px",marginTop:"4px"}}/></label>)}
+          <label style={{display:"block",marginBottom:"10px",fontSize:"13px",fontWeight:"600",color:"#475569"}}>Modalidad<select value={nuevo.modalidad} onChange={e=>setNuevo(x=>({...x,modalidad:e.target.value}))} style={{...S.sel,height:"40px",marginTop:"4px"}}><option>Ambas</option><option>Presencial</option><option>Remoto</option></select></label>
+          <textarea value={nuevo.observaciones} onChange={e=>setNuevo(x=>({...x,observaciones:e.target.value}))} placeholder="Observaciones" style={{...S.inp,height:"80px",marginBottom:"10px"}}/>
+          <button onClick={guardarDisponibilidad} style={S.btnA}>Agregar</button>
+        </Card>
+        <Card><h3 style={{marginTop:0}}>Mis disponibilidades</h3>{(disponibilidad||[]).length?(disponibilidad.map(d=><div key={d.id} style={{padding:"10px 0",borderBottom:"1px solid #E5E7EB",display:"flex",justifyContent:"space-between",gap:"8px"}}><div><b>{fechaTexto(d.fecha)}</b><div style={{fontSize:"13px",color:"#64748B"}}>{d.hora_desde?.slice(0,5)||""}–{d.hora_hasta?.slice(0,5)||""} · {d.modalidad}</div></div><button onClick={()=>eliminarDisponibilidad(d.id)} style={{border:"none",background:"transparent",color:"#DC2626",cursor:"pointer"}}>Eliminar</button></div>)):<div style={{color:"#64748B"}}>No has registrado disponibilidad.</div>}</Card>
+      </div>}
+      {tab==="perfil"&&<Card><h3 style={{marginTop:0}}>Datos profesionales</h3><div style={{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:"12px"}}>{[["nombre","Nombre"],["apellido","Apellido"],["email","Email"],["telefono","Teléfono"],["ciudad","Ciudad"],["modalidad_trabajo","Modalidad de trabajo"]].map(([k,l])=><label key={k} style={{fontSize:"13px",fontWeight:"600",color:"#475569"}}>{l}<input value={form[k]||""} onChange={e=>setForm(x=>({...x,[k]:e.target.value}))} style={{...S.inp,height:"40px",marginTop:"4px"}}/></label>)}</div><label style={{display:"block",marginTop:"12px",fontSize:"13px",fontWeight:"600",color:"#475569"}}>Notas<textarea value={form.notas||""} onChange={e=>setForm(x=>({...x,notas:e.target.value}))} style={{...S.inp,height:"100px",marginTop:"4px"}}/></label><button disabled={guardando} onClick={guardarPerfil} style={{...S.btnA,marginTop:"12px"}}>{guardando?"Guardando…":"Guardar cambios"}</button></Card>}
+    </div>
+  </div>;
+}
+
 function Logo({size=32}) {
   return (
     <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
@@ -3304,9 +3369,28 @@ export default function App() {
     return()=>sub.subscription.unsubscribe();
   },[]);
 
+  const cargarDatosInterprete=async()=>{
+    setCargando(true);
+    const [pR,aR,eR,eqR,parR]=await Promise.all([
+      sb.rpc("get_my_interpreter_profile"),sb.rpc("get_my_interpreter_assignments"),
+      sb.rpc("get_my_interpreter_events"),sb.rpc("get_my_interpreter_equipment"),
+      sb.rpc("get_my_interpreter_language_pairs")
+    ]);
+    const p=pR.data?.[0]||null;
+    setInterpretePerfil(p);setMisAsignaciones(aR.data||[]);setMisEventos(eR.data||[]);
+    setMisEquipos(eqR.data||[]);setMisPares(parR.data||[]);
+    if(p?.id){
+      const {data:d}=await sb.from("disponibilidad_interpretes").select("*").eq("interprete_id",p.id).order("fecha",{ascending:true});
+      setMisDisponibilidad(d||[]);
+    } else setMisDisponibilidad([]);
+    setCargando(false);
+  };
+
   const cargarPerfil=async(uid)=>{
-    const{data}=await sb.from("perfiles").select("*").eq("id",uid).single();
-    setPerfil(data);setCargandoAuth(false);cargarDatos();
+    const{data,error}=await sb.from("perfiles").select("*").eq("id",uid).single();
+    if(error){setCargandoAuth(false);return;}
+    setPerfil(data);setCargandoAuth(false);
+    if(data?.rol==="interprete") cargarDatosInterprete(); else cargarDatos();
   };
 
   const cargarDatos=useCallback(async()=>{
@@ -3321,12 +3405,9 @@ export default function App() {
       sb.from("contactos").select("*").order("nombre"),
     ]);
     if(evR.data) setEventos(evR.data.filter((e,i,a)=>a.findIndex(x=>x.id===e.id)===i));
-    if(cliR.data) setClientes(cliR.data);
-    if(intR.data) setInterpretes(intR.data);
-    if(parR.data) setPares(parR.data);
-    if(provR.data) setProveedores(provR.data);
-    if(lugR.data) setLugares(lugR.data);
-    if(conR.data) setContactos(conR.data);
+    if(cliR.data) setClientes(cliR.data);if(intR.data) setInterpretes(intR.data);
+    if(parR.data) setPares(parR.data);if(provR.data) setProveedores(provR.data);
+    if(lugR.data) setLugares(lugR.data);if(conR.data) setContactos(conR.data);
     setCargando(false);
   },[]);
 
@@ -3926,6 +4007,14 @@ export default function App() {
     </div>
   );
   if(!SKIP_LOGIN && !usuario) return <PantallaLogin onLogin={(u)=>{setUsuario(u);cargarPerfil(u.id);}}/>;
+
+  if(perfil?.rol==="interprete") return <VistaInterprete
+    usuario={usuario} perfil={perfil} perfilInterprete={interpretePerfil}
+    asignaciones={misAsignaciones} eventos={misEventos} equipos={misEquipos}
+    pares={misPares} disponibilidad={misDisponibilidad}
+    onRecargar={cargarDatosInterprete}
+    onSalir={async()=>{await sb.auth.signOut();window.location.reload();}}
+  />;
 
   const esAdmin=perfil?.rol==="admin";
   const esEditor=perfil?.rol==="editor"||esAdmin;
