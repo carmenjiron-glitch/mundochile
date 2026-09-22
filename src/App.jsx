@@ -3264,6 +3264,7 @@ export default function App() {
   const [diaMultidiaSeleccionado,setDiaMultidiaSeleccionado]=useState(0);
   const [vistaAnterior,setVistaAnterior]=useState("semana");
   const [pantalla,setPantalla]=useState("calendario");
+  const [filtroInterprete,setFiltroInterprete]=useState({periodo:"proximos",modalidad:"",tipo:"",texto:""});
   const [modalEvento,setModalEvento]=useState(null);
   const [modalDetalle,setModalDetalle]=useState(null);
   const [modalFicha,setModalFicha]=useState(null);
@@ -4029,11 +4030,38 @@ export default function App() {
 
 
   if(esInterprete){
-    const misEventos=[...eventos].sort((a,b)=>String(a.fecha_inicio||"").localeCompare(String(b.fecha_inicio||"")));
+    const hoyISO=new Date().toISOString().slice(0,10);
+    const misEventosBase=[...eventos].sort((a,b)=>String(a.fecha_inicio||"").localeCompare(String(b.fecha_inicio||"")));
+    const textoFiltro=filtroInterprete.texto.trim().toLowerCase();
+    const eventosVisibles=misEventosBase.filter(ev=>{
+      const inicio=String(ev.fecha_inicio||"");
+      const fin=String(ev.fecha_termino||inicio);
+      const asigns=Array.isArray(ev.asignaciones)?ev.asignaciones:[];
+      const tipos=Array.isArray(ev.tipo)?ev.tipo:[ev.tipo||"Simultánea"];
+      const idiomas=asigns.map(a=>`${a.idioma_origen||""} ${a.idioma_destino||""}`).join(" ").toLowerCase();
+      const texto=[ev.nombre_evento,ev.lugar,ev.lugar_detalle,ev.plataforma,idiomas].filter(Boolean).join(" ").toLowerCase();
+      const coincideTexto=!textoFiltro||texto.includes(textoFiltro);
+      const coincideModalidad=!filtroInterprete.modalidad||ev.modalidad===filtroInterprete.modalidad;
+      const coincideTipo=!filtroInterprete.tipo||tipos.includes(filtroInterprete.tipo);
+      let coincidePeriodo=true;
+      if(filtroInterprete.periodo==="hoy") coincidePeriodo=inicio<=hoyISO&&fin>=hoyISO;
+      if(filtroInterprete.periodo==="proximos") coincidePeriodo=fin>=hoyISO;
+      if(filtroInterprete.periodo==="historial") coincidePeriodo=fin<hoyISO;
+      return coincidePeriodo&&coincideModalidad&&coincideTipo&&coincideTexto;
+    });
+    const ordenados=[...eventosVisibles].sort((a,b)=>{
+      const aa=String(a.fecha_inicio||""),bb=String(b.fecha_inicio||"");
+      return filtroInterprete.periodo==="historial"?bb.localeCompare(aa):aa.localeCompare(bb);
+    });
+    const totalProximos=misEventosBase.filter(ev=>String(ev.fecha_termino||ev.fecha_inicio||"")>=hoyISO).length;
+    const totalHoy=misEventosBase.filter(ev=>String(ev.fecha_inicio||"")<=hoyISO&&String(ev.fecha_termino||ev.fecha_inicio||"")>=hoyISO).length;
+    const totalPasados=misEventosBase.filter(ev=>String(ev.fecha_termino||ev.fecha_inicio||"")<hoyISO).length;
+    const tiposDisponibles=[...new Set(misEventosBase.flatMap(ev=>Array.isArray(ev.tipo)?ev.tipo:[ev.tipo||"Simultánea"]))].filter(Boolean);
+    const tieneFiltros=filtroInterprete.modalidad||filtroInterprete.tipo||filtroInterprete.texto;
+    const limpiarFiltros=()=>setFiltroInterprete({periodo:"proximos",modalidad:"",tipo:"",texto:""});
 
     return (
       <div style={{fontFamily:"'Inter','Segoe UI',system-ui,sans-serif",minHeight:"100vh",background:"#F3F6FA",color:"#172033",WebkitFontSmoothing:"antialiased",MozOsxFontSmoothing:"grayscale"}}>
-        {/* ── ENCABEZADO MUNDOCHILE ── */}
         <div style={{position:"sticky",top:0,zIndex:100,background:"#162654",color:"#fff",minHeight:"96px",display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 24px",boxSizing:"border-box",gap:"18px"}}>
           <div style={{display:"flex",alignItems:"center",gap:"12px",flexShrink:0}}>
             <div style={{width:"64px",height:"64px",borderRadius:"50%",background:"#fff",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",boxShadow:"0 2px 8px rgba(0,0,0,0.18)"}}>
@@ -4044,7 +4072,6 @@ export default function App() {
               <div style={{fontSize:"13px",color:"rgba(255,255,255,0.72)",marginTop:"3px"}}>Mi espacio de intérprete</div>
             </div>
           </div>
-
           <div style={{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap",justifyContent:"flex-end"}}>
             <div style={{display:"flex",alignItems:"center",gap:"9px",padding:"6px 12px 6px 7px",background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.22)",borderRadius:"28px",minHeight:"46px",boxSizing:"border-box"}}>
               <div style={{width:"34px",height:"34px",borderRadius:"50%",background:"#fff",color:"#162654",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"12px",fontWeight:"800"}}>
@@ -4064,66 +4091,69 @@ export default function App() {
         {pantalla==="interprete-disponibilidad"
           ? <InterpreterAvailability supabase={sb} interpreteId={perfil?.interprete_id}/>
           : <main style={{maxWidth:"1240px",margin:"0 auto",padding:"34px 28px 70px"}}>
-
-              {/* ── TÍTULO ── */}
-              <div style={{marginBottom:"26px"}}>
+              <div style={{marginBottom:"22px"}}>
                 <div style={{fontSize:"32px",fontWeight:"700",color:"#162654",lineHeight:1.15}}>Mis eventos</div>
-                <div style={{fontSize:"15px",color:"#64748B",marginTop:"7px"}}>Eventos y asignaciones asociados a tu agenda.</div>
+                <div style={{fontSize:"15px",color:"#64748B",marginTop:"7px"}}>Tu agenda de interpretación, con los próximos compromisos primero.</div>
               </div>
+
+              {!cargando&&misEventosBase.length>0&&
+                <div style={{background:"#fff",border:"1px solid #D8E0EA",borderRadius:"12px",padding:"14px 16px",marginBottom:"22px",boxShadow:"0 2px 7px rgba(15,23,42,0.04)"}}>
+                  <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"center",marginBottom:"12px"}}>
+                    {[
+                      ["proximos",`Próximos · ${totalProximos}`],
+                      ["hoy",`Hoy · ${totalHoy}`],
+                      ["historial",`Historial · ${totalPasados}`],
+                      ["todos",`Todos · ${misEventosBase.length}`]
+                    ].map(([v,l])=>
+                      <button key={v} onClick={()=>setFiltroInterprete(f=>({...f,periodo:v}))}
+                        style={{padding:"8px 13px",borderRadius:"8px",border:"1px solid "+(filtroInterprete.periodo===v?"#1D4ED8":"#D6DEE9"),background:filtroInterprete.periodo===v?"#EAF2FF":"#fff",color:filtroInterprete.periodo===v?"#174EA6":"#475569",fontWeight:filtroInterprete.periodo===v?"700":"500",fontSize:"13px",cursor:"pointer",fontFamily:"inherit"}}>{l}</button>
+                    )}
+                  </div>
+                  <div style={{display:"grid",gridTemplateColumns:"minmax(220px,1fr) 180px 180px auto",gap:"9px",alignItems:"center"}}>
+                    <input value={filtroInterprete.texto} onChange={e=>setFiltroInterprete(f=>({...f,texto:e.target.value}))} placeholder="Buscar evento, lugar o idioma…" style={{height:"38px",boxSizing:"border-box",border:"1px solid #D6DEE9",borderRadius:"8px",padding:"0 11px",fontSize:"13px",fontFamily:"inherit",outline:"none",color:"#1F2937"}}/>
+                    <select value={filtroInterprete.modalidad} onChange={e=>setFiltroInterprete(f=>({...f,modalidad:e.target.value}))} style={{height:"38px",border:"1px solid #D6DEE9",borderRadius:"8px",padding:"0 10px",fontSize:"13px",fontFamily:"inherit",color:"#334155",background:"#fff"}}>
+                      <option value="">Todas las modalidades</option><option value="remoto">Remoto</option><option value="presencial">Presencial</option><option value="hibrido">Híbrido</option>
+                    </select>
+                    <select value={filtroInterprete.tipo} onChange={e=>setFiltroInterprete(f=>({...f,tipo:e.target.value}))} style={{height:"38px",border:"1px solid #D6DEE9",borderRadius:"8px",padding:"0 10px",fontSize:"13px",fontFamily:"inherit",color:"#334155",background:"#fff"}}>
+                      <option value="">Todos los tipos</option>{tiposDisponibles.map(t=><option key={t} value={t}>{t}</option>)}
+                    </select>
+                    {tieneFiltros&&<button onClick={limpiarFiltros} style={{height:"38px",padding:"0 12px",border:"1px solid #D6DEE9",borderRadius:"8px",background:"#F8FAFC",color:"#475569",fontSize:"13px",cursor:"pointer",fontFamily:"inherit"}}>Limpiar</button>}
+                  </div>
+                </div>}
 
               {cargando
                 ? <div style={{background:"#fff",border:"1px solid #D8E0EA",borderRadius:"12px",padding:"30px",color:"#64748B",fontSize:"15px"}}>Cargando tus eventos…</div>
-                : misEventos.length===0
+                : misEventosBase.length===0
                   ? <div style={{background:"#fff",border:"1px solid #D8E0EA",borderRadius:"12px",padding:"42px",textAlign:"center",color:"#64748B",fontSize:"15px"}}>No tienes eventos asignados.</div>
-                  : <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(430px,1fr))",gap:"20px"}}>
-                      {misEventos.map(ev=>{
-                        const asigns=Array.isArray(ev.asignaciones)?ev.asignaciones:[];
-                        const paresEvento=[...new Map(asigns.filter(a=>a.idioma_origen||a.idioma_destino).map(a=>[a.par_id||String(a.idioma_origen)+String(a.idioma_destino),a])).values()];
-                        const tipos=Array.isArray(ev.tipo)?ev.tipo:[ev.tipo||"Simultánea"];
-                        const modalidad=ev.modalidad==="hibrido"?"Híbrido":ev.modalidad==="presencial"?"Presencial":ev.modalidad==="remoto"?"Remoto":ev.modalidad||"";
-                        const borde=ev.modalidad==="presencial"?"#00AF57":ev.modalidad==="hibrido"?"#D97706":"#1D4ED8";
-                        return (
-                          <div key={ev.id}
-                            style={{position:"relative",background:"#fff",border:"1px solid #D5DDE8",borderLeft:"10px solid "+borde,borderRadius:"0 12px 12px 0",padding:"22px 24px 24px",boxShadow:"0 3px 12px rgba(15,23,42,0.10)",minHeight:"255px",boxSizing:"border-box"}}>
-                            
-                            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"14px",marginBottom:"15px"}}>
-                              <div style={{fontSize:"21px",fontWeight:"750",color:"#162654",lineHeight:1.25}}>{ev.nombre_evento||"Evento"}</div>
-                              <div style={{fontSize:"12px",fontWeight:"700",color:"#1D4ED8",background:"#EAF2FF",border:"1px solid #BFD6FF",borderRadius:"7px",padding:"5px 9px",whiteSpace:"nowrap"}}>
-                                {ev.fecha_inicio||"Fecha por confirmar"}
+                  : ordenados.length===0
+                    ? <div style={{background:"#fff",border:"1px solid #D8E0EA",borderRadius:"12px",padding:"42px",textAlign:"center",color:"#64748B",fontSize:"15px"}}>No hay eventos que coincidan con los filtros seleccionados.</div>
+                    : <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(430px,1fr))",gap:"20px"}}>
+                        {ordenados.map(ev=>{
+                          const asigns=Array.isArray(ev.asignaciones)?ev.asignaciones:[];
+                          const paresEvento=[...new Map(asigns.filter(a=>a.idioma_origen||a.idioma_destino).map(a=>[a.par_id||String(a.idioma_origen)+String(a.idioma_destino),a])).values()];
+                          const tipos=Array.isArray(ev.tipo)?ev.tipo:[ev.tipo||"Simultánea"];
+                          const modalidad=ev.modalidad==="hibrido"?"Híbrido":ev.modalidad==="presencial"?"Presencial":ev.modalidad==="remoto"?"Remoto":ev.modalidad||"";
+                          const borde=ev.modalidad==="presencial"?"#00AF57":ev.modalidad==="hibrido"?"#D97706":"#1D4ED8";
+                          return (
+                            <div key={ev.id} style={{position:"relative",background:"#fff",border:"1px solid #D5DDE8",borderLeft:"10px solid "+borde,borderRadius:"0 12px 12px 0",padding:"22px 24px 24px",boxShadow:"0 3px 12px rgba(15,23,42,0.10)",minHeight:"255px",boxSizing:"border-box"}}>
+                              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"14px",marginBottom:"15px"}}>
+                                <div style={{fontSize:"21px",fontWeight:"750",color:"#162654",lineHeight:1.25}}>{ev.nombre_evento||"Evento"}</div>
+                                <div style={{fontSize:"12px",fontWeight:"700",color:"#1D4ED8",background:"#EAF2FF",border:"1px solid #BFD6FF",borderRadius:"7px",padding:"5px 9px",whiteSpace:"nowrap"}}>{ev.fecha_inicio||"Fecha por confirmar"}</div>
                               </div>
+                              <div style={{display:"grid",gap:"9px",fontSize:"15px",color:"#334155",lineHeight:1.35}}>
+                                {(ev.hora_inicio||ev.hora_termino)&&<div style={{fontSize:"18px",fontWeight:"700",color:"#162654"}}>🕐 {ev.hora_inicio?.slice?.(0,5)||"—"}{ev.hora_termino?" – "+ev.hora_termino.slice(0,5):""} hrs</div>}
+                                {ev.fecha_termino&&ev.fecha_termino!==ev.fecha_inicio&&<div>📅 Evento hasta {ev.fecha_termino}</div>}
+                                {modalidad&&<div style={{display:"flex",gap:"7px",flexWrap:"wrap",alignItems:"center"}}>{tipos.map(t=><span key={t} style={{display:"inline-flex",alignItems:"center",padding:"6px 11px",borderRadius:"18px",fontSize:"13px",fontWeight:"700",color:"#fff",background:"#1D4ED8"}}>{t}</span>)}<span style={{display:"inline-flex",alignItems:"center",padding:"6px 11px",borderRadius:"18px",fontSize:"13px",fontWeight:"700",color:"#fff",background:borde}}>{modalidad}</span></div>}
+                                {ev.lugar&&<div style={{fontSize:"15px"}}>📍 {ev.lugar}{ev.lugar_detalle?" · "+ev.lugar_detalle:""}</div>}
+                                {ev.plataforma&&<div style={{fontSize:"15px"}}>💻 {ev.plataforma}</div>}
+                                {ev.jornada&&<div style={{fontSize:"14px",color:"#64748B"}}>🗓️ {ev.jornada_personalizada||ev.jornada}</div>}
+                                {ev.zoom_link&&<div style={{marginTop:"2px"}}><a href={ev.zoom_link} target="_blank" rel="noreferrer" style={{display:"inline-flex",alignItems:"center",padding:"7px 12px",borderRadius:"8px",background:"#EAF2FF",border:"1px solid #BFD6FF",color:"#1558B0",fontSize:"14px",fontWeight:"700",textDecoration:"none"}}>Abrir enlace Zoom ↗</a></div>}
+                              </div>
+                              {paresEvento.length>0&&<div style={{marginTop:"18px",paddingTop:"14px",borderTop:"2px solid #E8EDF4"}}><div style={{fontSize:"12px",fontWeight:"800",color:"#162654",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:"8px"}}>Mi asignación</div><div style={{display:"flex",flexWrap:"wrap",gap:"8px"}}>{paresEvento.map((a,i)=><span key={i} style={{display:"inline-flex",alignItems:"center",padding:"7px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"700",color:"#174EA6",background:"#EEF4FF",border:"1px solid #BFD6FF"}}>{a.idioma_origen} → {a.idioma_destino}{a.rol?" · "+a.rol:""}</span>)}</div></div>}
                             </div>
-
-                            <div style={{display:"grid",gap:"9px",fontSize:"15px",color:"#334155",lineHeight:1.35}}>
-                              {(ev.hora_inicio||ev.hora_termino)&&
-                                <div style={{fontSize:"18px",fontWeight:"700",color:"#162654"}}>🕐 {ev.hora_inicio?.slice?.(0,5)||"—"}{ev.hora_termino?" – "+ev.hora_termino.slice(0,5):""} hrs</div>}
-                              {ev.fecha_termino&&ev.fecha_termino!==ev.fecha_inicio&&
-                                <div>📅 Evento hasta {ev.fecha_termino}</div>}
-                              {modalidad&&
-                                <div style={{display:"flex",gap:"7px",flexWrap:"wrap",alignItems:"center"}}>
-                                  {tipos.map(t=><span key={t} style={{display:"inline-flex",alignItems:"center",padding:"6px 11px",borderRadius:"18px",fontSize:"13px",fontWeight:"700",color:"#fff",background:"#1D4ED8"}}>{t}</span>)}
-                                  <span style={{display:"inline-flex",alignItems:"center",padding:"6px 11px",borderRadius:"18px",fontSize:"13px",fontWeight:"700",color:"#fff",background:borde}}>{modalidad}</span>
-                                </div>}
-                              {ev.lugar&&<div style={{fontSize:"15px"}}>📍 {ev.lugar}{ev.lugar_detalle?" · "+ev.lugar_detalle:""}</div>}
-                              {ev.plataforma&&<div style={{fontSize:"15px"}}>💻 {ev.plataforma}</div>}
-                              {ev.jornada&&<div style={{fontSize:"14px",color:"#64748B"}}>🗓️ {ev.jornada_personalizada||ev.jornada}</div>}
-                              {ev.zoom_link&&<div style={{marginTop:"2px"}}><a href={ev.zoom_link} target="_blank" rel="noreferrer" style={{display:"inline-flex",alignItems:"center",padding:"7px 12px",borderRadius:"8px",background:"#EAF2FF",border:"1px solid #BFD6FF",color:"#1558B0",fontSize:"14px",fontWeight:"700",textDecoration:"none"}}>Abrir enlace Zoom ↗</a></div>}
-                            </div>
-
-                            {paresEvento.length>0&&
-                              <div style={{marginTop:"18px",paddingTop:"14px",borderTop:"2px solid #E8EDF4"}}>
-                                <div style={{fontSize:"12px",fontWeight:"800",color:"#162654",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:"8px"}}>Mi asignación</div>
-                                <div style={{display:"flex",flexWrap:"wrap",gap:"8px"}}>
-                                  {paresEvento.map((a,i)=>
-                                    <span key={i} style={{display:"inline-flex",alignItems:"center",padding:"7px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"700",color:"#174EA6",background:"#EEF4FF",border:"1px solid #BFD6FF"}}>
-                                      {a.idioma_origen} → {a.idioma_destino}{a.rol?" · "+a.rol:""}
-                                    </span>
-                                  )}
-                                </div>
-                              </div>}
-                          </div>
-                        );
-                      })}
-                    </div>
+                          );
+                        })}
+                      </div>
               }
             </main>}
       </div>
