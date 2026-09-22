@@ -3387,10 +3387,21 @@ export default function App() {
   };
 
   const cargarPerfil=async(uid)=>{
-    const{data,error}=await sb.from("perfiles").select("*").eq("id",uid).single();
-    if(error){setCargandoAuth(false);return;}
-    setPerfil(data);setCargandoAuth(false);
-    if(data?.rol==="interprete") cargarDatosInterprete(); else cargarDatos();
+    // Primero usamos la fila de perfil; si RLS/latencia impide leerla directamente,
+    // hacemos fallback a los RPC seguros de identidad. Esto evita que un intérprete
+    // termine accidentalmente en el calendario administrativo.
+    const{data,error}=await sb.from("perfiles").select("*").eq("id",uid).maybeSingle();
+    let perfilActual=data||null;
+    if(!perfilActual || error){
+      const [{data:rolR},{data:intR}]=await Promise.all([
+        sb.rpc("get_user_rol"),sb.rpc("get_interprete_id")
+      ]);
+      const rol=rolR?.[0]?.rol||rolR?.rol||rolR||null;
+      const interpreteId=intR?.[0]?.interprete_id??intR?.interprete_id??intR??null;
+      if(rol) perfilActual={id:uid,rol,nombre:usuario?.user_metadata?.nombre||usuario?.email?.split("@")[0]||"",interprete_id:interpreteId};
+    }
+    setPerfil(perfilActual);setCargandoAuth(false);
+    if(perfilActual?.rol==="interprete") cargarDatosInterprete(); else cargarDatos();
   };
 
   const cargarDatos=useCallback(async()=>{
