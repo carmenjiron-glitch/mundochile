@@ -4127,7 +4127,7 @@ export default function App() {
                   ? <div style={{background:"#fff",border:"1px solid #D8E0EA",borderRadius:"12px",padding:"42px",textAlign:"center",color:"#64748B",fontSize:"15px"}}>No tienes eventos asignados.</div>
                   : ordenados.length===0
                     ? <div style={{background:"#fff",border:"1px solid #D8E0EA",borderRadius:"12px",padding:"42px",textAlign:"center",color:"#64748B",fontSize:"15px"}}>No hay eventos que coincidan con los filtros seleccionados.</div>
-                    : <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(520px,1fr))",gap:"22px",width:"100%",maxWidth:"1380px",margin:"0 auto"}}>
+                    : <div style={{display:"grid",gridTemplateColumns:ordenados.length===1?"minmax(0,760px)":"repeat(auto-fit,minmax(520px,1fr))",gap:"22px",width:"100%",maxWidth:ordenados.length===1?"760px":"1380px",margin:"0 auto",justifyContent:"center"}}>
                         {ordenados.map(ev=>{
                           const asigns=Array.isArray(ev.asignaciones)?ev.asignaciones:[];
                           const paresEvento=[...new Map(asigns.filter(a=>a.idioma_origen||a.idioma_destino).map(a=>[a.par_id||String(a.idioma_origen)+String(a.idioma_destino),a])).values()];
@@ -4136,20 +4136,21 @@ export default function App() {
                           const borde=ev.modalidad==="presencial"?"#00AF57":ev.modalidad==="hibrido"?"#D97706":"#1D4ED8";
                           return (
                             <div key={ev.id} style={{position:"relative",background:"#fff",border:"1px solid #D5DDE8",borderLeft:"10px solid "+borde,borderRadius:"0 12px 12px 0",padding:"22px 24px 24px",boxShadow:"0 3px 12px rgba(15,23,42,0.10)",minHeight:"255px",boxSizing:"border-box"}}>
-                              <div style={{marginBottom:"18px"}}>
-                                <div style={{display:"flex",justifyContent:"flex-end",marginBottom:"10px"}}>
+                              <div style={{marginBottom:"18px",position:"relative"}}>
+                                <div style={{position:"absolute",top:"-2px",left:"-1px",zIndex:2,display:"flex",gap:"7px",flexWrap:"wrap"}}>{tipos.map(t=>{const tc=t==="Simultánea"?{bg:"#2563EB",bd:"#1D4ED8"}:t==="Consecutiva"?{bg:"#C2416C",bd:"#A92F57"}:{bg:"#7C3AED",bd:"#6D28D9"};return <span key={t} style={{display:"inline-flex",alignItems:"center",padding:"6px 11px",borderRadius:"18px",fontSize:"13px",fontWeight:"800",color:"#fff",background:tc.bg,border:"1px solid "+tc.bd,boxShadow:"0 2px 5px rgba(15,23,42,0.12)"}}>{t}</span>})}</div>
+                                <div style={{display:"flex",justifyContent:"flex-end",marginBottom:"34px"}}>
                                   <div style={{width:"148px",textAlign:"center",fontSize:"17px",fontWeight:"640",color:"#fff",background:"#4774C4",border:"2px solid #3A63B0",borderRadius:"10px",padding:"11px 9px",lineHeight:1.25,whiteSpace:"normal",boxShadow:"0 3px 8px rgba(29,78,216,0.20)"}}>
                                     <div style={{fontSize:"11px",fontWeight:"640",textTransform:"uppercase",letterSpacing:"0.08em",color:"rgba(255,255,255,0.82)",marginBottom:"4px"}}>Fecha</div>
-                                    {ev.fecha_inicio||"Por confirmar"}
+                                    {(()=>{const d=String(ev.fecha_inicio||"");const p=d.split("-");const meses=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];return p.length===3?Number(p[2])+" de "+meses[Number(p[1])-1]+" de "+p[0]:"Por confirmar";})()}
                                   </div>
                                 </div>
-                                {ev.cliente_nombre&&<div style={{fontSize:"19.2px",fontWeight:"800",color:"#526B92",marginBottom:"5px",lineHeight:1.2}}>Cliente: {ev.cliente_nombre}</div>}
-                                <div style={{fontSize:"19.6px",fontWeight:"850",color:"#0B3A78",lineHeight:1.25}}>{ev.nombre_evento||"Evento"}</div>
+                                {ev.cliente_nombre&&<div style={{fontSize:"17px",fontWeight:"650",color:"#7183A0",letterSpacing:"0.01em",marginBottom:"4px",lineHeight:1.2}}>Cliente: {ev.cliente_nombre}</div>}
+                                <div style={{fontSize:"19.6px",fontWeight:"850",color:"#063B78",lineHeight:1.3,marginTop:"2px"}}>{ev.nombre_evento||"Evento"}</div>
                               </div>
                               <div style={{display:"grid",gap:"9px",fontSize:"16px",fontWeight:"600",color:"#26384F",lineHeight:1.4}}>
                                 {(ev.hora_inicio||ev.hora_termino)&&<div style={{fontSize:"20px",fontWeight:"800",color:"#162654"}}>🕐 {ev.hora_inicio?.slice?.(0,5)||"—"}{ev.hora_termino?" – "+ev.hora_termino.slice(0,5):""} hrs</div>}
                                 {ev.fecha_termino&&ev.fecha_termino!==ev.fecha_inicio&&<div>📅 Evento hasta {ev.fecha_termino}</div>}
-                                {modalidad&&<div style={{display:"flex",gap:"7px",flexWrap:"wrap",alignItems:"center"}}>{tipos.map(t=>{const tc=t==="Simultánea"?{bg:"#2563EB",bd:"#1D4ED8"}:t==="Consecutiva"?{bg:"#C2416C",bd:"#A92F57"}:{bg:"#7C3AED",bd:"#6D28D9"};return <span key={t} style={{display:"inline-flex",alignItems:"center",padding:"6px 11px",borderRadius:"18px",fontSize:"13px",fontWeight:"800",color:"#fff",background:tc.bg,border:"1px solid "+tc.bd,boxShadow:"0 2px 5px rgba(15,23,42,0.12)"}}>{t}</span>})}<span style={{display:"inline-flex",alignItems:"center",padding:"6px 12px",borderRadius:"18px",fontSize:"13px",fontWeight:"680",color:"#fff",background:ev.modalidad==="presencial"?"#00A86B":ev.modalidad==="hibrido"?"#F59E0B":"#7C3AED",border:"1px solid "+(ev.modalidad==="presencial"?"#008A58":ev.modalidad==="hibrido"?"#D97706":"#6D28D9"),boxShadow:"0 2px 5px rgba(15,23,42,0.12)"}}>{modalidad}</span></div>}
+                                {modalidad&&<div style={{display:"flex",gap:"7px",flexWrap:"wrap",alignItems:"center"}}><span style={{display:"inline-flex",alignItems:"center",padding:"6px 12px",borderRadius:"18px",fontSize:"13px",fontWeight:"680",color:"#fff",background:ev.modalidad==="presencial"?"#00A86B":ev.modalidad==="hibrido"?"#F59E0B":"#7C3AED",border:"1px solid "+(ev.modalidad==="presencial"?"#008A58":ev.modalidad==="hibrido"?"#D97706":"#6D28D9"),boxShadow:"0 2px 5px rgba(15,23,42,0.12)"}}>{modalidad}</span></div>}
                                 {ev.lugar&&<div style={{fontSize:"16.5px",fontWeight:"600"}}>📍 {ev.lugar}{ev.lugar_detalle?" · "+ev.lugar_detalle:""}</div>}
                                 {ev.plataforma&&<div style={{fontSize:"16.5px",fontWeight:"600"}}>💻 {ev.plataforma}</div>}
                                 {ev.jornada&&<div style={{fontSize:"15.5px",fontWeight:"600",color:"#52637A"}}>🗓️ {ev.jornada_personalizada||ev.jornada}</div>}
