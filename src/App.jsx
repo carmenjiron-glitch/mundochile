@@ -4138,8 +4138,8 @@ export default function App() {
                             <div key={ev.id} style={{position:"relative",background:"#fff",border:"1px solid #D5DDE8",borderLeft:"10px solid "+borde,borderRadius:"0 12px 12px 0",padding:"22px 24px 24px",boxShadow:"0 3px 12px rgba(15,23,42,0.10)",minHeight:"255px",boxSizing:"border-box"}}>
                               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"18px",marginBottom:"15px"}}>
                                 <div style={{fontSize:"21px",fontWeight:"750",color:"#162654",lineHeight:1.25,flex:"1 1 auto"}}>{ev.nombre_evento||"Evento"}</div>
-                                <div style={{flex:"0 0 148px",textAlign:"center",fontSize:"17px",fontWeight:"800",color:"#fff",background:"#1D4ED8",border:"2px solid #174EA6",borderRadius:"10px",padding:"11px 9px",lineHeight:1.25,whiteSpace:"normal",boxShadow:"0 3px 8px rgba(29,78,216,0.20)"}}>
-                                  <div style={{fontSize:"11px",fontWeight:"800",textTransform:"uppercase",letterSpacing:"0.08em",color:"rgba(255,255,255,0.82)",marginBottom:"4px"}}>Fecha</div>
+                                <div style={{flex:"0 0 148px",textAlign:"center",fontSize:"17px",fontWeight:"640",color:"#fff",background:"#4A73C4",border:"2px solid #3D65B0",borderRadius:"10px",padding:"11px 9px",lineHeight:1.25,whiteSpace:"normal",boxShadow:"0 3px 8px rgba(29,78,216,0.20)"}}>
+                                  <div style={{fontSize:"11px",fontWeight:"640",textTransform:"uppercase",letterSpacing:"0.08em",color:"rgba(255,255,255,0.82)",marginBottom:"4px"}}>Fecha</div>
                                   {ev.fecha_inicio||"Por confirmar"}
                                 </div>
                               </div>
