@@ -220,12 +220,12 @@ export default function EventCard({ ev, diaDe, clientes, contactos=[], interpret
       onClick={onClick}
       style={{
         background:   "#FFFFFF",
-        borderLeft:   `10px solid ${borderColor}`,
-        borderTop:    `3px solid ${borderColor}`,
+        borderLeft:   `16px solid ${borderColor}`,
+        borderTop:    `6px solid ${borderColor}`,
         borderRadius: agendaSmall ? "0 12px 12px 0" : "0 8px 8px 0",
-        padding:      agendaSmall ? "20px 29px" : "14px 16px 16px",
+        padding:      agendaSmall ? "20px 29px" : "17px 18px 18px",
         marginBottom: "10px",
-        boxShadow:    agendaSmall ? "0 2px 12px rgba(0,0,0,0.10)" : "0 2px 8px rgba(15,23,42,0.10)",
+        boxShadow:    agendaSmall ? "0 2px 12px rgba(0,0,0,0.10)" : "0 3px 10px rgba(15,23,42,0.14)",
         cursor:       "pointer",
         width:        "100%",
         boxSizing:    "border-box",
@@ -366,7 +366,7 @@ export default function EventCard({ ev, diaDe, clientes, contactos=[], interpret
                 </div>
                 {pillMultidia}
               </div>
-              <div style={{ fontSize:19, fontWeight:700, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", minWidth:0, marginBottom:6 }}>
+              <div style={{ fontSize:23, fontWeight:800, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", minWidth:0, marginBottom:6 }}>
                 {cliente?.nombre_empresa || "—"}
               </div>
               {nombreContacto && (
@@ -386,12 +386,12 @@ export default function EventCard({ ev, diaDe, clientes, contactos=[], interpret
                 </div>
               )}
               <div style={{ marginBottom:4 }}>
-                <div style={{ fontSize:23, fontWeight:700, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", minWidth:0, paddingRight:((!hideDots&&(dotEsHoy||dotEsMan))||ev.comentarios)?"44px":0 }}>
+                <div style={{ fontSize:26, fontWeight:800, color:"#0F172A", lineHeight:1.2, letterSpacing:"-0.01em", minWidth:0, paddingRight:((!hideDots&&(dotEsHoy||dotEsMan))||ev.comentarios)?"44px":0 }}>
                   {cliente?.nombre_empresa || "—"}
                 </div>
               </div>
               {nombreContacto && (
-                <div style={{ fontSize:16, color:"#373B42", fontStyle:"italic", marginTop:2 }}>
+                <div style={{ fontSize:17, color:"#374151", fontStyle:"italic", marginTop:2 }}>
                   Contacto: {nombreContacto}
                 </div>
               )}
@@ -400,14 +400,14 @@ export default function EventCard({ ev, diaDe, clientes, contactos=[], interpret
 
           {/* Nombre evento */}
           {ev.nombre_evento && (
-            <div style={{ fontSize:14, color:"#1F2937", marginTop:7, lineHeight:1.35 }}>
+            <div style={{ fontSize:16, color:"#111827", marginTop:9, lineHeight:1.4 }}>
               <span style={{ fontWeight:700, color:"#374151" }}>Nombre del evento:</span>{" "}
               <span style={{ fontWeight:400 }}>{ev.nombre_evento}</span>
             </div>
           )}
 
           {/* Horario */}
-          <div style={{ fontSize:15, fontWeight:700, color:"#111827", marginTop:10, marginBottom:9, display:"flex", alignItems:"center", gap:6 }}>
+          <div style={{ fontSize:17, fontWeight:800, color:"#111827", marginTop:12, marginBottom:11, display:"flex", alignItems:"center", gap:6 }}>
             🕐 {ev.hora_inicio?.slice(0,5)} – {ev.hora_termino?.slice(0,5)} hrs
           </div>
 
@@ -443,14 +443,14 @@ export default function EventCard({ ev, diaDe, clientes, contactos=[], interpret
             const flagSz  = solidPill ? 13 : 14;
             return (
               <div key={key} style={{ marginTop:14 }}>
-                <div style={{ fontSize:solidPill?12:13, fontWeight:800, color:"#92400E", textTransform:"uppercase", letterSpacing:"0.07em", marginBottom:6, textAlign:"center", background:"#FFFBEB", border:"1.5px solid #FCD34D", borderRadius:"8px", padding:"3px 10px", display:"block", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+                <div style={{ fontSize:solidPill?12:13, fontWeight:800, color:"#92400E", textTransform:"uppercase", letterSpacing:"0.07em", marginBottom:6, textAlign:"center", background:"#FFFBEB", border:"1.5px solid #FCD34D", borderRadius:"8px", padding:"5px 10px", display:"block", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
                   {key}
                 </div>
                 <div style={{ display:"grid", gridTemplateColumns:solidPill?"1fr":"1fr 1fr", gap:6, ...(pillsHalf?{maxWidth:"50%"}:{}) }}>
                   {grupo.items.map((interp, i) => (
                     <span key={i}
                       title={`${interp.nombre}${interp.apellido ? " " + interp.apellido : ""}`}
-                      style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:5, padding:solidPill ? "2px 6px" : "5px 11px", borderRadius:20, fontSize:pillFs, fontWeight:700, lineHeight:1.4, color:"#333333", background:"#FFFFFF", border, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"default", WebkitFontSmoothing:"antialiased", MozOsxFontSmoothing:"grayscale", textRendering:"optimizeLegibility", letterSpacing:"0.01em" }}>
+                      style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", gap:5, padding:solidPill ? "2px 6px" : "5px 11px", borderRadius:20, fontSize:14, fontWeight:800, lineHeight:1.45, color:"#1F2937", background:"#FFFFFF", border, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", cursor:"default", WebkitFontSmoothing:"antialiased", MozOsxFontSmoothing:"grayscale", textRendering:"optimizeLegibility", letterSpacing:"0.01em" }}>
                       {interp.isHost && <span style={{ fontSize:11 }}>🔑</span>}
                       <Flag idioma={grupo.idioma} size={flagSz} />
                       <span style={{ overflow:"hidden", textOverflow:"ellipsis", color:"#333333" }}>
@@ -471,7 +471,7 @@ export default function EventCard({ ev, diaDe, clientes, contactos=[], interpret
 
           {/* Equipos AV */}
           {tieneEquipos && (
-            <div style={{ fontSize:11, color:"#6B7280", marginTop:8, display:"flex", alignItems:"center", gap:5 }}>
+            <div style={{ fontSize:13, color:"#4B5563", marginTop:10, display:"flex", alignItems:"center", gap:5 }}>
               <IconAV size={13} /> {provNombre || "Equipos AV"}
             </div>
           )}
