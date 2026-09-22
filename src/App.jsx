@@ -4031,7 +4031,7 @@ export default function App() {
 
   if(esInterprete){
     const hoyISO=new Date().toISOString().slice(0,10);
-    const misEventosBase=[...eventos].sort((a,b)=>String(a.fecha_inicio||"").localeCompare(String(b.fecha_inicio||"")));
+    const misEventosBase=[...eventos].sort((a,b)=>{const aa=String(a.fecha_inicio||"");const bb=String(b.fecha_inicio||"");return bb.localeCompare(aa)||String(b.hora_inicio||"").localeCompare(String(a.hora_inicio||""));});
     const textoFiltro=filtroInterprete.texto.trim().toLowerCase();
     const eventosVisibles=misEventosBase.filter(ev=>{
       const inicio=String(ev.fecha_inicio||"");
@@ -4051,7 +4051,7 @@ export default function App() {
     });
     const ordenados=[...eventosVisibles].sort((a,b)=>{
       const aa=String(a.fecha_inicio||""),bb=String(b.fecha_inicio||"");
-      return filtroInterprete.periodo==="historial"?bb.localeCompare(aa):aa.localeCompare(bb);
+      return bb.localeCompare(aa)||String(b.hora_inicio||"").localeCompare(String(a.hora_inicio||""));
     });
     const totalProximos=misEventosBase.filter(ev=>String(ev.fecha_termino||ev.fecha_inicio||"")>=hoyISO).length;
     const totalHoy=misEventosBase.filter(ev=>String(ev.fecha_inicio||"")<=hoyISO&&String(ev.fecha_termino||ev.fecha_inicio||"")>=hoyISO).length;
@@ -4090,10 +4090,10 @@ export default function App() {
 
         {pantalla==="interprete-disponibilidad"
           ? <InterpreterAvailability supabase={sb} interpreteId={perfil?.interprete_id}/>
-          : <main style={{maxWidth:"1240px",margin:"0 auto",padding:"34px 28px 70px"}}>
+          : <main style={{maxWidth:"1440px",margin:"0 auto",padding:"34px 28px 70px"}}>
               <div style={{marginBottom:"22px"}}>
                 <div style={{fontSize:"32px",fontWeight:"700",color:"#162654",lineHeight:1.15}}>Mis eventos</div>
-                <div style={{fontSize:"15px",color:"#64748B",marginTop:"7px"}}>Tu agenda de interpretación, con los próximos compromisos primero.</div>
+                <div style={{fontSize:"15px",color:"#64748B",marginTop:"7px"}}></div>
               </div>
 
               {!cargando&&misEventosBase.length>0&&
@@ -4127,7 +4127,7 @@ export default function App() {
                   ? <div style={{background:"#fff",border:"1px solid #D8E0EA",borderRadius:"12px",padding:"42px",textAlign:"center",color:"#64748B",fontSize:"15px"}}>No tienes eventos asignados.</div>
                   : ordenados.length===0
                     ? <div style={{background:"#fff",border:"1px solid #D8E0EA",borderRadius:"12px",padding:"42px",textAlign:"center",color:"#64748B",fontSize:"15px"}}>No hay eventos que coincidan con los filtros seleccionados.</div>
-                    : <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(390px,1fr))",gap:"18px",maxWidth:"900px",margin:"0 auto"}}>
+                    : <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(520px,1fr))",gap:"22px",width:"100%",maxWidth:"1380px",margin:"0 auto"}}>
                         {ordenados.map(ev=>{
                           const asigns=Array.isArray(ev.asignaciones)?ev.asignaciones:[];
                           const paresEvento=[...new Map(asigns.filter(a=>a.idioma_origen||a.idioma_destino).map(a=>[a.par_id||String(a.idioma_origen)+String(a.idioma_destino),a])).values()];
@@ -4136,23 +4136,26 @@ export default function App() {
                           const borde=ev.modalidad==="presencial"?"#00AF57":ev.modalidad==="hibrido"?"#D97706":"#1D4ED8";
                           return (
                             <div key={ev.id} style={{position:"relative",background:"#fff",border:"1px solid #D5DDE8",borderLeft:"10px solid "+borde,borderRadius:"0 12px 12px 0",padding:"22px 24px 24px",boxShadow:"0 3px 12px rgba(15,23,42,0.10)",minHeight:"255px",boxSizing:"border-box"}}>
-                              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"18px",marginBottom:"15px"}}>
-                                <div style={{flex:"1 1 auto"}}>{ev.cliente_nombre&&<div style={{fontSize:"19.2px",fontWeight:"800",color:"#29466F",marginBottom:"6px",lineHeight:1.2}}>Cliente: {ev.cliente_nombre}</div>}<div style={{fontSize:"19.6px",fontWeight:"850",color:"#162654",lineHeight:1.25}}>{ev.nombre_evento||"Evento"}</div></div>
-                                <div style={{flex:"0 0 148px",textAlign:"center",fontSize:"17px",fontWeight:"640",color:"#fff",background:"#4774C4",border:"2px solid #3A63B0",borderRadius:"10px",padding:"11px 9px",lineHeight:1.25,whiteSpace:"normal",boxShadow:"0 3px 8px rgba(29,78,216,0.20)"}}>
-                                  <div style={{fontSize:"11px",fontWeight:"640",textTransform:"uppercase",letterSpacing:"0.08em",color:"rgba(255,255,255,0.82)",marginBottom:"4px"}}>Fecha</div>
-                                  {ev.fecha_inicio||"Por confirmar"}
+                              <div style={{marginBottom:"18px"}}>
+                                <div style={{display:"flex",justifyContent:"flex-end",marginBottom:"10px"}}>
+                                  <div style={{width:"148px",textAlign:"center",fontSize:"17px",fontWeight:"640",color:"#fff",background:"#4774C4",border:"2px solid #3A63B0",borderRadius:"10px",padding:"11px 9px",lineHeight:1.25,whiteSpace:"normal",boxShadow:"0 3px 8px rgba(29,78,216,0.20)"}}>
+                                    <div style={{fontSize:"11px",fontWeight:"640",textTransform:"uppercase",letterSpacing:"0.08em",color:"rgba(255,255,255,0.82)",marginBottom:"4px"}}>Fecha</div>
+                                    {ev.fecha_inicio||"Por confirmar"}
+                                  </div>
                                 </div>
+                                {ev.cliente_nombre&&<div style={{fontSize:"19.2px",fontWeight:"800",color:"#526B92",marginBottom:"5px",lineHeight:1.2}}>Cliente: {ev.cliente_nombre}</div>}
+                                <div style={{fontSize:"19.6px",fontWeight:"850",color:"#0B3A78",lineHeight:1.25}}>{ev.nombre_evento||"Evento"}</div>
                               </div>
-                              <div style={{display:"grid",gap:"9px",fontSize:"15px",color:"#334155",lineHeight:1.35}}>
+                              <div style={{display:"grid",gap:"9px",fontSize:"16px",fontWeight:"600",color:"#26384F",lineHeight:1.4}}>
                                 {(ev.hora_inicio||ev.hora_termino)&&<div style={{fontSize:"20px",fontWeight:"800",color:"#162654"}}>🕐 {ev.hora_inicio?.slice?.(0,5)||"—"}{ev.hora_termino?" – "+ev.hora_termino.slice(0,5):""} hrs</div>}
                                 {ev.fecha_termino&&ev.fecha_termino!==ev.fecha_inicio&&<div>📅 Evento hasta {ev.fecha_termino}</div>}
-                                {modalidad&&<div style={{display:"flex",gap:"7px",flexWrap:"wrap",alignItems:"center"}}>{tipos.map(t=>{const tc=t==="Simultánea"?{bg:"#2563EB",bd:"#1D4ED8"}:t==="Consecutiva"?{bg:"#C2416C",bd:"#A92F57"}:{bg:"#7C3AED",bd:"#6D28D9"};return <span key={t} style={{display:"inline-flex",alignItems:"center",padding:"6px 11px",borderRadius:"18px",fontSize:"13px",fontWeight:"800",color:"#fff",background:tc.bg,border:"1px solid "+tc.bd,boxShadow:"0 2px 5px rgba(15,23,42,0.12)"}}>{t}</span>})}<span style={{display:"inline-flex",alignItems:"center",padding:"6px 12px",borderRadius:"18px",fontSize:"13px",fontWeight:"800",color:"#fff",background:ev.modalidad==="presencial"?"#00A86B":ev.modalidad==="hibrido"?"#F59E0B":"#7C3AED",border:"1px solid "+(ev.modalidad==="presencial"?"#008A58":ev.modalidad==="hibrido"?"#D97706":"#6D28D9"),boxShadow:"0 2px 5px rgba(15,23,42,0.12)"}}>{modalidad}</span></div>}
+                                {modalidad&&<div style={{display:"flex",gap:"7px",flexWrap:"wrap",alignItems:"center"}}>{tipos.map(t=>{const tc=t==="Simultánea"?{bg:"#2563EB",bd:"#1D4ED8"}:t==="Consecutiva"?{bg:"#C2416C",bd:"#A92F57"}:{bg:"#7C3AED",bd:"#6D28D9"};return <span key={t} style={{display:"inline-flex",alignItems:"center",padding:"6px 11px",borderRadius:"18px",fontSize:"13px",fontWeight:"800",color:"#fff",background:tc.bg,border:"1px solid "+tc.bd,boxShadow:"0 2px 5px rgba(15,23,42,0.12)"}}>{t}</span>})}<span style={{display:"inline-flex",alignItems:"center",padding:"6px 12px",borderRadius:"18px",fontSize:"13px",fontWeight:"680",color:"#fff",background:ev.modalidad==="presencial"?"#00A86B":ev.modalidad==="hibrido"?"#F59E0B":"#7C3AED",border:"1px solid "+(ev.modalidad==="presencial"?"#008A58":ev.modalidad==="hibrido"?"#D97706":"#6D28D9"),boxShadow:"0 2px 5px rgba(15,23,42,0.12)"}}>{modalidad}</span></div>}
                                 {ev.lugar&&<div style={{fontSize:"16.5px",fontWeight:"600"}}>📍 {ev.lugar}{ev.lugar_detalle?" · "+ev.lugar_detalle:""}</div>}
                                 {ev.plataforma&&<div style={{fontSize:"16.5px",fontWeight:"600"}}>💻 {ev.plataforma}</div>}
                                 {ev.jornada&&<div style={{fontSize:"15.5px",fontWeight:"600",color:"#52637A"}}>🗓️ {ev.jornada_personalizada||ev.jornada}</div>}
                                 {ev.zoom_link&&<div style={{marginTop:"2px"}}><a href={ev.zoom_link} target="_blank" rel="noreferrer" style={{display:"inline-flex",alignItems:"center",padding:"7px 12px",borderRadius:"8px",background:"#EAF2FF",border:"1px solid #BFD6FF",color:"#1558B0",fontSize:"14px",fontWeight:"700",textDecoration:"none"}}>Abrir enlace Zoom ↗</a></div>}
                               </div>
-                              {paresEvento.length>0&&<div style={{marginTop:"18px",paddingTop:"14px",borderTop:"2px solid #E8EDF4"}}><div style={{fontSize:"13px",fontWeight:"920",color:"#162654",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:"8px"}}>Mi asignación</div><div style={{display:"flex",flexWrap:"wrap",gap:"8px"}}>{paresEvento.map((a,i)=><span key={i} style={{display:"inline-flex",alignItems:"center",padding:"7px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"700",color:"#174EA6",background:"#EEF4FF",border:"1px solid #BFD6FF"}}>{a.idioma_origen} → {a.idioma_destino}{a.rol?" · "+a.rol:""}</span>)}</div></div>}
+                              {paresEvento.length>0&&<div style={{marginTop:"18px",paddingTop:"14px",borderTop:"2px solid #E8EDF4"}}><div style={{fontSize:"13px",fontWeight:"900",color:"#162654",textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:"10px"}}>Mi Par de Idiomas</div><div style={{display:"flex",flexWrap:"wrap",gap:"8px"}}>{[...new Map(paresEvento.map(a=>{const key=[a.idioma_origen,a.idioma_destino].sort().join("↔");return [key,a]})).values()].map((a,i)=><span key={i} style={{display:"inline-flex",alignItems:"center",padding:"7px 12px",borderRadius:"20px",fontSize:"14px",fontWeight:"700",color:"#174EA6",background:"#EEF4FF",border:"1px solid #BFD6FF"}}>{a.idioma_origen} ↔ {a.idioma_destino}</span>)}</div></div>}
                             </div>
                           );
                         })}
