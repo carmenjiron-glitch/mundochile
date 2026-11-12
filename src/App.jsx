@@ -630,20 +630,28 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
         if(asigs.length>0){const{error:e}=await sb.from("asignaciones").insert(asigs);if(e)throw e;}
       }
       // Insertar equipos AV para evento de un día (phantom evento_dia)
-      if(!esMultidia&&form.modalidad!=="remoto"&&(form.equipos||[]).length>0){
+      if(!esMultidia&&(form.equipos||[]).length>0){
         const{data:dD,error:eDia}=await sb.from("evento_dias").insert({
           evento_id:eventoId,fecha:form.fecha_inicio,orden:1,
           hora_inicio:form.hora_inicio||"09:00",hora_termino:form.hora_termino||"13:00",
           jornada:form.jornada||"Media Jornada",jornada_personalizada:form.jornada_personalizada||"",
         }).select().single();
         if(eDia)throw eDia;
-        const eqs=form.equipos.map(eq=>({
-          evento_dia_id:dD.id,tipo_equipo:eq.tipo_equipo||"fijo",
-          proveedor_id:eq.proveedor_id||null,proveedor_nombre:eq.proveedor_nombre||"",
-          proveedor_contacto:eq.proveedor_contacto||"",proveedor_telefono:eq.proveedor_telefono||"",
-          num_receptores:Number(eq.num_receptores)||0,num_cabinas:Number(eq.num_cabinas)||0,
-          num_asistentes:Number(eq.num_asistentes)||0,
-        }));
+        const eqs=form.equipos.map(eq=>{
+          const nombreProveedor=eq.proveedor_nombre||proveedores.find(p=>p.id===Number(eq.proveedor_id))?.nombre||"";
+          return {
+            evento_dia_id:dD.id,tipo_equipo:eq.tipo_equipo||"fijo",
+            proveedor_id:eq.proveedor_id||null,proveedor_nombre:nombreProveedor,proveedor:nombreProveedor,
+            proveedor_contacto:eq.proveedor_contacto||"",proveedor_telefono:eq.proveedor_telefono||"",
+            num_receptores:Number(eq.num_receptores)||0,num_cabinas:Number(eq.num_cabinas)||0,
+            num_asistentes:Number(eq.num_asistentes)||0,asistentes_origen:eq.asistentes_origen||"mismo_proveedor",
+            asistentes_otro_proveedor:eq.asistentes_otro_proveedor||"",
+            asistentes_mundochile_nombres:eq.asistentes_mundochile_nombres||"",
+            portatiles_origen:eq.portatiles_origen||"mundochile",proveedor_portatiles:eq.proveedor_portatiles||"",
+            dia_montaje:eq.dia_montaje||null,hora_montaje:eq.hora_montaje||null,
+            contacto_in_situ:eq.contacto_in_situ||"",instrucciones:eq.instrucciones||"",
+          };
+        });
         const{error:eE}=await sb.from("equipos_dia").insert(eqs);if(eE)throw eE;
       }
       // Insertar días
@@ -666,19 +674,22 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
             es_host_zoom:!!a.es_host_zoom, hora_presentacion:a.hora_presentacion||null,
           }));
           if(asigsDia.length>0){const{error:eA}=await sb.from("asignaciones_dia").insert(asigsDia);if(eA)throw eA;}
-          if(form.modalidad!=="remoto"&&(dia.equipos||[]).length>0){
-            const eqs=dia.equipos.map(eq=>({
-              evento_dia_id:dD.id, tipo_equipo:eq.tipo_equipo||"fijo",
-              proveedor_id:eq.proveedor_id||null, proveedor_nombre:eq.proveedor_nombre||"",
-              proveedor_contacto:eq.proveedor_contacto||"", proveedor_telefono:eq.proveedor_telefono||"",
-              num_receptores:Number(eq.num_receptores)||0, num_cabinas:Number(eq.num_cabinas)||0,
-              num_asistentes:Number(eq.num_asistentes)||0, asistentes_origen:eq.asistentes_origen||"mismo_proveedor",
-              asistentes_otro_proveedor:eq.asistentes_otro_proveedor||"",
-              asistentes_mundochile_nombres:eq.asistentes_mundochile_nombres||"",
-              portatiles_origen:eq.portatiles_origen||"mundochile", proveedor_portatiles:eq.proveedor_portatiles||"",
-              dia_montaje:eq.dia_montaje||null, hora_montaje:eq.hora_montaje||null,
-              contacto_in_situ:eq.contacto_in_situ||"", instrucciones:eq.instrucciones||"",
-            }));
+          if((dia.equipos||[]).length>0){
+            const eqs=dia.equipos.map(eq=>{
+              const nombreProveedor=eq.proveedor_nombre||proveedores.find(p=>p.id===Number(eq.proveedor_id))?.nombre||"";
+              return {
+                evento_dia_id:dD.id, tipo_equipo:eq.tipo_equipo||"fijo",
+                proveedor_id:eq.proveedor_id||null, proveedor_nombre:nombreProveedor, proveedor:nombreProveedor,
+                proveedor_contacto:eq.proveedor_contacto||"", proveedor_telefono:eq.proveedor_telefono||"",
+                num_receptores:Number(eq.num_receptores)||0, num_cabinas:Number(eq.num_cabinas)||0,
+                num_asistentes:Number(eq.num_asistentes)||0, asistentes_origen:eq.asistentes_origen||"mismo_proveedor",
+                asistentes_otro_proveedor:eq.asistentes_otro_proveedor||"",
+                asistentes_mundochile_nombres:eq.asistentes_mundochile_nombres||"",
+                portatiles_origen:eq.portatiles_origen||"mundochile", proveedor_portatiles:eq.proveedor_portatiles||"",
+                dia_montaje:eq.dia_montaje||null, hora_montaje:eq.hora_montaje||null,
+                contacto_in_situ:eq.contacto_in_situ||"", instrucciones:eq.instrucciones||"",
+              };
+            });
             const{error:eE}=await sb.from("equipos_dia").insert(eqs);if(eE)throw eE;
           }
         }
