@@ -1055,7 +1055,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                   {(dia.asignaciones||[]).length>0&&<button onClick={()=>addAsig(dIdx)} style={{...S.btnA,width:"100%",padding:"12px",fontSize:"15px",fontWeight:"600",height:"auto",marginTop:"8px"}}>+ Agregar otro intérprete</button>}
                 </div>
                 {/* Equipos AV */}
-                {modEfectiva!=="remoto"&&<div style={{marginTop:"14px",border:"2px solid #155724",borderRadius:"16px",padding:"16px",background:"rgba(21,87,36,0.06)",marginBottom:"16px"}}>
+                <div style={{marginTop:"14px",border:"2px solid #155724",borderRadius:"16px",padding:"16px",background:"rgba(21,87,36,0.06)",marginBottom:"16px"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
                     <div style={{fontWeight:"600",color:"#155724",fontSize:"17px",display:"flex",alignItems:"center",gap:"5px"}}><IconAV size={16}/> Equipos AV de este día</div>
                     <button onClick={()=>addEq(dIdx)} style={{...S.btnP,fontSize:"13px",color:"#2C5CA0",border:"1px solid #869CB8"}}>+ Agregar equipos</button>
@@ -1140,7 +1140,7 @@ function ModalEvento({eventoInicial,clientes,interpretes,pares,proveedores,lugar
                       </div>
                     </div>
                   ))}
-                </div>}
+                </div>
               </div>
             </div>
           );})}</>}
