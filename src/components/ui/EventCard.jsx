@@ -1,4 +1,5 @@
 // EventCard.jsx — MundoChile v3.0 — Diseño Trello
+import { useState } from "react";
 import { colorCliente, INTERP_LANG, resolverHoraPresentacion } from "../../design-system/tokens";
 import PlatformChip from "./PlatformChip";
 
@@ -117,6 +118,7 @@ const Chip = ({ label, emoji, fontSize=12, padding="4px 10px", dark=false, fw:fw
 
 // ── Componente principal ──────────────────────────────────────────────────────
 export default function EventCard({ ev, diaDe, clientes, contactos=[], interpretes, pares, proveedores=[], lugares=[], onClick, onNavegar, onVerMultidia=null, solidPill=false, pillsHalf=false, agendaSmall=false, hideDots=false }) {
+  const [mostrarEquiposAV, setMostrarEquiposAV] = useState(false);
   const cliente       = clientes.find(c => c.id === ev.cliente_id);
   const nombreContacto = contactos.find(c => c.id === ev.contacto_id)?.nombre || cliente?.nombre_contacto || "";
   const borderColor = colorCliente(ev.cliente_id);
@@ -141,10 +143,12 @@ export default function EventCard({ ev, diaDe, clientes, contactos=[], interpret
   }
 
   // Equipos AV
-  const todosEquipos = (ev.evento_dias || []).flatMap(d => d.equipos_dia || []);
+  const todosEquipos = (ev.evento_dias || []).flatMap(d =>
+    (d.equipos_dia || []).map(eq => ({ ...eq, fecha_evento: d.fecha }))
+  );
   const tieneEquipos = todosEquipos.length > 0;
-  const provNombre   = tieneEquipos
-    ? (todosEquipos[0].proveedor_nombre || proveedores.find(p => p.id === todosEquipos[0].proveedor_id)?.nombre || "")
+  const provNombre = tieneEquipos
+    ? (todosEquipos[0].proveedor_nombre || todosEquipos[0].proveedor || proveedores.find(p => p.id === todosEquipos[0].proveedor_id)?.nombre || "")
     : "";
 
   // Hora de inicio de referencia para resolver hora_presentacion relativa (-30/-45)
@@ -216,6 +220,7 @@ export default function EventCard({ ev, diaDe, clientes, contactos=[], interpret
   })();
 
   return (
+    <>
     <div
       onClick={onClick}
       style={{
@@ -314,9 +319,10 @@ export default function EventCard({ ev, diaDe, clientes, contactos=[], interpret
             </div>
 
             {tieneEquipos && (
-              <div style={{ fontSize:12, color:"#4B5563", marginTop:8, display:"flex", alignItems:"center", gap:5 }}>
-                <IconAV size={13} /> {provNombre || "Equipos AV"}
-              </div>
+              <button type="button" onClick={e=>{e.stopPropagation();setMostrarEquiposAV(true);}}
+                style={{marginTop:8,display:"inline-flex",alignItems:"center",gap:6,padding:"6px 12px",borderRadius:8,border:"1.5px solid #138B3F",background:"#F0FDF4",color:"#166534",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>
+                <IconAV size={14}/> Equipos AV
+              </button>
             )}
           </div>
 
@@ -471,9 +477,10 @@ export default function EventCard({ ev, diaDe, clientes, contactos=[], interpret
 
           {/* Equipos AV */}
           {tieneEquipos && (
-            <div style={{ fontSize:13, color:"#4B5563", marginTop:10, display:"flex", alignItems:"center", gap:5 }}>
-              <IconAV size={13} /> {provNombre || "Equipos AV"}
-            </div>
+            <button type="button" onClick={e=>{e.stopPropagation();setMostrarEquiposAV(true);}}
+              style={{marginTop:10,display:"inline-flex",alignItems:"center",gap:6,padding:"6px 12px",borderRadius:8,border:"1.5px solid #138B3F",background:"#F0FDF4",color:"#166534",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>
+              <IconAV size={14}/> Equipos AV
+            </button>
           )}
 
           {/* Estado — siempre al final */}
@@ -483,5 +490,50 @@ export default function EventCard({ ev, diaDe, clientes, contactos=[], interpret
         </>
       )}
     </div>
+    {mostrarEquiposAV && (
+      <div onClick={e=>{e.stopPropagation();setMostrarEquiposAV(false);}}
+        style={{position:"fixed",inset:0,zIndex:5000,background:"rgba(15,23,42,0.68)",display:"flex",alignItems:"center",justifyContent:"center",padding:16,boxSizing:"border-box"}}>
+        <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:760,maxHeight:"88vh",overflowY:"auto",background:"#FFFFFF",borderRadius:16,boxShadow:"0 24px 80px rgba(0,0,0,0.35)",padding:22,boxSizing:"border-box",color:"#1F2937"}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,borderBottom:"2px solid #D1FAE5",paddingBottom:12,marginBottom:16}}>
+            <div style={{display:"flex",alignItems:"center",gap:9,fontSize:20,fontWeight:800,color:"#166534"}}><IconAV size={22}/> Equipos AV</div>
+            <button type="button" onClick={()=>setMostrarEquiposAV(false)} style={{border:"1px solid #CBD5E1",background:"#F8FAFC",borderRadius:8,padding:"7px 12px",fontSize:13,fontWeight:700,cursor:"pointer"}}>✕ Cerrar</button>
+          </div>
+          <div style={{fontSize:15,fontWeight:700,color:"#111827",marginBottom:14}}>{cliente?.nombre_empresa || "Evento"}{ev.nombre_evento ? " · "+ev.nombre_evento : ""}</div>
+          {todosEquipos.map((eq,i)=>{
+            const proveedor=eq.proveedor_nombre||eq.proveedor||proveedores.find(p=>p.id===eq.proveedor_id)?.nombre||"Sin proveedor";
+            let contactosAV=[];
+            try { const parsed=JSON.parse(eq.proveedor_contacto||"[]"); contactosAV=Array.isArray(parsed)?parsed:[]; }
+            catch { if(eq.proveedor_contacto) contactosAV=[{valor:eq.proveedor_contacto}]; }
+            const tipo=eq.tipo_equipo==="fijo"?"Sistema fijo":eq.tipo_equipo==="portatil"?"Sistema portátil":eq.tipo_equipo==="cabina_portatil"?"Cabina portátil":(eq.tipo_equipo||"Equipo AV");
+            const filas=[
+              ["Proveedor",proveedor],["Teléfono proveedor",eq.proveedor_telefono],
+              ["N° receptores",eq.num_receptores],["N° cabinas",eq.num_cabinas],["N° asistentes",eq.num_asistentes],
+              ["Origen de asistentes",eq.asistentes_origen==="mismo_proveedor"?"Mismo proveedor":eq.asistentes_origen],
+              ["Otro proveedor de asistentes",eq.asistentes_otro_proveedor],["Personal MundoChile",eq.asistentes_mundochile_nombres],
+              ["Origen de portátiles",eq.portatiles_origen==="mundochile"?"MundoChile":eq.portatiles_origen],
+              ["Proveedor de portátiles",eq.proveedor_portatiles],["Día de montaje",eq.dia_montaje],
+              ["Hora de montaje",eq.hora_montaje],["Contacto en terreno",eq.contacto_in_situ],["Instrucciones",eq.instrucciones],
+            ].filter(([,v])=>v!==null&&v!==undefined&&String(v).trim()!=="");
+            return (
+              <div key={eq.id||i} style={{border:"1.5px solid #BBF7D0",borderRadius:12,overflow:"hidden",marginBottom:14}}>
+                <div style={{background:"#ECFDF5",padding:"10px 14px",display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap",fontWeight:800,color:"#166534"}}>
+                  <span>{tipo}</span><span style={{fontSize:12,fontWeight:600}}>{eq.fecha_evento||""}</span>
+                </div>
+                <div style={{padding:14}}>
+                  {filas.map(([label,value])=><div key={label} style={{display:"grid",gridTemplateColumns:"minmax(150px, 0.8fr) 1.2fr",gap:12,padding:"5px 0",borderBottom:"1px solid #F1F5F9",fontSize:13}}>
+                    <strong style={{color:"#475569"}}>{label}</strong><span style={{whiteSpace:"pre-wrap",overflowWrap:"anywhere"}}>{String(value)}</span>
+                  </div>)}
+                  {contactosAV.length>0&&<div style={{paddingTop:10}}>
+                    <div style={{fontSize:12,fontWeight:800,color:"#475569",textTransform:"uppercase",marginBottom:6}}>Contactos del proveedor</div>
+                    {contactosAV.map((c,j)=><div key={j} style={{fontSize:13,padding:"4px 0",color:"#334155"}}>{[c.nombre,c.cargo,c.tipo,c.valor].filter(Boolean).join(" · ")}</div>)}
+                  </div>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    )}
+    </>
   );
 }
