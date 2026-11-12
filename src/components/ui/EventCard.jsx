@@ -500,16 +500,23 @@ export default function EventCard({ ev, diaDe, clientes, contactos=[], interpret
           </div>
           <div style={{fontSize:15,fontWeight:700,color:"#111827",marginBottom:14}}>{cliente?.nombre_empresa || "Evento"}{ev.nombre_evento ? " · "+ev.nombre_evento : ""}</div>
           {todosEquipos.map((eq,i)=>{
-            const proveedor=eq.proveedor_nombre||eq.proveedor||proveedores.find(p=>p.id===eq.proveedor_id)?.nombre||"Sin proveedor";
+            const proveedorObj=proveedores.find(p=>p.id===eq.proveedor_id);
+            const proveedor=eq.proveedor_nombre||eq.proveedor||proveedorObj?.nombre||"Sin proveedor";
+            const contactosProveedor=[1,2,3].flatMap(n=>{
+              const nombre=proveedorObj?.[`contacto${n}_nombre`];
+              if(!nombre)return[];
+              return [{nombre,cargo:proveedorObj?.[`contacto${n}_cargo`],celular:proveedorObj?.[`contacto${n}_celular`],email:proveedorObj?.[`contacto${n}_email`]}];
+            });
             let contactosAV=[];
             try { const parsed=JSON.parse(eq.proveedor_contacto||"[]"); contactosAV=Array.isArray(parsed)?parsed:[]; }
             catch { if(eq.proveedor_contacto) contactosAV=[{valor:eq.proveedor_contacto}]; }
             const tipo=eq.tipo_equipo==="fijo"?"Sistema fijo":eq.tipo_equipo==="portatil"?"Sistema portátil":eq.tipo_equipo==="cabina_portatil"?"Cabina portátil":(eq.tipo_equipo||"Equipo AV");
             const filas=[
-              ["Proveedor",proveedor],["Teléfono proveedor",eq.proveedor_telefono],
+              ["Proveedor",proveedor],["RUT proveedor",proveedorObj?.rut],["Ciudad proveedor",proveedorObj?.ciudad],
+              ["Email proveedor",proveedorObj?.email],["Teléfono proveedor",eq.proveedor_telefono||proveedorObj?.telefono],
               ["N° receptores",eq.num_receptores],["N° cabinas",eq.num_cabinas],["N° asistentes",eq.num_asistentes],
               ["Origen de asistentes",eq.asistentes_origen==="mismo_proveedor"?"Mismo proveedor":eq.asistentes_origen],
-              ["Otro proveedor de asistentes",eq.asistentes_otro_proveedor],["Personal MundoChile",eq.asistentes_mundochile_nombres],
+              ["Proveedor de asistentes",eq.asistentes_proveedor],["Otro proveedor de asistentes",eq.asistentes_otro_proveedor],["Personal MundoChile",eq.asistentes_mundochile_nombres],
               ["Origen de portátiles",eq.portatiles_origen==="mundochile"?"MundoChile":eq.portatiles_origen],
               ["Proveedor de portátiles",eq.proveedor_portatiles],["Día de montaje",eq.dia_montaje],
               ["Hora de montaje",eq.hora_montaje],["Contacto en terreno",eq.contacto_in_situ],["Instrucciones",eq.instrucciones],
@@ -523,8 +530,12 @@ export default function EventCard({ ev, diaDe, clientes, contactos=[], interpret
                   {filas.map(([label,value])=><div key={label} style={{display:"grid",gridTemplateColumns:"minmax(150px, 0.8fr) 1.2fr",gap:12,padding:"5px 0",borderBottom:"1px solid #F1F5F9",fontSize:13}}>
                     <strong style={{color:"#475569"}}>{label}</strong><span style={{whiteSpace:"pre-wrap",overflowWrap:"anywhere"}}>{String(value)}</span>
                   </div>)}
+                  {contactosProveedor.length>0&&<div style={{paddingTop:10}}>
+                    <div style={{fontSize:12,fontWeight:800,color:"#475569",textTransform:"uppercase",marginBottom:6}}>Contactos registrados del proveedor</div>
+                    {contactosProveedor.map((c,j)=><div key={j} style={{fontSize:13,padding:"4px 0",color:"#334155"}}>{[c.nombre,c.cargo,c.celular,c.email].filter(Boolean).join(" · ")}</div>)}
+                  </div>}
                   {contactosAV.length>0&&<div style={{paddingTop:10}}>
-                    <div style={{fontSize:12,fontWeight:800,color:"#475569",textTransform:"uppercase",marginBottom:6}}>Contactos del proveedor</div>
+                    <div style={{fontSize:12,fontWeight:800,color:"#475569",textTransform:"uppercase",marginBottom:6}}>Contactos asignados a este evento</div>
                     {contactosAV.map((c,j)=><div key={j} style={{fontSize:13,padding:"4px 0",color:"#334155"}}>{[c.nombre,c.cargo,c.tipo,c.valor].filter(Boolean).join(" · ")}</div>)}
                   </div>}
                 </div>
